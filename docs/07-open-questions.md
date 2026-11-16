@@ -8,14 +8,15 @@ Last reviewed: Mon 16 Nov 2026.
 |---|---|---|
 | 1 | **MCP API key.** The guide needs an `X-API-Key` "supplied by the organisation". It is not in anything filed here. Without it no MCP client connects | Rui Mendes or Hugo Dias on Slack. Check the organisers' email and the resources folder first |
 | 2 | **Book the Wednesday mentor checkpoint.** It is mandatory and must happen on Wed 18 Nov | The Altice mentors, on Slack |
-| 3 | **Bring the kit online** and confirm every device shows in the app | Us. See [04-kit-and-access.md](04-kit-and-access.md) |
+| 3 | **Bring the kit online** and confirm every device shows in the app. The gateway is cabled to the lab ethernet; the camera still needs a 2.4 GHz Wi-Fi network with the kit's name and password, which the gateway does not provide | Us. See [04-kit-and-access.md](04-kit-and-access.md) |
 
 ## To confirm
 
 | # | What | Why it matters |
 |---|---|---|
 | 4 | The team account arrived as a single line, "A - B". We read it as username and password | First login will tell |
-| 5 | **What each kit device exposes through the MCP.** The hardware is inventoried from photos. Still unknown: what the MS-D3D sensor is, whether the bulb does colour, whether the plug reports energy use, whether the smoke alarm and camera events are visible | Decides which ideas are buildable. Extra devices cannot be added |
+| 5 | **What each kit device exposes through the MCP.** The hardware is inventoried from photos. Still unknown: whether the MS-D3D sensor is a door contact, whether the plug and bulb are Wi-Fi or Zigbee, whether the bulb does colour, whether the plug reports energy use, whether smoke alarm and camera events are visible | Decides which ideas are buildable. Extra devices cannot be added |
+| 5b | Whether the lab network lets the gateway reach the internet. A light on the gateway is not proof; the app showing it online is | If not, it needs registering with whoever runs the lab network, or a different uplink |
 | 6 | Exact challenge title and whether a written statement exists | Goes in the header of the executive summary |
 | 7 | Whether Claude Code, or any client beyond VS Code, Hermes and Codex, can authenticate | The OAuth redirect may be restricted to the documented clients |
 | 8 | Whether one app invite works on several phones | Otherwise ask Hugo for invites for Simon and Mushahid |

@@ -12,7 +12,7 @@ Raw material as received. The pages in `docs/` are digests of what is here, so w
 | `email/2026-11-16-challenge-3-links.md` | Organisers' email with the Challenge #3 links | Pasted text, 16 Nov | Hyperlinks lost in the paste |
 | `brainstorm/IMG_9114.HEIC` | Whiteboard photo of the brainstorm | Posted on Slack by Sofia Martins | Original |
 | `brainstorm/whiteboard.jpg` | Same photo as JPEG | Converted with `sips` | For viewers that do not open HEIC |
-| `kit/*.jpg` | 15 photos of the kit devices and their boxes | Taken by Filipe, 16 Nov | Renamed by device from `1000078021.jpg` … `1000078041.jpg`. Unmodified, and they carry no location metadata. A duplicate of the bulb photo was left out |
+| `kit/*.jpg` | 17 photos of the kit devices and their boxes, including the gateway's front panel and label | Taken by the team, 16 Nov | Renamed by device from `1000078019.jpg` … `1000078042.jpg`. Unmodified, and they carry no location metadata. A duplicate of the bulb photo was left out |
 
 The official templates are in `deliverables/`, not here, because they are meant to be worked on.
 

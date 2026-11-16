@@ -44,7 +44,7 @@ Full thread: [`sources/slack/team-channel.md`](../sources/slack/team-channel.md)
 
 This section is analysis added while filing, not a team decision. The Slack discussion happened before we had the kit, the MCP guide or the mentors' steer.
 
-The kit is: a camera, a temperature and humidity sensor, a smoke alarm, a smart plug, a smart bulb, a small sensor that is probably a door contact, and a gateway. Details in [04-kit-and-access.md](04-kit-and-access.md). What each device exposes through the MCP is still to be confirmed.
+The kit is: an LTE IoT gateway, a camera, a temperature and humidity sensor, a smoke alarm, a smart plug, a smart bulb, and a small sensor that is probably a door contact. Details in [04-kit-and-access.md](04-kit-and-access.md). What each device exposes through the MCP is still to be confirmed.
 
 | Idea | What the kit offers | Gap or risk |
 |---|---|---|
@@ -58,7 +58,8 @@ The kit is: a camera, a temperature and humidity sensor, a smoke alarm, a smart 
 | HVAC automation | Climate sensor to read, smart plug to switch one appliance | No thermostat. The sensor reports only every 5 to 30 minutes, so nothing reacts live |
 | Fridge inventory, recycling | Camera only | No dedicated hardware |
 
-Two things from the kick-off bear on the choice:
+Three things bear on the choice:
 
 - The mentors want to be surprised by a **useful use case** and said **not to underestimate the camera** ([02-challenge.md](02-challenge.md)).
 - The organisers expect teams to say plainly **what is real and what is simulated** ([01-event.md](01-event.md)).
+- **Altice already pitches several of these.** Their public product page lists security, energy management, AI-powered automation, a "Virtual Concierge Assistant" and aging in place ([02-challenge.md](02-challenge.md)). Of the whiteboard list, security systems, HVAC automation and elder assist sit inside what they sell. Lost & found, plants, fridge inventory, recycling, pets and kid monitoring do not appear there.

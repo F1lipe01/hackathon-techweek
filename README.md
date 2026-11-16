@@ -37,6 +37,7 @@ No extensions on any deadline, and pitch time is cut strictly. Details in [docs/
 | [docs/07-open-questions.md](docs/07-open-questions.md) | What is missing and what to do next |
 | [deliverables/](deliverables/) | Official templates and our drafts |
 | [mcp/](mcp/) | MCP client config templates from the official guide |
+| [assets/](assets/) | Clean device images for diagrams and slides, and screens of Altice's own app |
 | [sources/](sources/) | Raw material exactly as received, with an index |
 
 ## Links
@@ -58,6 +59,8 @@ MCP client config files hold the API key in plain text, so `.mcp.json` and `.vsc
 ## Before sharing this repo
 
 `sources/` holds raw Slack threads and a meeting transcript with the names and words of colleagues, organisers and other participants. The kit photos show device serial numbers and people in the background of the lab. Review or drop that folder before making the repository public or submitting it to the jury.
+
+Some images in `assets/` come from other sites and are not ours. Sources are listed in `assets/README.md`.
 
 ## Language
 

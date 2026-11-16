@@ -30,11 +30,19 @@ The MCP server from the challenge guide, `cognitive-home.futurelabsinnovations.c
 
 Each device has a detail page with these sections: **Scenarios, Energy, Events, Notifications, About**, plus a room and a connection state.
 
-Confirmed so far:
+The full device roster read from the app on 16 Nov (home **"Hack 3"**, all "Without room"):
 
-- **Plug** has an **Energy** section → the smart plug **meters energy**. On 16 Nov it showed "Disconnected" and "Without room", because the kit was not yet on the Wi-Fi network.
+| App name | State | = our device |
+|---|---|---|
+| Security hub | On | Gateway MS-WES1AS |
+| Temperature sensor | On, 20.8 °C / 48.3 % | Nedis ZBSC10WT |
+| Smoke sensor | On | Photoelectric smoke alarm |
+| Contact sensor | Open | MS-D3D |
+| Camera | Disconnected | Tuya SC034-WNV3 |
+| Plug | Disconnected | Smart plug (has an **Energy** page → meters energy) |
+| Light | Disconnected | Smart bulb |
 
-The full device roster and each device's real name, room and capabilities are being read off the app screen (the kit has to be online first). They go in the table in [04-kit-and-access.md](04-kit-and-access.md).
+The full table with radios and capabilities is in [04-kit-and-access.md](04-kit-and-access.md). Each device detail page has Scenarios, Energy, Events, Notifications, About.
 
 ## How this was accessed
 

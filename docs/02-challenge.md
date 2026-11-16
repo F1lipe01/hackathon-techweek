@@ -2,7 +2,14 @@
 
 **Connected Homes Reimagined: a IA ao serviço da casa**
 
-The title is as spoken at the kick-off. No written challenge statement (enunciado) is filed here. The only challenge document we have is the MCP connection guide, so check the resources folder for a statement.
+The official challenge sheet (ficha) is filed at [`sources/challenge/desafio3-ficha.pdf`](../sources/challenge/desafio3-ficha.pdf). Key points from it:
+
+- **Deliberately open.** There is no specific problem to solve and no predefined kind of application. Teams are asked to imagine new experiences, services and ways of interacting that become possible when AI can understand, reason about and act on the devices and their environment.
+- **The MCP tool is the main technical resource and must be integrated into the solution** ("deverá ser integrado na solução proposta").
+- Suggested areas: automation, accessibility, energy efficiency, comfort, security, entertainment, communication, daily routines, or entirely unexpected use cases.
+- **"The challenge is not simply to control devices through AI. Think beyond commands.** Explore how AI can combine context, intention, information and action to create something genuinely useful, surprising or innovative."
+- Closing line: *"A casa já está conectada. O que vão fazê-la capaz de fazer?"* — The house is already connected. What will you make it able to do?
+- Technologies named: Mobile, Web, Cloud, AI. A technical support document for the MCP server is provided (that is the MCP guide).
 
 ## The brief
 

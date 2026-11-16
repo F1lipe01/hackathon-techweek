@@ -8,16 +8,19 @@ Sources: photos of the kit taken on 16 Nov ([`sources/kit/`](../sources/kit/)), 
 - Every device is already provisioned on Altice's platform and linked to our team account. No pairing is needed.
 - The table says what the hardware is. What the platform exposes for each device is **not confirmed yet**: fill in the last column once the kit is online, from the app or from `GET_HOME_DEVICES`.
 
-| Device | Markings | Power and radio | What it should give us | Seen in the MCP as |
+The home is named **"Hack 3"** in the app, with all seven devices "Without room". The states below were read from the app on 16 Nov, with the gateway cabled to ethernet but no Wi-Fi network up yet.
+
+| Device (app name) | State, 16 Nov | Hardware | Radio / link | Capabilities |
 |---|---|---|---|---|
-| **Gateway** | "LTE IoT Gateway", model **MS-WES1AS**. Altice label 424, hand-marked "R10 A" | 12 V / 1 A. Uplink by RJ45, Wi-Fi 2.4 GHz (b/g/n) or LTE (4G). Talks to devices over Zigbee 2.4 GHz and RF 433 / 868 MHz | The hub the sensors report to. Probably the "Security Hub" with a cellular link that the MCP guide's example mentions. **It is not a Wi-Fi access point** | |
-| **Camera** | Tuya smart camera, model **SC034-WNV3**. Box hand-marked "Tuya Go samples". Altice label 346 | 12 V / 2 A. **Wi-Fi, 2.4 GHz only**. IP65 | The RTSP video feed. The box also lists HD video, motion detection, two-way audio, SD-card and cloud storage | |
-| **Climate sensor** | Round disc, thermometer icon, Nedis logo. Nedis Zigbee Climate Sensor, model **ZBSC10WT**. Altice label 689 | CR2450 battery. Zigbee 3.0 | Temperature (0–40 °C) and humidity (0–95 %). **Reports only every 5 to 30 minutes** | |
-| **Climate sensor, 2nd** | A second identical-looking round disc. The team reports it as "another temperature sensor" | Same as above, assumed | Same as above. **To confirm in the app:** whether there really are two, or this is the same unit photographed twice | |
-| **Smoke alarm** | Photoelectric smoke alarm, EN 14604. Box hand-marked "V2 NEW 2". Altice label 349. Maker not identified | Battery. Radio not stated | Smoke alarm events. 85 dB siren, test/hush button, low-battery warning | |
-| **MS-D3D sensor** | Cream oval/pill body, model **MS-D3D**, QR label **685**, "no Wi-Fi" symbol on the back. No public listing found | CR2450 battery. RF, not Wi-Fi (so Zigbee or 433/868 MHz to the gateway) | **Probable door/window contact sensor** (oval body plus a magnet bar; a white rectangle sits beside it in the photos). Shares the "MS-" prefix with the gateway | |
-| **Smart plug** | EU (Schuko) plug with a power button on the side. No brand visible | Mains. Wi-Fi or Zigbee, not known | Switches whatever is plugged into it. Altice's app screenshots show a power reading next to a plug | |
-| **Smart bulb** | E27 LED bulb. No brand visible | Mains. Wi-Fi or Zigbee, not known | Light on and off. Altice's app screenshots show white and colour modes for a bulb | |
+| **Security hub** | On | LTE IoT Gateway **MS-WES1AS** (label 424) | RJ45 / Wi-Fi 2.4 / LTE uplink; **Zigbee + 433/868 MHz** down to the devices | The hub the sensors run through, and the security system itself. Not a Wi-Fi access point |
+| **Temperature sensor** | On — **20.8 °C, 48.3 %** | Nedis **ZBSC10WT** (label 689) | Zigbee, via the hub | Temperature + humidity, live. Only **one** unit is paired (the app lists one), even though two round discs were in the kit |
+| **Smoke sensor** | On | Photoelectric, EN 14604 (label 349) | via the hub | Smoke events; 85 dB siren, test/hush, low-battery warning |
+| **Contact sensor** | **Open** | **MS-D3D** oval (label 685) | RF, via the hub | Open / closed state of a door or window. **Confirmed a contact sensor** |
+| **Camera** | Disconnected | Tuya **SC034-WNV3** (label 346) | **Wi-Fi 2.4 GHz only**, IP65 | RTSP feed; HD video, motion detection, two-way audio, SD/cloud. Needs the Wi-Fi network |
+| **Plug** | Disconnected | Unbranded Schuko plug | **Wi-Fi** | On/off **and energy metering** (the app has an Energy page for it). Needs the Wi-Fi network |
+| **Light** | Disconnected | Unbranded E27 bulb | **Wi-Fi** | On/off; colour vs white still to confirm. Needs the Wi-Fi network |
+
+**The connected/disconnected split proves the two radio paths.** The four devices that were *On* (hub, temperature, smoke, contact) talk to the Security hub over Zigbee/RF, and the hub is online via its ethernet cable — so they work with no Wi-Fi. The three that were *Disconnected* (camera, plug, light) are **Wi-Fi** devices and stay offline until we create the 2.4 GHz network.
 
 What the kit does not have: a thermostat, any valve or pump, a soil-moisture sensor, a motion sensor, a siren other than the smoke alarm's own. The single smart plug is the only general-purpose actuator.
 

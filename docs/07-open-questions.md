@@ -15,9 +15,9 @@ Last reviewed: Mon 16 Nov 2026.
 | # | What | Why it matters |
 |---|---|---|
 | 4 | The team account arrived as a single line, "A - B". We read it as username and password | First login will tell |
-| 5 | **What each kit device exposes through the MCP.** The hardware is inventoried from photos. Still unknown: whether the MS-D3D sensor is a door contact, whether the plug and bulb are Wi-Fi or Zigbee, whether the bulb does colour, whether the plug reports energy use, whether smoke alarm and camera events are visible | Decides which ideas are buildable. Extra devices cannot be added |
-| 5b | Whether the lab network lets the gateway reach the internet. A light on the gateway is not proof; the app showing it online is | If not, it needs registering with whoever runs the lab network, or a different uplink |
-| 6 | Exact challenge title and whether a written statement exists | Goes in the header of the executive summary |
+| ~~5~~ | Mostly **resolved from the app** (16 Nov): 7 devices in home "Hack 3". MS-D3D **is** a contact sensor; plug **meters energy**; camera/plug/light are **Wi-Fi**; temperature/smoke/contact run over the hub. Still open: whether the bulb does **colour** vs white only | Open the Light's detail page in the app |
+| ~~5b~~ | **Resolved.** The app shows the **Security hub as On**, so the gateway reaches the Cognitive Home platform over the lab ethernet | Done |
+| ~~6~~ | **Resolved.** Official challenge sheet obtained and filed (`sources/challenge/desafio3-ficha.pdf`); summarised in [02-challenge.md](02-challenge.md) | Done |
 | 7 | Whether Claude Code, or any client beyond VS Code, Hermes and Codex, can authenticate | The OAuth redirect may be restricted to the documented clients |
 | 8 | Whether one app invite works on several phones | Otherwise ask Hugo for invites for Simon and Mushahid |
 | 9 | Jury names and affiliations | Transcript is unreliable on names |

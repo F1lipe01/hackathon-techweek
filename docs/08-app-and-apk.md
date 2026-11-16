@@ -44,6 +44,14 @@ The full device roster read from the app on 16 Nov (home **"Hack 3"**, all "With
 
 The full table with radios and capabilities is in [04-kit-and-access.md](04-kit-and-access.md). Each device detail page has Scenarios, Energy, Events, Notifications, About.
 
+## Static analysis of the APK
+
+The APK was unpacked and inspected (read-only, nothing executed). Findings:
+
+- **UI string catalogs** ship in the app: `assets/flutter_assets/assets/strings/strings_{enus,ptpt,engb,frfr}.json`, ~2000 strings each. These document every screen and feature of the platform. The full capability model mined from them is in [09-platform-capabilities.md](09-platform-capabilities.md).
+- The app is the **full Altice SmartHome / SmartWiFi product**, not a hackathon cut-down: it includes device control, a scenario rules engine, security, energy, camera recordings, Wi-Fi mesh management, parental control and user management.
+- Dart code is AOT-compiled into `lib/*/libapp.so`, so business logic is not readily readable; the string catalogs and asset configs are the useful surface.
+
 ## How this was accessed
 
 - Phone connected over USB with debugging on; only the `pt.altice.smarthome.beta` package was touched.

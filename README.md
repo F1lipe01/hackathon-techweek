@@ -35,6 +35,8 @@ No extensions on any deadline, and pitch time is cut strictly. Details in [docs/
 | [docs/05-ideas.md](docs/05-ideas.md) | Whiteboard brainstorm, Slack discussion, references |
 | [docs/06-people.md](docs/06-people.md) | Team, mentors, organisers, jury |
 | [docs/07-open-questions.md](docs/07-open-questions.md) | What is missing and what to do next |
+| [docs/08-app-and-apk.md](docs/08-app-and-apk.md) | The mobile app and APK analysis; confirmed device roster |
+| [docs/09-platform-capabilities.md](docs/09-platform-capabilities.md) | The platform's full capability model (devices, automation, security, energy), reverse-engineered from the app |
 | [deliverables/](deliverables/) | Official templates and our drafts |
 | [mcp/](mcp/) | MCP client config templates from the official guide |
 | [assets/](assets/) | Clean device images for diagrams and slides, and screens of Altice's own app |

@@ -88,7 +88,7 @@ Ways to create it:
 | Spare router or access point | Set the SSID and password, enable 2.4 GHz, and plug it into a port with internet access |
 | Mac | Only if the Mac itself is on wired ethernet: System Settings → General → Sharing → Internet Sharing, from Ethernet to Wi-Fi, with the same name and password |
 
-The phone that hosts the hotspot can still run the app.
+The phone that hosts the hotspot can still run the app. Whatever the camera streams travels over that phone's mobile data, so a router on wired internet is the better choice for long sessions.
 
 ### 3. Check every device in the app
 
@@ -133,10 +133,12 @@ Connect an MCP client and log in with the team account. See [03-mcp-connected-ho
 
 Values are in `.env`, which is gitignored. All of them reached us on 16 Nov.
 
-| What | `.env` variable | Came from | Note |
+| What | `.env` variable | What you do with it | Came from |
 |---|---|---|---|
-| Team account | `CONNECTED_HOME_USERNAME`, `CONNECTED_HOME_PASSWORD` | Rui Mendes, Slack DM | Sent as one line, "A - B". Reading it as username and password is our interpretation |
-| MCP API key | `CONNECTED_HOME_API_KEY` | Not received | Goes in the `X-API-Key` header |
-| Camera feed | `CAMERA_RTSP_URL` | Rui Mendes, Slack DM | No authentication |
-| Kit Wi-Fi | `KIT_WIFI_SSID`, `KIT_WIFI_PASSWORD` | Rui Mendes, Slack DM | Same for every team |
-| App invite | `APP_INVITE_URL` | Email to Filipe | Firebase App Distribution |
+| Kit Wi-Fi | `KIT_WIFI_SSID`, `KIT_WIFI_PASSWORD` | **You do not look for this network, you create it.** Give a hotspot or router this name and password and the kit devices join by themselves. Same values for every team | Rui Mendes, Slack DM |
+| Team account | `CONNECTED_HOME_USERNAME`, `CONNECTED_HOME_PASSWORD` | Type it into the login page that opens when an MCP client connects. Try it for the app login too. It was sent as one line, "A - B"; reading that as username and password is our interpretation | Rui Mendes, Slack DM |
+| Camera feed | `CAMERA_RTSP_URL` | Paste it into VLC to watch the camera, or hand it to our own vision code. No authentication | Rui Mendes, Slack DM |
+| MCP API key | `CONNECTED_HOME_API_KEY` | Paste it into the MCP client config in place of `<API_KEY>` | **Not received yet** |
+| App invite | `APP_INVITE_URL` | Open it on the phone to install the app | Email to Filipe |
+
+None of these is typed into the gateway. The gateway has nothing for us to configure.

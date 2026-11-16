@@ -8,7 +8,7 @@ Everything received or discussed so far is filed here: organiser material, kick-
 
 - Done: registered as a team of three, hardware kit collected and inventoried from photos, team credentials received, MCP guide and templates received, kick-off and challenge Q&A attended.
 - Not done: kit brought online, MCP client connected, idea chosen, mentor checkpoint booked, executive summary written.
-- This repo is private on GitHub at `F1lipe01/hackathon-techweek`. Nobody else has been invited yet.
+- This repo is private on GitHub at `F1lipe01/hackathon-techweek`. Simon and Mushahid have been added as collaborators.
 - Gaps and to-dos are listed in [docs/07-open-questions.md](docs/07-open-questions.md).
 
 ## Deadlines

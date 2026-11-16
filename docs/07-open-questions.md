@@ -7,6 +7,7 @@ Last reviewed: Mon 16 Nov 2026.
 | # | What | Who can resolve it |
 |---|---|---|
 | ~~1~~ | ~~MCP API key~~ **Received** 16 Nov from Rui Mendes, stored in `.env`. The MCP client still needs the OAuth login (team account) on top of it | Done |
+| 1b | **Camera has no power adapter.** It needs 12 V ⎓ 2 A DC (barrel 5.5 × 2.1 mm, centre-positive — check the label). Ethernet does **not** power it: it is not PoE; its RJ45 is only a wired-network alternative to Wi-Fi. Don't borrow the gateway's 12 V 1 A adapter | Hugo or Rui on Slack, or any 12 V ≥ 2 A CCTV adapter in the lab |
 | 2 | **Book the Wednesday mentor checkpoint.** It is mandatory and must happen on Wed 18 Nov | The Altice mentors, on Slack |
 | 3 | **Bring the kit online** and confirm every device shows in the app. The gateway is cabled to the lab ethernet; the camera still needs a 2.4 GHz Wi-Fi network with the kit's name and password, which the gateway does not provide | Us. See [04-kit-and-access.md](04-kit-and-access.md) |
 

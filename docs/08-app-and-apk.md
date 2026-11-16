@@ -42,7 +42,21 @@ The full device roster read from the app on 16 Nov (home **"Hack 3"**, all "With
 | Plug | Disconnected | Smart plug (has an **Energy** page → meters energy) |
 | Light | Disconnected | Smart bulb |
 
-The full table with radios and capabilities is in [04-kit-and-access.md](04-kit-and-access.md). Each device detail page has Scenarios, Energy, Events, Notifications, About.
+The full table with radios and capabilities is in [04-kit-and-access.md](04-kit-and-access.md).
+
+## Live app map (walked on 16 Nov)
+
+Screens captured by driving the app over ADB. Clean screenshots (no account data) are in [`assets/app-screens/`](../assets/app-screens/).
+
+- **Bottom navigation:** Favorites, Areas, Devices, Menu.
+- **Devices tab:** home **"Hack 3"**, list "Without room (7)" with the seven devices. A separate "Add-ons" sub-view exists and is empty ("No add-ons" — we have no Wi-Fi extenders).
+- **Device detail page:** header (name, room, connection state, favourite star, "⋯" menu), a large device icon with the state, then sections. The sections differ by device:
+  - **Plug:** Scenarios, **Energy**, Events, Notifications, About.
+  - **Light:** Scenarios, Events, Notifications, About — **no Energy section**.
+  - Controls (power, brightness, colour) are hidden while a device is **Disconnected**, so the bulb's colour support could not be confirmed from the app while the kit was offline. Its About page shows only a serial UUID. Confirm colour when the kit is on Wi-Fi, or via the scenario capability picker.
+- **Menu tab:** Home (Scenarios, Rooms, Houses management), Account (Profile, Notifications, App settings), Support.
+- **App settings:** notification types; App authentication (on), Access code, Biometrics (on); Language, Units; About links (Smart home service — external web portal, Accessibility, Terms). **Version 2.5.0 (2050003)**, build `BP2A.250605.031.A3-…`.
+- **No hidden debug menu:** tapping the version line ten times did nothing. No developer/environment switcher was found in the UI.
 
 ## Static analysis of the APK
 

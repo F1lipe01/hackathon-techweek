@@ -17,6 +17,17 @@ One clean image per kit device. "Exact" means it shows our actual model. "Look-a
 | `smart-plug.png` | EU smart plug | Look-alike | https://www.zigbee2mqtt.io/devices/TS011F_plug_1.html |
 | `smart-bulb.png` | E27 smart bulb | Look-alike. Shown lit in colour; ours is not confirmed to do colour | https://www.zigbee2mqtt.io/devices/TS0505B_3.html |
 
+## `app-screens/`
+
+Screenshots of **our** beta app (home "Hack 3"), driven over ADB on 16 Nov. Only screens with no personal data are kept here — Profile/account and the device serial pages were deliberately not committed.
+
+| File | Shows |
+|---|---|
+| `device-list.png` | The 7 devices and their states |
+| `light-detail.png` | A device detail page (Light, disconnected) |
+| `menu.png` | The Menu tab structure |
+| `app-version.png` | App settings bottom: version 2.5.0 and build |
+
 ## `altice-app/`
 
 Four screens of Altice Labs' own Connected Home app, taken from their public product page: https://www.alticelabs.com/products/connected-home/

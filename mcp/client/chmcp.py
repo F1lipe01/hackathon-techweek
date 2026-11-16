@@ -75,11 +75,13 @@ def discover():
 
 def save_tokens(tok, token_endpoint):
     now = time.time()
+    refresh_in = int(tok.get("refresh_expires_in", 1800))
     data = {
         "access_token": tok["access_token"],
         "refresh_token": tok.get("refresh_token"),
         "expires_at": now + int(tok.get("expires_in", 300)) - 30,
-        "refresh_expires_at": now + int(tok.get("refresh_expires_in", 1800)) - 30,
+        # Keycloak sends refresh_expires_in = 0 when the refresh token has no fixed expiry
+        "refresh_expires_at": now + refresh_in - 30 if refresh_in > 0 else now + 365 * 86400,
         "token_endpoint": token_endpoint,
     }
     fd = os.open(TOKENS, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)

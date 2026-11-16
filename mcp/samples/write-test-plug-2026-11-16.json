@@ -1,0 +1,60 @@
+[
+  {
+    "step": "1_before",
+    "time": "20:38:18",
+    "call_s": 0.8,
+    "power": "on",
+    "instantPower_W": 0,
+    "voltage_V": 237,
+    "lastComm": "20:20:47",
+    "isError": null
+  },
+  {
+    "step": "2_off_by_id",
+    "time": "20:38:19",
+    "call_s": 1.32,
+    "args": {
+      "deviceId": "bc891629-98bc-44f7-99a8-1aa61428a9bf",
+      "body": {
+        "type": "power",
+        "value": "off"
+      }
+    },
+    "isError": null,
+    "response": "{'message': 'device updated'}"
+  },
+  {
+    "step": "3_after_off",
+    "time": "20:38:25",
+    "call_s": 0.7,
+    "power": "off",
+    "instantPower_W": 0,
+    "voltage_V": 237,
+    "lastComm": "20:38:20",
+    "isError": null
+  },
+  {
+    "step": "4_on_by_name",
+    "time": "20:38:26",
+    "call_s": 0.82,
+    "args": {
+      "deviceName": "Plug",
+      "body": {
+        "type": "power",
+        "value": "on"
+      }
+    },
+    "isError": null,
+    "response": "{'message': 'device updated'}"
+  },
+  {
+    "step": "5_after_on",
+    "time": "20:38:32",
+    "call_s": 0.77,
+    "power": "on",
+    "instantPower_W": 0,
+    "voltage_V": 237,
+    "lastComm": "20:38:26",
+    "isError": null
+  }
+]

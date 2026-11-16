@@ -39,6 +39,49 @@ Names are lowercase on the real server (`get_home_devices`, not `GET_HOME_DEVICE
 | `post_execute_scenario` | `scenarioId`* |
 | `post_timer_device` | `deviceId`*, `body` (scheduled action) |
 
+## Test coverage (16 Nov, ~20:40)
+
+| Tool | Tested | Result |
+|---|---|---|
+| `get_home`, `get_home_detail_report`, `get_home_status_brief`, `get_home_devices` | ✓ | Full data, see samples |
+| `get_home_rooms`, `get_home_scenarios` | ✓ | Empty lists |
+| `get_home_security_status` | ✓ | `DISARMED`, `isAlarmed: false` |
+| `get_home_security_alarm_history` (`page` 0, `size` 20) | ✓ | Empty history |
+| `get_device_details` (with and without `techInfo`) | ✓ | Adds `pairedTime` and `categories`; **no event history** |
+| `get_device_timers` (Plug) | ✓ | Empty |
+| `get_device_recommendations` | ✓ | Device inventory (the model is meant to turn it into advice) |
+| `get_scenario` | — | Needs an existing scenario |
+| `update_device_capabilities` — power | ✓ | **Works by `deviceId` and by name** (see below) |
+| `update_device_capabilities` — brightness / colour | — | Needs the Light online |
+| `patch_home_security_status` | — | Not tested: the contact sensor reads open and Home mode has a 0 s delay, so arming could trigger the alarm |
+| `post_new_scenario`, `patch_scenario_activation`, `post_execute_scenario` | — | Not tested: **there is no delete-scenario tool**, so every test scenario stays in the home |
+| `post_timer_device` | — | Not tested |
+
+### Write test: Plug off and on
+
+Log: [`mcp/samples/write-test-plug-2026-11-16.json`](../mcp/samples/write-test-plug-2026-11-16.json). Nothing was plugged into the Plug; it ended in its original state (on).
+
+| Time | Step | Result | Call duration |
+|---|---|---|---|
+| 20:38:18 | Read | power `on`, 0 W, 237 V | 0.8 s |
+| 20:38:19 | `power: off` by `deviceId` | `{"message": "device updated"}` | 1.3 s |
+| 20:38:25 | Read | power `off`; device last contact **20:38:20** | 0.7 s |
+| 20:38:26 | `power: on` by `deviceName: "Plug"` | `{"message": "device updated"}` | 0.8 s |
+| 20:38:32 | Read | power `on`; device last contact **20:38:26** | 0.8 s |
+
+The device's own `lastCommunicationTime` moved to about one second after each command, so the physical plug acknowledged both changes, not just the cloud.
+
+### Session lifetime
+
+The access token lasts **about 24 hours**; Keycloak reports the refresh token without a fixed expiry. Log in once a day, and again on Friday morning before the demo.
+
+### What the MCP does not expose
+
+Compared with the app (see [09-platform-capabilities.md](09-platform-capabilities.md)):
+
+- **Device event history** (door opened/closed, motion, power changes). Only current values, `lastCommunicationTime` and the alarm history are available. An agent that needs history must poll and keep its own log.
+- Creating or editing rooms, deleting scenarios, notifications and push, the energy tariff, and the camera video (the RTSP feed is separate).
+
 ## Safety findings
 
 - **`patch_home_security_status` is mislabelled `readOnlyHint: true`.** It arms and disarms the alarm. A client that auto-approves "read-only" tools would arm the house unprompted. Our agent must require explicit confirmation for it whatever the annotation says, as the guide's own example agent does.

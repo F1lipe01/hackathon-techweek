@@ -45,7 +45,9 @@ Config templates for all three are in [`mcp/`](../mcp/). The real config files c
 
 ## Other clients
 
-Claude Code and other MCP clients are not covered by the guide. Whether they work depends on which redirect URLs the Keycloak client accepts. Ask the mentors before spending time on it. Gonçalo's team built the server.
+Tested on 16 Nov: the Keycloak client only accepts the callbacks `http://mcp-redirect.futurelabsinnovations.com:5434/callback` and `https://vscode.dev/redirect`; any `localhost` callback gets a 403. Clients that log in via `localhost` (including Claude Code) cannot connect natively. Our own client in [`mcp/client/`](../mcp/client/) uses the allowed callback and can also act as a proxy for Claude Code. Note also that Cloudflare in front of the server rejects Python's default User-Agent.
+
+> **Connected and tested on 16 Nov.** The real server has **18** tools with lowercase names, a mislabelled security tool, and per-device data that this guide doesn't show. See [10-mcp-in-practice.md](10-mcp-in-practice.md). The section below is the guide as written.
 
 ## The 16 tools
 

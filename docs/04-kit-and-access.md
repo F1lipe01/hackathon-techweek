@@ -16,9 +16,9 @@ The home is named **"Hack 3"** in the app, with all seven devices "Without room"
 | **Temperature sensor** | On — **20.8 °C, 48.3 %** | Nedis **ZBSC10WT** (label 689) | Zigbee, via the hub | Temperature + humidity, live. Only **one** unit is paired (the app lists one), even though two round discs were in the kit |
 | **Smoke sensor** | On | Photoelectric, EN 14604 (label 349) | via the hub | Smoke events; 85 dB siren, test/hush, low-battery warning |
 | **Contact sensor** | **Open** | **MS-D3D** oval (label 685) | RF, via the hub | Open / closed state of a door or window. **Confirmed a contact sensor** |
-| **Camera** | Disconnected | Tuya **SC034-WNV3** (label 346) | **Wi-Fi 2.4 GHz only**, IP65 | RTSP feed; HD video, motion detection, two-way audio, SD/cloud. Needs the Wi-Fi network |
+| **Camera** | Disconnected | Tuya **SC034-WNV3** (label 346) | **Wi-Fi 2.4 GHz only**, IP65 | RTSP feed; motion detection with sensitivity and pet filter, **built-in siren**, night vision, SD recording, two-way audio. Needs the Wi-Fi network **and its 12 V adapter (missing)**. Last contact 09 Nov |
 | **Plug** | Disconnected → **Online** once the hotspot was up, reporting **0,0 W** | Unbranded Schuko plug | **Wi-Fi** | On/off **and live energy metering** (confirmed: watts shown in the device list) |
-| **Light** | Disconnected | Unbranded E27 bulb | **Wi-Fi** | On/off; colour vs white still to confirm. Needs the Wi-Fi network |
+| **Light** | Disconnected — **last contact 04 Nov** (provisioning) | Unbranded E27 bulb | **Wi-Fi** | On/off, brightness, white tone, and **colour (confirmed via MCP: `workMode` colour/white/music/scene)**. Needs the Wi-Fi network and a powered socket |
 
 **The connected/disconnected split proves the two radio paths.** The four devices that were *On* (hub, temperature, smoke, contact) talk to the Security hub over Zigbee/RF, and the hub is online via its ethernet cable — so they work with no Wi-Fi. The three that were *Disconnected* (camera, plug, light) are **Wi-Fi** devices and stay offline until we create the 2.4 GHz network.
 

@@ -16,10 +16,11 @@ Last reviewed: Mon 16 Nov 2026.
 | # | What | Why it matters |
 |---|---|---|
 | 4 | The team account arrived as a single line, "A - B". We read it as username and password | First login will tell |
-| ~~5~~ | Mostly **resolved from the app** (16 Nov): 7 devices in home "Hack 3". MS-D3D **is** a contact sensor; plug **meters energy**; camera/plug/light are **Wi-Fi**; temperature/smoke/contact run over the hub. Still open: whether the bulb does **colour** vs white only | Open the Light's detail page in the app |
+| ~~5~~ | **Resolved** (app + MCP, 16 Nov): 7 devices in home "Hack 3"; MS-D3D is a contact sensor; plug meters energy; **bulb does colour**; camera has a siren. Full capability map in [10-mcp-in-practice.md](10-mcp-in-practice.md) | Done |
+| 5c | **The Light has not reached the cloud since 04 Nov**, even with the kit Wi-Fi up. Check it is in a socket that is switched on (steady, not blinking). If it still won't come online, ask the mentors — it may need re-pairing | Us, then mentors |
 | ~~5b~~ | **Resolved.** The app shows the **Security hub as On**, so the gateway reaches the Cognitive Home platform over the lab ethernet | Done |
 | ~~6~~ | **Resolved.** Official challenge sheet obtained and filed (`sources/challenge/desafio3-ficha.pdf`); summarised in [02-challenge.md](02-challenge.md) | Done |
-| 7 | Whether Claude Code, or any client beyond VS Code, Hermes and Codex, can authenticate | The OAuth redirect may be restricted to the documented clients |
+| ~~7~~ | **Resolved.** Only the documented callbacks are accepted, so we wrote our own client (`mcp/client/chmcp.py`), which also plugs into Claude Code | Done |
 | 8 | Whether one app invite works on several phones | Otherwise ask Hugo for invites for Simon and Mushahid |
 | 9 | Jury names and affiliations | Transcript is unreliable on names |
 

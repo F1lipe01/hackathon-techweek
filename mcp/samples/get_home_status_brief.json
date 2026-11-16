@@ -1,0 +1,50 @@
+{
+  "homeStatus": {
+    "alarmArmed": false,
+    "alarmStatus": "DISARMED"
+  },
+  "devices": [
+    {
+      "name": "Smoke sensor",
+      "id": "d091c05f-e72c-45be-a16f-0ab2e93297a3",
+      "type": "smokeSensor",
+      "lastCommunicationTime": 1794861019073
+    },
+    {
+      "name": "Contact sensor",
+      "id": "7aafb6f4-74ec-4771-84f6-bbc7df420631",
+      "type": "contactSensor",
+      "lastCommunicationTime": 1794859064607
+    },
+    {
+      "name": "Temperature sensor",
+      "id": "2c76ef67-f807-426a-9237-9e67df475202",
+      "type": "temperatureSensor",
+      "lastCommunicationTime": 1794860978158
+    },
+    {
+      "name": "Light",
+      "id": "00e038d4-0da7-45c2-b61f-f38c9ff9df82",
+      "type": "bulb",
+      "lastCommunicationTime": 1793792126221
+    },
+    {
+      "name": "Plug",
+      "id": "bc891629-98bc-44f7-99a8-1aa61428a9bf",
+      "type": "plug",
+      "lastCommunicationTime": 1794860447172
+    },
+    {
+      "name": "Security hub",
+      "id": "5d5f8fff-cd69-4f33-a331-04bd731de043",
+      "type": "gateway",
+      "lastCommunicationTime": 1794856559153
+    },
+    {
+      "name": "Camera",
+      "id": "0c7856ad-89b1-468d-9d6a-10253b2f3c20",
+      "type": "camera",
+      "lastCommunicationTime": 1794245088424
+    }
+  ]
+}

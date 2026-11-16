@@ -7,7 +7,8 @@ Everything received or discussed so far is filed here: organiser material, kick-
 ## Status — Mon 16 Nov 2026 (kick-off day)
 
 - Done: registered as a team of three, hardware kit collected and inventoried from photos, team credentials received, MCP guide and templates received, kick-off and challenge Q&A attended.
-- Not done: kit brought online, MCP client connected, idea chosen, mentor checkpoint booked, executive summary written.
+- Done since: **MCP connected and tested** (our own client, `mcp/client/`), kit Wi-Fi up via the Redmi hotspot, Plug online.
+- Not done: Camera (no power adapter) and Light (not reaching the cloud) online, idea chosen, mentor checkpoint booked, executive summary written.
 - This repo is private on GitHub at `F1lipe01/hackathon-techweek`. Simon and Mushahid have been added as collaborators.
 - Gaps and to-dos are listed in [docs/07-open-questions.md](docs/07-open-questions.md).
 
@@ -38,6 +39,7 @@ No extensions (late = possible disqualification), pitch time cut strictly. Full 
 | [docs/07-open-questions.md](docs/07-open-questions.md) | What is missing and what to do next |
 | [docs/08-app-and-apk.md](docs/08-app-and-apk.md) | The mobile app and APK analysis; confirmed device roster |
 | [docs/09-platform-capabilities.md](docs/09-platform-capabilities.md) | The platform's full capability model (devices, automation, security, energy), reverse-engineered from the app |
+| [docs/10-mcp-in-practice.md](docs/10-mcp-in-practice.md) | **The MCP tested live:** the real 18 tools, write payloads, safety findings, every device's capabilities |
 | [deliverables/](deliverables/) | Official templates and our drafts |
 | [mcp/](mcp/) | MCP client config templates from the official guide |
 | [assets/](assets/) | Clean device images for diagrams and slides, and screens of Altice's own app |

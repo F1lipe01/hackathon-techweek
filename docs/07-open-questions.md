@@ -6,7 +6,7 @@ Last reviewed: Mon 16 Nov 2026.
 
 | # | What | Who can resolve it |
 |---|---|---|
-| 1 | **MCP API key.** The guide needs an `X-API-Key` "supplied by the organisation". It is not in anything filed here. Without it no MCP client connects | Rui Mendes or Hugo Dias on Slack. Check the organisers' email and the resources folder first |
+| ~~1~~ | ~~MCP API key~~ **Received** 16 Nov from Rui Mendes, stored in `.env`. The MCP client still needs the OAuth login (team account) on top of it | Done |
 | 2 | **Book the Wednesday mentor checkpoint.** It is mandatory and must happen on Wed 18 Nov | The Altice mentors, on Slack |
 | 3 | **Bring the kit online** and confirm every device shows in the app. The gateway is cabled to the lab ethernet; the camera still needs a 2.4 GHz Wi-Fi network with the kit's name and password, which the gateway does not provide | Us. See [04-kit-and-access.md](04-kit-and-access.md) |
 

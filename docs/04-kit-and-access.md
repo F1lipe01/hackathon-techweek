@@ -141,7 +141,7 @@ Values are in `.env`, which is gitignored. All of them reached us on 16 Nov.
 | Kit Wi-Fi | `KIT_WIFI_SSID`, `KIT_WIFI_PASSWORD` | **You do not look for this network, you create it.** Give a hotspot or router this name and password and the kit devices join by themselves. Same values for every team | Rui Mendes, Slack DM |
 | Team account | `CONNECTED_HOME_USERNAME`, `CONNECTED_HOME_PASSWORD` | Type it into the login page that opens when an MCP client connects. Try it for the app login too. It was sent as one line, "A - B"; reading that as username and password is our interpretation | Rui Mendes, Slack DM |
 | Camera feed | `CAMERA_RTSP_URL` | Paste it into VLC to watch the camera, or hand it to our own vision code. No authentication | Rui Mendes, Slack DM |
-| MCP API key | `CONNECTED_HOME_API_KEY` | Paste it into the MCP client config in place of `<API_KEY>` | **Not received yet** |
+| MCP API key | `CONNECTED_HOME_API_KEY` | Paste it into the MCP client config in place of `<API_KEY>` | Rui Mendes, Slack, 16 Nov |
 | App invite | `APP_INVITE_URL` | Open it on the phone to install the app | Email to Filipe |
 
 None of these is typed into the gateway. The gateway has nothing for us to configure.

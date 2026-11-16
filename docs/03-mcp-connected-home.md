@@ -10,7 +10,7 @@ Source: *Guia de ligação ao MCP Connected Home — Visual Studio Code, Hermes 
 | Transport | HTTP |
 | Header `X-Client-Type` | `core` |
 | Header `Content-Type` | `application/json` |
-| Header `X-API-Key` | Key supplied by the organisers. **Not received yet**, see open questions |
+| Header `X-API-Key` | Key supplied by the organisers. **Received** 16 Nov, stored in `.env` as `CONNECTED_HOME_API_KEY` (format `cgh_live_…`) |
 | Auth | OAuth through Keycloak, client id `mcp-client` |
 | OAuth redirect host | `mcp-redirect.futurelabsinnovations.com` |
 | OAuth callback (Codex) | `http://mcp-redirect.futurelabsinnovations.com:5434/callback`, port 5434 |

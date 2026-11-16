@@ -6,11 +6,21 @@ Sources: challenge-room Q&A in the kick-off transcript (lines 164–293), Slack 
 
 - Collected from Altice Labs in Aveiro. The pick-up was arranged for Fri 13 Nov.
 - Every device is already provisioned on Altice's platform and linked to our team account. No pairing is needed.
-- **Contents are not inventoried here yet.** From the Q&A we know there is a gateway, a light, a camera and "several types of sensors and equipment". Fill in the table below once the kit is online, from the app or from `GET_HOME_DEVICES`.
+- The inventory below comes from photos of the kit taken on 16 Nov, filed in [`sources/kit/`](../sources/kit/). It says what the hardware is, not what the platform exposes. **Fill in the last column once the kit is online**, from the app or from `GET_HOME_DEVICES`.
 
-| Device | Type | Room | Capabilities | Online? |
+| Device | Markings | Radio and power | What it should give us | Seen in the MCP as |
 |---|---|---|---|---|
-| | | | | |
+| Camera | Tuya smart camera, model SC034-WNV3. Box hand-marked "Tuya Go samples". Altice label 346 | Wi-Fi, **2.4 GHz only**. 12 V / 2 A adapter. IP65 | The RTSP video feed. The box also lists HD video, motion detection, two-way audio, SD-card and cloud storage | |
+| Climate sensor | Nedis Zigbee Climate Sensor, model ZBSC10WT. Altice label 689 | Zigbee, needs a gateway. CR2450 battery | Temperature and humidity. **Reports only every 5 to 30 minutes** | |
+| Smoke alarm | Photoelectric smoke alarm, EN 14604. Box hand-marked "V2 NEW 2". Altice label 349 | Battery. Radio not stated on the box | Smoke alarm events. 85 dB siren, test/hush button, low-battery warning | |
+| Small oval sensor | Model MS-D3D | CR2450 battery. Radio not stated | **Not identified.** Probably a door or window contact sensor | |
+| Smart plug | EU (Schuko) plug with a power button. No brand visible | Mains | Switches whatever is plugged into it | |
+| Smart bulb | E27 LED bulb. No brand visible | Mains | Light on and off. The demo light in the guide also had brightness and colour | |
+| Gateway | Not photographed by itself. Probably the white square unit at the edge of several photos | | Hub for the Zigbee devices | |
+
+What the kit does not have: a thermostat, any valve or pump, a soil-moisture sensor, a siren other than the smoke alarm's own. The single smart plug is the only general-purpose actuator.
+
+Serial number and MAC address of the camera are on its label and on the back of its box (`sources/kit/camera-box-back.jpg`).
 
 ## Bringing it online
 
@@ -19,7 +29,9 @@ Sources: challenge-room Q&A in the kick-off transcript (lines 164–293), Slack 
 3. **Check the camera** in VLC: open a network stream and paste `CAMERA_RTSP_URL`.
 4. **Connect an MCP client** and log in with the team account. See [03-mcp-connected-home.md](03-mcp-connected-home.md).
 
-Our own tip, not from the organisers and not verified on these devices: smart-home devices often only join 2.4 GHz networks, so if a phone hotspot is used and nothing connects, try its compatibility (2.4 GHz) mode.
+The network has to be on **2.4 GHz**: the camera's box says "Connect with 2.4G Wi-Fi". On a phone hotspot that usually means turning on its compatibility mode.
+
+The climate sensor is slow by design. Its box gives an update interval of 5 to 30 minutes, so a temperature change will not show up live in a demo.
 
 ## Troubleshooting
 

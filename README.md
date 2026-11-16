@@ -6,8 +6,9 @@ Everything received or discussed so far is filed here: organiser material, kick-
 
 ## Status — Mon 16 Nov 2026 (kick-off day)
 
-- Done: registered as a team of three, hardware kit collected, team credentials received, MCP guide and templates received, kick-off and challenge Q&A attended.
+- Done: registered as a team of three, hardware kit collected and inventoried from photos, team credentials received, MCP guide and templates received, kick-off and challenge Q&A attended.
 - Not done: kit brought online, MCP client connected, idea chosen, mentor checkpoint booked, executive summary written.
+- This repo is private on GitHub at `F1lipe01/hackathon-techweek`. Nobody else has been invited yet.
 - Gaps and to-dos are listed in [docs/07-open-questions.md](docs/07-open-questions.md).
 
 ## Deadlines
@@ -56,7 +57,7 @@ MCP client config files hold the API key in plain text, so `.mcp.json` and `.vsc
 
 ## Before sharing this repo
 
-`sources/` holds raw Slack threads and a meeting transcript with the names and words of colleagues, organisers and other participants. Review or drop that folder before pushing to a public remote or submitting the repository to the jury.
+`sources/` holds raw Slack threads and a meeting transcript with the names and words of colleagues, organisers and other participants. The kit photos show device serial numbers and people in the background of the lab. Review or drop that folder before making the repository public or submitting it to the jury.
 
 ## Language
 

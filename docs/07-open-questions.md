@@ -15,7 +15,7 @@ Last reviewed: Mon 16 Nov 2026.
 | # | What | Why it matters |
 |---|---|---|
 | 4 | The team account arrived as a single line, "A - B". We read it as username and password | First login will tell |
-| 5 | **What is actually in the kit**, with each device's capabilities | Decides which ideas are buildable. Extra devices cannot be added |
+| 5 | **What each kit device exposes through the MCP.** The hardware is inventoried from photos. Still unknown: what the MS-D3D sensor is, whether the bulb does colour, whether the plug reports energy use, whether the smoke alarm and camera events are visible | Decides which ideas are buildable. Extra devices cannot be added |
 | 6 | Exact challenge title and whether a written statement exists | Goes in the header of the executive summary |
 | 7 | Whether Claude Code, or any client beyond VS Code, Hermes and Codex, can authenticate | The OAuth redirect may be restricted to the documented clients |
 | 8 | Whether one app invite works on several phones | Otherwise ask Hugo for invites for Simon and Mushahid |

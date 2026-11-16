@@ -69,6 +69,8 @@ Power it and give it an uplink. The simplest is a cable into a port with interne
 
 Its front panel has four lights: power, Wi-Fi, a padlock and a link symbol. On 16 Nov, cabled to the lab's ethernet, power was green, link was blue, and Wi-Fi and the padlock were off. We have no manual, so the reading is ours: link shows the wired uplink, and the padlock probably shows whether the security system is armed.
 
+The back panel has, from left to right: a speaker grille, the RJ45 port, a SIM-card slot, two recessed buttons marked with a link symbol and a power symbol, and the DC power input (`sources/kit/gateway-back.jpg`). Cable in the RJ45 port and power in DC is all it needs. Leave the SIM slot empty and **do not press the recessed buttons**: one of them is probably what reset another team's gateway.
+
 A managed lab network may refuse an unregistered device even though the cable is in and a light is on. **The test is the app:** if the gateway shows offline there, either get the device allowed on the lab network or unplug the cable so it falls back to Wi-Fi.
 
 ### 2. Wi-Fi for the camera
@@ -85,7 +87,7 @@ Ways to create it:
 |---|---|
 | Android hotspot | Settings → hotspot and tethering → Wi-Fi hotspot. Set the name and password, and set the band to 2.4 GHz. Menu names vary by brand |
 | iPhone hotspot | The hotspot name is the phone's name: Settings → General → About → Name. Set the password under Personal Hotspot and turn on Maximise Compatibility, which forces 2.4 GHz |
-| Spare router or access point | Set the SSID and password, enable 2.4 GHz, and plug it into a port with internet access |
+| Spare router or access point | Set the SSID and password, enable 2.4 GHz, and plug it into a port with internet access. A Ubiquiti UniFi access point showing a steady white light is in factory-default state: it broadcasts nothing until it is adopted and given a Wi-Fi network in the UniFi Network app or controller |
 | Mac | Only if the Mac itself is on wired ethernet: System Settings → General → Sharing → Internet Sharing, from Ethernet to Wi-Fi, with the same name and password |
 
 The phone that hosts the hotspot can still run the app. Whatever the camera streams travels over that phone's mobile data, so a router on wired internet is the better choice for long sessions.

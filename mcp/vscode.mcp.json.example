@@ -1,0 +1,16 @@
+{
+  "servers": {
+    "connected-home": {
+      "type": "http",
+      "url": "https://cognitive-home.futurelabsinnovations.com",
+      "headers": {
+        "X-Client-Type": "core",
+        "Content-Type": "application/json",
+        "X-API-Key": "<API_KEY>"
+      },
+      "oauth": {
+        "clientId": "mcp-client"
+      }
+    }
+  }
+}

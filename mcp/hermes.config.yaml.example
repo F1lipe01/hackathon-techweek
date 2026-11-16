@@ -1,0 +1,11 @@
+mcp_servers:
+  connected-home:
+    url: "https://cognitive-home.futurelabsinnovations.com"
+    auth: oauth
+    oauth:
+      client_id: mcp-client
+      redirect_host: "mcp-redirect.futurelabsinnovations.com"
+    headers:
+      X-Client-Type: core
+      Content-Type: application/json
+      X-API-Key: "<API_KEY>"

@@ -1,0 +1,27 @@
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+secrets/
+
+# MCP client configs carry the API key in plain text. Templates are in mcp/
+.mcp.json
+.vscode/mcp.json
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# Office lock files
+~$*
+
+# Common build and dependency folders
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+build/

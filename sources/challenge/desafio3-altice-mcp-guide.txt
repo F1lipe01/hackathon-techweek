@@ -1,0 +1,423 @@
+Guia de ligação ao MCP Connected Home
+Visual Studio Code, Hermes e Codex
+Objetivo. Configurar um cliente MCP, autenticar via OAuth e disponibilizar as ferramentas (tools) do
+Connected Home na interface do cliente.
+
+
+
+
+                                                 1
+1       Visual Studio Code
+O VS Code gere o fluxo OAuth depois de o servidor ser adicionado à configuração MCP.
+
+ 1. Criar a configuração MCP.
+    Abre o VS Code numa pasta à escolha e cria o ficheiro .mcp.json com o seguinte conteúdo:
+    {
+        "servers": {
+          "connected-home": {
+            "type": "http",
+            "url": "https://cognitive-home.futurelabsinnovations.com",
+            "headers": {
+              "X-Client-Type": "core",
+              "Content-Type": "application/json",
+              "X-API-Key": "<API_KEY>"
+            },
+            "oauth": {
+              "clientId": "mcp-client"
+            }
+          }
+        }
+    }
+
+
+ 2. Iniciar o servidor.
+    Usa Ctrl+Shift+P (ou Cmd+Shift+P no macOS), escolhe Browse MCP Servers, abre MCP
+    Servers e inicia connected-home.
+
+
+
+
+    Este processo pode ser acompanhado fazendo → List MCP Servers → connected-home → Show
+    Output
+
+ 3. Autorizar e concluir o fluxo de login.
+    Aceita a primeira janela de autenticação, selecionando Allow.
+
+
+
+
+           Caso apareça uma página 403: volta ao VS Code, cancela a primeira tentativa de login e aceita
+           a alternativa URL Handler apresentada pelo editor.
+           Este comportamento é específico do cenário demonstrado na hackathon.
+
+
+
+                                                      2
+4. Entrar com a conta da equipa.
+  Inicia sessão com as credenciais atribuídas à tua equipa.
+
+
+
+
+5. Validar a ligação.
+  Executa Ctrl+Shift+P → List MCP Servers → connected-home → Show Output.
+
+
+
+
+6. Utilizar as ferramentas.
+  Com a autenticação concluída, podes interagir com o MCP através do Copilot Chat.
+
+
+
+
+                                                  3
+2    Hermes
+Configuração do servidor num ficheiro YAML e autenticação iniciada no terminal.
+
+ 1. Abrir o ficheiro de configuração.
+    Abre ou cria o ficheiro ~/.hermes/config.yaml.
+
+ 2. Adicionar o Connected Home.
+    mcp_servers:
+      connected-home:
+        url: "https://cognitive-home.futurelabsinnovations.com"
+        auth: oauth
+        oauth:
+          client_id: mcp-client
+          redirect_host: "mcp-redirect.futurelabsinnovations.com"
+        headers:
+          X-Client-Type: core
+          Content-Type: application/json
+          X-API-Key: "<API_KEY>"
+
+
+ 3. Iniciar a autenticação.
+    Guarda o ficheiro, reinicia o Hermes (ou recarrega a configuração MCP) e executa:
+    hermes mcp login connected-home
+
+
+ 4. Confirmar as tools.
+    Conclui o login OAuth apresentado pelo cliente e confirma que as tools Connected Home estão
+    disponíveis.
+
+
+
+
+                                                    4
+3    Codex
+Configuração TOML, verificação do servidor e autenticação OAuth pelo Codex CLI.
+
+ 1. Abrir o ficheiro de configuração.
+    O Codex guarda a configuração no ficheiro config.toml, dentro da pasta .codex do utilizador.
+    Windows:
+    C:\Users\<utilizador>\.codex\config.toml
+
+    Para abrir ou criar o ficheiro no PowerShell:
+    New-Item -ItemType Directory -Force "$HOME\.codex"
+    notepad "$HOME\.codex\config.toml"
+
+    Linux / macOS:
+    ~/.codex/config.toml.
+
+ 2. Adicionar o servidor MCP.
+    [mcp_servers.connected-home]
+    url = ’https://cognitive-home.futurelabsinnovations.com’
+
+    [mcp_servers.connected-home.http_headers]
+    Content-Type = ’application/json’
+    X-API-Key = ’<API_KEY>’
+    X-Client-Type = ’core’
+
+    [mcp_servers.connected-home.oauth]
+    callback_port = 5434
+    callback_url = ’http://mcp-redirect.futurelabsinnovations.com:5434/callback’
+    client_id = ’mcp-client’
+
+
+ 3. Verificar o registo do servidor.
+    Executa o seguinte comando no terminal:
+    codex mcp list
+
+
+
+
+    Caso haja conflito com a porta 5434, altearem a mesma e voltem a este passo.
+
+ 4. Autenticar no Keycloak.
+    Se a sessão não pedir autenticação automaticamente, executa:
+    codex mcp login connected-home
+
+    Conclui o login no browser e regressa ao Codex.
+
+
+
+
+                                                    5
+ 5. Confirmar o estado e testar as tools.
+    Repete o comando codex mcp list e confirma a configuração.
+    Dentro da sessão interativa do Codex, utiliza /mcp para consultar o servidor e as ferramentas
+    disponíveis.
+
+
+
+
+Notas e referências
+     Segurança: substitui <API_KEY> pela chave fornecida pela organização.
+
+Os parâmetros de ligação são os fornecidos pela equipa de organização.
+Os detalhes dos redirects OAuth dependem da configuração do Keycloak/servidor de autorização e da
+infraestrutura da hackathon.
+Documentação
+
+• https://code.visualstudio.com/docs/agents/reference/mcp-configuration
+• https://code.visualstudio.com/docs/agent-customization/mcp-servers
+• https://learn.chatgpt.com/docs/extend/mcp
+
+
+
+
+                                                    6
+4     Ferramentas disponíveis
+O servidor MCP Connected Home disponibiliza 16 ferramentas (tools), organizadas em quatro grupos:
+Home, Device, Security e Scenarios.
+Estas ferramentas permitem consultar informações sobre a casa, gerir dispositivos, consultar e alterar o
+estado de segurança e gerir cenários configurados.
+
+
+4.1    Home
+As ferramentas deste grupo permitem consultar informações gerais sobre a casa, os dispositivos e as
+divisões.
+
+Get home details      GET_HOME
+Retorna os detalhes da casa, incluindo informações gerais.
+
+Get home devices        GET_HOME_DEVICES
+Retorna a lista de dispositivos associados à casa, incluindo as respetivas informações e estados atuais.
+
+Get home rooms         GET_HOME_ROOMS
+Retorna a lista de divisões da casa, incluindo os respetivos detalhes e dispositivos associados.
+
+Get home status brief     GET_HOME_STATUS_BRIEF
+Retorna um resumo do estado atual da casa, incluindo informações principais sobre dispositivos, divisões
+e segurança.
+
+Get home detail report         GET_HOME_DETAIL_REPORT
+Retorna um relatório detalhado da casa, incluindo informações completas sobre dispositivos, divisões,
+estados e configurações associadas.
+
+
+4.2    Device
+As ferramentas deste grupo permitem consultar dispositivos, atualizar as suas capacidades e obter
+recomendações.
+
+Get device detail      GET_DEVICE_DETAILS
+Retorna os detalhes de um dispositivo específico, incluindo informações gerais, estado atual e capacidades
+disponíveis.
+
+Update device capabilities        UPDATE_DEVICE_CAPABILITIES
+Atualiza as capacidades de um dispositivo, permitindo alterar as funcionalidades disponíveis e as respetivas
+configurações associadas.
+
+Get device recommendations         GET_DEVICE_RECOMMENDATIONS
+Retorna recomendações de dispositivos com base no estado atual da casa, nas divisões e nos dispositivos
+existentes.
+
+
+4.3    Security
+As ferramentas deste grupo permitem consultar e alterar o estado do sistema de segurança da casa, bem
+como consultar o histórico de alarmes.
+
+Get Home Security State         GET_HOME_SECURITY_STATE
+Retorna o estado atual do sistema de segurança da casa.
+O sistema pode encontrar-se armado (STAY ou AWAY) ou desarmado.
+
+
+
+                                                     7
+Update Home Security Details          PATCH_HOME_SECURITY_STATUS
+Altera o estado do sistema de segurança da casa.
+
+Get Home Security Alarm History           GET_HOME_SECURITY_ALARM_HISTORY
+Retorna o histórico do sistema de segurança da casa.
+
+
+4.4    Scenarios
+As ferramentas deste grupo permitem consultar, criar, ativar, desativar e executar cenários configurados
+na casa.
+
+Get Scenarios       GET_HOME_SCENARIOS
+Retorna a lista de cenários configurados na casa, incluindo informações sobre cada cenário e o seu estado
+atual.
+
+Get Scenario detail       GET_SCENARIO
+Retorna os detalhes de um cenário específico configurado na casa, incluindo informações gerais, estado
+atual e ações associadas.
+
+Create a new scenario      POST_NEW_SCENARIO
+Cria um novo cenário na casa, permitindo configurar ações, condições e dispositivos associados.
+
+Patch Scenario Activation       PATCH_SCENARIO_ACTIVATION
+Ativa ou desativa um cenário específico.
+
+Execute scenario     POST_EXECUTE_SCENARIO
+Executa um cenário configurado na casa, acionando as ações definidas para os dispositivos e condições
+associadas.
+
+
+
+
+                                                   8
+5     Exemplos de utilização
+Esta secção apresenta exemplos de pedidos que podem ser feitos ao agente através do cliente MCP. Os
+exemplos estão organizados por grupo de ferramentas e baseiam-se em interações com o Connected Home.
+
+
+5.1    Home
+Consultar os dispositivos da casa
+Pedido:
+
+      "Dá-me detalhes sobre os dispositivos da minha casa."
+
+O agente apresenta os dispositivos registados, organizados por divisão, incluindo informações como estado,
+bateria, sinal e outras propriedades disponíveis.
+
+Consultar as divisões
+Pedido:
+
+      "Quais as divisões da minha casa?"
+
+O agente devolve a lista de divisões registadas, incluindo o número de dispositivos em cada uma.
+
+Obter um resumo da casa
+Pedido:
+
+      "Dá-me um resumo da casa."
+
+O agente apresenta um resumo do estado da casa, incluindo informações sobre o sistema de segurança, os
+dispositivos e eventuais alertas.
+Pode também fornecer um relatório mais detalhado, com informações sobre dispositivos, divisões, estados
+e configurações.
+
+
+5.2    Device
+Consultar o estado de um dispositivo
+Pedido:
+
+      "Qual o estado atual da luz Light?"
+
+O agente apresenta as informações disponíveis sobre o dispositivo, incluindo:
+
+• Estado: ligada;
+• Divisão: Showroom;
+• Brilho: 100%;
+• Modo: cor;
+• Cor atual: branco quente.
+
+
+Alterar as capacidades de um dispositivo
+Pedido:
+
+      "Altera a cor da luz Light para verde."
+
+
+
+                                                    9
+O agente utiliza a ferramenta de atualização das capacidades do dispositivo e confirma a alteração da cor
+para verde.
+
+Obter recomendações
+Pedido:
+
+      "Que recomendações me podes dar sobre a minha casa?"
+
+O agente analisa o estado dos dispositivos e apresenta recomendações organizadas por prioridade.
+No exemplo apresentado, foram identificadas situações como:
+
+• Sensor de temperatura com bateria a 1%;
+• Sirene exterior com alerta de tamper;
+• Sirenes com bateria baixa;
+• Problemas na ligação celular do Security Hub;
+• Possibilidades de otimização de energia.
+
+
+5.3    Security
+Consultar o estado de segurança
+Pedido:
+
+      "Qual o estado de segurança da casa?"
+
+O agente consulta o sistema de segurança e apresenta o seu estado atual.
+No exemplo, o sistema encontrava-se desarmado, sem nenhum disparo de alarme ativo.
+
+Armar o sistema de segurança
+Pedido:
+
+      "Quero armar a casa no modo STAY."
+
+O agente solicita confirmação antes de alterar o estado do sistema.
+Após a confirmação do utilizador, o sistema é armado no modo STAY (Em casa).
+
+Consultar o histórico de segurança
+Pedido:
+
+      "Dá-me o histórico de segurança da casa."
+
+O agente apresenta os eventos recentes do sistema de segurança, incluindo operações de ativação e
+desativação do alarme.
+
+
+5.4    Scenarios
+Consultar os cenários disponíveis
+Pedido:
+
+      "Que cenários estão disponíveis na casa?"
+
+O agente apresenta os cenários configurados, incluindo o respetivo estado e agendamento.
+No exemplo, foram identificados quatro cenários, incluindo os cenários Abertura e Fecho.
+
+Consultar um cenário específico
+Pedido:
+
+
+                                                   10
+     "Como é o cenário Abertura?"
+
+O agente apresenta os detalhes do cenário, incluindo o estado, o horário de execução e as ações configuradas.
+No exemplo, o cenário Abertura estava agendado para as 09:00 e configurado para ligar a luz Light com
+brilho a 100% e tom quente.
+
+Criar um cenário
+Pedido:
+
+     "Quero um novo cenário para mudar a cor da luz Light para verde às 12h."
+
+O agente cria um cenário com as seguintes configurações:
+
+• Nome: Light verde às 12h;
+• Estado: ativo;
+• Agendamento: todos os dias às 12:00;
+• Ação: alterar a cor da luz Light para verde.
+
+
+Executar um cenário
+Pedido:
+
+     "Executa o cenário Abertura."
+
+No exemplo, como o cenário estava inativo, o agente solicitou confirmação antes da execução.
+Após a confirmação, o cenário foi executado e a luz foi ligada com brilho a 100% e tom quente.
+
+Ativar um cenário
+Pedido:
+
+     "Ativa o cenário Abertura."
+
+O agente ativa o cenário e confirma que este passará a ser executado automaticamente todos os dias às
+09:00.
+
+
+
+
+                                                     11
+

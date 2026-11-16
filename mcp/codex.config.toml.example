@@ -1,0 +1,14 @@
+# The PDF prints these values with typographic quotes. TOML needs straight ones, as below.
+
+[mcp_servers.connected-home]
+url = 'https://cognitive-home.futurelabsinnovations.com'
+
+[mcp_servers.connected-home.http_headers]
+Content-Type = 'application/json'
+X-API-Key = '<API_KEY>'
+X-Client-Type = 'core'
+
+[mcp_servers.connected-home.oauth]
+callback_port = 5434
+callback_url = 'http://mcp-redirect.futurelabsinnovations.com:5434/callback'
+client_id = 'mcp-client'

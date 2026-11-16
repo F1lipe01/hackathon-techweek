@@ -44,7 +44,14 @@ For anything about the event, message Rui or Marta on Slack.
 
 ## Jury for the final
 
-As announced at the kick-off, still being confirmed at that point: "Pedro Duarte", a juror from Universidade de Aveiro to be confirmed, and "Vítor" from Altice. Four jurors in total were mentioned.
+Per the rules (Article 19), the jury has **five** members:
+
+- Two from Câmara Municipal de Aveiro, one of them acting as **president** (the president breaks ties).
+- One from Instituto de Telecomunicações.
+- One from Universidade de Aveiro.
+- One from **Altice Labs**.
+
+The jury's scores and decisions are final, with no appeal. At the kick-off the names mentioned (partial, to be confirmed) were "Pedro Duarte" and "Vítor" from Altice.
 
 ## A note on the transcript
 

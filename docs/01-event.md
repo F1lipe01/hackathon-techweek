@@ -25,50 +25,95 @@ The **participant guide** is not filed here yet. It holds the evaluation criteri
 | Mon 16 Nov | Online kick-off, then challenge room with mentors from 18:00 | Done. Transcript filed |
 | Mon 16 – Wed 18 Nov | Online phase, teams work on their own schedule | |
 | Wed 18 Nov | **Mandatory mentor checkpoint** | Guide slot is 14:00–18:00; another time the same day is fine if the mentors agree. 10 to 30 minutes |
-| Wed 18 Nov, 19:00 | **Executive summary due** | Google Form |
+| Wed 18 Nov, 19:00 | **1st deliverable due** — succinct 2-page report (the executive-summary PDF) | Google Form |
 | Thu 19 Nov | Organisers set up the venue | |
-| Fri 20 Nov, 08:30–20:30 | **In-person day** | Attendance mandatory |
-| Fri 20 Nov, 16:00 | Intermediate evaluation | |
-| Fri 20 Nov, 17:30 | **Final presentation and repository due** | |
-| Fri 20 Nov, time not stated | Final on stage | Presumably between the 17:30 submission and the 20:30 close |
+| Fri 20 Nov, 08:30–20:00 | **In-person day** at Fábrica Centro Ciência Viva | Attendance mandatory |
+| Fri 20 Nov, 09:30 | Coding time starts | |
+| Fri 20 Nov, 16:30–17:30 | Intermediate pitches done; finalists selected | Up to 6 per challenge |
+| Fri 20 Nov, 17:30 | **Executive summary (PDF) + presentation (PPT) + repo link due** | Coffee break |
+| Fri 20 Nov, 18:00–19:30 | Final pitches on stage | Finalists only |
+| Fri 20 Nov, 20:00 | Winners announced + cocktail | |
 
 ## Evaluation
 
-There are two rounds and **the criteria differ between them**. The criteria are written in the participant guide. The organisers stressed that the jury scores exactly what the criteria say, so a technically brilliant solution can still lose points on simpler criteria.
+Two rounds, **different criteria**. These are the official criteria and weights from the rules (`sources/rules/normas-2026.pdf`, Articles 16 and 18) and the FAQ, which override the numbers given verbally at the kick-off. The jury scores exactly these, so a technically brilliant solution can still lose points on the softer ones.
 
 | | Intermediate | Final |
 |---|---|---|
-| When | Fri 20 Nov, 16:00 | Fri 20 Nov, time not stated |
-| Judged by | Mentors | Jury |
-| Format | 3 min pitch + 2 min Q&A | 5 min pitch + 3 min Q&A |
-| Who | Every team, in random order | Top 3 teams per challenge |
+| When | Fri 20 Nov, pitches in the afternoon; finalists chosen 16:30–17:30 | Fri 20 Nov, 18:00–19:30 |
+| Judged by | Mentors **and** jurors | Jury (5 members) |
+| Format | 3 min pitch + **1 min** Q&A | 5 min pitch + 3 min Q&A |
+| Who | Every team | **Up to 6** teams per challenge |
+
+**Intermediate criteria** — each scored 1–10, weight 25 %:
+
+| Criterion | Weight |
+|---|---|
+| Fit and response to the challenge | 25 % |
+| **Ease of adoption of the project by the challenger** (Altice Labs) | 25 % |
+| Feasibility of implementation and future management (sustainability) | 25 % |
+| Presentation of the solution | 25 % |
+
+**Final criteria** — each 1–10:
+
+| Criterion | Weight |
+|---|---|
+| Fit and response to the challenge | 20 % |
+| Ease of adoption by the challenger (Altice Labs) | 20 % |
+| Feasibility of implementation and future management (sustainability) | 20 % |
+| **Possibility of replication in other territories and contexts** | 20 % |
+| Presentation of the solution | 10 % |
+| Documentation (deliverables) of the solution | 10 % |
+
+What the criteria tell us to optimise for: it is not just the demo. Half the final score is **adoption by Altice + replicability** — i.e. would Altice actually ship this, and would it work beyond our one kit. Build and pitch for that.
+
+> **Discrepancy to confirm.** The written rules and the FAQ both say the intermediate selects **up to six** teams per challenge, with a **3 + 1** min pitch. At the kick-off Rui said only the **3** best teams advance, with **3 + 2** min. The written documents (version vf1) are the formal rule; the kick-off was later and verbal. With only 7 teams in our challenge, "up to 6 advance" would mean almost everyone does. Worth a one-line check with the mentors.
 
 - The whole team does not need to be at the intermediate pitch. Some can pitch while the rest keep working.
-- The intermediate round is early on purpose, so every team has time to adjust before the 17:30 submission.
 - Time is enforced: when it runs out you finish your sentence and stop.
-- Questions can be technical or general. Mentors follow the teams during the week, so the pitch should not surprise them.
-- To change a pitch slot, talk to the organisers beforehand.
+- Finalists are only revealed when they are called to the stage, so **every team must prepare the full pitch**.
 
 ## Deliverables
 
+From the rules (Article 14) and FAQ Q18. There are **two submission moments**:
+
 | # | What | Deadline | Format |
 |---|---|---|---|
-| 1 | Executive summary | Wed 18 Nov, 19:00 | PDF, max 2 pages, official template, submitted by Google Form |
-| 2 | Final presentation | Fri 20 Nov, 17:30 | Official slide template |
-| 3 | Code or application repository | Fri 20 Nov, 17:30 | Optional, but the organisers recommend sending it |
+| 1 | **Succinct report** of the approach to the problem | **Wed 18 Nov, 19:00** | Max 2 pages, obligatory |
+| 2 | **Executive summary** | **Fri 20 Nov, 17:30** | PDF, max 2 pages, obligatory |
+| 3 | **Presentation** | **Fri 20 Nov, 17:30** | PPT, obligatory |
+| 4 | Link to the code repository | **Fri 20 Nov, 17:30** | Optional |
 
-About the executive summary:
+**Naming inconsistency, resolved pragmatically.** The written documents call the 18 Nov deliverable a "succinct report" and put the "executive summary" on the 20th. The kick-off, and the only 2-page template provided ("Sumário Executivo"), call the 18 Nov one the executive summary. Only one 2-page template and one slide template exist. So in practice:
 
-- It is a short summary of work done and ideas to develop, written for a mixed technical and non-technical audience.
-- Sections: challenge description, strategy, ideas for the proposed solution, AI tools.
-- Make a copy of the template, fill in team name and challenge number, and delete all the blue instruction text. Previous editions had teams leaving it in.
-- It does not lock the solution. The team can keep developing and even change direction between Wednesday and Friday. Its purpose is to get teams thinking before Friday.
+- Write the **2-page PDF** using the Sumário Executivo template and submit it on the **18th**.
+- Keep improving it and **resubmit the 2-page PDF on the 20th**, together with the **slides**.
+- Treat them as the same document refined, unless the mentors say otherwise. Worth confirming at the checkpoint.
 
-There are no deadline extensions. Submit early.
+About the 2-page document:
+
+- A short summary of work done and ideas to develop, for a mixed technical and non-technical audience.
+- Sections in the template: challenge description, strategy, ideas for the proposed solution, AI tools.
+- Make a copy of the template, fill in team name and challenge number, delete all the blue instruction text, export to PDF.
+- It does not lock the solution; the team can keep developing and even change direction.
+
+**Late submission can mean disqualification** (Article 14.2). There are no extensions. Submit early.
+
+## Rules that affect the solution
+
+From the rules and FAQ. These shape what we build and how we pitch:
+
+- **Intellectual property goes to the challenger.** IP of the developed projects is assigned to the entity that set the challenge — here **Altice Labs** — for free non-commercial use and adaptation, with an obligation to share (Article 22.3, FAQ Q20). We do not keep ownership. So there is no reason to hold back, but also know the work becomes theirs.
+- **AI tools are allowed** (FAQ Q17): coding assistants, content generation, data analysis. But the proposal must be original (no plagiarism), AI must not replace the team's own thinking, and the team must validate, test and fully understand the solution. The jury may question the technical choices, so be able to defend them. Using AI is neither a plus nor a minus by itself.
+- **Originality.** All elements must be original or used with permission (Article 22.2). This applies to images and assets in our repo — credit or replace anything taken from the web (see `assets/README.md`).
+- **Image and name rights.** By participating, teams authorise the organisers to use their names, images and solutions for promotion for 36 months (Article 23.3).
+- **No conflict of interest for us.** Members affiliated with a challenger cannot enter that challenger's challenge (FAQ Q9). We are on the Altice challenge, so IT-Porto affiliation is not a problem here (it would be for Challenge #1, which Instituto de Telecomunicações co-runs).
 
 ## Prizes
 
-€15,000 in total. Per challenge: €3,000 for 1st, €1,500 for 2nd, €500 for 3rd. All three finalists of each challenge receive a prize.
+€15,000 in total — nine monetary prizes, three per challenge: **€3,000** for 1st, **€1,500** for 2nd, **€500** for 3rd (Article 21). Only the top 3 per challenge get a prize, even though up to 6 may reach the final stage. (At the kick-off Rui implied all finalists get a prize — that matched his "3 finalists" figure, not the written "up to 6".)
+
+The prize is paid to the **team representative** (Filipe), who splits it with the team. Payment may require, from the representative, up-to-date tax and social-security clearance certificates and an IBAN. Winners whose solution is not mature enough may be asked to finish it within 30 days for the prize to be confirmed.
 
 ## Rules and logistics
 
@@ -76,7 +121,7 @@ There are no deadline extensions. Submit early.
 - **Slack** is the official channel: announcements, general (logistics), random, and one channel per challenge. The challenge channels were made public during the kick-off, so use "browse channels" to join. General questions go in the challenge channel; private matters go by DM to a mentor.
 - Mentors answer asynchronously. If one stays silent for a long time, tell the organisers.
 - **Friday attendance is mandatory.** Leaving for about an hour, for example for an exam, is possible if agreed with Rui or Marta right after check-in. The organisation can issue a declaration to justify missed classes, on request.
-- **Venue:** Fábrica Centro Ciência Viva de Aveiro, about 20 minutes on foot from the train station, close to Fórum Aveiro. Exact address: see guide. Parts of the building have no mobile coverage.
+- **Venue:** Fábrica Centro Ciência Viva de Aveiro ([map](https://maps.app.goo.gl/b5cENmcW2NtsTDho9)), about 20 minutes on foot from the train station, close to Fórum Aveiro. The venue provides Wi-Fi, workspace, AV equipment for the pitch, and meals (lunch, coffee breaks, drinks). Parts of the building have no mobile coverage.
 - **Data and licences** must be respected whatever the challenge.
 
 ## Advice from the organisers

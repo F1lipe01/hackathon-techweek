@@ -8,6 +8,9 @@ Raw material as received. The pages in `docs/` are digests of what is here, so w
 | `challenge/desafio3-altice-mcp-guide.txt` | Text of the PDF, for searching | Extracted with `pdftotext -layout` | Screenshots are not included |
 | `challenge/desafio3-ficha.pdf` | The official challenge statement (ficha de desafio), 2 pages | Organisers, 16 Nov. Original `fichadesafio_alticelabs1.pdf` | Checked clean: no scripts, links or hidden text |
 | `challenge/desafio3-ficha.txt` | Text of the ficha | `pdftotext -layout` | |
+| `rules/normas-2026.pdf` | Official participation rules (Normas), 13 pages | Organisers, 16 Nov. Original `atw_hackathon_normas2026_vf1.pdf` | Has the evaluation criteria, deliverables, IP, prizes. Checked clean |
+| `rules/faqs.pdf` | Official FAQ, 8 pages | Organisers, 16 Nov. Original `hackathon_pt_faqs_vf1.pdf` | Confirms criteria + AI-use rules. Checked clean |
+| `rules/*.txt` | Text of the two above | `pdftotext -layout` | |
 | `meetings/2026-11-16-kickoff-transcript.txt` | Automatic transcript of the kick-off and the Challenge #3 room | Recorded by the team, 16 Nov | Original name `note.txt`. Unmodified. Speaker labels are unreliable and some background audio was captured |
 | `slack/team-channel.md` | The team's Slack channel, from brainstorm to kick-off | Copied from Slack, 16 Nov | Credentials redacted |
 | `slack/dm-rui-mendes.md` | DM in which the organisers sent our credentials | Copied from Slack, 16 Nov | Credentials redacted |

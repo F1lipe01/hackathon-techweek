@@ -1,12 +1,15 @@
 # Deliverables
 
+Per the rules (Article 14) and FAQ Q18, there are **two submission moments**:
+
 | # | Deliverable | Deadline | Folder | Submit |
 |---|---|---|---|---|
-| 1 | Executive summary: PDF, max 2 pages, Portuguese | **Wed 18 Nov, 19:00** | `executive-summary/` | [Google Form](https://docs.google.com/forms/d/e/1FAIpQLSepZIiXKm-tQaNF-1UmPIh4Z3IapeybneKr7N5W47Qs1Vf7dQ/viewform) |
-| 2 | Final presentation | **Fri 20 Nov, 17:30** | `final-presentation/` | Not announced yet |
-| 3 | Code or app repository, optional but recommended | **Fri 20 Nov, 17:30** | The repo itself | Not announced yet |
+| 1 | Succinct 2-page report (PDF) — use the exec-summary template | **Wed 18 Nov, 19:00** | `executive-summary/` | [Google Form](https://docs.google.com/forms/d/e/1FAIpQLSepZIiXKm-tQaNF-1UmPIh4Z3IapeybneKr7N5W47Qs1Vf7dQ/viewform) |
+| 2 | Executive summary (PDF, max 2 pages) | **Fri 20 Nov, 17:30** | `executive-summary/` | TBA |
+| 3 | Presentation (PPT) | **Fri 20 Nov, 17:30** | `final-presentation/` | TBA |
+| 4 | Code / app repository link, optional | **Fri 20 Nov, 17:30** | the repo | TBA |
 
-No extensions. Submit early.
+The 18 Nov "report" and 20 Nov "executive summary" are, in practice, the same 2-page PDF refined — the only 2-page template is the exec summary. See [docs/01-event.md](../docs/01-event.md#deliverables) for the naming inconsistency. **Late = possible disqualification.** Submit early.
 
 ## Files
 

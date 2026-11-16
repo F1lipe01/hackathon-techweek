@@ -1,0 +1,332 @@
+                                             AVEIRO TECH WEEK - AVEIRO TECH CITY Hackathon | 2026
+                                                                                                     FAQ’s
+
+
+
+1.   Preciso ser especialista em áreas tecnológicas para participar no Aveiro Tech City Hackathon?
+
+
+O “Aveiro Tech City Hackathon” dirige-se a pessoas, com 18 anos ou mais, com diversos perfis. Assim, não é
+necessário que os participantes sejam especialistas nas áreas tecnológicas, mas sim que demonstrem
+sensibilidade e interesse pela resolução dos desafios colocados. Se é este o caso, este evento é perfeito para
+ti! Deves, contudo, ter em mente que as equipas precisam de alguma experiência (académica, profissional
+ou enquanto hobby) para resolverem o desafio num curto período de tempo.
+
+
+2.   Que competências são recomendadas?
+
+
+Recomendamos a constituição de equipas multidisciplinares, capazes de combinar diferentes conhecimentos
+e perspetivas para responder ao desafio escolhido.
+Dependendo do desafio, poderão ser particularmente úteis competências nas seguintes áreas:
+     •   Programação e desenvolvimento de software;
+     •   Ciência e análise de dados;
+     •   Inteligência Artificial;
+     •   Design de produto e UX/UI;
+     •   Comunicação e apresentação;
+     •   Conhecimento da área de negócio associada ao desafio.
+Equipas com perfis complementares tendem a estar melhor preparadas para compreender o problema,
+desenvolver soluções mais completas e apresentar propostas com maior potencial de impacto.
+
+
+3.   Existe algum custo de participação/inscrição?
+
+
+Não, a inscrição e participação no “Aveiro Tech City Hackathon” é gratuita.
+
+
+Por esse motivo, os interessados devem apenas inscrever-se caso tenham total disponibilidade para
+participar no Hackathon uma vez que podem estar a condicionar a participação a outros interessados.
+De igual modo, a não comparência sem justificação ou aviso prévio irá condicionar a participação dos
+inscritos em futuras edições.
+
+
+
+
+                                                                                                             2
+                                               AVEIRO TECH WEEK - AVEIRO TECH CITY Hackathon | 2026
+                                                                                                 FAQ’s
+
+
+
+4.   Em que datas decorre o Aveiro Tech City Hackathon e qual o programa previsto?
+O “Aveiro Tech City Hackathon” ocorrerá de acordo com o seguinte programa:
+     •   1 de outubro a 4 de novembro de 2026 | Período de inscrições e esclarecimentos.
+     •   6 de novembro de 2026 | Anúncio da lista final de candidatos/as admitidos.
+     •   13 de novembro de 2026 | Identificação do desafio atribuído a cada Candidato/a/Equipa admitido.
+     •   16 a 18 de novembro de 2026 | HACKATHON (online).
+         .   16 de novembro - 17h30 - Sessão de Abertura.
+         .   18 de novembro - 19h00 - Submissão do 1.º entregável.
+     •   20 de novembro de 2026 | HACKATHON (presencial).
+         .   08h30 - Receção de Participantes.
+         .   09h00 - Abertura e boas vindas.
+         .   09h30 - Let’s Start | Coding Time.
+         .   16h30 - Seleção dos projetos finalistas.
+         .   17h30 - Submissão de projetos e Coffee-Break.
+         .   18h00 - Apresentações dos projetos.
+         .   20h00 - Anúncio dos vencedores e Cocktail final.
+
+
+5.   Em alguma fase, é necessária uma participação presencial?
+
+
+Sim, os participantes devem garantir a sua disponibilidade e assumir o compromisso de participar de forma
+assídua durante a maratona (Hackathon). Tal significa a obrigatoriedade de presença física durante o
+programa que decorre no dia 20 de novembro de 2026.
+
+
+6.   Quanto tempo terei de dedicar à participação no Aveiro Tech City Hackathon?
+
+
+O Aveiro Tech City Hackathon decorre em formato híbrido:
+     •   Fase online: de 16 a 18 de novembro de 2026;
+     •   Fase presencial: 20 de novembro de 2026.
+Durante a fase online, o tempo necessário dependerá da dimensão da equipa, da complexidade do desafio
+escolhido e da abordagem adotada para o desenvolvimento da solução. Como referência, recomendamos
+um investimento mínimo de cerca de 4 a 5 horas por participante.
+
+
+
+
+                                                                                                         3
+                                              AVEIRO TECH WEEK - AVEIRO TECH CITY Hackathon | 2026
+                                                                                                    FAQ’s
+
+
+
+No dia presencial, os participantes deverão estar disponíveis entre as 08h30 e as 20h00, de acordo com a
+agenda do evento.
+Para tirares o máximo partido da experiência, recomendamos que reserves tempo suficiente para colaborar
+com a tua equipa ao longo de toda a competição.
+
+
+7.   Posso inscrever-me individualmente?
+
+
+Sim. Podes inscrever-te individualmente e indicar, por ordem de preferência, em que desafios gostarias de
+trabalhar. Posteriormente, as inscrições individuais serão agrupadas pela organização, por equipas,
+consoante a ordem de preferência do desafio que indicaram na inscrição.
+A organização irá procurar garantir a participação do maior número de interessados, procurando, sempre
+que possível alocá-los ao desafio preferencial que selecionaram.
+Todas as inscrições serão validadas e selecionadas e os inscritos selecionados serão informados, no dia 13 de
+novembro, em que equipa e desafio foram colocados.
+
+
+Nota: Devido à necessidade de haver um limite mínimo e máximo de equipas para cada desafio, não é
+garantido que o candidato e/ou equipa seja alocado no desafio de maior preferência.
+
+
+8.   Quantas pessoas podem integrar uma equipa?
+
+
+As equipas devem ter entre 3 a 5 elementos.
+
+
+9.   Sou colaborador(a)/estudante ou membro de uma das entidades organizadoras dos desafios. Posso
+     participar?
+
+
+Sim. Podes participar no Aveiro Tech City Hackathon, desde que não integres uma equipa que esteja a
+desenvolver uma solução para o desafio promovido pela entidade com a qual tens vínculo académico,
+profissional ou institucional direto.
+Por exemplo, estudantes, docentes, investigadores ou colaboradores da Universidade de Aveiro não poderão
+integrar equipas que concorram a um desafio promovido pela própria Universidade de Aveiro.
+O mesmo princípio aplica-se às restantes entidades promotoras dos desafios.
+
+
+
+
+                                                                                                            4
+                                            AVEIRO TECH WEEK - AVEIRO TECH CITY Hackathon | 2026
+                                                                                                    FAQ’s
+
+
+
+10. Quando terminam as inscrições?
+
+
+As inscrições terminam às 23:59 (GMT) do dia 4 de novembro de 2026, no formulário de inscrições (cujo link
+estará disponível no website da Aveiro Tech Week - https://techweek.aveirotechcity.pt/)
+
+
+11. O que ganho em participar no Aveiro Tech City Hackathon?
+
+
+O “Aveiro Tech City Hackathon” é uma ótima oportunidade para fazer networking, melhorar as tuas
+competências, ganhar prémios e criar memórias incríveis.
+
+
+12. Quais os desafios que integram este Hackathon?
+
+
+O “Aveiro Tech City Hackathon” apresenta 3 desafios a que os participantes podem apresentar projetos:
+   •   Desafio #1 - by CMA e Instituto de Telecomunicações - Smart Aveiro: From Data to Action
+   •   Desafio #2 - by CMA e Universidade de Aveiro - Ctrl + F Aveiro: Identificação Automática de Mobiliário
+       Urbano
+   •   Desafio #3 - by Altice Labs - Connected Home, Reimagined: A IA ao serviço da casa
+
+
+13. Onde é que o evento vai decorrer?
+
+
+O Hackathon terá um formato híbrido e estará dividido em duas fases:
+   •   Online, no dia 16 de novembro de 2026, 17h30 | Sessão de Abertura online para dar início à
+       competição, até 18 de novembro às 19h00, terminando com a submissão do 1.º entregável.
+   •   Presencial, no dia 20 de novembro de 2026, 08h30-20h00 | HACKATHON, na Fábrica Centro de
+       Ciência Viva de Aveiro.
+
+
+14. E em relação à comida?
+
+
+Não te preocupes. Vamos oferecer almoço, coffee-breaks e bebidas durante o evento.
+Caso tenhas alguma restrição alimentar deves informar atempadamente a organização através do email
+aveirotechcity@cm-aveiro.pt.
+
+
+
+
+                                                                                                            5
+                                              AVEIRO TECH WEEK - AVEIRO TECH CITY Hackathon | 2026
+                                                                                                      FAQ’s
+
+
+
+15. O que devo levar?
+
+
+Boa disposição, humor e muita vontade de aprender! Além disso, os participantes devem trazer
+computadores ou outros equipamentos que julguem relevantes para o desenvolvimento dos projetos.
+
+
+16. Que tipo de apoio e mentoria será prestada?
+
+
+Cada parceiro disponibilizará diversos mentores para apoiar o desenvolvimento das soluções.
+Estes mentores serão divulgados ao longo do período de inscrições.
+Também, ao longo da competição, as equipas/projetos terão que cumprir um checkpoint obrigatório, online,
+com mentores. O checkpoint deverá ser agendado com os mentores no dia 18 de novembro, durante a parte
+da tarde, em horário a combinar. Contudo, no dia 16 de novembro, na sessão de abertura, iremos possibilitar
+o contacto com mentores para que tal aconteça.
+
+
+17. Posso utilizar ferramentas de Inteligência Artificial para desenvolver a solução?
+
+
+Sim. É permitida a utilização de ferramentas de Inteligência Artificial (IA), incluindo assistentes de
+programação, geração de conteúdo, análise de dados ou outras tecnologias de apoio ao desenvolvimento.
+As equipas podem recorrer a estas ferramentas para apoiar a pesquisa, a exploração de ideias, a resolução
+de questões técnicas e o desenvolvimento das suas soluções.
+No entanto, cada equipa deverá assegurar a originalidade da proposta apresentada, não sendo admitidas
+cópias ou plágios, integrais ou parciais, de projetos já existentes. A utilização de IA não deverá substituir o
+contributo criativo, o pensamento crítico e a participação efetiva dos membros da equipa.
+Os participantes são responsáveis por validar, testar e compreender integralmente a solução apresentada,
+bem como por verificar a adequação e a fiabilidade dos conteúdos produzidos ou sugeridos pelas
+ferramentas utilizadas.
+Durante a avaliação, o júri poderá colocar questões sobre as opções técnicas adotadas, pelo que os
+participantes deverão demonstrar conhecimento efetivo sobre a solução desenvolvida.
+A utilização de ferramentas de IA será considerada um recurso de apoio ao desenvolvimento e não constitui,
+por si só, um fator de avaliação positiva ou negativa.
+
+
+
+
+                                                                                                              6
+                                                 AVEIRO TECH WEEK - AVEIRO TECH CITY Hackathon | 2026
+                                                                                                       FAQ’s
+
+
+
+18. Existem outros checkpoints obrigatórios?
+
+
+Sim. A organização irá disponibilizar templates para todos os entregáveis que as equipas deverão utilizar. As
+equipas a concurso devem submeter os seguintes entregáveis:
+            a. até às 19h00 do dia 18 de novembro de 2026:
+                        i. Relatório sucinto da abordagem ao problema, com o máximo de 2 páginas
+                           (obrigatório).
+            b. até às 17h30 do dia 20 de novembro de 2026:
+                        i. Sumário Executivo, em pdf, com o máximo de 2 páginas (obrigatório).
+                       ii. Apresentação, em ppt (obrigatório).
+                       iii. Link para o repositório de código (opcional).
+
+
+19. Como será feita a avaliação e seleção dos vencedores?
+
+
+Existirão dois momentos de avaliação e seleção de projetos, nomeadamente a Avaliação Intermédia e a
+Avaliação Final.
+
+
+A Avaliação Intermédia é a etapa para seleção de até seis melhores equipas/projetos de cada desafio. Nesta
+fase de avaliação, todas as equipas/projetos terão a oportunidade de apresentar o seu projeto durante 3
+minutos, acrescidos de 1 minuto para questões, aos mentores e jurados.
+A seleção de até seis melhores equipas/projetos de cada desafio que irão defender o seu projeto perante o
+júri ocorrerá de acordo com os critérios, pontuação e ponderação apresentados de seguida:
+
+
+
+    Critérios de Avaliação                                                    Pontuação    Ponderação
+    Enquadramento e resposta ao desafio                                         (1-10)           25%
+    Facilidade de adoção do projeto por parte dos desafiadores                  (1-10)           25%
+    Viabilidade de implementação e gestão futura (sustentabilidade) do          (1-10)           25%
+    projeto
+    Apresentação da solução                                                     (1-10)            25%
+                                                                                                 100%
+
+
+As equipas/projetos finalistas só serão apresentadas no momento de subir ao palco, pelo que todas devem
+preparar os pitches.
+
+
+
+
+                                                                                                               7
+                                             AVEIRO TECH WEEK - AVEIRO TECH CITY Hackathon | 2026
+                                                                                                     FAQ’s
+
+
+
+A Avaliação Final é a etapa para seleção da equipa/projeto vencedor de cada desafio. Nesta fase de
+avaliação, as equipas/projetos finalistas terão a oportunidade de apresentar ao júri o seu projeto durante 5
+minutos, acrescidos de 3 minutos para questões.
+Os projetos apresentados serão avaliados pelos Júri tendo em conta os seguintes critérios, pontuação e
+ponderação:
+
+    Critérios de Avaliação                                                   Pontuação    Ponderação
+    Enquadramento e resposta ao desafio                                        (1-10)          20%
+    Facilidade de adoção do projeto por parte dos desafiadores                 (1-10)          20%
+    Viabilidade de implementação e gestão futura (sustentabilidade) do         (1-10)          20%
+    projeto
+    Possibilidade de replicação em outros territórios e contextos              (1-10)          20%
+    Apresentação da solução                                                    (1-10)          10%
+    Documentação (entregáveis) da solução                                      (1-10)          10%
+                                                                                              100%
+
+
+20. Após a competição, quem será o dono da propriedade intelectual desenvolvida?
+
+
+Todos os projetos constituem trabalho colaborativo. A propriedade intelectual dos projetos desenvolvidos
+será atribuída às entidades que apresentaram os desafios de modo a facultar o livre acesso de uso e
+adaptação, sem objetivos comerciais, mas com obrigação de partilha, a todos/as que tiverem interesse na
+sua aplicação.
+
+
+21. Tenho outra questão
+
+
+Se pudermos ajudar, contacta-nos através do email aveirotechcity@cm-aveiro.pt
+
+
+22. Gosto de estar a par de tudo! Onde posso encontrar mais informações?
+
+
+Podes sempre obter mais informações em https://techweek.aveirotechcity.pt/events/aveiro-tech-city-
+hackathon
+
+
+
+
+                                                                                                             8
+

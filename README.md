@@ -15,14 +15,15 @@ Everything received or discussed so far is filed here: organiser material, kick-
 
 | When | What | Format |
 |---|---|---|
-| **Wed 18 Nov**, any time that day (guide slot 14:00–18:00) | Mandatory checkpoint with the Altice mentors | Book it with them on Slack |
-| **Wed 18 Nov, 19:00** | Executive summary | PDF, max 2 pages, via Google Form |
-| **Fri 20 Nov, 08:30–20:30** | In-person day, Fábrica Centro Ciência Viva de Aveiro | Attendance mandatory |
-| **Fri 20 Nov, 16:00** | Intermediate evaluation by mentors | 3 min pitch + 2 min Q&A; top 3 go to the final |
-| **Fri 20 Nov, 17:30** | Final presentation, plus code repository (optional but recommended) | Template in `deliverables/` |
-| Fri 20 Nov, time not announced | Final on stage, for the 3 finalists | 5 min pitch + 3 min Q&A |
+| **Wed 18 Nov afternoon** | Mandatory checkpoint with the Altice mentors | Book it with them on Slack |
+| **Wed 18 Nov, 19:00** | 1st deliverable: succinct 2-page report (PDF) | Via Google Form |
+| **Fri 20 Nov, 08:30–20:00** | In-person day, Fábrica Centro Ciência Viva de Aveiro | Attendance mandatory |
+| **Fri 20 Nov, afternoon → 16:30–17:30** | Intermediate pitches; finalists selected | 3 min + 1 min Q&A; **up to 6** per challenge advance |
+| **Fri 20 Nov, 17:30** | Executive summary (PDF) + presentation (PPT) + repo link (optional) | Templates in `deliverables/` |
+| **Fri 20 Nov, 18:00–19:30** | Final pitches on stage, for the finalists | 5 min + 3 min Q&A |
+| **Fri 20 Nov, 20:00** | Winners announced + cocktail | |
 
-No extensions on any deadline, and pitch time is cut strictly. Details in [docs/01-event.md](docs/01-event.md).
+No extensions (late = possible disqualification), pitch time cut strictly. Full criteria and rules in [docs/01-event.md](docs/01-event.md). The kick-off said 3 finalists / 3+2 min; the written rules say up to 6 / 3+1 — confirm with mentors.
 
 ## Map
 

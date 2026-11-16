@@ -26,7 +26,8 @@ Last reviewed: Mon 16 Nov 2026.
 
 | # | What | Where it probably is |
 |---|---|---|
-| 10 | **Participant guide.** Evaluation criteria for both rounds, venue address, mentor list, checkpoint slot | Organisers' email |
+| ~~10~~ | **Resolved.** Evaluation criteria, schedule, deliverables, IP and rules are in the official norms + FAQ, now filed (`sources/rules/`) and summarised in [01-event.md](01-event.md). Venue address is in the norms (maps link). Mentor list still only partial | Mostly done |
+| 10b | **Confirm the finalist count and intermediate Q&A length.** Written rules say up to 6 teams / 3+1 min; the kick-off said 3 teams / 3+2 min | Ask the mentors |
 | 11 | The links from the organisers' email of 16 Nov: session room, challenge resources folder, Slack invite. Only the text was pasted, the links were lost | Same email |
 | 12 | Two Slack screenshots: `Screenshot 2026-11-02 at 11.43.36.png` and `Screenshot 2026-11-16 at 17.51.54.png` | Team Slack channel |
 | 13 | `Desafio#3_Altice_Hackathon_MCP_ATC2026.pdf - Google Drive.html` was not found in Downloads. The PDF itself is filed, so nothing is lost | |

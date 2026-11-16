@@ -17,7 +17,7 @@ The home is named **"Hack 3"** in the app, with all seven devices "Without room"
 | **Smoke sensor** | On | Photoelectric, EN 14604 (label 349) | via the hub | Smoke events; 85 dB siren, test/hush, low-battery warning |
 | **Contact sensor** | **Open** | **MS-D3D** oval (label 685) | RF, via the hub | Open / closed state of a door or window. **Confirmed a contact sensor** |
 | **Camera** | Disconnected | Tuya **SC034-WNV3** (label 346) | **Wi-Fi 2.4 GHz only**, IP65 | RTSP feed; HD video, motion detection, two-way audio, SD/cloud. Needs the Wi-Fi network |
-| **Plug** | Disconnected | Unbranded Schuko plug | **Wi-Fi** | On/off **and energy metering** (the app has an Energy page for it). Needs the Wi-Fi network |
+| **Plug** | Disconnected → **Online** once the hotspot was up, reporting **0,0 W** | Unbranded Schuko plug | **Wi-Fi** | On/off **and live energy metering** (confirmed: watts shown in the device list) |
 | **Light** | Disconnected | Unbranded E27 bulb | **Wi-Fi** | On/off; colour vs white still to confirm. Needs the Wi-Fi network |
 
 **The connected/disconnected split proves the two radio paths.** The four devices that were *On* (hub, temperature, smoke, contact) talk to the Security hub over Zigbee/RF, and the hub is online via its ethernet cable — so they work with no Wi-Fi. The three that were *Disconnected* (camera, plug, light) are **Wi-Fi** devices and stay offline until we create the 2.4 GHz network.
@@ -95,6 +95,10 @@ Ways to create it:
 | Mac | Only if the Mac itself is on wired ethernet: System Settings → General → Sharing → Internet Sharing, from Ethernet to Wi-Fi, with the same name and password |
 
 The phone that hosts the hotspot can still run the app. Whatever the camera streams travels over that phone's mobile data, so a router on wired internet is the better choice for long sessions.
+
+**What we use now (16 Nov):** the team's **Redmi 17** hotspot, reconfigured over ADB to the kit's SSID and password from `.env`, **WPA2-Personal, 2.4 GHz**, SSID visible, auto-off disabled. It shares the phone's mobile data. Within a minute of switching it on the **Plug came online** and started reporting live power. The phone's previous hotspot name was "REDMI 17" — to restore it, set the name back and enter the owner's own password.
+
+If a Wi-Fi device stays offline after the network appears, **power-cycle it**: devices that failed to find the network for hours can back off, and a restart makes them retry at once. The bulb also needs to be in a socket that is switched on.
 
 ### 3. Check every device in the app
 

@@ -41,6 +41,8 @@ No extensions (late = possible disqualification), pitch time cut strictly. Full 
 | [docs/09-platform-capabilities.md](docs/09-platform-capabilities.md) | The platform's full capability model (devices, automation, security, energy), reverse-engineered from the app |
 | [docs/10-mcp-in-practice.md](docs/10-mcp-in-practice.md) | **The MCP tested live:** the real 18 tools, write payloads, test results, safety findings, every device's capabilities |
 | [docs/11-project-baseline.md](docs/11-project-baseline.md) | **Start here for the project discussion:** verified facts, what works and what doesn't, ideas against the facts, decisions to make |
+| [docs/12-market-research.md](docs/12-market-research.md) | **Evidence for choosing the use case:** sourced figures for Portugal, France and the EU (damp, cold homes, older people living alone, fires, burglary, adoption), kit fit, overlap with Altice, scored candidates, pitch-ready figures in Portuguese |
+| [deliverables/use-case-report/](deliverables/use-case-report/) | **Top 5 use cases** as a PDF report: problem, what we have, what to build, why, pitch and Q&A for each |
 | [deliverables/](deliverables/) | Official templates and our drafts |
 | [mcp/](mcp/) | MCP client config templates from the official guide |
 | [assets/](assets/) | Clean device images for diagrams and slides, and screens of Altice's own app |

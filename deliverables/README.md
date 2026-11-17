@@ -18,6 +18,7 @@ The 18 Nov "report" and 20 Nov "executive summary" are, in practice, the same 2-
 | `executive-summary/sumario-executivo-template.docx` | Official template. Original name `Sumário Executivo Template ATC Hackathon 2026.docx` |
 | `executive-summary/draft.md` | Working skeleton with the template's four sections |
 | `final-presentation/apresentacao-final-template.pptx` | Official slide template, 5 layout slides with no text. Original name `Template - ATC Hackathon 2026.pptx` |
+| `use-case-report/top5-use-cases.pdf` | **Top 5 use cases** (v3, 17 Nov): evidence, kit fit, scores, pitch scripts in PT-PT, Q&A, and a draft Sumário Executivo in PT-PT for Wednesday. Source: `top5-use-cases.md`; rebuild with `use-case-report/build.sh` (pandoc + Chrome) |
 
 The templates were downloaded on 16 Nov. The live versions are in the [templates folder on Drive](https://drive.google.com/drive/folders/1rYi1o8HWRieewvc4dZwyyiTYM_o9bOyT); the slide template was still being edited that afternoon, so re-download before building the final deck.
 

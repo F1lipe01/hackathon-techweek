@@ -1,6 +1,6 @@
 # Open questions and next steps
 
-Last reviewed: Mon 16 Nov 2026.
+Last reviewed: Tue 17 Nov 2026.
 
 ## Blocking
 
@@ -34,6 +34,31 @@ Last reviewed: Mon 16 Nov 2026.
 | 12 | Two Slack screenshots: `Screenshot 2026-11-02 at 11.43.36.png` and `Screenshot 2026-11-16 at 17.51.54.png` | Team Slack channel |
 | 13 | `Desafio#3_Altice_Hackathon_MCP_ATC2026.pdf - Google Drive.html` was not found in Downloads. The PDF itself is filed, so nothing is lost | |
 | 14 | The MDPI paper Ana shared has not been read or summarised | [05-ideas.md](05-ideas.md) |
+
+## Gaps from the market research (17 Nov)
+
+From [12-market-research.md](12-market-research.md). Mentor questions for the checkpoint are in its §9.
+
+| # | What | Who can resolve it |
+|---|---|---|
+| 21 | **Altice's customer data is not public**: who uses Connected Home (now "Cognitive Home"), for what, and which segment MEO and SFR want to grow | Mentors, at the checkpoint |
+| 22 | **Altice already covers older-person monitoring**: Family Care (motion sensors + Wi-Fi sensing), Aging in place (activity and fall alerts, per the brochure), eHealth Smart Assisted Living. An older-person use case has to add something they lack, e.g. home-condition health (damp, cold). The use-case report's checkpoint question targets this | Mentors, at the checkpoint |
+| 23 | **The MCP has no event history and no notifications.** Any routine or trend feature means polling and keeping our own log; any alert needs our own channel | Ask mentors whether a platform event/push API exists |
+| 24 | **Nothing to switch on the plug at the venue** for a damp/cold demo (a dehumidifier, heater or stand-in lamp) | Us; ask the mentors whether a heater is allowed |
+| 25 | **Smoke sensor test button**: unknown whether it triggers the hub alarm or emergency contacts | Mentors |
+| 26 | **Figures not confirmed at source**: excess winter mortality (only press citing DGS was found), "37.8 % of 80+ live alone" (a seminar talk, wider definition), ANACOM Q2 2026 operator shares (the page loads by JavaScript; Q4 2025 is used), share of fire deaths who are elderly (not published) | Only if needed |
+| 27 | **No current Portuguese time-use data.** INE's survey is from 1999 and INUT (CESIS/CITE) from 2015, and Portugal is absent from EU HETUS. "People spend more time at home" cannot be backed by a number | Accept the gap; only RASI 2025 says it, qualitatively |
+| 28 | **Altice brochure (2025) has a hidden contradictory paragraph** (pp. 1, 16). It is not an instruction, but don't quote the PDF's extracted text without looking at the page | Noted |
+| 29 | **Untested kit behaviour the demos depend on**:
+  - the contact sensor changing open → closed through the MCP;
+  - plug metering under a load (and the daily counter's unit);
+  - whether the plugged appliance resumes on power;
+  - how fast the MCP may be polled;
+  - how a powered-off hub shows up, and that it reconnects cleanly;
+  - whether a smoke sensor can trigger a scenario.
+
+  Full list: [use-case report §9](../deliverables/use-case-report/top5-use-cases.md) | Us, Wednesday morning or Thursday; the scenario question goes to the mentors |
+| 30 | **Owners for the build streams** (engine, conversation, story) and the **LLM/coding-assistant names** for the Sumário's AI section | Team, before Wed 19:00 |
 
 ## Decisions the team has to make
 

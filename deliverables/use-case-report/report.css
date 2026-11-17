@@ -1,0 +1,31 @@
+@page { size: A4; margin: 16mm 15mm 18mm 15mm; }
+:root { --ink:#1d2327; --muted:#5b6670; --line:#d5dbe0; --accent:#0b5cad; --soft:#eef4fa; --warn:#8a5a00; --warnbg:#fff6e0; --ok:#1f6f3f; }
+html { font-size: 10pt; }
+body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; color: var(--ink); line-height: 1.42; max-width: none; margin: 0; padding: 0; background: #fff; }
+header#title-block-header { display:none; }
+h1 { font-size: 20pt; color: var(--accent); margin: 0 0 4pt; line-height:1.15; }
+h2 { font-size: 14pt; color: var(--accent); border-bottom: 1.5pt solid var(--accent); padding-bottom: 2pt; margin: 18pt 0 6pt; break-after: avoid; }
+h3 { font-size: 11.5pt; margin: 12pt 0 4pt; break-after: avoid; }
+h4 { font-size: 10pt; margin: 9pt 0 3pt; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; break-after: avoid; }
+p, li { orphans: 3; widows: 3; }
+ul, ol { padding-left: 16pt; margin: 3pt 0 6pt; }
+li { margin: 1pt 0; }
+table { border-collapse: collapse; width: 100%; margin: 5pt 0 9pt; font-size: 8.6pt; break-inside: auto; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th { background: var(--soft); text-align: left; font-weight: 600; }
+th, td { border: 0.6pt solid var(--line); padding: 3pt 4.5pt; vertical-align: top; }
+blockquote { margin: 6pt 0; padding: 6pt 9pt; background: var(--soft); border-left: 3pt solid var(--accent); }
+blockquote p { margin: 2pt 0; }
+code { font-size: 8.6pt; background: #f3f5f7; padding: 0 2pt; border-radius: 2pt; }
+a { color: var(--accent); text-decoration: none; word-break: break-word; }
+.pagebreak { break-before: page; }
+.lead { font-size: 11pt; color: var(--muted); margin-bottom: 10pt; }
+.note { background: var(--warnbg); border-left: 3pt solid var(--warn); padding: 5pt 8pt; margin: 6pt 0; }
+.pitch { background: #f7f9fb; border: 0.6pt solid var(--line); padding: 7pt 10pt; margin: 6pt 0; font-size: 9.6pt; }
+.pitch p { margin: 3pt 0; }
+.small { font-size: 8.4pt; color: var(--muted); }
+.score { font-weight: 700; color: var(--accent); }
+table { table-layout: auto; }
+colgroup col { width: auto !important; }
+td:first-child, th:first-child { white-space: normal; }

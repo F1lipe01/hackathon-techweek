@@ -454,26 +454,35 @@ _door_lock = threading.Lock()
 POLL_S = float(os.environ.get("TT_DOOR_POLL_S", "4"))
 
 
-def door_changed(is_open, source):
+NO_EXIT_GRACE = 5   # seconds: with no camera at the entrance there is nothing to wait for
+
+
+def door_changed(is_open, source, baseline=False):
+    """baseline: the first live reading after the session comes up says where the door is, not that it moved."""
     now_ = time.time()
     with _door_lock:
         prev = DOOR["open"]
         if prev is is_open:
             return
         DOOR.update(open=is_open, source=source, changed=now_)
-    if source == "live" and prev is None:   # the first reading is where the door is, not a change
+    if baseline or (source == "live" and prev is None):
         return
     sim = source == "sim"
     if sim:
         store.set_device_status("contactSensor", "Open" if is_open else "Closed")
     store.add_event("door", ("Simulated: the door " if sim else "The door ") + ("opened" if is_open else "closed")
-                    + " (Contact sensor).", sim=sim, open=is_open)
+                    + " (Contact sensor).", sim=sim, open=is_open, device="Contact sensor")
     if not is_open:
         return
+    # grace_s is the time to see the thing go out at an entrance camera; with none, only a few seconds
+    entrance = any(place_matches("entrance", p) for p in store.camera_places())
     for r in store.active_rules():          # closed (or unknown, for the simulation) -> open
         if (r.get("kind") == "leave_without" and r["id"] not in PENDING
                 and now_ - r.get("last_fired", 0) >= r.get("cooldown_s", 300)):
-            PENDING[r["id"]] = {"opened": now_, "due": now_ + float(r.get("grace_s") or 60)}
+            grace = float(r.get("grace_s") or 60)
+            if not (entrance or r.get("exit_place")):
+                grace = min(grace, NO_EXIT_GRACE)
+            PENDING[r["id"]] = {"opened": now_, "due": now_ + grace}
 
 
 @app.post("/api/sim/door")
@@ -490,19 +499,31 @@ def _caps(d):
 
 def device_poller():
     """When the MCP session is live: every POLL_S seconds, the device statuses through the READ-ONLY get_home_devices
-    (into the local copy of the home) and the door's changes. When it is not live: try again every 60 s, quietly."""
+    (into the local copy of the home), a device going on or off line, and the door's changes. When it is not live:
+    try again every 15 s, quietly, so a `chmcp.py login` is picked up without restarting the server."""
+    last_door = None
     while True:
         data = actions.poll_devices()
         DOOR["live"] = data is not None
         if data is None:
-            time.sleep(60)
+            last_door = None
+            time.sleep(15)
             continue
-        devs = data.get("devices", [])
-        store.sync_devices([{"id": d["id"], "status": _status(d)} for d in devs if d.get("id")],
+        devs = [d for d in data.get("devices", []) if d.get("id")]
+        before = {d["id"]: d["status"] for d in store.home()["devices"]}
+        for d in devs:                       # "Light is online.", as the Altice app writes it
+            old, new = before.get(d["id"]), _status(d)
+            if old is not None and (old == "Disconnected") != (new == "Disconnected"):
+                store.add_event("device", f"{d.get('name', 'A device')} is {'offline' if new == 'Disconnected' else 'online'}.",
+                                device=d.get("name", ""))
+        store.sync_devices([{"id": d["id"], "status": _status(d)} for d in devs],
                            f"Synced from the Altice platform at {time.strftime('%H:%M')}")
         door = next((d for d in devs if d.get("type") == "contactSensor"), None)
         if door and _status(door) != "Disconnected":
-            door_changed(_caps(door).get("sensorState") == "alarm", "live")
+            is_open = _caps(door).get("sensorState") == "alarm"
+            if is_open != last_door:         # only a change of the real sensor, never a re-read
+                door_changed(is_open, "live", baseline=last_door is None)
+                last_door = is_open
         time.sleep(POLL_S)
 
 
@@ -826,12 +847,15 @@ def add_rule(payload: dict = Body(...)):
                     cooldown_s=max(60, min(3600, int(compiled.get("cooldown_s", 300)))))
     if compiled.get("kind") == "leave_without":
         compiled["grace_s"] = int(compiled.get("grace_s") or 60)
+        if compiled.get("action", "notify") == "notify":   # the team's choice (18 Nov): the alert and a red light
+            compiled["action"] = LEAVE_ACTION
     rule = store.add_rule(sentence, compiled)
     note = rule_note(rule)
     store.add_event("sensor", f"New sensor: {rule['title']}." + (f" {note}" if note else ""), rule_id=rule["id"])
     return {**rule, "note": note}
 
 
+LEAVE_ACTION = os.environ.get("TT_LEAVE_ACTION", "light_red")
 TUNABLE = {"grace_s": float, "min_s": float, "within_s": float, "minutes": float, "cooldown_s": int,
            "by": hhmm, "from": hhmm, "place": str, "exit_place": str}
 

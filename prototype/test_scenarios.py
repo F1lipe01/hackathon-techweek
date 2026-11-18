@@ -8,6 +8,10 @@
         uses a server that is already running. It WRITES test things, sensors, sightings and suggestions into that
         server's database: use it only on a throwaway one.
 
+The private server also reads the devices from a file in the shape of get_home_devices (TT_DEVICES_FILE) instead
+of the MCP, so the live door path (the device poll, the Contact sensor going from closed to open) runs without a
+session; the test flips the sensor in that file.
+
 What it does: it plays the edge service (POST /api/edge/observe: a thing on the table, a cat at the food bowl, a
 person in the kitchen, a child in the hall), opens the simulated door (POST /api/sim/door), writes sentences to the
 assistant (POST /api/assistant), and shortens deadlines and grace periods (PATCH /api/rules) so each case takes
@@ -99,9 +103,28 @@ def door():
     call("POST", "/api/sim/door", {"open": False})
 
 
+LIGHT = "00e038d4-0da7-45c2-b61f-f38c9ff9df82"
+DEVICES = None
+
+
+def set_contact(state):
+    """The Contact sensor in the devices file: 'normal' (closed) or 'alarm' (open)."""
+    d = json.loads((HERE.parent / "mcp" / "samples" / "get_home_devices.json").read_text())
+    for dev in d["devices"]:
+        if dev["type"] == "contactSensor":
+            for c in dev["capabilities"]:
+                if c.get("type") == "sensorState":
+                    c["value"] = state
+    DEVICES.write_text(json.dumps(d))
+
+
 def start_private_server(port):
+    global DEVICES
     data = Path(tempfile.mkdtemp(prefix="tt-test-"))
-    env = {**os.environ, "TT_PORT": str(port), "TT_DATA": str(data)}
+    DEVICES = data / "devices.json"
+    set_contact("normal")
+    env = {**os.environ, "TT_PORT": str(port), "TT_DATA": str(data), "TT_DEVICES_FILE": str(DEVICES),
+           "TT_DOOR_POLL_S": "1"}
     env.pop("TT_AI", None)
     env.pop("TT_LIVE_ACTIONS", None)          # never: device actions stay dry runs
     proc = subprocess.Popen([sys.executable, str(HERE / "server.py")], env=env, stdout=subprocess.DEVNULL,
@@ -148,6 +171,10 @@ def run(private, db):
     if st["settings"]["live_actions"]:
         raise SystemExit("This server has TT_LIVE_ACTIONS=1: refusing to fire test alerts that would act on the home.")
     check("state carries the door", "door" in st, json.dumps(st.get("door")))
+    for q, want in [("Onde está o livro?", "Ainda não conheço o livro"), ("Where is my book?", "don't know your book")]:
+        out = call("POST", "/api/assistant", {"text": q})
+        check(f"“{q}” with no book registered -> says so and how to add it", want in out.get("answer", "")
+              and "Things" in out.get("answer", ""), out.get("answer", ""))
     book = call("POST", "/api/things", {"name": "Book", "description": "yellow book"})["id"]
     keys = call("POST", "/api/things", {"name": "Keys", "description": "keys"})["id"]
     wallet = call("POST", "/api/things", {"name": "Wallet", "description": "wallet"})["id"]
@@ -162,6 +189,35 @@ def run(private, db):
         check(f"“{text}” -> {want}", out["kind"] == want, out["kind"] + (": " + out.get("answer", "")[:70] if out["kind"] == "answer" else ""))
         if out["kind"] == "sensor":
             call("DELETE", f"/api/rules/{out['sensor']['id']}")
+
+    # ------------------------------------------------------------------ A0. the live door, read through the device poll
+    if private:
+        print("\nA0. The real door: the Contact sensor read every second through the device poll (a file, not the MCP)")
+        end = time.time() + 10
+        while time.time() < end and not call("GET", "/api/state")["door"].get("live"):
+            time.sleep(0.5)
+        d = call("GET", "/api/state")["door"]
+        check("device poll is live and the door reads closed", d.get("live") and d.get("open") is False, json.dumps(d))
+        r = sensor("Avisa-me se eu sair de casa sem o livro")
+        check("the sentence of the lab test -> leave_without, light red", r and r["kind"] == "leave_without"
+              and r["action"] == "light_red", r and f"{r['kind']}, action {r['action']}")
+        if r:
+            observe(sightings=[{"thing_id": book, "place": "table", "crop_b64": JPEG, "note": "test"}])
+            set_contact("alarm")
+            a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == r["id"], timeout=15)
+            door_ev = next((e for e in events() if e["kind"] == "door" and e.get("open") and not e.get("sim")), None)
+            check("the real sensor opens -> a door event (not simulated)", door_ev, door_ev and door_ev["text"])
+            check("… and the alert, with the book's photo", a and a.get("crop"), a and a["text"])
+            calls = (a or {}).get("action", {}).get("calls", [])
+            want = [{"type": "power", "value": "on"}, {"type": "color_rgb", "redValue": 255, "greenValue": 0, "blueValue": 0}]
+            check("… and the red light: the exact MCP calls, dry run", [c["arguments"].get("body") for c in calls] == want
+                  and all(c["tool"] == "update_device_capabilities" and c["arguments"].get("deviceId") == LIGHT for c in calls)
+                  and not a["action"]["live"] and a["action"]["result"] == "dry run: not sent",
+                  "; ".join(f"{c['tool']} {json.dumps(c['arguments'])}" for c in calls))
+            set_contact("normal")
+            closed = wait_for(lambda e: e["kind"] == "door" and e.get("open") is False and not e.get("sim"), timeout=8)
+            check("the real sensor closes -> a door event", closed, closed and closed["text"])
+            call("DELETE", f"/api/rules/{r['id']}")
 
     # ------------------------------------------------------------------ A. leave home without
     print("\nA. “Tell me if I leave home without my book”: fires when the door opens and the book is still at home")

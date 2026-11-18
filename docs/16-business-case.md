@@ -8,13 +8,13 @@ State on **Wed 18 Nov 2026**. The charts are built from [the model](16-business-
 - **How many:** about 19,000 MEO homes in the expected case, 1.2% of MEO's fixed-broadband homes.
 - **Per home:** €3.99 a month leaves about €1.74 after the AI, the servers, support and the cost of winning the customer.
 - **The condition:** the local AI must run on hardware already in the home. With a box per home, the add-on loses money.
-- **Price:** a fraction of today's camera plans in Portugal, which cost €42–46 a month.
+- **Price:** a fraction of today's camera alarm plans in Portugal, which start at €34.99 a month.
 
 ## 1. The market
 
 ![About 19,000 MEO homes in the expected case](business-case/charts/1-market.png)
 
-MEO has about 1.58 million homes with fixed broadband (ANACOM). About one person in four in Portugal already uses a connected-home system (Eurostat 2024). If one in twenty of them subscribes, which is our assumption, that makes about 19,000 homes. The range we model runs from about 2,700 to 52,000.
+MEO has about 1.58 million homes with fixed broadband (ANACOM, Q4 2025). About one person in four in Portugal already uses a connected-home system (Eurostat 2024). If one in twenty of them subscribes, which is our assumption, that makes about 19,000 homes. The range we model runs from about 2,700 to 52,000.
 
 ## 2. One home, one month
 
@@ -32,7 +32,7 @@ The local vision models are the heavy part. If they run on a router, gateway or 
 
 ![A fraction of what a camera plan costs](business-case/charts/4-prices.png)
 
-Camera plans in Portugal cost €42–46 a month. ThingTracker is proposed at €3.99 for a home that already has a camera, or €7.50 with a camera.
+Camera alarm plans in Portugal start at €34.99 a month at NOS (a campaign price, plus €7.50 a month for each extra indoor camera) and at €45.50 at Vodafone. ThingTracker is proposed at €3.99 for a home that already has a camera, or €7.50 with a camera.
 
 ## 5. What MEO can earn
 
@@ -67,7 +67,7 @@ The operator already holds the bill, the app and the devices that the Model Cont
 | Step | Low | Base | High | Source |
 |---|---|---|---|---|
 | Residential fixed broadband accesses | 4,052 k | 4,052 k | 4,052 k | [ANACOM 4T2025](https://www.anacom.pt/streaming/SAI4T2025.pdf?contentId=1828507&field=ATTACHED_FILE), Tabela 5 |
-| × MEO share of residential accesses | 39.0 % | 39.0 % | 39.0 % | ANACOM, Tabela 6 |
+| × MEO share of residential accesses | 39.0 % | 39.0 % | 39.0 % | ANACOM 4T2025, Tabela 6 |
 | = MEO residential accesses [D01] | 1,580 k | 1,580 k | 1,580 k | |
 | × homes ready for an add-on [D02] | 8.49 % | 23.99 % | 33.04 % | PROXY, Eurostat 2024: PT security devices / PT any connected-home system / EU average |
 | × take rate [B22] | 2 % | 5 % | 10 % | **ASSUMPTION** |
@@ -91,14 +91,14 @@ Caveats: ANACOM counts accesses, not homes, and Eurostat counts individuals. MEO
 | Competitor offer | Price | Camera | Source |
 |---|---|---|---|
 | Vodafone + Prosegur Alarms | "desde €45,5/mês" | 360° camera in the base package | [vodafone.pt](https://www.vodafone.pt/alarmes-prosegur.html) |
-| NOS Securitas, apartment | €34.99/month campaign (€39.99 struck through); 36 months | Indoor camera **+€7.50/month** | [nos.pt alarm](https://www.nos.pt/alarmes/alarme-casa), [nos.pt cameras](https://www.nos.pt/alarmes/equipamentos/camaras-vigilancia) |
-| SFR Maison Sécurisée | €19.99/month; €5 off for SFR Box customers | Included | docs/12 §2 |
-| MEO | Ajax Starter kit, no monthly fee | None | docs/12 §2 |
+| NOS Securitas, apartment | €34.99/month campaign (€39.99 struck through); 36 months | Motion detector with camera in the kit; each extra indoor camera **+€7.50/month** | [nos.pt alarm](https://www.nos.pt/alarmes/alarme-casa), [nos.pt cameras](https://www.nos.pt/alarmes/equipamentos/camaras-vigilancia) |
+| SFR Maison Sécurisée | €19.99/month, no commitment; €14.99 for SFR Box customers; the €99 "pack alerte vidéo" must be bought | Included | [sfr.fr/maison](https://www.sfr.fr/maison/), checked 18 Nov 2026; docs/12 §2 |
+| MEO | Ajax Starter kit, no service subscription | Motion detector with a camera that takes photos; no video camera | meo.pt, checked 18/11/2026 |
 
 | Our option (**ASSUMPTION**) | Retail incl. VAT | Net of 23 % VAT | Fits | Why this price |
 |---|---|---|---|---|
-| A. Camera + Things bundle [B21] | €7.50 | €6.10 | MEO | What NOS charges for the camera alone |
-| B. Add-on [B20] | €2.99 / €3.99 / €4.99 | €2.43 / €3.24 / €4.06 | Homes with a platform camera, e.g. Maison Sécurisée | €4.99 is 25 % of SFR's price, 14 % of NOS's and 11 % of Vodafone's |
+| A. Camera + Things bundle [B21] | €7.50 | €6.10 | MEO | What NOS charges for each extra indoor camera |
+| B. Add-on [B20] | €2.99 / €3.99 / €4.99 | €2.43 / €3.24 / €4.06 | Homes with a platform camera, e.g. Maison Sécurisée | €4.99 is 25 % of SFR's price (33 % of the €14.99 SFR Box price), 14 % of NOS's and 11 % of Vodafone's |
 | C. Inside an alarm plan | €0 extra | — | Retention | Value is lower churn, **unknown** |
 
 ### D4. Unit economics per home per month

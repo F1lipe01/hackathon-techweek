@@ -8,7 +8,7 @@ Dados atualizados a 18 de novembro de 2026. Os gráficos são gerados a partir d
 - No cenário esperado, aderem ao serviço cerca de 19 000 casas MEO, ou seja, 1,2 % das casas com banda larga fixa da operadora.
 - De uma mensalidade de 3,99 €, restam cerca de 1,74 € por casa, depois de descontados o IVA e os custos do modelo de linguagem, dos servidores, do apoio ao cliente e da angariação.
 - A condição essencial é que os modelos de IA que analisam as imagens funcionem em equipamento já instalado em casa. Com uma caixa dedicada em cada casa, o serviço adicional dá prejuízo.
-- O preço proposto corresponde a uma fração do custo dos atuais planos com câmara em Portugal, que vai de 42 a 46 € por mês.
+- O preço proposto corresponde a uma fração do preço dos atuais planos de alarme com câmara em Portugal, que começam nos 34,99 € por mês.
 
 ## 1. O mercado
 
@@ -16,7 +16,7 @@ Dados atualizados a 18 de novembro de 2026. Os gráficos são gerados a partir d
 
 Figura 1 – Cerca de 19 000 casas MEO no cenário esperado
 
-A MEO tem cerca de 1,58 milhões de casas com banda larga fixa (ANACOM) e, em Portugal, cerca de uma pessoa em cada quatro já utiliza um sistema de casa conectada (Eurostat, 2024). Admitindo, como pressuposto da equipa, que adere ao serviço uma em cada vinte casas que já utilizam estes sistemas, chega-se a cerca de 19 000 casas, como mostra a Figura 1. O intervalo considerado no modelo vai de cerca de 2 700 a 52 000 casas.
+A MEO tem cerca de 1,58 milhões de casas com banda larga fixa (ANACOM, 4.º trimestre de 2025) e, em Portugal, cerca de uma pessoa em cada quatro já utiliza um sistema de casa conectada (Eurostat, 2024). Admitindo, como pressuposto da equipa, que adere ao serviço uma em cada vinte casas que já utilizam estes sistemas, chega-se a cerca de 19 000 casas, como mostra a Figura 1. O intervalo considerado no modelo vai de cerca de 2 700 a 52 000 casas.
 
 ## 2. Uma casa, um mês
 
@@ -40,7 +40,7 @@ Os modelos de visão locais são a parte mais exigente do sistema. Se funcionare
 
 Figura 4 – Uma fração do preço de um plano com câmara
 
-Em Portugal, os planos de alarme com câmara custam de 42 a 46 € por mês. Propõe-se o _ThingTracker_ a 3,99 € por mês para as casas que já têm câmara, ou a 7,50 € com câmara incluída, o que corresponde a uma fração daqueles valores, como mostra a Figura 4.
+Em Portugal, os planos de alarme com câmara custam a partir de 34,99 € por mês na NOS (preço de campanha, a que acrescem 7,50 € por cada câmara interior adicional) e a partir de 45,50 € na Vodafone. Propõe-se o _ThingTracker_ a 3,99 € por mês para as casas que já têm câmara, ou a 7,50 € com câmara incluída, o que corresponde a uma fração daqueles valores, como mostra a Figura 4.
 
 ## 5. Receita para a MEO
 
@@ -75,7 +75,7 @@ O operador já gere a faturação, a aplicação e os dispositivos sobre os quai
 | Etapa | Prudente | Esperado | Otimista | Fonte |
 |---|---|---|---|---|
 | Acessos residenciais de banda larga fixa | 4 052 mil | 4 052 mil | 4 052 mil | [ANACOM, 4.º trimestre de 2025](https://www.anacom.pt/streaming/SAI4T2025.pdf?contentId=1828507&field=ATTACHED_FILE), tabela 5 |
-| × quota da MEO nos acessos residenciais | 39,0 % | 39,0 % | 39,0 % | ANACOM, tabela 6 |
+| × quota da MEO nos acessos residenciais | 39,0 % | 39,0 % | 39,0 % | ANACOM, 4.º trimestre de 2025, tabela 6 |
 | = acessos residenciais da MEO [D01] | 1 580 mil | 1 580 mil | 1 580 mil | |
 | × casas preparadas para um serviço adicional [D02] | 8,49 % | 23,99 % | 33,04 % | Aproximação, Eurostat 2024: dispositivos de segurança em Portugal / qualquer sistema de casa conectada em Portugal / média da UE |
 | × taxa de adesão [B22] | 2 % | 5 % | 10 % | Pressuposto da equipa |
@@ -99,14 +99,14 @@ Os assinantes do _Maison Sécurisée_ seriam o melhor mercado para começar, mas
 | Oferta concorrente | Preço | Câmara | Fonte |
 |---|---|---|---|
 | Vodafone + Prosegur Alarmes | “desde €45,5/mês” | Câmara de 360° incluída no pacote base | [vodafone.pt](https://www.vodafone.pt/alarmes-prosegur.html) |
-| NOS Securitas, apartamento | 34,99 €/mês em campanha (preço anterior de 39,99 €), com fidelização de 36 meses | Câmara interior por mais 7,50 €/mês | [nos.pt, alarme](https://www.nos.pt/alarmes/alarme-casa), [nos.pt, câmaras](https://www.nos.pt/alarmes/equipamentos/camaras-vigilancia) |
-| SFR _Maison Sécurisée_ | 19,99 €/mês, com desconto de 5 € para clientes _SFR Box_ | Incluída | Estudo de mercado, secção 2 |
-| MEO | Kit _Ajax Starter_, sem mensalidade | Não tem | Estudo de mercado, secção 2 |
+| NOS Securitas, apartamento | 34,99 €/mês em campanha (preço anterior de 39,99 €), com fidelização de 36 meses | Detetor de movimento com câmara incluído no kit; cada câmara interior adicional custa mais 7,50 €/mês | [nos.pt, alarme](https://www.nos.pt/alarmes/alarme-casa), [nos.pt, câmaras](https://www.nos.pt/alarmes/equipamentos/camaras-vigilancia) |
+| SFR _Maison Sécurisée_ | 19,99 €/mês, sem fidelização; 14,99 €/mês para clientes _SFR Box_; compra obrigatória do _pack alerte vidéo_, por 99 € | Incluída | [sfr.fr/maison](https://www.sfr.fr/maison/), consultado a 18/11/2026; estudo de mercado, secção 2 |
+| MEO | Kit _Ajax Starter_, sem subscrição de serviço | Detetor de movimento com câmara que tira fotografias; sem câmara de vídeo | meo.pt, consultado a 18/11/2026 |
 
 | Opção proposta (pressuposto da equipa) | Preço com IVA | Preço sem IVA (23 %) | Adequada a | Justificação do preço |
 |---|---|---|---|---|
-| A. Pacote com câmara e _ThingTracker_ [B21] | 7,50 € | 6,10 € | MEO | O que a NOS cobra apenas pela câmara |
-| B. Serviço adicional [B20] | 2,99 € / 3,99 € / 4,99 € | 2,43 € / 3,24 € / 4,06 € | Casas com uma câmara da plataforma, por exemplo do _Maison Sécurisée_ | 4,99 € equivale a 25 % do preço da SFR, 14 % do da NOS e 11 % do da Vodafone |
+| A. Pacote com câmara e _ThingTracker_ [B21] | 7,50 € | 6,10 € | MEO | O que a NOS cobra por cada câmara interior adicional |
+| B. Serviço adicional [B20] | 2,99 € / 3,99 € / 4,99 € | 2,43 € / 3,24 € / 4,06 € | Casas com uma câmara da plataforma, por exemplo do _Maison Sécurisée_ | 4,99 € equivale a 25 % do preço da SFR (33 % do preço para clientes _SFR Box_, de 14,99 €), 14 % do da NOS e 11 % do da Vodafone |
 | C. Incluído num plano de alarme | 0 € adicionais | 0 € | Retenção de clientes | O valor está na redução do abandono de clientes, ainda desconhecida |
 
 ### D4. Custos e margem por casa e por mês
@@ -122,7 +122,7 @@ A perceção funciona em casa e só quando há movimento ou som. O modelo de lin
 O total é de 0,10 / 0,43 / 1,78 USD por casa e por mês [C01] e assenta em três pressupostos da equipa:
 
 - um fator multiplicativo de 1,0 / 1,5 / 2,0 sobre o custo medido de cada pedido, uma vez que só foi medido um pedido de cada tipo;
-- um fator de 1,00 / 1,10 / 1,25, isto é, um acréscimo de 0 a 25 %, para garantir a residência dos dados na UE;
+- um fator de 1,00 / 1,10 / 1,25, isto é, um acréscimo de 0 a 25 %, associado à residência dos dados;
 - uma taxa de câmbio de 1 USD = 1 EUR.
 
 Em comparação, enviar para a nuvem as imagens de uma única zona com muito movimento custa até 0,37 USD por hora (documentação do protótipo).

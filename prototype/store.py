@@ -11,6 +11,7 @@ Two kinds of tables live in it.
    things          the objects the user registered (name, the English word the detector searches for)
    fingerprints    each thing's visual fingerprint (8 DINOv2 vectors); the home device keeps its own copy too
    sightings       the home's memory: where and when each thing was seen, with a small crop of it
+   presence        where and when the camera saw a person, a child, a dog or a cat; never a picture of them
    sensors         the rules written as sentences, compiled to structured rules
    events          what the app shows as activity and alerts
    spend           what each language-model call cost
@@ -19,6 +20,7 @@ Values that are lists or nested objects are kept as JSON text in a column. The c
 already uses (snapshot, things, add_observation, ...), so the server never writes SQL itself.
 """
 import json
+import os
 import sqlite3
 import threading
 import time
@@ -26,7 +28,9 @@ import unicodedata
 import uuid
 from pathlib import Path
 
-DATA = Path(__file__).resolve().parent / "data"
+# TT_DATA points a second server at its own data folder (prototype/test_scenarios.py uses one), so tests never
+# write into the demo's database.
+DATA = Path(os.environ.get("TT_DATA") or Path(__file__).resolve().parent / "data")
 DB = DATA / "home.db"
 CROPS = DATA / "crops"
 
@@ -44,6 +48,9 @@ CREATE TABLE IF NOT EXISTS sightings (
   id TEXT PRIMARY KEY, ts REAL NOT NULL, thing_id TEXT NOT NULL REFERENCES things(id) ON DELETE CASCADE,
   place TEXT NOT NULL, room TEXT NOT NULL, note TEXT NOT NULL DEFAULT '', crop TEXT);
 CREATE INDEX IF NOT EXISTS sightings_by_thing ON sightings(thing_id, ts);
+CREATE TABLE IF NOT EXISTS presence (
+  id TEXT PRIMARY KEY, ts REAL NOT NULL, who TEXT NOT NULL, place TEXT NOT NULL, room TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS presence_by_who ON presence(who, ts);
 CREATE TABLE IF NOT EXISTS sensors (id TEXT PRIMARY KEY, created REAL NOT NULL, active INTEGER NOT NULL, data TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS events (id TEXT PRIMARY KEY, ts REAL NOT NULL, kind TEXT NOT NULL, text TEXT NOT NULL, data TEXT);
 CREATE TABLE IF NOT EXISTS spend (ts REAL, kind TEXT, model TEXT, tokens_in INTEGER, tokens_out INTEGER, usd REAL);
@@ -114,6 +121,18 @@ class Store:
         row = self._q("SELECT r.name FROM devices d JOIN rooms r ON r.id = d.room_id WHERE d.type = 'camera' LIMIT 1")
         return row[0]["name"] if row else "Without room"
 
+    def camera_places(self):
+        """The places the cameras stand for: each camera is one place ("Kitchen 1", "Kitchen 2"), named by its room,
+        plus any place a camera has reported sightings from."""
+        names = [self.camera_room()] + [r["room"] for r in self._q(
+            "SELECT DISTINCT room FROM sightings UNION SELECT DISTINCT room FROM presence")]
+        return list(dict.fromkeys(n for n in names if n and n != "Without room"))
+
+    def set_device_status(self, device_type, status):
+        """The status line of every device of one type (the simulated door changes the Contact sensor's card)."""
+        with self.lock, self.db:
+            self.db.execute("UPDATE devices SET status = ?, updated = ? WHERE type = ?", (status, now(), device_type))
+
     def sync_devices(self, devices, source):
         """Refresh device statuses from the platform (get_home_devices); keeps rooms and the card style."""
         with self.lock, self.db:
@@ -140,6 +159,18 @@ class Store:
     def last_seen(self, thing_id):
         obs = self.observations(thing_id, limit=1)
         return obs[-1] if obs else None
+
+    def presence(self, who, since=0.0, until=None):
+        """Sightings of people and pets (who: a list of 'person', 'child', 'dog', 'cat'), oldest first."""
+        marks = ",".join("?" * len(who))
+        return self._q(f"SELECT ts, who, place, room FROM presence WHERE who IN ({marks}) AND ts > ? AND ts <= ? "
+                       "ORDER BY ts", (*who, since, until if until is not None else now() + 1))
+
+    def last_presence(self, who, before):
+        marks = ",".join("?" * len(who))
+        rows = self._q(f"SELECT ts, who, place, room FROM presence WHERE who IN ({marks}) AND ts < ? "
+                       "ORDER BY ts DESC LIMIT 1", (*who, before))
+        return rows[0] if rows else None
 
     def rules(self):
         return [{**json.loads(r["data"]), "id": r["id"], "active": bool(r["active"])}
@@ -173,6 +204,12 @@ class Store:
                            {"when": fmt(last["ts"]), "zone": last["zone_name"], "room": last["room"], "where": last["where"]}})
         events = [{"when": fmt(e["ts"]), "text": e["text"]} for e in self.events(15)]
         return {"now": fmt(now()), "things": things, "recent_events": events[::-1]}
+
+    def find_suggestion(self, sentence):
+        """The suggestion event that proposed this exact sentence, with its ready-made rule, or None."""
+        rows = self._q("SELECT data FROM events WHERE kind = 'suggest' AND json_extract(data, '$.sentence') = ? "
+                       "ORDER BY ts DESC LIMIT 1", (sentence,))
+        return json.loads(rows[0]["data"]) if rows else None
 
     def zones(self):
         return []                       # one camera = one place; zones inside a camera are left to Altice
@@ -218,10 +255,15 @@ class Store:
             if not info:
                 self.db.execute("DELETE FROM fingerprints WHERE thing_id = ?", (thing_id,))
 
-    def add_observation(self, thing_id, zone, where, crop_name):
+    def add_observation(self, thing_id, zone, where, crop_name, room=None):
+        """room: the place of the camera that saw it (each camera is one place); the kit camera's room by default."""
         with self.lock, self.db:
             self.db.execute("INSERT INTO sightings VALUES (?, ?, ?, ?, ?, ?, ?)",
-                            (_id(), now(), thing_id, zone["name"], self.camera_room(), where or "", crop_name))
+                            (_id(), now(), thing_id, zone["name"], room or self.camera_room(), where or "", crop_name))
+
+    def add_presence(self, who, place, room):
+        with self.lock, self.db:
+            self.db.execute("INSERT INTO presence VALUES (?, ?, ?, ?, ?)", (_id(), now(), who, place, room))
 
     def add_event(self, kind, text, **extra):
         e = {"id": _id(), "ts": now(), "kind": kind, "text": text, **extra}
@@ -246,9 +288,15 @@ class Store:
             self.db.execute("UPDATE sensors SET data = ?, active = ? WHERE id = ?", (json.dumps(r), int(bool(active)), rid))
             return {**r, "id": rid, "active": bool(active)}
 
+    def delete_rule(self, rid):
+        """A sensor and the activity it wrote."""
+        with self.lock, self.db:
+            self.db.execute("DELETE FROM sensors WHERE id = ?", (rid,))
+            self.db.execute("DELETE FROM events WHERE json_extract(data, '$.rule_id') = ?", (rid,))
+
     def reset(self):
         """Start again with no things, sightings, sensors or events. The home's devices and the spending stay."""
         with self.lock, self.db:
-            for table in ("sightings", "fingerprints", "things", "sensors", "events"):
+            for table in ("sightings", "presence", "fingerprints", "things", "sensors", "events"):
                 self.db.execute(f"DELETE FROM {table}")
             self.db.execute("DELETE FROM meta WHERE key = 'suggested'")

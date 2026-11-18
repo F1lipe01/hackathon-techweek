@@ -46,6 +46,24 @@ def run(action):
     return out
 
 
+_upstream = None   # one MCP session kept across polls, so each poll is a single request
+
+
+def poll_devices():
+    """READ-ONLY: the home's devices from the MCP tool get_home_devices, through one kept session; None when the
+    session is not live (not logged in, expired, offline). This is the only tool it ever calls."""
+    global _upstream
+    try:
+        from chmcp import Upstream
+        if _upstream is None:
+            _upstream = Upstream()
+        res = _upstream.request("tools/call", {"name": "get_home_devices", "arguments": {}})
+        return json.loads(res["result"]["content"][0]["text"])
+    except (Exception, SystemExit):  # noqa: BLE001 - not logged in or offline: the caller keeps the simulated door
+        _upstream = None
+        return None
+
+
 def devices():
     """Read-only device list: live from the MCP if logged in, else the 16 Nov sample."""
     sample = ROOT / "mcp" / "samples" / "get_home_devices.json"

@@ -5,7 +5,8 @@
 It reads the kit camera through the server, and stays idle while nothing changes: a cheap motion check on a
 small grey picture runs twice a second. Only when something moves does it run the open-source detector (OWLv2)
 on the things the home tracks, the places they live and people. It sends the server what it saw (thing, place,
-time and a small crop of the thing), never the full frame. The rules are evaluated by the server's rules engine.
+time and a small crop of the thing; who is there, a person, a child, a dog or a cat, and where, without any picture of
+them), never the full frame. The rules are evaluated by the server's rules engine.
 """
 import argparse
 import base64
@@ -133,6 +134,12 @@ def place_of(box, places):
     return best[0] if best else "room"
 
 
+def overlaps(a, b, pad=0.15):
+    """Do two boxes touch, the second grown by `pad` of its size on each side (a dog's head over its bowl)?"""
+    w, h = (b[2] - b[0]) * pad, (b[3] - b[1]) * pad
+    return a[0] < b[2] + w and a[2] > b[0] - w and a[1] < b[3] + h and a[3] > b[1] - h
+
+
 def crop_b64(img, box, pad=0.25, size=200):
     w, h = box[2] - box[0], box[3] - box[1]
     x0, y0 = max(0, box[0] - w * pad), max(0, box[1] - h * pad)
@@ -205,7 +212,13 @@ def analyse(img, things, fps, det, emb, args):
         label = f"{t['name']} · yours {sim:.2f}"
         boxes.append({"box": norm_box(img, b), "label": label, "kind": "thing", "score": round(sim or s, 2)})
         out.append({"thing_id": t["id"], "score": round(s, 2), "place": place, "crop_b64": crop_b64(img, b), "note": note})
-    return {"people": len(people), "sightings": out, "boxes": boxes, "profile": profile}
+    # who is there, and where: at a registered thing it touches (the dog at its bowl), else on the surface under it.
+    # No crop: the server keeps who, place and time only.
+    seen_things = [(t["name"], b) for t, s, b, note, sim in sightings]
+    where = lambda box: next((n for n, tb in seen_things if overlaps(box, tb)), None) or place_of(box, places)
+    beings = [{"who": "person", "place": where(b)} for s, b in people[:6]]
+    beings += [{"who": k, "place": where(b)} for k, v in PROFILE.items() for q, s, b in dets if q == v and s >= 0.45]
+    return {"people": len(people), "sightings": out, "boxes": boxes, "profile": profile, "beings": beings}
 
 
 def main():

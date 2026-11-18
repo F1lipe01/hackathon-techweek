@@ -44,7 +44,7 @@ def load_env(keys):
 load_env({"ANTHROPIC_API_KEY", "CAMERA_RTSP_URL"})
 
 import actions  # noqa: E402  (after the environment is loaded)
-from brain import Brain, BudgetExceeded  # noqa: E402
+from brain import BEINGS, Brain, BudgetExceeded, hhmm, place_matches  # noqa: E402
 from kitcam import KitCamera  # noqa: E402
 from store import CROPS, Store  # noqa: E402
 
@@ -76,11 +76,15 @@ def _llm(fn, *args):
         raise HTTPException(502, "No connection to the Claude API")
 
 
-def fire(rule, crop=None, evidence=""):
+def fire(rule, crop=None, evidence="", text=None, **extra):
     result = actions.run(rule["action"])
     store.update_rule(rule["id"], last_fired=time.time(), fired_today=True)
-    return store.add_event("alert", rule["message"], rule_id=rule["id"], title=rule["title"], action=result,
-                           crop=crop, evidence=evidence)
+    return store.add_event("alert", text or rule["message"], rule_id=rule["id"], title=rule["title"], action=result,
+                           crop=crop, evidence=evidence, **extra)
+
+
+def hm(ts):
+    return time.strftime("%H:%M", time.localtime(ts))
 
 
 def roll_day(rule):
@@ -99,15 +103,102 @@ def deadline_passed(rule):
     return (t.tm_hour, t.tm_min) >= (hh, mm)
 
 
+def clock_today(text):
+    """Today at 'HH:MM' (or 'HH:MM:SS'), as a timestamp; None if it is not a time."""
+    try:
+        h, m, sec = ([int(x) for x in str(text).split(":")] + [0, 0])[:3]
+    except ValueError:
+        return None
+    t = time.localtime()
+    return time.mktime((t.tm_year, t.tm_mon, t.tm_mday, h, m, sec, 0, 0, -1))
+
+
+def visits(who, place, since, until=None):
+    """When the camera saw `who` (person, child, dog, cat, or a thing id) at `place`, oldest first. A person
+    includes children. Places match as place_matches() says: 'kitchen' is 'Kitchen 1' and 'Kitchen 2'."""
+    if who in BEINGS:
+        rows = store.presence(["person", "child"] if who == "person" else [who], since, until)
+        return [r for r in rows if place_matches(place, r["room"], r["place"])]
+    return [{"ts": o["ts"], "room": o["room"], "place": o["zone_name"]} for o in store.observations(who, limit=2000)
+            if o["ts"] > since and (until is None or o["ts"] <= until) and place_matches(place, o["room"], o["zone_name"])]
+
+
+def stayed(rows, min_s):
+    """Did one stay (sightings less than 30 s apart) last at least min_s seconds? Any sighting counts when min_s is 0."""
+    if not rows:
+        return False
+    start = prev = rows[0]["ts"]
+    for r in rows:
+        if r["ts"] - prev > 30:
+            start = r["ts"]
+        prev = r["ts"]
+        if prev - start >= float(min_s or 0):
+            return True
+    return False
+
+
+def camera_note():
+    return "" if edge_online() else " The camera service was offline at the deadline, so nothing could be seen."
+
+
+WHO_TEXT = {"dog": "The dog", "cat": "The cat", "child": "A child", "person": "Someone"}
+
+
+def check_deadline(r):
+    """not_by: who has not been at the place by 'by' today (or, with within_s, for that long); nobody_by: no person
+    at the place between 'from' and 'by' today. One alert a day at most (roll_day resets it); a rule written after
+    today's deadline starts tomorrow. Data: the presence table (people, pets) and the sightings (things)."""
+    now_ = time.time()
+    kind, place = r["kind"], r.get("place", "")
+    who = "person" if kind == "nobody_by" else r.get("who", "")
+    if not who:
+        return
+    names = {t["id"]: t["name"] for t in store.things()}
+    subject = WHO_TEXT.get(who) or names.get(who, who)
+    room = any(place_matches(place, n) for n in store.camera_places())
+    at = (f" in the {place}" if room else f" at the {place.lower()}") if place else " at home"
+    if kind == "not_by" and r.get("within_s"):            # a rolling window: "not at the water bowl for 12 hours"
+        start = r.get("armed_at") or r.get("created_at") or now_
+        seen = visits(who, place, since=start)
+        if stayed(seen, r.get("min_s")):
+            store.update_rule(r["id"], armed_at=seen[-1]["ts"])
+        elif now_ - start >= float(r["within_s"]):
+            hours = (now_ - start) / 3600
+            fire(r, evidence=f"{subject} was not seen{at} for " + (f"{hours:.1f} h." if hours >= 1 else
+                                                               f"{int(now_ - start)} s.") + camera_note())
+            store.update_rule(r["id"], armed_at=now_)
+        return
+    roll_day(r)
+    by_ts = clock_today(r.get("by"))
+    if by_ts is None or r.get("fired_today") or r.get("seen_trigger_today") or by_ts <= r.get("created_at", 0):
+        return
+    from_ts = clock_today(r.get("from") or "00:00") if kind == "nobody_by" else clock_today("00:00")
+    seen = visits(who, place, since=from_ts, until=min(now_, by_ts))
+    if stayed(seen, r.get("min_s")):
+        store.update_rule(r["id"], seen_trigger_today=True)
+        store.add_event("ok", f"{r['title']}: {subject.lower()} was seen{at} at {hm(seen[-1]['ts'])}, so no alert today.",
+                        rule_id=r["id"])
+    elif now_ >= by_ts:
+        span = f"between {r.get('from')} and {r['by']}" if kind == "nobody_by" else f"by {r['by']}"
+        fire(r, evidence=(f"Nobody was seen{at} {span}." if kind == "nobody_by" else f"{subject} was not seen{at} {span}.")
+             + camera_note())
+
+
 def deadline_ticker():
-    """Fires 'not_by_deadline' sensors even when the camera sends nothing new."""
+    """Fires the deadline sensors even when the camera sends nothing new: the old 'not_by_deadline' ones (cloud
+    vision) and the local not_by and nobody_by."""
     while True:
         for r in store.active_rules():
-            if r.get("mode") == "not_by_deadline":
-                roll_day(r)
-                if deadline_passed(r) and not r.get("seen_trigger_today") and not r.get("fired_today"):
-                    fire(r, evidence=f"Nothing seen by {r['deadline']}.")
-        time.sleep(30)
+            try:
+                if r.get("mode") == "not_by_deadline":
+                    roll_day(r)
+                    if deadline_passed(r) and not r.get("seen_trigger_today") and not r.get("fired_today"):
+                        fire(r, evidence=f"Nothing seen by {r['deadline']}.")
+                elif r.get("kind") in ("not_by", "nobody_by"):
+                    check_deadline(r)
+            except Exception as e:  # one bad rule must not stop the ticker
+                print("deadline error", r.get("id"), e)
+        time.sleep(3)
 
 
 threading.Thread(target=deadline_ticker, daemon=True).start()
@@ -132,13 +223,46 @@ def edge_status(payload: dict = Body(...)):
     return {"ok": True}
 
 
+def clean_place(text, n=32):
+    return " ".join("".join(ch for ch in str(text or "") if ch.isalnum() or ch in " -").split())[:n]
+
+
+_last_presence = {}
+
+
+def record_presence(payload, camera):
+    """People and pets as sightings with a place, never a picture: the data of not_by, nobody_by and the arrival
+    rules. The edge sends 'beings' (who, and the surface or registered thing each is at); an older edge only sends
+    the number of people and its profile scores, recorded at the camera's place. At most one row every 5 s for the
+    same who and place."""
+    beings = payload.get("beings")
+    if beings is None:
+        beings = ([{"who": "person", "place": "room"}] if int(payload.get("people", 0)) > 0 else []) + \
+                 [{"who": k, "place": "room"} for k, sc in (payload.get("profile") or {}).items()
+                  if k in BEINGS and float(sc or 0) >= 0.45]
+    now_ = time.time()
+    for b in beings[:12]:
+        who = b.get("who")
+        if who not in BEINGS:
+            continue
+        place = clean_place(b.get("place"), 24) or "room"
+        if now_ - _last_presence.get((who, camera, place), 0) < 5:
+            continue
+        _last_presence[(who, camera, place)] = now_
+        store.add_presence(who, place, camera)
+        if who in ("person", "child"):
+            EDGE["last_person"] = now_
+
+
 @app.post("/api/edge/observe")
 def edge_observe(payload: dict = Body(...)):
-    """What the edge saw: thing, place, a small crop of the thing, and how many people. Never the full frame."""
+    """What the edge saw: thing, place, a small crop of the thing, who is there (people, pets) and where. Never the
+    full frame, never a picture of a person. 'camera' names the camera's place (default: the kit camera's room)."""
     now_ = time.time()
     EDGE["updated"], EDGE["ms"] = now_, payload.get("ms")
     if int(payload.get("people", 0)) > 0:
         EDGE["last_person"] = now_
+    camera = clean_place(payload.get("camera")) or store.camera_room()
     known = {t["id"]: t["name"] for t in store.things()}
     last = {t["id"]: t.get("last_seen") for t in store.snapshot()["things"]}
     for sgt in payload.get("sightings", [])[:12]:
@@ -148,7 +272,8 @@ def edge_observe(payload: dict = Body(...)):
         place = "".join(ch for ch in str(sgt.get("place", "room")).lower() if ch.isalpha() or ch == " ")[:24] or "room"
         zone = {"id": "place-" + place, "name": place}
         prev = last.get(tid)
-        moved = not prev or prev.get("zone_id") != zone["id"] or now_ - prev["ts"] > 600
+        moved = (not prev or prev.get("zone_id") != zone["id"] or prev.get("room") != camera
+                 or now_ - prev["ts"] > 600)
         crop = None
         if sgt.get("crop_b64") and (moved or now_ - _last_crop.get(tid, 0) > 60):
             crop = f"{time.strftime('%Y%m%d-%H%M%S')}-{tid}.jpg"
@@ -156,9 +281,12 @@ def edge_observe(payload: dict = Body(...)):
             _last_crop[tid] = now_
         elif prev:
             crop = prev.get("crop")
-        store.add_observation(tid, zone, str(sgt.get("note", ""))[:60], crop)
+        store.add_observation(tid, zone, str(sgt.get("note", ""))[:60], crop, room=camera)
         if moved:
-            store.add_event("seen", f"{known[tid]} seen " + ("in the room." if place == "room" else f"on the {place}."), thing_id=tid, crop=crop)
+            cam = "" if camera == store.camera_room() else f" ({camera})"
+            store.add_event("seen", f"{known[tid]} seen " + ("in the room" if place == "room" else f"on the {place}")
+                            + f"{cam}.", thing_id=tid, crop=crop)
+    record_presence(payload, camera)
     if "boxes" in payload:
         EDGE["boxes"], EDGE["boxes_at"] = payload["boxes"][:30], now_
     for kind, score in (payload.get("profile") or {}).items():
@@ -237,28 +365,71 @@ def edge_boxes():
 
 
 # ---------------------------------------------------------------------- suggestions from the home's profile
-PROFILE_SUGGESTIONS = {
-    "child": ("Children at home", "Tell me if the children are doing something wrong, something that could hurt them, or acting strangely."),
-    "dog": ("A dog at home", "Tell me if the dog has not drunk water by 6 pm."),
-    "cat": ("A cat at home", "Tell me if the cat has not drunk water by 6 pm."),
-}
+PROFILE_KINDS = ("child", "dog", "cat", "older_alone")
+
+
+def profile_suggestions(kind):
+    """The sensors to suggest for who lives here, as (title, sentence, rule). Each rule is ready-made and of a kind the
+    rules engine evaluates locally on the camera's data, so it really fires. None sends a picture anywhere, and the
+    child's rule carries no photo at all. A pet's bowl is a registered thing when the home has one, else the place of
+    the camera (each camera is one place)."""
+    cam, things = store.camera_room(), store.things()
+
+    def spot(key):
+        name = next((t["name"] for t in things if place_matches(key, t["name"])), None)
+        return (name, f"the {name.lower()}") if name else (cam, f"the {key} ({cam} camera)")
+
+    base = {"engine": "local", "action": "notify", "thing_id": "", "minutes": 0, "cooldown_s": 300, "lang": "en",
+            "min_s": 0}
+    if kind in ("dog", "cat"):
+        (food, food_txt), (water, water_txt) = spot("food bowl"), spot("water bowl")
+        return [(f"The {kind}'s food", f"Tell me if the {kind} has not been at {food_txt} by 20:00.",
+                 {**base, "title": f"The {kind}'s food by 20:00", "kind": "not_by", "who": kind, "place": food,
+                  "by": "20:00", "message": f"The {kind} has not been at {food_txt} today."}),
+                (f"The {kind}'s water", f"Tell me if the {kind} has not been at {water_txt} for 12 hours.",
+                 {**base, "title": f"The {kind}'s water, 12 h", "kind": "not_by", "who": kind, "place": water,
+                  "within_s": 12 * 3600, "message": f"The {kind} has not been at {water_txt} for 12 hours."})]
+    if kind == "older_alone":
+        kitchen = next((p for p in store.camera_places() if place_matches("kitchen", p)), cam)
+        return [("Someone living alone", f"Tell me if nobody has been in the {kitchen} between 06:00 and 12:00.",
+                 {**base, "title": f"Nobody in the {kitchen} by 12:00", "kind": "nobody_by", "place": kitchen,
+                  "from": "06:00", "by": "12:00", "message": f"Nobody has been in the {kitchen} this morning."})]
+    if kind == "child":
+        return [("Children at home", "Tell me when a child arrives home.",
+                 {**base, "title": "A child arrives home", "kind": "someone_arrives", "who": "child", "minutes": 30,
+                  "message": "A child arrived home."})]
+    return []
 
 
 _profile_hits = {}
 
 
-def suggest_for_profile(kind, score):
-    """Suggest a sensor only after the camera has seen a child or a pet clearly, in 3 analyses within 10 minutes."""
-    if kind not in PROFILE_SUGGESTIONS or float(score) < 0.45:
-        return
-    now_ = time.time()
-    hits = [t for t in _profile_hits.get(kind, []) if now_ - t < 600] + [now_]
-    _profile_hits[kind] = hits
-    if kind in store.suggested() or len(hits) < 3:
-        return
+def suggest_for_profile(kind, score, declared=False):
+    """Suggest sensors after the camera has seen a child or a pet clearly, in 3 analyses within 10 minutes, or at once
+    when the family declares who lives here. An older person living alone is only ever declared, never guessed."""
+    if kind not in PROFILE_KINDS or (kind == "older_alone" and not declared):
+        return []
+    if not declared:
+        if float(score or 0) < 0.45:
+            return []
+        now_ = time.time()
+        _profile_hits[kind] = [t for t in _profile_hits.get(kind, []) if now_ - t < 600] + [now_]
+        if len(_profile_hits[kind]) < 3:
+            return []
+    if kind in store.suggested():
+        return []
     store.mark_suggested(kind)
-    title, sentence = PROFILE_SUGGESTIONS[kind]
-    store.add_event("suggest", f"{title}. Suggested sensor: “{sentence}”", title=title, sentence=sentence)
+    return [store.add_event("suggest", f"{title}. Suggested sensor: “{sentence}”", title=title, sentence=sentence,
+                            rule=rule, profile=kind) for title, sentence, rule in profile_suggestions(kind)]
+
+
+@app.post("/api/profile")
+def declare_profile(payload: dict = Body(...)):
+    """The family says who lives here ('older_alone', 'child', 'dog', 'cat'): the matching sensors are suggested."""
+    kind = str(payload.get("kind", ""))
+    if kind not in PROFILE_KINDS:
+        raise HTTPException(400, f"kind is one of {', '.join(PROFILE_KINDS)}")
+    return {"suggested": suggest_for_profile(kind, 1.0, declared=True)}
 
 
 def _stay_start(thing_id, place):
@@ -273,16 +444,155 @@ def _stay_start(thing_id, place):
     return start
 
 
+# ---------------------------------------------------------------------- the front door (the kit's Contact sensor)
+# The door is the home's Contact sensor ('sensorState' 'alarm' means open). When the MCP session is live, the server
+# polls it every 4 s with the read-only tool get_home_devices; when it is not, the page's "Simulate: door opens" button
+# drives it (POST /api/sim/door). Both feed door_changed(), which starts the leave_without checks.
+DOOR = {"open": None, "source": "", "changed": 0.0, "live": False}
+PENDING = {}                    # leave_without rule id -> {"opened": ts, "due": ts}
+_door_lock = threading.Lock()
+POLL_S = float(os.environ.get("TT_DOOR_POLL_S", "4"))
+
+
+def door_changed(is_open, source):
+    now_ = time.time()
+    with _door_lock:
+        prev = DOOR["open"]
+        if prev is is_open:
+            return
+        DOOR.update(open=is_open, source=source, changed=now_)
+    if source == "live" and prev is None:   # the first reading is where the door is, not a change
+        return
+    sim = source == "sim"
+    if sim:
+        store.set_device_status("contactSensor", "Open" if is_open else "Closed")
+    store.add_event("door", ("Simulated: the door " if sim else "The door ") + ("opened" if is_open else "closed")
+                    + " (Contact sensor).", sim=sim, open=is_open)
+    if not is_open:
+        return
+    for r in store.active_rules():          # closed (or unknown, for the simulation) -> open
+        if (r.get("kind") == "leave_without" and r["id"] not in PENDING
+                and now_ - r.get("last_fired", 0) >= r.get("cooldown_s", 300)):
+            PENDING[r["id"]] = {"opened": now_, "due": now_ + float(r.get("grace_s") or 60)}
+
+
+@app.post("/api/sim/door")
+def sim_door(payload: dict = Body(...)):
+    """The simulated front door, for when the MCP session is not live: {"open": true} or {"open": false}."""
+    door_changed(bool(payload.get("open")), "sim")
+    return dict(DOOR)
+
+
+def _caps(d):
+    """A device's capabilities by type (the MCP sends them with an empty name and the type as the key)."""
+    return {(c.get("type") or c.get("name")): c.get("value") for c in d.get("capabilities", []) if isinstance(c, dict)}
+
+
+def device_poller():
+    """When the MCP session is live: every POLL_S seconds, the device statuses through the READ-ONLY get_home_devices
+    (into the local copy of the home) and the door's changes. When it is not live: try again every 60 s, quietly."""
+    while True:
+        data = actions.poll_devices()
+        DOOR["live"] = data is not None
+        if data is None:
+            time.sleep(60)
+            continue
+        devs = data.get("devices", [])
+        store.sync_devices([{"id": d["id"], "status": _status(d)} for d in devs if d.get("id")],
+                           f"Synced from the Altice platform at {time.strftime('%H:%M')}")
+        door = next((d for d in devs if d.get("type") == "contactSensor"), None)
+        if door and _status(door) != "Disconnected":
+            door_changed(_caps(door).get("sensorState") == "alarm", "live")
+        time.sleep(POLL_S)
+
+
+def is_exit(rule, o):
+    """Was this sighting at the way out? A camera place (or surface) named entrance, hall, door, entrada, porta..."""
+    return place_matches(rule.get("exit_place") or "entrance", o["room"], o["zone_name"])
+
+
+def last_place_text(o, lang):
+    day = time.strftime("%Y-%m-%d", time.localtime(o["ts"]))
+    today, yday = time.strftime("%Y-%m-%d"), time.strftime("%Y-%m-%d", time.localtime(time.time() - 86400))
+    if lang == "pt":
+        when = {today: "hoje", yday: "ontem"}.get(day, time.strftime("a %d/%m", time.localtime(o["ts"])))
+        where = {**Brain.PLACE_PT, "room": "na divisão"}.get(o["zone_name"], f"em {o['zone_name']}")
+        return f"Última deteção: {where} ({o['room']}), {when} às {hm(o['ts'])}."
+    when = {today: "today", yday: "yesterday"}.get(day, time.strftime("on %d %b", time.localtime(o["ts"])))
+    where = "in the room" if o["zone_name"] == "room" else f"on the {o['zone_name']}"
+    return f"Last seen {where} ({o['room']}), {when} at {hm(o['ts'])}."
+
+
+def check_leave_without(r, p):
+    """The door opened grace_s ago: alert if the thing is still at home, with its photo and its last place.
+    "At home" means its newest sighting is anywhere but the way out; it need not be recent, because the last known
+    place stays home until a camera sees the thing going out. "Going out" means seen at an entrance camera (a place
+    named entrance, hall, door, entrada...) from grace_s before the door opened until now.
+    Limits of this simple version, on purpose:
+    - the contact sensor says the door opened, not who opened it nor which way: someone arriving also counts;
+    - without a camera at the entrance nothing is ever seen going out, so every opening while the thing is at home
+      alerts, also when the user did take it;
+    - a thing taken out unseen still counts as at home until a camera sees it again;
+    - a thing the camera has never seen gives no alert (a line in the activity instead): there is no last place."""
+    tid = r.get("thing_id")
+    thing = next((t for t in store.things() if t["id"] == tid), None)
+    last = store.last_seen(tid) if thing else None
+    if not last:
+        what = thing["name"] if thing else "the thing"
+        store.add_event("info", f"{r['title']}: the door opened, but the camera has never seen {what}, so there is no "
+                        "last place to check.", rule_id=r["id"])
+        return
+    grace = float(r.get("grace_s") or 60)
+    if is_exit(r, last) and last["ts"] >= p["opened"] - grace:
+        store.add_event("ok", f"{thing['name']} was seen at the {last['room']} as the door opened: it went out.",
+                        rule_id=r["id"], thing_id=tid, crop=last.get("crop"))
+        return
+    fire(r, crop=last.get("crop"), text=f"{r['message']} {last_place_text(last, r.get('lang'))}",
+         evidence=f"Door opened at {hm(p['opened'])}; not seen going out.", thing_id=tid,
+         place=last["zone_name"], room=last["room"], seen_at=last["ts"])
+
+
 def rules_engine():
-    """Evaluates the local rules every 2 s against the memory and the edge's presence signals."""
+    """Evaluates the local rules every 2 s against the memory, the door and the edge's presence signals."""
     while True:
         now_ = time.time()
         for r in store.active_rules():
-            if r.get("engine") != "local" or now_ - r.get("last_fired", 0) < r.get("cooldown_s", 300):
+            if r.get("engine") != "local":
+                continue
+            if r.get("kind") == "leave_without":        # started by the door, not by the clock
+                p = PENDING.get(r["id"])
+                if p and now_ >= p["due"]:
+                    PENDING.pop(r["id"], None)
+                    try:
+                        check_leave_without(r, p)
+                    except Exception as e:
+                        print("rule error", r.get("id"), e)
+                continue
+            if now_ - r.get("last_fired", 0) < r.get("cooldown_s", 300):
                 continue
             kind, mins = r.get("kind"), float(r.get("minutes") or 0)
             try:
-                if kind == "left_for":
+                if kind == "someone_arrives" and r.get("who") in ("child", "dog", "cat"):
+                    # "a child arrives home": seen after none was seen for `minutes`. No photo, ever.
+                    who, gap = r["who"], max(mins or 30, 5) * 60
+                    rows = store.presence([who], since=r.get("seen_at") or r.get("created_at", 0))
+                    if rows:
+                        store.update_rule(r["id"], seen_at=rows[-1]["ts"])
+                    for row in rows:
+                        prev = store.last_presence([who], before=row["ts"])
+                        if not prev or row["ts"] - prev["ts"] > gap:
+                            fire(r, evidence=f"Seen at the {row['room']} at {hm(row['ts'])}; "
+                                             f"none seen in the {int(gap // 60)} min before.")
+                            break
+                elif kind == "seen_in" and r.get("who"):
+                    who = r["who"]
+                    rows = [x for x in store.presence(["person", "child"] if who == "person" else [who],
+                                                      since=max(now_ - 10, r.get("seen_at", 0)))
+                            if place_matches(r.get("place"), x["room"], x["place"])]
+                    if rows:
+                        store.update_rule(r["id"], seen_at=rows[-1]["ts"])
+                        fire(r, evidence=f"Seen at the {rows[-1]['room']} ({rows[-1]['place']}).")
+                elif kind == "left_for":
                     last = store.last_seen(r.get("thing_id"))
                     place = r.get("place") or (last or {}).get("zone_name")
                     if last and last["zone_name"] == place and now_ - last["ts"] < 120:
@@ -312,6 +622,7 @@ def rules_engine():
 
 
 threading.Thread(target=rules_engine, daemon=True).start()
+threading.Thread(target=device_poller, daemon=True).start()
 
 # ---------------------------------------------------------------------- API
 @app.get("/api/state")
@@ -321,6 +632,7 @@ def state():
                      "kit_camera": bool(os.environ.get("CAMERA_RTSP_URL"))}
     s["edge"] = {k: v for k, v in EDGE.items() if k != "boxes"} | {"online": edge_online()}
     s["enrol"] = dict(ENROL) or None
+    s["door"] = dict(DOOR)
     return s
 
 
@@ -332,7 +644,7 @@ def devices():
 
 def _status(d):
     """A device's status line, written as the Altice app writes it."""
-    caps = {c.get("name"): c.get("value") for c in d.get("capabilities", []) if isinstance(c, dict)}
+    caps = _caps(d)
     online = str(d.get("operStatus", "")).lower() not in ("offline", "disconnected")
     if not online:
         return "Disconnected"
@@ -344,18 +656,6 @@ def _status(d):
     if t == "temperatureSensor":
         return f"{caps.get('temperatureValue')} °C | {caps.get('humidityValue')} %"
     return "On"
-
-
-def sync_from_platform():
-    """When the MCP session is live, refresh the device statuses in the local database (read-only tool)."""
-    res = actions.devices()
-    if res.get("source") == "live":
-        devs = res["data"].get("devices", [])
-        store.sync_devices([{"id": d["id"], "status": _status(d)} for d in devs],
-                           f"Synced from the Altice platform at {time.strftime('%H:%M')}")
-
-
-threading.Thread(target=sync_from_platform, daemon=True).start()
 
 
 @app.get("/api/things/{tid}/sightings")
@@ -384,7 +684,7 @@ def add_thing(payload: dict = Body(...)):
     if not name:
         raise HTTPException(400, "name is required")
     tid = store.add_thing(name, str(payload.get("description", ""))[:120])
-    store.add_event("thing", f"Now tracking: {name}.")
+    store.add_event("thing", f"Now tracking: {name}.", thing_id=tid)
     return {"id": tid}
 
 
@@ -497,6 +797,21 @@ def assistant(payload: dict = Body(...)):
     return {"kind": "answer", **ask({"question": text})}
 
 
+def rule_note(r):
+    """Why a new sensor cannot fire yet, in one sentence for the activity, or ''."""
+    kind, things = r.get("kind"), store.things()
+    if kind in ("leave_without", "left_for") or (kind == "seen_in" and not r.get("who")):
+        if not any(t["id"] == r.get("thing_id") for t in things):
+            return "No registered thing matches it yet: add the thing in the Things tab."
+    if kind in ("not_by", "nobody_by"):
+        if kind == "not_by" and not r.get("by") and not r.get("within_s"):
+            return "It gives no time: say “by 20:00” or “in 12 hours”."
+        place = r.get("place")
+        if place and not any(place_matches(place, n) for n in store.camera_places() + [t["name"] for t in things]):
+            return f"No camera or registered thing is called “{place}” yet: register it as a thing, or name a camera after it."
+    return ""
+
+
 @app.post("/api/rules")
 def add_rule(payload: dict = Body(...)):
     """A sentence becomes a local rule: the language model (or, with AI off, a template) compiles it once;
@@ -504,19 +819,46 @@ def add_rule(payload: dict = Body(...)):
     sentence = str(payload.get("sentence", "")).strip()[:300]
     if not sentence:
         raise HTTPException(400, "sentence is required")
-    compiled = _llm(brain.compile_local, sentence, store.things())
-    compiled.update(engine="local", zone_id="", cooldown_s=max(60, min(3600, int(compiled.get("cooldown_s", 300)))))
+    suggestion = store.find_suggestion(sentence)    # a suggested sensor comes with its rule ready-made
+    compiled = (dict(suggestion["rule"]) if suggestion and suggestion.get("rule")
+                else _llm(brain.compile_local, sentence, store.things(), store.camera_places()))
+    compiled.update(engine="local", zone_id="", created_at=time.time(),
+                    cooldown_s=max(60, min(3600, int(compiled.get("cooldown_s", 300)))))
+    if compiled.get("kind") == "leave_without":
+        compiled["grace_s"] = int(compiled.get("grace_s") or 60)
     rule = store.add_rule(sentence, compiled)
-    store.add_event("sensor", f"New sensor: {rule['title']}.", rule_id=rule["id"])
-    return rule
+    note = rule_note(rule)
+    store.add_event("sensor", f"New sensor: {rule['title']}." + (f" {note}" if note else ""), rule_id=rule["id"])
+    return {**rule, "note": note}
+
+
+TUNABLE = {"grace_s": float, "min_s": float, "within_s": float, "minutes": float, "cooldown_s": int,
+           "by": hhmm, "from": hhmm, "place": str, "exit_place": str}
 
 
 @app.patch("/api/rules/{rid}")
 def patch_rule(rid: str, payload: dict = Body(...)):
-    r = store.update_rule(rid, active=bool(payload.get("active")))
+    """Pause or resume a sensor ({"active": false}), or tune it: grace_s, by, from, within_s, min_s, place..."""
+    fields = {"active": bool(payload["active"])} if "active" in payload else {}
+    for k, conv in TUNABLE.items():
+        if k in payload:
+            v = conv(str(payload[k]))[:40] if conv in (hhmm, str) else conv(payload[k])
+            if conv is hhmm and not v:
+                raise HTTPException(400, f"{k} must be a time, HH:MM")
+            fields[k] = v
+    if {"by", "from", "within_s"} & set(fields):     # a new deadline is checked afresh
+        fields.update(fired_today=False, seen_trigger_today=False)
+    r = store.update_rule(rid, **fields)
     if not r:
         raise HTTPException(404, "no such sensor")
     return r
+
+
+@app.delete("/api/rules/{rid}")
+def delete_rule(rid: str):
+    store.delete_rule(rid)
+    PENDING.pop(rid, None)
+    return {"ok": True}
 
 
 @app.post("/api/reset")

@@ -7,9 +7,18 @@ Decided 18 Nov 2026: **logo Trail**, **typeface Switzer**, **colour Altice Labs*
 | Options sheet (logo, typeface, colour, live preview) | [`options/brand-options.html`](options/brand-options.html) |
 | Animated logo, mark ⇄ wordmark (source, plays in a browser, has controls) | [`animation/logo-reveal.html`](animation/logo-reveal.html) |
 | Animated logo as 4K video (3840 × 2160): 60 fps for slides, plus a 120 fps version of the main one for 120 Hz screens; a still of the last frame for each | [`animation/out/`](animation/out/) |
-| Earlier logo exports (Trail, teal) | [`../logo/`](../logo/) |
+| **Logo files**: lockup, lockup with "by Altice Labs", and the mark alone; `light` for white grounds, `dark` for `#003399` or black. SVG (text converted to outlines, works without the font) and transparent PNG | [`logo/`](logo/) |
 
-Re-render the videos after changing the animation: `node animation/render.mjs` (Node 22+, Chrome, ffmpeg). Pick variants with `mode:theme`, for example `node animation/render.mjs expand:labs-deep collapse:labs`. Themes: `labs` (default), `labs-deep`, `meo-blue`, `meo-light`, `meo-navy`, `app`.
+Re-render the videos after changing the animation: `node animation/render.mjs` (Node 22+, Chrome, ffmpeg). Pick variants with `mode:theme`, for example `node animation/render.mjs expand:labs-deep collapse:labs`. Themes: `labs` (default), `labs-deep`, `meo-blue`, `meo-light`, `meo-navy`, `app`. `FPS=120` and `SCALE=2` (4K, the default) set the frame rate and size.
+
+Rebuild the logo files: `python logo/build_logos.py SWITZER_SEMIBOLD.ttf SWITZER_MEDIUM.ttf` (fonttools and uharfbuzz; the fonts come from fontshare.com and are not stored here), then `logo/render_png.sh`.
+
+## "by Altice Labs"
+
+Altice Labs does not put "by Altice Labs" in its own product logos. NOSSIS Genius, for example, is the name and a symbol, and the company link appears in sentences such as "Telco Operations powered by NOSSIS One". MEO names sub-brands with a prefix (MEO Energia, MEO Empresas). So:
+
+- **Use `track-things-*.svg`** (no endorsement) in the app, on icons and anywhere small.
+- **Use `track-things-by-altice-labs-*.svg`** on the title and closing slides of the pitch. It shows the jury where the product would live. It is our own text in our typeface, not Altice's logo artwork, and it is a concept: Altice Labs has not endorsed it.
 
 ## Colours and where each one comes from
 
@@ -36,4 +45,4 @@ The app's grey `#73727C` and MEO's grey `#747380` are almost identical: the app 
 
 ## Typeface
 
-Switzer (Indian Type Foundry, via Fontshare), free for commercial use. Not available in Google Slides: install it on the presenting laptop, or embed it in the PowerPoint file. The 2-page report keeps the organisers' template fonts (Lato headings, Arial text).
+Switzer by the Indian Type Foundry (ITF), via Fontshare, free for commercial use. Its licence asks us to credit ITF in design and production credits: put "Typeface: Switzer, Indian Type Foundry" in the video credits and the deck's last slide. Not available in Google Slides: install it on the presenting laptop, or embed it in the PowerPoint file. The 2-page report keeps the organisers' template fonts (Lato headings, Arial text).

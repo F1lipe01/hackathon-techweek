@@ -1,0 +1,5 @@
+node_modules/
+out/
+public/footage/
+public/real/*.mp4
+public/real/fonts/

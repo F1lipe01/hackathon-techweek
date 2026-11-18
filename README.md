@@ -42,6 +42,9 @@ No extensions (late = possible disqualification), pitch time cut strictly. Full 
 | [docs/10-mcp-in-practice.md](docs/10-mcp-in-practice.md) | **The MCP tested live:** the real 18 tools, write payloads, test results, safety findings, every device's capabilities |
 | [docs/11-project-baseline.md](docs/11-project-baseline.md) | **Start here for the project discussion:** verified facts, what works and what doesn't, ideas against the facts, decisions to make |
 | [docs/12-market-research.md](docs/12-market-research.md) | **Evidence for choosing the use case:** sourced figures for Portugal, France and the EU (damp, cold homes, older people living alone, fires, burglary, adoption), kit fit, overlap with Altice, scored candidates, pitch-ready figures in Portuguese |
+| [docs/14-architecture.md](docs/14-architecture.md) | **ThingTracker architecture:** components, flows, the sensor language, data model, privacy, measured performance and cost, decisions with alternatives, open questions. Diagram in [docs/architecture/](docs/architecture/) |
+| [docs/15-integration-spec.md](docs/15-integration-spec.md) | **Integration with the Altice platform:** the four Things MCP tools, the edge ↔ platform channel, enrolment, scenarios, what we need from Altice |
+| [docs/16-business-case.md](docs/16-business-case.md) | **Business case:** market funnel, pricing, unit economics, operator revenue, risks; model in `16-business-case-model.csv` |
 | [deliverables/use-case-report/](deliverables/use-case-report/) | **Top 5 use cases** as a PDF report: problem, what we have, what to build, why, pitch and Q&A for each |
 | [deliverables/](deliverables/) | Official templates and our drafts |
 | [mcp/](mcp/) | MCP client config templates from the official guide |

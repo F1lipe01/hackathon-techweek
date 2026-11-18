@@ -503,7 +503,7 @@ Criteria and weights from Articles 16 and 18 of the participation rules (`source
 | Facilidade de adoção do Projeto por parte dos Desafiadores (ease of adoption by the challenger) | 25 % | 20 % | A fifth tab in the existing app; actions go through the MCP Altice already has; rules are saved as platform scenarios; 22 of the 32 cases use kit devices only, and the 9 outdoor ones add an outdoor camera | Architecture (`docs/14-architecture.md`, §3 and D5); integration spec (`docs/15-integration-spec.md`); the app replica in the prototype |
 | Viabilidade de implementação e gestão futura (sustentabilidade) do Projeto (feasibility and sustainability) | 25 % | 20 % | Open-source models free for commercial use; vision only on motion, on the router or on Altice servers; the language model is called only to create a rule or answer a question; about €0.43 per home per month on the language model and €0.49 on vision (the report's estimate); 7 cases work today and 20 are small extensions | Report ("Ferramentas de IA"); architecture (§8); business case (`docs/16-business-case.md`) |
 | Possibilidade de replicação em outros territórios e contextos (replication in other territories and contexts) | — | 20 % | A platform service for any operator; no data is specific to Portugal; the language model speaks the user's language; France is the second market analysed; the rules for outdoor cameras differ by country and would have to be reviewed in each | Business case (France section); architecture (requirement N5) |
-| Apresentação da solução (presentation) | 25 % | 10 % | Live demo with the kit camera and the book; video with the knife-and-cat case (illustration); cases told in one sentence; eight cases chosen for the pitch (section 4) | Video; prototype; pitch |
+| Apresentação da solução (presentation) | 25 % | 10 % | Live demo with the kit camera and the book; video with the knife-and-cat case (illustration); cases told in one sentence; five cases for the pitch and the video, one of them live (section 5) | Video; prototype; pitch |
 | Documentação (Entregáveis) da solução (documentation) | — | 10 % | Two-page report; architecture, integration spec, business case and use cases, in Portuguese and English | `deliverables/`, `docs/pt/`, `docs/` |
 
 ### 3.2 Matrix
@@ -555,7 +555,7 @@ The team's self-assessment, for discussion. Scale per criterion:
 
 ## 4. The 8 cases for the pitch
 
-The eight strongest cases for the slides and the video: safety first, four indoors and four outdoors. Only C2 and V1 work in the prototype today; the others are shown as concepts, and the video should say so, for example with a "conceito" caption. The hooks are in Portuguese, as they will appear on the slides, with an English gloss.
+The eight strongest cases for the slides and the video: safety first, four indoors and four outdoors. Only C2 and V1 work in the prototype today; the others are shown as concepts, and the video should say so, for example with a "conceito" caption. Section 5 narrows the choice to 10 finalists and the 5 for the pitch; the scenes in this section stay as a reserve. The hooks are in Portuguese, as they will appear on the slides, with an English gloss.
 
 | # | Hook | Gloss | Case | Where |
 |---|---|---|---|---|
@@ -624,7 +624,162 @@ The eight strongest cases for the slides and the video: safety first, four indoo
 - Devices: door contact sensor, camera and light (kit).
 - Status: works in the prototype today; it is the video's real example.
 
-## 5. Value proposition
+## 5. The 10 finalists and the 5 for the pitch
+
+The team wants at most 10 strong cases and, of those, 5 for the pitch and the video. The choice starts from the catalogue (section 1) and from the case the report submitted on 18 November uses: the child in danger in the kitchen, with the rule "avisa-me se a criança estiver em perigo" (tell me if the child is in danger), where the language model defines the danger (a detergent, a knife, the stove). In the catalogue this case combines S2 and S5.
+
+### 5.1 How the scores work
+
+Each criterion runs from 1 to 5:
+- Impact: what the family gains or avoids.
+- Novelty: how surprising it is; using the camera as a source of information counts in favour.
+- Feasibility: with the kit and at most one extra device; 5 if it already works in the prototype.
+- Demo: 5 if it works live with the kit; 4 if it films easily; 3 if it needs staging or waiting time.
+- Criteria: fit with the criteria of Articles 16 and 18 of the rules (fit, adoption, feasibility, replication).
+- Privacy: the risk, from 1 (low) to 5 (high). It enters the total inverted, as 6 minus the risk.
+
+The maximum total is 30. It is the team's self-assessment, for discussion.
+
+### 5.2 The 10 finalists
+
+Chosen to cover the child at risk, pets, the older person, outdoors and security, lost and found, and two cases that show the camera as a source of information (C3 and V2).
+
+| # | Case | Catalogue | Impact | Novelty | Feasibility | Demo | Criteria | Privacy (risk) | Total |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | Leaving without the book, the wallet or the keys | V1 | 3 | 4 | 5 | 5 | 5 | 1 | 27 |
+| 2 | Knife on the counter with the cat nearby | S1 | 4 | 4 | 4 | 4 | 5 | 1 | 26 |
+| 3 | Nobody in the kitchen by midday | C2 | 5 | 4 | 5 | 3 | 5 | 2 | 26 |
+| 4 | The pill box has not moved | C3 | 4 | 5 | 4 | 4 | 4 | 1 | 26 |
+| 5 | "Where is the wallet?" | V2 | 3 | 4 | 5 | 5 | 5 | 2 | 26 |
+| 6 | The child in danger: detergent, knife, stove | S2 + S5 | 5 | 5 | 3 | 4 | 5 | 4 | 24 |
+| 7 | The hob on and nobody in the kitchen | S3 | 5 | 3 | 4 | 3 | 5 | 2 | 24 |
+| 8 | The cat has not been to its bowl | C1 | 3 | 3 | 5 | 3 | 4 | 1 | 23 |
+| 9 | Parcel at the door | E5 | 2 | 3 | 3 | 4 | 4 | 3 | 19 |
+| 10 | A person in the garden at night | E2 | 4 | 2 | 3 | 4 | 3 | 4 | 18 |
+
+### 5.3 The reason for each score
+
+#### V1. Leaving without the book, the wallet or the keys – 27
+
+- Impact 3: saves an everyday slip, but prevents no danger.
+- Novelty 4: the camera remembers the object and the door sensor closes the loop.
+- Feasibility 5: works today, with the kit alone.
+- Demo 5: live, with the yellow book, the door and the kit light.
+- Criteria 5: shows the MCP reading a sensor and acting; it is the deliverables' real example.
+- Privacy (risk) 1: follows an object; nobody is identified.
+
+#### S1. Knife on the counter with the cat nearby – 26
+
+- Impact 4: keeps a pet from cutting itself; it is the mentors' own example.
+- Novelty 4: the camera relates two things, the knife and the cat, not just motion.
+- Feasibility 4: kit only; the "knife" query and the "near" rule are missing.
+- Demo 4: films well; live it would need a cat on site.
+- Criteria 5: safety asked for by the mentors, the camera as a source of information, kit only.
+- Privacy (risk) 1: no person in the alert's image.
+
+#### C2. Nobody in the kitchen by midday – 26
+
+- Impact 5: warns someone whose father or mother lives alone hours earlier; 517,146 people aged 65+ lived alone in 2021.
+- Novelty 4: the home's routine becomes a signal, with no camera in the bedroom and nobody identified.
+- Feasibility 5: works today, with the kit alone.
+- Demo 3: an absence is shown with a timeline, not live.
+- Criteria 5: fits Altice's "aging in place" line and replicates in any country.
+- Privacy (risk) 2: detects "a person", with no photos; needs the person's own agreement.
+
+#### C3. The pill box has not moved – 26
+
+- Impact 4: a forgotten medicine can have serious consequences.
+- Novelty 5: the camera turns an object that did not move into information; the clearest example of the idea.
+- Feasibility 4: kit only; the "has not moved" rule is missing.
+- Demo 4: staged on a table with the kit camera; registering the box already works.
+- Criteria 4: care and aging in place; moving the box does not prove the dose was taken.
+- Privacy (risk) 1: follows an object.
+
+#### V2. "Where is the wallet?" – 26
+
+- Impact 3: saves time every day.
+- Novelty 4: the answer brings the place, the time and the photo: the camera as the home's memory.
+- Feasibility 5: works today.
+- Demo 5: live, straight after V1.
+- Criteria 5: it is the core of ThingTracker and uses the language model beyond commands.
+- Privacy (risk) 2: keeps 30 days of object sightings, which reveal routines.
+
+#### S2 + S5. The child in danger: detergent, knife, stove – 24
+
+- Impact 5: detergents, knives and the stove are real dangers for a small child.
+- Novelty 5: a vague sentence becomes several concrete rules, written by the language model.
+- Feasibility 3: kit only; "near" is a small extension, but "in the hand" or "in the mouth" needs a pose model (future); a pod is small at a distance.
+- Demo 4: filmed staged or illustrated; filming a real child needs the parents' agreement.
+- Criteria 5: it is the submitted report's case: safety, perception and action in one story.
+- Privacy (risk) 4: stores a child's visual fingerprint and sends the child's photo in the alert; only with the parents' consent.
+
+#### S3. The hob on and nobody in the kitchen – 24
+
+- Impact 5: a forgotten stove can start a fire.
+- Novelty 3: a forgotten-stove alert is not new; what is new is the camera knowing the kitchen is empty.
+- Feasibility 4: the kit plug serves countertop appliances; a connected hob would be the only extra device.
+- Demo 3: needs an appliance on and 15 minutes of waiting, sped up in the video.
+- Criteria 5: shows a real MCP action: switching the plug off, the only write already tested.
+- Privacy (risk) 2: detects "a person", with no photos.
+
+#### C1. The cat has not been to its bowl – 23
+
+- Impact 3: a pet that stops eating or drinking may be ill, and the alert comes the same day.
+- Novelty 3: the automatic proposal surprises; the rest is simple.
+- Feasibility 5: works today, including the proposal when the camera sees the cat.
+- Demo 3: needs a cat and hours of waiting; mostly the proposal on the phone is shown.
+- Criteria 4: asked for by the mentors; kit only.
+- Privacy (risk) 1: no person.
+
+#### E5. Parcel at the door – 19
+
+- Impact 2: convenience: a parcel is not forgotten at the door.
+- Novelty 3: useful, but not very surprising.
+- Feasibility 3: needs the outdoor camera, the only extra device; the "appears" rule is missing.
+- Demo 4: staged with a box and a doormat, and the kit light turns blue.
+- Criteria 4: asked for by the mentors and mentioned in the report.
+- Privacy (risk) 3: the outdoor camera may catch the street and the courier; the alert shows only the parcel.
+
+#### E2. A person in the garden at night – 18
+
+- Impact 4: safety and peace of mind at night.
+- Novelty 2: it is what security cameras usually do already.
+- Feasibility 3: with the outdoor camera, the alert only; floodlights would be a second device.
+- Demo 4: a night scene films well.
+- Criteria 3: security is already part of Altice's offer, and the outdoor rules differ by country.
+- Privacy (risk) 4: films outdoors, sends a photo of a person and is limited by Article 19 of Lei n.º 58/2019.
+
+### 5.4 The 5 for the pitch and the video
+
+| Order | Case | Role in the story |
+|---|---|---|
+| 1 | The child in danger (S2 + S5) | Opens with fear, and with the new idea: a vague sentence the language model turns into rules |
+| 2 | Knife on the counter and the cat (S1) | Pets; the mentors' own example |
+| 3 | Nobody in the kitchen by midday (C2) | Care for someone who lives alone; works today |
+| 4 | Parcel at the door (E5) | Outdoors, and a light moment: good news, with the light turning blue |
+| 5 | Live: leaving without the book, and "where is the book?" (V1 and V2) | The proof: the yellow book, the kit's door sensor and the light turning red |
+
+Why, together, they tell the best story:
+- Variety: a child, a pet, an older person, outdoors and everyday things; three scenes indoors, one outdoors and one live.
+- Emotional arc: it starts with fear (the child), moves through tenderness (the cat, the grandmother), eases with good news (the parcel) and ends with proof that it works.
+- One thread: in every scene the camera sees something and the home understands what it means; four of the five need only the kit, and two already work in the prototype (C2 and V1).
+- The live demo closes: after four cases on video, the jury sees the real kit working.
+- Left out are well-scored cases that would repeat a theme: C3 (pills) repeats the older person, S3 (hob) repeats the kitchen, and V2 is folded into the live demo. E2 (a person in the garden at night) is the alternative to the parcel if the team wants a security moment, at the cost of more privacy risk.
+
+One storyboard line per scene (the on-screen text stays in Portuguese):
+1. Child in danger: first, the sentence "avisa-me se a criança estiver em perigo" and the three rules the model wrote (detergent, knife, stove); then, in the kitchen, the child (box "criança") reaches for a detergent pod (box "detergente") and the boxes turn red; on the phone: "A criança está junto a um detergente. Cozinha, 16h30." (The child is next to a detergent. Kitchen, 16:30), with the photo and the buttons "Ligar alarme" (turn the alarm on) and "Tudo bem" (all fine).
+2. Knife and cat: the kitchen camera, from above, sees a knife on the counter (box "faca"); the cat jumps up (box "gato") and, 3 seconds later, the boxes and the light turn red; on the phone: "Há uma faca na bancada e o gato está perto." (There is a knife on the counter and the cat is close.)
+3. Grandmother: the empty kitchen and a timeline from 07:00 to 12:00 with no "pessoa" box; at midday the clock turns red; on the daughter's phone: "Ninguém passou na cozinha desde as 7h." (Nobody has been in the kitchen since 7:00.)
+4. Parcel: the doormat and a cardboard box (box "encomenda"); inside, the light turns blue; on the phone: "Deixaram uma encomenda à porta às 11h20." (A parcel was left at the door at 11:20), with a crop of the parcel.
+5. Live, with the kit camera: the yellow book on the table (box "livro", recognised with a similarity of 0.70); the door opens (the kit sensor) and the light turns red; on the phone: "Saíste sem o livro. Está na mesa." (You left without the book. It is on the table); finally, the question "onde está o livro?" (where is the book?) and the answer with the photo.
+
+Before filming:
+- The report's Figure 1 shows the alert "A criança pôs um detergente na boca." (The child put a detergent in its mouth.) Today the camera can only say "next to"; "in the hand" or "in the mouth" needs a pose model (future). For the video, "junto a um detergente" (next to a detergent) is proposed, or a "conceito" caption.
+- The child appears as an illustration, or in a staged scene with the parents' agreement.
+- The light turning red live needs the prototype's real actions switched on, with the team's approval, and the light connected to the platform (on 16 November it had not reported since 4 November; to confirm). Without that, the app shows the simulated MCP call.
+- The prototype waits 60 seconds after the door opens; in a 3-minute demo that wait should be shorter, and it is a parameter of the rule.
+
+## 6. Value proposition
 
 - For the family: the camera already in the home starts warning about dangers nobody is watching (the knife within the cat's reach, the forgotten stove, the grandmother who has not come into the kitchen, someone in the garden at night) and answers "where is it?".
 - For the family: every alert comes from a sentence or from a proposal accepted with one tap; the siren never sounds without a "yes", and no full image leaves the home for analysis.
@@ -632,7 +787,7 @@ The eight strongest cases for the slides and the video: safety first, four indoo
 - For Altice and MEO, revenue: an add-on of €3.99 a month, of which about €1.74 per home remains, and about 19,000 MEO homes in the expected case (business-case assumptions).
 - For Altice Labs: a platform service for any operator, and a reason to sell more sensors (outdoor cameras, floodlights, connected hob, leak sensor, smart lock).
 
-## 6. Assumptions and open questions
+## 7. Assumptions and open questions
 
 1. Two or three cameras per home is a team assumption, to validate with customers.
 2. Notification service: the MCP has no tool for alerts; which service the app uses is unknown.
@@ -647,4 +802,4 @@ The eight strongest cases for the slides and the video: safety first, four indoo
 11. Licence plates: opt-in, a DPIA and legal advice before any pilot.
 12. Devices from the IoT ideas proposed within the team (floodlights, blinds, sprinkler, pet door, garage door motor, thermostat, outdoor speaker): which ones the platform supports, and whether the MCP write tool is enough to drive them, is unknown.
 
-Sources: Aveiro Tech City Hackathon 2026 participation rules, Articles 16 and 18; Lei n.º 58/2019, Article 19 (Diário da República, 1st series, no. 151, 8 August 2019); Regulation (EU) 2016/679 (GDPR), Article 2(2)(c); Court of Justice of the EU, Ryneš, C-212/13, 11 December 2014; European Data Protection Board, Guidelines 3/2019 on processing of personal data through video devices, version 2.0, 29 January 2020 (paras. 8, 12 and 13, section 7.1); the legal sources were read on 18 November 2026; Eurostat, `hlth_dhc140` (2025, read on 18 November 2026, see `docs/12-market-research.md`); Altice Labs' Connected Home product page (see `docs/02-challenge.md`); business case (`docs/16-business-case.md`); team measurements, 18 November 2026.
+Sources: Aveiro Tech City Hackathon 2026 participation rules, Articles 16 and 18; Lei n.º 58/2019, Article 19 (Diário da República, 1st series, no. 151, 8 August 2019); Regulation (EU) 2016/679 (GDPR), Article 2(2)(c); Court of Justice of the EU, Ryneš, C-212/13, 11 December 2014; European Data Protection Board, Guidelines 3/2019 on processing of personal data through video devices, version 2.0, 29 January 2020 (paras. 8, 12 and 13, section 7.1); the legal sources were read on 18 November 2026; INE, Census 2021, table Q1.04 (age bands summed by the team, see `docs/12-market-research.md`); Eurostat, `hlth_dhc140` (2025, read on 18 November 2026, see `docs/12-market-research.md`); Altice Labs' Connected Home product page (see `docs/02-challenge.md`); business case (`docs/16-business-case.md`); team measurements, 18 November 2026.

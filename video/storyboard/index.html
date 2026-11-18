@@ -1,0 +1,518 @@
+<title>ThingTracker Video 1 Storyboard</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a review sheet. A rhythm strip of the whole cut, then acts of shot cards (frame left, script right), then the filming list. */
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#0D1320; --ink-2:#4B5565; --ink-3:#7A8494; --line:#DCE2EA;
+  --accent:#0084D6; --accent-soft:#E3F1FB;
+  --stock:#8A97AB; --film:#0084D6; --graphic:#C7D0DB;
+  --ok:#1E7F47; --ok-soft:#E3F4EA; --change:#B8430F; --change-soft:#FBEBE2;
+  --sans:"Inter Tight",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1218; --surface:#161C25; --ink:#E8EDF3; --ink-2:#A3AEBC; --ink-3:#7D8898; --line:#273141;
+  --accent:#3AA6F0; --accent-soft:#12283A; --stock:#66758B; --film:#3AA6F0; --graphic:#3A4657;
+  --ok:#55C487; --ok-soft:#14291D; --change:#F2935A; --change-soft:#33200F; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1218; --surface:#161C25; --ink:#E8EDF3; --ink-2:#A3AEBC; --ink-3:#7D8898; --line:#273141;
+  --accent:#3AA6F0; --accent-soft:#12283A; --stock:#66758B; --film:#3AA6F0; --graphic:#3A4657;
+  --ok:#55C487; --ok-soft:#14291D; --change:#F2935A; --change-soft:#33200F; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--sans);margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+h1,h2,h3{text-wrap:balance;margin:0;letter-spacing:-0.01em}
+h1{font-size:clamp(28px,4vw,44px);font-weight:700;line-height:1.1}
+h2{font-size:24px;font-weight:700}
+h3{font-size:17px;font-weight:600}
+p{margin:0}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.02em}
+.eyebrow{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lede{color:var(--ink-2);max-width:68ch;margin-top:12px;font-size:17px}
+.head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end}
+.tally{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font:600 13px/1 var(--sans);padding:8px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill.ok{color:var(--ok)} .pill.ch{color:var(--change)}
+section{margin-top:48px}
+.sec-head{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.sec-head p{color:var(--ink-2);max-width:72ch}
+
+/* rhythm strip */
+.strip{display:flex;height:56px;border-radius:10px;overflow:hidden;gap:2px;background:var(--bg)}
+.seg{position:relative;min-width:6px;border:0;padding:0;cursor:pointer;background:var(--stock);color:#fff;font:600 11px/1 var(--mono);display:flex;align-items:flex-end;justify-content:flex-start;padding:0 0 6px 6px;overflow:hidden}
+.seg.film{background:var(--film)} .seg.graphic{background:var(--graphic);color:var(--ink)}
+.seg:focus-visible{outline:3px solid var(--ink);outline-offset:-3px}
+.seg .dot{position:absolute;top:6px;left:6px;width:8px;height:8px;border-radius:50%;background:transparent}
+.seg .dot.ok{background:#fff;box-shadow:0 0 0 2px var(--ok)} .seg .dot.change{background:#fff;box-shadow:0 0 0 2px var(--change)}
+.axis{display:flex;justify-content:space-between;margin-top:6px;color:var(--ink-3)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;color:var(--ink-2);font-size:14px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* changes list */
+.changes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.chg{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.chg .said{color:var(--ink-3);font-size:14px}
+.chg .now{margin-top:6px}
+
+/* decisions */
+.decs{display:grid;gap:10px}
+.dec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}
+.dec p{color:var(--ink-2);font-size:14px;margin-top:2px}
+.seg-ctl{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.opt{font:500 14px/1.2 var(--sans);padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.opt:focus-visible,.vbtn:focus-visible,textarea:focus-visible,.play:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* acts and shots */
+.act{margin-top:56px}
+.act-head{display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:20px}
+.act-head .mono{color:var(--ink-3)}
+.act-head p{flex:0 0 100%;color:var(--ink-2);max-width:none;padding-right:min(25%,280px)}
+.shot{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:24px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;scroll-margin-top:24px}
+.shot.optional-off{opacity:.45}
+.shot.is-ok{border-color:var(--ok)} .shot.is-change{border-color:var(--change)}
+.frame{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:8px;overflow:hidden;background:#E9ECF1}
+.frame img{width:100%;height:100%;object-fit:cover;display:block}
+.ref{position:absolute;left:10px;bottom:10px;font:600 11px/1 var(--mono);background:rgba(13,19,32,.78);color:#fff;padding:6px 8px;border-radius:6px;letter-spacing:.03em}
+.bx{position:absolute}
+.bx i{position:absolute;width:16px;height:16px;border:2.5px solid #0A8CE0}
+.bx i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0;border-top-left-radius:6px}
+.bx i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0;border-top-right-radius:6px}
+.bx i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0;border-bottom-left-radius:6px}
+.bx i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0;border-bottom-right-radius:6px}
+.bx b{position:absolute;left:0;bottom:calc(100% + 4px);font:600 11px/1 var(--mono);background:#0A8CE0;color:#fff;padding:5px 7px;border-radius:5px;white-space:nowrap}
+.bx.inside b{bottom:auto;top:6px;left:6px}
+/* film frames drawn in code always show the film's bright look */
+.gfx{position:absolute;inset:0;background:#F2F4F7;color:#0D1320;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px}
+.gfx .big{font:600 clamp(18px,2.6vw,30px)/1.2 var(--sans);letter-spacing:-.01em}
+.gfx .small{font:500 13px/1.3 var(--mono);color:#7A8494;margin-top:8px}
+.meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.num{font:700 15px/1 var(--mono);color:var(--ink)}
+.tc{color:var(--ink-3)}
+.badge{font:600 11px/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:5px 8px;border-radius:6px}
+.badge.stock{background:var(--bg);color:var(--ink-2);border:1px solid var(--line)}
+.badge.film{background:var(--accent-soft);color:var(--accent)}
+.badge.graphic{background:var(--bg);color:var(--ink-2);border:1px dashed var(--line)}
+.badge.opt{background:var(--change-soft);color:var(--change)}
+.say{font:600 20px/1.3 var(--sans);margin-top:12px;letter-spacing:-.01em}
+.say.none{font-weight:500;font-size:15px;color:var(--ink-3)}
+dl{display:grid;grid-template-columns:76px minmax(0,1fr);gap:8px 12px;margin:14px 0 0;font-size:15px}
+dt{font:600 11px/1.9 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+dd{margin:0;color:var(--ink-2)}
+.verdict{margin-top:16px;border-top:1px solid var(--line);padding-top:14px;display:grid;gap:10px}
+.vrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.vbtn{font:600 14px/1 var(--sans);padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.vbtn.ok[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.vbtn.ch[aria-pressed="true"]{background:var(--change);border-color:var(--change);color:#fff}
+.saved{color:var(--ink-3);font-size:13px;margin-left:auto}
+textarea{width:100%;min-height:64px;resize:vertical;font:15px/1.45 var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+/* burst preview */
+.burst-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.burst-list span{font-size:14px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:4px 8px}
+.plays{position:absolute;right:10px;bottom:10px;display:flex;gap:6px}
+.play{font:600 13px/1 var(--sans);padding:9px 12px;border-radius:8px;border:0;background:#0D1320;color:#fff;cursor:pointer}
+.stack{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;font:600 clamp(11px,1.45vw,17px)/1.25 var(--sans);width:100%;padding-left:6%}
+.stack span{opacity:0;transition:opacity 130ms cubic-bezier(.23,1,.32,1)}
+.stack span.on{opacity:1}
+@media (prefers-reduced-motion:reduce){.stack span{transition:none}}
+.badge.rev{background:var(--accent-soft);color:var(--accent)}
+.stale{flex-basis:100%;font-size:13px;color:var(--change)}
+.research{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0;margin:0}
+.research li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;list-style:none}
+.research ul{display:contents}
+.research p.src{color:var(--ink-3);font-size:13px;margin-top:4px}
+/* small drawn graphics */
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center}
+.flow span{font:600 13px/1.2 var(--sans);background:#fff;border:1.5px solid #0D1320;border-radius:8px;padding:8px 10px}
+.flow em{font-style:normal;color:#0084D6;font-weight:700}
+.steps3{display:flex;flex-direction:column;gap:8px;align-items:flex-start;text-align:left;font:600 16px/1.2 var(--sans)}
+.steps3 span::before{content:attr(data-n);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#C0392B;color:#fff;font:700 12px/1 var(--mono);margin-right:8px}
+.mark{display:flex;align-items:center;gap:12px;justify-content:center}
+.redlight{width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#ff4b3e 0 35%,rgba(255,75,62,.35) 36% 60%,rgba(255,75,62,0) 61%)}
+/* filming list */
+.films{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.fcard h3{display:flex;gap:10px;align-items:baseline}
+.fcard h3 .mono{color:var(--accent);font-size:13px}
+.fcard dl{grid-template-columns:72px minmax(0,1fr);font-size:14px}
+.tips{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-top:12px}
+.tips ul{margin:8px 0 0;padding-left:20px;color:var(--ink-2)}
+.tips li{margin:4px 0}
+.notes textarea{min-height:110px;background:var(--surface)}
+.offline{display:none;margin-top:16px;background:var(--change-soft);color:var(--change);border-radius:10px;padding:10px 14px;font-size:14px}
+@media (max-width:820px){
+  .research{grid-template-columns:minmax(0,1fr)}
+  .shot{grid-template-columns:minmax(0,1fr)}
+  .changes,.films{grid-template-columns:minmax(0,1fr)}
+  .head{grid-template-columns:minmax(0,1fr)} .tally{justify-content:flex-start}
+  .dec{grid-template-columns:minmax(0,1fr)} .seg-ctl{justify-content:flex-start}
+  .seg{font-size:0}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <div>
+      <p class="eyebrow">Vídeo 1 · storyboard v5.1 · para aprovação</p>
+      <h1>Nothing renders until you approve this</h1>
+      <p class="lede">Every shot of the new cut, with the real frame it will use, its length, the text on screen, the motion and the sound. Mark each shot <b>Approve</b> or <b>Change</b> and write what to change; I read your marks directly and build only what you approved.</p>
+    </div>
+    <div class="tally" aria-live="polite">
+      <span class="pill" id="t-total">—</span>
+      <span class="pill ok" id="t-ok">0 approved</span>
+      <span class="pill ch" id="t-ch">0 to change</span>
+    </div>
+  </header>
+  <p class="offline" id="offline">Your marks can't be saved in this view. Open the page from its claude.ai link to save them.</p>
+
+  <section aria-labelledby="h-rhythm">
+    <div class="sec-head">
+      <h2 id="h-rhythm">The rhythm of the whole cut</h2>
+      <p>Each block is one shot, its width is its length. Steady footage first, then the fast text-only burst, then every beat of the story on its own footage. Click a block to jump to that shot.</p>
+    </div>
+    <div class="strip" id="strip" role="list"></div>
+    <div class="axis mono" id="axis"></div>
+    <div class="legend">
+      <span><i style="background:var(--stock)"></i>Licensed stock</span>
+      <span><i style="background:var(--film)"></i>We film it on Thursday (or the real prototype)</span>
+      <span><i style="background:var(--graphic)"></i>Text or drawn graphic</span>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-changes">
+    <div class="sec-head">
+      <h2 id="h-changes">What changes from v4</h2>
+    </div>
+    <div class="changes">
+      <div class="chg"><p class="said">“I don't want the constant quick flick of examples.”</p><p class="now">The opening is four steady real moments, 2 s each (one bar of the music), like the start you liked in v3. No footage flicks.</p></div>
+      <div class="chg"><p class="said">“The flick fast is the text only… more examples of the text.”</p><p class="now">The fast part is text only: the questions arrive faster and faster with the music, then a hard stop and silence. Two ways to show them; play both in act 2.</p></div>
+      <div class="chg"><p class="said">“The first 30 seconds you just reuse the video.”</p><p class="now">No clip is used twice. Each beat of the wallet story has its own footage: the table, the photos, the sofa, the door, the street.</p></div>
+      <div class="chg"><p class="said">“Taking a picture, you literally just screenshot the video.”</p><p class="now">We film the real actions on Thursday: a hand photographing the wallet, someone asking the phone, someone leaving. The app parts are screen recordings of the real prototype, zoomed in so they can be read.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-research">
+    <div class="sec-head">
+      <h2 id="h-research">What the research changed (v5.1)</h2>
+      <p>Rules from people who make launch films, home-camera brands' own videos and the craft skills we have installed. Shots they changed carry a “revised after research” tag and a “Why” line.</p>
+    </div>
+    <ul class="research">
+      <li><b>Cut on the bar.</b> At 120 BPM a bar is 2 s; footage cuts land on downbeats, never crossfade between scenes.<p class="src">Beat-editing guides; HyperFrames motion reference</p></li>
+      <li><b>Text you can read.</b> About 17 characters a second in Portuguese; a 0,25 s card can't be read. Titles hold long enough to read twice, then stay still.<p class="src">Netflix Portuguese timed-text guide</p></li>
+      <li><b>No flashing.</b> At most three full-frame changes a second, and no white flashes; the hard stop is silence, not white.<p class="src">W3C WCAG 2.3.1</p></li>
+      <li><b>Real app, readable.</b> Record the real prototype, push in until it fills the frame, and start the reading time only when the camera stops.<p class="src">HyperFrames launch reference; product-demo zoom guides</p></li>
+      <li><b>The sentence and the crop are the hero.</b> Alerts read “who or what, where” and carry their picture; a wide view plus a close-up inset.<p class="src">Google Nest, Ring, Arlo, Wyze</p></li>
+      <li><b>Real sounds, only on changes.</b> Shutter, door, tap, vibration; no beeps or chimes; one riser in the whole film; mix at −16 to −14 LUFS.<p class="src">HyperFrames sound reference; Google Pixel sound design</p></li>
+      <li><b>Three proof cases, 8 s each.</b> Safety, care and memory; the dog moves out. Older people framed around independence.<p class="src">Launch-film structure; Kami's ageing-in-place framing</p></li>
+      <li><b>No claims we can't show.</b> “Ninguém configura nada” becomes “A app propõe o que vigiar”; the privacy line waits for the team's yes.<p class="src">AGENTS.md; brands state privacy once, plainly</p></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="h-dec">
+    <div class="sec-head">
+      <h2 id="h-dec">Seven choices to make first</h2>
+      <p>The first option of each is my recommendation. Your choice is saved at once; the optional shots below follow it.</p>
+    </div>
+    <div class="decs" id="decs"></div>
+  </section>
+
+  <div id="acts"></div>
+
+  <section aria-labelledby="h-film">
+    <div class="sec-head">
+      <p class="eyebrow">Thursday</p>
+      <h2 id="h-film">What we film, shot by shot</h2>
+      <p>Seven short takes, about an hour with one phone and one helper. Each has a stock fallback, so the film never waits on a take that fails.</p>
+    </div>
+    <div class="films" id="films"></div>
+    <div class="tips">
+      <h3>For every take</h3>
+      <ul>
+        <li>Phone in landscape, 4K at 30 fps, lens wiped clean.</li>
+        <li>Lock exposure and focus before pressing record (press and hold on the subject).</li>
+        <li>Daylight plus every room light on; nothing dark, nothing back-lit.</li>
+        <li>Hold still 2 s before and 2 s after each action. Three takes of each.</li>
+        <li>Only hands, backs and shoulders. Anyone whose face shows has agreed, or we blur them.</li>
+        <li>No brand logos in frame; turn labels away.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="notes" aria-labelledby="h-notes">
+    <div class="sec-head">
+      <h2 id="h-notes">Anything else</h2>
+      <p>Music, pace, length, a shot you want added. Saved as you type.</p>
+    </div>
+    <label for="general" class="mono" style="color:var(--ink-3)">General notes</label>
+    <textarea id="general" placeholder="For example: shorter, 60 s; or a different song."></textarea>
+  </section>
+</div>
+
+<script>
+const BOXES = {"s08":[{"label":"carteira","box":[0.6122,0.5257,0.7322,0.6363]}],"s12":[{"label":"porta","box":[0.228,0.0,0.52,0.91]}],"s17":[{"label":"gato","box":[0.535,0.265,0.995,0.79]}],"s18":[{"label":"cão","box":[0.395,0.10,0.66,0.87]},{"label":"tigela","box":[0.357,0.825,0.538,0.99]}],"s21":[{"label":"pessoa · 04:02","box":[0.172,0.385,0.238,0.738]}]}; // every box fitted by hand to the frame
+
+const QUESTIONS = ["Onde estão as chaves?","O cão já comeu?","A minha mãe já acordou?","Onde deixei a carteira?","Fechei a porta?","A criança está bem?","Deixei o fogão ligado?","A encomenda chegou?","O gato subiu à bancada?","Onde pus os óculos?","Tomei o comprimido?","Os miúdos já chegaram?","Reguei as plantas?","Quem está no quintal?","Onde está o comando?","O que aconteceu esta noite?"];
+
+const QUESTIONS_STACK = ["Onde estão as chaves?","O cão já comeu?","A minha mãe já acordou?","Onde deixei a carteira?","Fechei a porta?","A criança está bem?","Deixei o fogão ligado?","A encomenda chegou?","O gato subiu à bancada?","O que aconteceu esta noite?"];
+
+const DECISIONS = [
+ {id:"d1",q:"The hero object of the story",note:"The deck and the report both use the wallet.",opts:["Wallet (carteira)","Keys (chaves)"]},
+ {id:"d2",q:"Boxes in the opening moments",note:"Without them, the boxes appear for the first time right after the stop, which makes the reveal land.",opts:["No, boxes start after the stop","Yes, soft boxes from the first shot"]},
+ {id:"d3",q:"The child case (the team's AI-generated image)",note:"It is a still, not footage. It stays in the deck either way.",opts:["Leave it out of the video","Include it, labelled as an AI image"]},
+ {id:"d4",q:"The lab's light turning red",note:"Only if the team gives the go-ahead for the live action on Thursday and the test works.",opts:["Include it if the test works","Leave it out"]},
+ {id:"d6",q:"How the questions burst looks",note:"Stack: questions pile up and stay, readable, no flicker (the research). Swap: one at a time, 4 a second (what you asked for in v5). Press play on act 2 to feel both.",opts:["Stack","Swap"]},
+ {id:"d7",q:"The privacy line “Nenhum vídeo nem imagem completa sai de casa.”",note:"True of the prototype today: the camera service sends only small crops. As a product promise it needs the team's yes.",opts:["Keep it","Drop it"]},
+ {id:"d5",q:"Who appears in what we film",note:"Hands and backs need nobody's agreement; faces need everyone's.",opts:["Only hands and backs","Team members, with their agreement"]}
+];
+
+const ACTS = [
+ {id:"a1",n:"1",title:"Everyday moments",sub:"Four steady real moments, 2 s each: one bar of the music, so every cut lands on a downbeat. No text, no boxes. Room sound and a thin bed.",shots:[
+  {id:"s01",d:2,kind:"stock",img:"s01",src:"Stock · leaving-home-keys-1",say:null,pic:"Keys and sunglasses on a sunny hall table; a hand comes in and picks up the keys.",motion:"Real speed, a slow 3 % push. A hard cut on the next downbeat.",sound:"Room sound and a thin bed.",rev:"Was 2,5 s with dissolves. 2 s is one bar at 120 BPM, so cuts land on the beat; scenes never crossfade."},
+  {id:"s02",d:2,kind:"stock",img:"s02",src:"Stock · dog-bowl-2",say:null,pic:"A beagle puppy eating from a steel bowl among plants.",motion:"Real speed, slow push, hard cut.",sound:"Room sound, thin bed."},
+  {id:"s03",d:2,kind:"stock",img:"s03",src:"Stock · elderly-tea-2",say:null,pic:"An older woman pours tea for her husband in a bright living room.",motion:"Real speed, slow push, hard cut.",sound:"Room sound, thin bed."},
+  {id:"s05",d:2,kind:"stock",img:"s05",src:"Stock · parcel-door-1",say:null,pic:"A parcel waiting on the doormat of a white front door.",motion:"Real speed, slow push, hard cut into the questions.",sound:"Room sound, thin bed.",rev:"The plant shot is dropped: four moments fill two bars exactly."}
+ ]},
+ {id:"a2",n:"2",title:"The questions",sub:"Text only, fast. Two ways to do it; press play on each and choose in the choices above.",shots:[
+  {id:"s06",d:()=>decisionOf("d6")===0?3.5:5,kind:"graphic",burst:true,src:"Text",pic:"Stack: the questions pile up in one column, one per beat for the first four, then two per beat. They stay on screen, so the frame fills with worries. Swap: one question at a time, as in v5.",motion:"Each line fades in over 4 frames, then sits still. The ground never changes.",sound:"The bed builds; the film's only riser runs under the burst.",rev:"A 0,25 s card can't be read (Netflix's Portuguese guide: about 17 characters a second), and four full-frame swaps a second break the web's flash limit. The stack keeps the speed and lets every question be read."},
+  {id:"s07",d:0.5,kind:"graphic",gfx:'<div><p class="big">&nbsp;</p><p class="small">empty frame · silence</p></div>',src:"Text",say:null,pic:"Hard stop: the questions vanish on the beat, leaving the empty light frame.",motion:"Nothing moves.",sound:"The music stops; only room tone for half a second, then the drop."}
+ ]},
+ {id:"a3",n:"3",title:"The answer",sub:"The first boxes of the film, on the music's drop, and the only full-frame hit.",shots:[
+  {id:"s08",d:8,kind:"film",img:"s08",ref:"Reference · we film F1",src:"We film it · F1 (fallback: the wallet still). Boxes from our own detector, run on the take",say:"A câmara da casa passa a saber onde estão as coisas.",pic:"Our own hall table in daylight: wallet, keys and glasses. On the drop the brackets lock onto the wallet, then the keys, then the glasses, one per beat, each with its name on its box. On the next downbeat the wallet's brackets close into the ThingTracker mark and the name.",motion:"A slow push-in; boxes move with the picture. The line then holds 3,5–4 s after the mark settles, dead still.",sound:"The drop. A soft real click on each lock, in 2–3 different takes.",rev:"One object per beat, then the mark on the next downbeat; the line holds long enough to read twice."}
+ ]},
+ {id:"a4",n:"4",title:"The wallet, from photos to the alert",sub:"Four phrases of 8 s, each on its own footage. The app is always the real prototype, recorded and placed into the filmed phone's screen, then pushed in until it fills the frame.",shots:[
+  {id:"s09",d:8,kind:"film",img:"s09",ref:"Reference · the earlier book recording",src:"We film it · F2 + screen recording F3",say:"Três fotografias. A casa fica a conhecê-la.",pic:"Over the shoulder: a hand photographs the wallet: front, at an angle, open. On each shutter the frame freezes and slides into one of three slots beside the phone (a match on action). The phone's screen is the real app, tracked onto the filmed phone. Then “Wallet added”.",motion:"One clean move per photo. Then a push into the phone screen.",sound:"A real shutter ×3 (different takes), a soft click on “added”.",rev:"The photo now freezes on the shutter and slides into its slot: the action itself makes the cut."},
+  {id:"s10",d:8,kind:"film",img:"s10",ref:"Reference · stock phone-alert-1",src:"We film it · F4 + screen recording F3",say:"Basta perguntar.",pic:"On the sofa, someone types on the phone (1 s). We push 1,5–2× into the screen: “Where is my wallet?”, then the answer card “On the hall table · 08:12” with its photo, held at least 2,5 s after the push stops. The photo scales to full frame and dissolves into the hall table at the same angle, later in the day.",motion:"Push in, hold still to read, then the photo grows into the scene.",sound:"Soft typing; the answer arrives silently; a gentle air move as the photo grows.",rev:"Reading time starts only when the camera stops. The hall table here is the same angle at another time, a callback, not the same clip."},
+  {id:"s11",d:4,kind:"film",img:"s11",ref:"Reference · video 2's zoomed app",src:"Screen recording F3",say:"Uma frase torna-se um sensor.",pic:"Inside the phone, filling the frame: “Tell me if I leave home without my wallet”, then the card “Left home without the wallet · Active”.",motion:"Held still on the screen; the card slides up.",sound:"Typing that carries on over the next shot (an L-cut).",rev:"The typing sound carries over the cut to tie the app to the home."},
+  {id:"s12",d:4,kind:"film",img:"s12",ref:"Reference · stock leaving-home-1",src:"We film it · F5 (fallback: stock leaving-home-1)",say:null,pic:"From a home camera's high corner: the person takes the keys and goes out. A close-up inset in the corner shows the wallet left on the table, under its bracket.",motion:"The camera does not move. One speed ramp as the door shuts, only if we film at 50–60 fps.",sound:"The door. The alert's sound starts on this shot's last beat (a J-cut).",rev:"Wide view plus a close-up inset, as Google shows its camera detections; it also matches our system, which sends only the crop."},
+  {id:"s13",d:6,kind:"film",img:"s13",ref:"Reference · stock phone-alert-2",src:"We film it · F6 (fallback: stock phone-alert-2)",say:null,pic:"Outside, a phone held in both hands fills two thirds of the frame height. The real alert: “Saíste sem a carteira · Ficou na mesa da entrada”, with the wallet's crop. It holds 2,5–3 s. No caption repeats it.",motion:"A gentle push until the alert is easy to read, then still.",sound:"The alert sound began on the shot before; a real phone vibration, no chime.",rev:"Alerts read “who or what, where” and carry their picture, as Google, Ring and Arlo do."},
+  {id:"s14",d:2,kind:"film",opt:"d4",gfx:'<div class="mark"><div class="redlight" aria-hidden="true"></div></div>',ref:"We film it · F7",src:"We film it · F7, only with the team's go-ahead",say:"A casa também pode agir.",pic:"In the lab, the real light turns red as the door opens.",motion:"Static.",sound:"The light's own click."}
+ ]},
+ {id:"a5",n:"5",title:"How it works",sub:"Three parts, drawn one per bar, ending on the privacy line.",shots:[
+  {id:"s15",d:8,kind:"graphic",gfx:'<div class="flow"><span>Em casa<br><em>a câmara vê o que mudou</em></span>→<span>Altice<br><em>reconhece as coisas</em></span>→<span>Na app<br><em>respostas e avisos</em></span></div>',src:"Drawn graphic",say:"Nenhum vídeo nem imagem completa sai de casa.",pic:"Three big parts on one line, each appearing as it is named, labels on the parts. The arrow leaving the home carries a small crop, not a frame. The privacy line is the payoff.",motion:"One part per bar; the line holds still at the end.",sound:"Quiet; no whoosh.",tag:"team to confirm the line",rev:"Was six small nodes. A diagram grows part by part, at most three, and brands state privacy once, plainly."}
+ ]},
+ {id:"a6",n:"6",title:"The home understands",sub:"Three cases of 8 s: safety, care and memory. Each one: footage and lock-on (2 s), the phone (4 s), the result (2 s).",shots:[
+  {id:"s16",d:2,kind:"graphic",gfx:'<p class="big">A app propõe o que vigiar.</p>',src:"Text",say:"A app propõe o que vigiar.",pic:"A white frame with one line.",motion:"The line fades in, then sits still.",sound:"The music lifts.",rev:"Was “Ninguém configura nada. A app percebe a casa.”, a claim we can't show. The app proposing rules is what the prototype does."},
+  {id:"s17",d:8,kind:"stock",img:"s17",src:"Stock · cat-counter-2 · real detector box",say:"A cozinha, mais segura.",pic:"A black cat on the edge of a bright kitchen counter, boxed “gato” (2 s). The phone: the proposal “Avisar se o gato subir à bancada?”, a tap on Ativar (4 s). The alert with the cat's crop (2 s).",motion:"The lock-on is a mask from the box into the phone.",sound:"A soft click on the lock, the tap, a vibration.",tag:"conceito"},
+  {id:"s19",d:4,kind:"stock",img:"s19",src:"Stock · elderly-reading-1 · real detector box",say:"“A minha mãe já acordou?”",pic:"Her normal morning by the window, framed from the side. No box on her: a box on a face reads as face recognition. A small time chip “08:12” in the corner, then the answer card: “Sim. Está na sala desde as 8h12.”",motion:"Slow push; the card rises.",sound:"Quiet room, no effect.",rev:"Framed around her independence, never surveillance; no face recognition."},
+  {id:"s20",d:4,kind:"stock",img:"s20",src:"Stock · older-kitchen-1, then phone-alert-3",say:null,pic:"A dissolve marks the hours passing: the kitchen is empty at noon, the clock turns red. A hand picks up a phone: “Meio-dia, e a mãe ainda não passou pela cozinha.”",motion:"One dissolve for time passing (1 s), then a cut to the phone.",sound:"A vibration.",note:"The empty kitchen is a different house from the woman's (stock)."},
+  {id:"s21",d:8,kind:"stock",img:"s21",src:"Stock · garden-night-2 · real detector box",say:"O que aconteceu às 4h?",pic:"The garden at night, a person by the car, boxed “pessoa · 04:02”. Next morning the assistant answers “What happened last night?” with two events, each with its own crop: the dog barked at 04:01, a person in the garden at 04:02.",motion:"A slow push in the dark; a bright cut to the phone.",sound:"Quiet, then the vibration.",tag:"conceito",rev:"Every answer carries its picture."},
+  {id:"s22",d:8,kind:"graphic",opt:"d3",img:"s22",ref:"Imagem gerada com IA (Gemini)",src:"The team's AI image, faces blurred",say:"Avisa-me se a criança estiver em perigo.",pic:"The child by the open cupboard with a detergent pod, boxed “criança” and “detergente”. Three steps: Perigo detetado → Alarme acionado → Mensagem enviada aos pais.",motion:"A slow push on the still; the steps appear one by one.",sound:"Soft click, a vibration.",tag:"imagem gerada com IA"}
+ ]},
+ {id:"a7",n:"7",title:"The end",sub:"",shots:[
+  {id:"s23",d:5,kind:"graphic",gfx:'<div style="display:flex;flex-direction:column;align-items:center;width:100%"><img src="img/thingtracker-light.svg" alt="ThingTracker" style="width:54%;height:auto"><img src="img/by-altice-labs-light.svg" alt="by Altice Labs" style="width:20%;height:auto;margin-top:3%"></div>',src:"The official logo files (assets/brand)",say:"ThingTracker · by Altice Labs",pic:"The official ThingTracker lockup (mark and name) lands centred on the downbeat. A beat later it glides up, and “by” with the official Altice Labs logo rises into the space below.",motion:"The mark's brackets close and the name is carried in; a beat later the lockup glides up in one eased move (0,6 s); the Altice Labs logo rises softly. All still for 3 s, then a 1 s tail.",sound:"The music ends on a bar line. No whoosh.",rev:"The name lands on the downbeat and holds 3 s, with a 1 s tail."}
+ ]}
+];
+
+const FILMS = [
+ {id:"F1",t:"The hall table",what:"The wallet, keys and glasses on a wooden table near a front door.",how:"Phone on a tripod or a stack of books at table height, 1 to 1,5 m away. 15 s still, then 15 s of a slow push by hand. Nobody in frame.",fb:"The wallet still"},
+ {id:"F2",t:"Photographing the wallet",what:"One hand holds a phone and photographs the wallet: front, at an angle, open.",how:"A second phone films over the shoulder, close enough that the first phone's screen is sharp. 20 s, three takes.",fb:"The earlier book recording"},
+ {id:"F3",t:"The app, recorded",what:"The real prototype: add the wallet with 3 photos; “Where is my wallet?”; “Tell me if I leave home without my wallet”; the alert.",how:"I record these on the Mac in a phone-sized window at 3× resolution, so they stay sharp when we zoom in.",fb:"None needed"},
+ {id:"F4",t:"Asking the phone",what:"Someone on a sofa, phone in both hands, typing.",how:"Over the shoulder, window light from the side. 10 s. Back of the head and hands only.",fb:"Stock phone-alert-1"},
+ {id:"F5",t:"Leaving without it",what:"The person takes the keys, leaves the wallet, opens the front door and goes out.",how:"Phone high in a corner like a home camera (a shelf, the top of a door frame), wide on the table and the door. 15 s, two takes; then the same at eye level.",fb:"Stock leaving-home-1"},
+ {id:"F6",t:"The alert outside",what:"Outside the door, a phone held in both hands, screen to the camera.",how:"8 s. The screen shows the real alert, or a plain white page that we fill in the edit.",fb:"Stock phone-alert-2"},
+ {id:"F7",t:"The red light (optional)",what:"The lab's light turns red when the door opens.",how:"Phone on a tripod facing the light and the door, 10 s. Only with the team's go-ahead for the live action.",fb:"Leave the shot out"}
+];
+
+/* ---------- state and storage ---------- */
+const state = {verdicts:{}, decisions:{}, general:""};
+let db = null;
+const fmt = s => { const m = Math.floor(s/60), r = s - m*60; return m + ":" + (r < 10 ? "0" : "") + r.toFixed(1).replace(".", ","); };
+const dur = d => (Number.isInteger(d) ? d : d.toFixed(1)).toString().replace(".", ",") + " s";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function decisionOf(id){ return state.decisions[id]?.choice ?? 0; }
+function included(shot){
+  if (shot.opt === "d3") return decisionOf("d3") === 1;
+  if (shot.opt === "d4") return decisionOf("d4") === 0;
+  return true;
+}
+function allShots(){ return ACTS.flatMap(a => a.shots); }
+const D = s => typeof s.d === "function" ? s.d() : s.d;
+const REVISED_AT = "2026-11-18T22:00:00Z";
+
+/* ---------- rendering ---------- */
+function frameHTML(s){
+  let inner = "";
+  if (s.burst) inner = `<div class="gfx"><p class="big" id="burst-line"${decisionOf("d6") === 0 ? " hidden" : ""}>${esc(QUESTIONS[0])}</p><div class="stack" id="burst-stack"${decisionOf("d6") === 0 ? "" : " hidden"}>${QUESTIONS_STACK.map(q => `<span class="on">${esc(q)}</span>`).join("")}</div></div><div class="plays"><button class="play" type="button" data-play="stack">Play the stack</button><button class="play" type="button" data-play="swap">Play the swap</button></div>`;
+  else if (s.img) {
+    inner = `<img src="img/${s.img}.jpg" alt="${esc(s.pic)}" loading="lazy">`;
+    (BOXES[s.id] || []).forEach(b => {
+      const [x1,y1,x2,y2] = b.box.map(v => Math.max(0, Math.min(1, v)));
+      const inside = y1 < 0.08 ? " inside" : "";
+      inner += `<div class="bx${inside}" style="left:${x1*100}%;top:${y1*100}%;width:${(x2-x1)*100}%;height:${(y2-y1)*100}%"><i></i><i></i><i></i><i></i><b>${esc(b.label)}</b></div>`;
+    });
+  } else if (s.gfx) inner = `<div class="gfx">${s.gfx}</div>`;
+  if (s.ref) inner += `<span class="ref">${esc(s.ref)}</span>`;
+  return `<div class="frame">${inner}</div>`;
+}
+const KIND = {stock:"Stock", film:"We film it", graphic:"Graphic"};
+
+function render(){
+  let t = 0, total = 0;
+  const times = {};
+  allShots().forEach(s => { if (included(s)) { times[s.id] = t; t += D(s); } });
+  total = t;
+  // acts
+  const acts = document.getElementById("acts");
+  acts.innerHTML = ACTS.map(a => `
+    <section class="act" aria-labelledby="h-${a.id}">
+      <div class="act-head"><span class="mono">Act ${a.n}</span><h2 id="h-${a.id}">${esc(a.title)}</h2>${a.sub ? `<p>${esc(a.sub)}</p>` : ""}</div>
+      ${a.shots.map(s => shotHTML(s, times)).join("")}
+    </section>`).join("");
+  // strip
+  const strip = document.getElementById("strip");
+  strip.innerHTML = allShots().filter(included).map(s => {
+    const v = state.verdicts[s.id]?.status;
+    return `<button class="seg ${s.kind}" role="listitem" style="flex:${D(s)}" data-go="${s.id}" title="${s.id.slice(1)} · ${dur(D(s))}" aria-label="Shot ${s.id.slice(1)}, ${dur(D(s))}${v ? ", " + (v === "ok" ? "approved" : "to change") : ""}"><span class="dot ${v || ""}"></span>${D(s) >= 2 ? s.id.slice(1) : ""}</button>`;
+  }).join("");
+  document.getElementById("axis").innerHTML = [0, total/4, total/2, 3*total/4, total].map(x => `<span>${fmt(x)}</span>`).join("");
+  // tally
+  const live = allShots().filter(included);
+  const ok = live.filter(s => state.verdicts[s.id]?.status === "ok").length;
+  const ch = live.filter(s => state.verdicts[s.id]?.status === "change").length;
+  document.getElementById("t-total").textContent = `${live.length} shots · ${fmt(total)}`;
+  document.getElementById("t-ok").textContent = `${ok} approved`;
+  document.getElementById("t-ch").textContent = `${ch} to change`;
+  // decisions
+  document.getElementById("decs").innerHTML = DECISIONS.map(d => `
+    <div class="dec"><div><h3>${esc(d.q)}</h3><p>${esc(d.note)}</p></div>
+      <div class="seg-ctl" role="group" aria-label="${esc(d.q)}">${d.opts.map((o,i) => `<button type="button" class="opt" data-dec="${d.id}" data-i="${i}" aria-pressed="${decisionOf(d.id) === i}">${esc(o)}${i === 0 ? " · recommended" : ""}</button>`).join("")}</div>
+    </div>`).join("");
+  // films
+  document.getElementById("films").innerHTML = FILMS.map(f => `
+    <div class="fcard"><h3><span class="mono">${f.id}</span>${esc(f.t)}</h3>
+      <dl><dt>What</dt><dd>${esc(f.what)}</dd><dt>How</dt><dd>${esc(f.how)}</dd><dt>Fallback</dt><dd>${esc(f.fb)}</dd></dl></div>`).join("");
+  const g = document.getElementById("general");
+  if (document.activeElement !== g) g.value = state.general;
+  bindBurst();
+}
+
+function shotHTML(s, times){
+  const v = state.verdicts[s.id] || {};
+  const on = included(s);
+  const cls = ["shot", !on ? "optional-off" : "", v.status === "ok" ? "is-ok" : v.status === "change" ? "is-change" : ""].join(" ");
+  const tc = on ? `${fmt(times[s.id])} · ${dur(D(s))}` : `left out · ${dur(D(s))}`;
+  const optBadge = s.opt ? `<span class="badge opt">optional</span>` : "";
+  const say = s.burst
+    ? (decisionOf("d6") === 0 ? `<p class="say">10 questions pile up, text only</p><div class="burst-list">${QUESTIONS_STACK.map(q => `<span>${esc(q)}</span>`).join("")}</div>` : `<p class="say">16 questions, one at a time</p><div class="burst-list">${QUESTIONS.map(q => `<span>${esc(q)}</span>`).join("")}</div>`)
+    : (s.id === "s15" && decisionOf("d7") === 1) ? `<p class="say none">No privacy line.</p>` : s.say ? `<p class="say">${esc(s.say)}</p>` : `<p class="say none">No text on screen.</p>`;
+  return `
+  <article class="${cls}" id="${s.id}">
+    <div>${frameHTML(s)}</div>
+    <div>
+      <div class="meta"><span class="num">${s.id.slice(1)}</span><span class="mono tc">${tc}</span><span class="badge ${s.kind}">${KIND[s.kind]}</span>${optBadge}${s.tag ? `<span class="badge graphic">${esc(s.tag)}</span>` : ""}${s.rev ? `<span class="badge rev">revised after research</span>` : ""}</div>
+      ${say}
+      <dl>
+        <dt>Picture</dt><dd>${esc(s.pic)}</dd>
+        <dt>Motion</dt><dd>${esc(s.motion)}</dd>
+        <dt>Sound</dt><dd>${esc(s.sound)}</dd>
+        <dt>Source</dt><dd>${esc(s.src)}${s.note ? ". " + esc(s.note) : ""}</dd>${s.rev ? `<dt>Why</dt><dd>${esc(s.rev)}</dd>` : ""}
+      </dl>
+      <div class="verdict">
+        <div class="vrow">
+          <button type="button" class="vbtn ok" data-v="${s.id}" data-s="ok" aria-pressed="${v.status === "ok"}">Approve</button>
+          <button type="button" class="vbtn ch" data-v="${s.id}" data-s="change" aria-pressed="${v.status === "change"}">Change</button>
+          <span class="saved" id="sv-${s.id}">${v.at ? "Saved" : ""}</span>${s.rev && v.status && v.at && v.at < REVISED_AT ? `<span class="stale">Your mark was on v5; this shot has changed since.</span>` : ""}
+        </div>
+        <label class="mono" for="n-${s.id}" style="color:var(--ink-3)">What should change</label>
+        <textarea id="n-${s.id}" data-n="${s.id}" placeholder="Optional for approved shots.">${esc(v.note || "")}</textarea>
+      </div>
+    </div>
+  </article>`;
+}
+
+/* ---------- burst preview ---------- */
+let burstTimer = null;
+function bindBurst(){
+  document.querySelectorAll("[data-play]").forEach(btn => btn.onclick = () => {
+    const line = document.getElementById("burst-line"), stack = document.getElementById("burst-stack");
+    clearTimeout(burstTimer);
+    const mode = btn.dataset.play;
+    const restore = () => { burstTimer = setTimeout(() => { render(); }, 1400); };
+    if (mode === "stack") {
+      line.hidden = true; stack.hidden = false;
+      const spans = [...stack.children]; spans.forEach(x => x.classList.remove("on"));
+      let i = 0;
+      const step = () => {
+        if (i < spans.length) { spans[i].classList.add("on"); const hold = i < 4 ? 500 : 250; i++; burstTimer = setTimeout(step, hold); }
+        else { burstTimer = setTimeout(() => { spans.forEach(x => x.classList.remove("on")); restore(); }, 250); }
+      };
+      step();
+    } else {
+      stack.hidden = true; line.hidden = false;
+      let i = 0;
+      const step = () => {
+        if (i < QUESTIONS.length) { line.textContent = QUESTIONS[i]; const hold = i < 4 ? 500 : 250; i++; burstTimer = setTimeout(step, hold); }
+        else { line.innerHTML = "&nbsp;"; restore(); }
+      };
+      step();
+    }
+  });
+}
+
+/* ---------- writes ---------- */
+const timers = {};
+async function saveVerdict(id, patch){
+  state.verdicts[id] = {...(state.verdicts[id] || {}), ...patch, at: new Date().toISOString()};
+  if (!db) return;
+  try { await db.doc("verdicts/" + id).set({...state.verdicts[id]}); const el = document.getElementById("sv-" + id); if (el) el.textContent = "Saved"; }
+  catch(e){ const el = document.getElementById("sv-" + id); if (el) el.textContent = "Not saved"; }
+}
+document.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]");
+  if (go) { document.getElementById(go.dataset.go)?.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}); return; }
+  const vb = e.target.closest("[data-v]");
+  if (vb) {
+    const id = vb.dataset.v, s = vb.dataset.s;
+    const cur = state.verdicts[id]?.status;
+    const note = document.getElementById("n-" + id)?.value ?? "";
+    saveVerdict(id, {status: cur === s ? null : s, note});
+    render();
+    if (s === "change" && cur !== s) document.getElementById("n-" + id)?.focus();
+    return;
+  }
+  const ob = e.target.closest("[data-dec]");
+  if (ob) {
+    const id = ob.dataset.dec, i = Number(ob.dataset.i);
+    state.decisions[id] = {choice: i, label: DECISIONS.find(d => d.id === id).opts[i], at: new Date().toISOString()};
+    if (db) db.doc("decisions/" + id).set({...state.decisions[id]}).catch(() => {});
+    render();
+  }
+});
+document.addEventListener("input", e => {
+  const n = e.target.closest("[data-n]");
+  if (n) {
+    const id = n.dataset.n;
+    state.verdicts[id] = {...(state.verdicts[id] || {}), note: n.value};
+    clearTimeout(timers[id]);
+    timers[id] = setTimeout(() => saveVerdict(id, {note: n.value}), 700);
+    const el = document.getElementById("sv-" + id); if (el) el.textContent = "Saving…";
+  }
+  if (e.target.id === "general") {
+    state.general = e.target.value;
+    clearTimeout(timers.general);
+    timers.general = setTimeout(() => { if (db) db.doc("notes/general").set({text: state.general, at: new Date().toISOString()}).catch(() => {}); }, 700);
+  }
+});
+
+render();
+
+(async () => {
+  try { db = await window.claude?.use?.("db"); } catch(e){ db = null; }
+  if (!db) { document.getElementById("offline").style.display = "block"; return; }
+  const typing = () => { const a = document.activeElement; return a && a.tagName === "TEXTAREA"; };
+  db.collection("verdicts").onSnapshot(snap => {
+    snap.docs.forEach(d => { if (d.exists) state.verdicts[d.id] = {...d.data()}; });
+    if (!typing()) render();
+  }, () => {});
+  db.collection("decisions").onSnapshot(snap => {
+    snap.docs.forEach(d => { if (d.exists) state.decisions[d.id] = {...d.data()}; });
+    if (!typing()) render();
+  }, () => {});
+  db.doc("notes/general").onSnapshot(d => { if (d.exists) { state.general = d.data().text || ""; const g = document.getElementById("general"); if (document.activeElement !== g) g.value = state.general; } }, () => {});
+})();
+</script>

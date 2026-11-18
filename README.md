@@ -4,19 +4,18 @@ Workspace of team **IT-Porto** for **Challenge #3 — Altice Labs: Connected Hom
 
 Everything received or discussed so far is filed here: organiser material, kick-off notes, our brainstorm, access details and the deliverable templates.
 
-## Status — Wed 18 Nov 2026
+## Status: Wed 18 Nov 2026, night
 
-- **Solution chosen: ThingTracker.** The home's camera becomes a source of information: it learns the things a family registers and finds them again. A sentence becomes a sensor, and the assistant answers "where is my book?". Read [AGENTS.md](AGENTS.md) first.
-- **Report (1st deliverable, due today 19:00):** 2 pages, fact-checked, on the official template: `deliverables/executive-summary/sumario-executivo-IT-Porto.pdf`. Submitted through the Google Form by the team.
-- **Prototype:** runs end to end on the kit camera.
-  - Visual registration (8 views → a DINOv2 fingerprint) and recognition (OWLv2 candidates matched to the fingerprint).
-  - Live boxes, a local rules engine and a local SQLite database.
-  - An exact copy of the Altice app, with the new *Things* tab and the assistant button.
-- **Documents:** architecture, integration spec and business case in English (`docs/14–16`) and in Portuguese (`docs/pt/`), the versions on Google Drive. The business case also comes as a 9-page PDF with charts.
-- **Next (Fri 20 Nov):**
-  - the executive summary and the deck;
-  - the product video, from screen recordings of the use case with the yellow book;
-  - pitch practice.
+- **Solution: ThingTracker.** The home's camera becomes a source of information: it recognises the things and people a family registers, a sentence becomes a sensor, and the assistant answers questions. Read [AGENTS.md](AGENTS.md) first; [JOURNAL.md](JOURNAL.md) tells how we got here, day by day.
+- **Report (1st deliverable): submitted** 18 Nov at 18:51 (v2, the child in the kitchen): `deliverables/executive-summary/`.
+- **Prototype:** runs end to end on the kit camera. Visual registration and recognition, live boxes, rules, a local text model, the Altice app copy with the *Things* tab, and the real door read through the MCP.
+- **Pitch:** an 18-slide deck ([deliverables/deck/](deliverables/deck/)) and the run of show for 3 and 5 minutes ([docs/pt/21-pitch.md](docs/pt/21-pitch.md)).
+- **Videos:**
+  - video 2, the real lab example, is in review;
+  - video 1, the presentation, is being rebuilt from the approved storyboard ([video/storyboard/](video/storyboard/)) and the research ([video/research/](video/research/)).
+- **Next:**
+  - Thursday: the lab test and filming;
+  - Friday 17:30: the executive summary, the deck and the repo link; then the pitches.
 
 ## Deadlines
 
@@ -51,6 +50,16 @@ No extensions (late = possible disqualification), pitch time cut strictly. Full 
 | [docs/14-architecture.md](docs/14-architecture.md) | **ThingTracker architecture:** components, flows, the sensor language, data model, privacy, measured performance and cost, decisions with alternatives, open questions. Diagram in [docs/architecture/](docs/architecture/) |
 | [docs/15-integration-spec.md](docs/15-integration-spec.md) | **Integration with the Altice platform:** the four Things MCP tools, the edge ↔ platform channel, enrolment, scenarios, what we need from Altice |
 | [docs/16-business-case.md](docs/16-business-case.md) | **Business case:** market funnel, pricing, unit economics, operator revenue, risks; model in `16-business-case-model.csv` |
+| [docs/17-operator-costs.md](docs/17-operator-costs.md) | **What it costs Altice** per home and month: processing at home, on Altice servers or in the cloud, at 500 000 homes; model in `deliverables/opcost/` |
+| [docs/18-use-cases.md](docs/18-use-cases.md) | **34 use cases**, 10 finalists scored, 5 for the pitch and the video |
+| [docs/19-teste-real.md](docs/19-teste-real.md) | The lab checklist for the real end-to-end test (PT) |
+| [docs/20-product.md](docs/20-product.md) | **Product spec**, written as the Altice team planning the launch: adding people, pets and things; rules; alerts; four flow diagrams |
+| [docs/pt/21-pitch.md](docs/pt/21-pitch.md) | **The pitch:** run of show for 3 and 5 minutes, who speaks, fixed lines, jury questions |
+| [deliverables/deck/](deliverables/deck/) | **The pitch deck:** link to the presentation and a copy of its source, with its version history |
+| [video/](video/) | **The two videos** in Remotion: the presentation (video 1) and the real lab example (video 2); tools for stock boxes, audio and safe rendering |
+| [video/storyboard/](video/storyboard/) | **Video 1 storyboard:** every shot with its real frame, timing, text, motion and sound, approved before rendering |
+| [video/research/](video/research/) | **Research playbooks** with sources: craft skills, how launch films and home-camera brands present products, how to run the pitch |
+| [JOURNAL.md](JOURNAL.md) | **How the project moved, day by day:** versions, verdicts, lessons and decisions |
 | [DELIVERABLES.md](DELIVERABLES.md) | **What we hand in and when:** the official deliverables and deadlines, the pitches, the supporting material, Thursday's plan, the Drive folders |
 | [AGENTS.md](AGENTS.md) | **Read first:** the project, where things live, how to run the prototype, conventions, the rules that must not be broken, key decisions |
 | [prototype/](prototype/) | **The working prototype:** server and rules engine, edge service (OWLv2 + DINOv2 on the kit camera), SQLite database, the Altice app copy with the Things tab and the assistant |

@@ -1,0 +1,161 @@
+# Business case — ThingTracker
+
+State on **Wed 18 Nov 2026**. The numbers come from [`16-business-case-model.csv`](16-business-case-model.csv); row ids are in brackets, e.g. [C02]. A figure is either **sourced** (link or [docs/12](12-market-research.md) section) or labelled **ASSUMPTION**. Products and ratios of sourced figures are our arithmetic. Competitor prices and the French figures were read at the source on 18 Nov 2026.
+
+## 1. Summary
+
+1. Operators sell ThingTracker as an add-on or inside a camera bundle; Altice Labs supplies it on Cognitive Home (B2B2C).
+2. Portugal: MEO has 1,580 k residential fixed accesses [D01]. Base scenario: 19 k homes (1.2 %) subscribe, giving €0.74 M of net revenue a year at €3.99 [D05, D07]. Take rates are ASSUMPTIONS.
+3. Cloud AI costs **€0.43 per home per month** in the base case (€0.10–1.78) [C02], from measured per-call costs and ASSUMED usage.
+4. **Edge hardware decides the case.** A €100 box adds €2.78 a month [C07] and turns a €3.99 add-on loss-making [M04]. It works if perception runs on hardware already in the home, or if a small box comes inside a camera bundle [M02, M08].
+5. France fits better, since SFR Maison Sécurisée already has a camera. But SFR is under a memorandum of understanding (MoU) to be sold to Bouygues Telecom, iliad and Orange ([iliad, 6 Jun 2026](https://www.iliad.fr/media/CP_ILD_060626_Eng_227f572f6d.pdf)).
+
+## 2. Who pays and why
+
+| Party | Pays | Gets |
+|---|---|---|
+| Household | A monthly fee on its operator bill | Last-seen answers, sensors from one sentence, actions on its own devices |
+| Operator (MEO, SFR) | Altice Labs, under a licence model that is **unknown** | Revenue on its existing base; an answer to the NOS and Vodafone camera plans (§4) |
+| Altice Labs | — | A feature for every operator on Cognitive Home, a white-label, multi-tenant B2B2C platform sold to telcos (docs/12 §2) |
+
+The operator already holds the bill, the app and the devices that the Model Context Protocol (MCP) server acts on. Portugal has room to grow: 23.99 % of people used a connected-home system in 2024, against 33.04 % in the EU (Eurostat, docs/12 §3.7). MEO sells an Ajax alarm kit with no camera and no monthly fee (docs/12 §2).
+
+## 3. Market size
+
+### Portugal (MEO)
+
+| Step | Low | Base | High | Source |
+|---|---|---|---|---|
+| Residential fixed broadband accesses | 4,052 k | 4,052 k | 4,052 k | [ANACOM 4T2025](https://www.anacom.pt/streaming/SAI4T2025.pdf?contentId=1828507&field=ATTACHED_FILE), Tabela 5 |
+| × MEO share of residential accesses | 39.0 % | 39.0 % | 39.0 % | ANACOM, Tabela 6 |
+| = MEO residential accesses [D01] | 1,580 k | 1,580 k | 1,580 k | |
+| × homes ready for an add-on [D02] | 8.49 % | 23.99 % | 33.04 % | PROXY, Eurostat 2024: PT security devices / PT any connected-home system / EU average |
+| × take rate [B22] | 2 % | 5 % | 10 % | **ASSUMPTION** |
+| = **subscribing homes** [D05] | **2.7 k** | **19.0 k** | **52.2 k** | 0.17 % / 1.20 % / 3.30 % of the MEO base |
+
+Caveats: ANACOM counts accesses, not homes, and Eurostat counts individuals. MEO sells no camera, so in Portugal the realistic route is the bundle (§4).
+
+### France (SFR)
+
+| Step | Low | Base | High | Source |
+|---|---|---|---|---|
+| SFR total fixed customers | 5,890 k | 5,890 k | 5,890 k | [Altice France Q2 2026](https://static.s-sfr.fr/AlticeFrance/investors/results-presentation/AlticeFrance-Q22026-PR.pdf), KPI table; 17.8 % of 33.1 M French subscriptions ([Arcep, 10 Sep 2026](https://www.arcep.fr/fileadmin/cru-1786970039/user_upload/48-26-version-francaise.pdf)) |
+| × ready share [F02] | 14.16 % | 39.01 % | 39.01 % | PROXY, Eurostat 2024: FR security devices / FR any connected-home system |
+| × take rate | 2 % | 5 % | 10 % | **ASSUMPTION** |
+| = **subscribing homes** [F04] | **16.7 k** | **114.9 k** | **229.8 k** | €0.67 M / €4.58 M / €9.17 M net a year at €3.99 [F05] |
+
+**Unknown:** the number of Maison Sécurisée subscribers. They are the best first market, but the count is not public.
+
+## 4. Pricing options
+
+| Competitor offer | Price | Camera | Source |
+|---|---|---|---|
+| Vodafone + Prosegur Alarms | "desde €45,5/mês" | 360° camera in the base package | [vodafone.pt](https://www.vodafone.pt/alarmes-prosegur.html) |
+| NOS Securitas, apartment | €34.99/month campaign (€39.99 struck through); 36 months | Indoor camera **+€7.50/month** | [nos.pt alarm](https://www.nos.pt/alarmes/alarme-casa), [nos.pt cameras](https://www.nos.pt/alarmes/equipamentos/camaras-vigilancia) |
+| SFR Maison Sécurisée | €19.99/month; €5 off for SFR Box customers | Included | docs/12 §2 |
+| MEO | Ajax Starter kit, no monthly fee | None | docs/12 §2 |
+
+| Our option (**ASSUMPTION**) | Retail incl. VAT | Net of 23 % VAT | Fits | Why this price |
+|---|---|---|---|---|
+| A. Camera + Things bundle [B21] | €7.50 | €6.10 | MEO | What NOS charges for the camera alone |
+| B. Add-on [B20] | €2.99 / €3.99 / €4.99 | €2.43 / €3.24 / €4.06 | Homes with a platform camera, e.g. Maison Sécurisée | €4.99 is 25 % of SFR's price, 14 % of NOS's and 11 % of Vodafone's |
+| C. Inside an alarm plan | €0 extra | — | Retention | Value is lower churn, **unknown** |
+
+## 5. Unit economics per home per month
+
+Continuous perception runs locally. The cloud is called only for these three kinds of call:
+
+| Call | Model | Measured cost per call | Calls a month, low / base / high (**ASSUMPTION**) |
+|---|---|---|---|
+| Sentence → sensor | Sonnet 5.5 | $0.003612 [A16] | 2 / 5 / 15 |
+| Question | Sonnet 5.5 | $0.002546 [A17] | 30 / 60 / 150 |
+| Ambiguous event | Haiku 5.5 | $0.0003077 [A18] | 60 / 300 / 900 |
+
+The total is **$0.10 / $0.43 / $1.78** [C01]. It includes three ASSUMPTIONS:
+- a per-call factor of 1.0 / 1.5 / 2.0, since only one call of each kind was measured;
+- a data-residency uplift of 1.00 / 1.10 / 1.25;
+- an exchange rate of 1 USD = 1 EUR.
+
+By contrast, sending one busy zone to the cloud costs up to $0.37 an hour ([prototype README](../prototype/README.md)).
+
+| Cost, €/home/month | Low | Base | High | Basis |
+|---|---|---|---|---|
+| Cloud AI [C02] | 0.10 | 0.43 | 1.78 | Above |
+| Cloud backend [B07] | 0.05 | 0.10 | 0.25 | **ASSUMPTION** |
+| Support [C03] | 0.17 | 0.42 | 1.25 | **ASSUMPTION**: 0.25 / 0.5 / 1 contacts a year at €8 / €10 / €15 |
+| Acquisition [C04] | 0.28 | 0.56 | 1.11 | **ASSUMPTION**: €10 / €20 / €40 over 36 months |
+| **Running cost** [C05] | **0.60** | **1.51** | **4.39** | |
+
+**Edge options.** Hardware prices are rough **ASSUMPTIONS**, amortised over 36 months to match NOS's commitment.
+
+| Option | Hardware | €/month | Household electricity (€0.2367/kWh, Eurostat) |
+|---|---|---|---|
+| E1: existing gateway or camera | €0 | 0 | — (feasibility **unknown**) |
+| E2: small box with an NPU | €60 / €100 / €150 | 1.67 / 2.78 / 4.17 | 0.52 / 0.86 / 1.38 (3 / 5 / 8 W) |
+| E3: GPU-class box | €200 / €300 / €400 | 5.56 / 8.33 / 11.11 | 1.73 / 2.59 / 4.32 (10 / 15 / 25 W) |
+
+**Margin, € per home per month, net of VAT.** Base costs, with the low-cost to high-cost range in brackets.
+
+| Offer | E1 | E2 | E3 |
+|---|---|---|---|
+| Add-on €2.99 [M01] | 0.92 (1.83 to −1.96) | — | — |
+| Add-on €3.99 [M02, M04] | **1.74** (2.65 to −1.15) | −1.04 | — |
+| Add-on €4.99 [M03, M05, M06] | 2.55 (3.46 to −0.34) | −0.23 | −5.78 |
+| Bundle €7.50, camera supplied (€25 / €40 / €60, **ASSUMPTION**) [M07–M09] | 3.48 | 0.70 | −4.85 |
+
+A GPU-class box per home never pays back. The open-vocabulary detectors we use (OWLv2, Grounding DINO) are the heavy part. The case needs a lighter detector, at a low frame rate, on hardware already in the home.
+
+## 6. Revenue for MEO
+
+| Adoption, share of 1,580 k accesses (**ASSUMPTION**) | Homes | Net revenue a year at €2.99 / €3.99 / €4.99 | Contribution at €3.99, E1, base costs |
+|---|---|---|---|
+| 0.5 % | 7.9 k | €230 k / €308 k / €385 k | €165 k |
+| 1 % | 15.8 k | €461 k / €615 k / €769 k | €329 k |
+| 2 % | 31.6 k | €922 k / €1,230 k / €1,539 k | €659 k |
+| 5 % | 79.0 k | €2,305 k / €3,076 k / €3,847 k | €1,647 k |
+
+The base funnel scenario (1.2 %) falls between the 1 % and 2 % rows. Bundle revenue, churn effects and any Altice Labs licence fee are not included; all three are **unknown**.
+
+## 7. Competitors and differentiation
+
+| Who | What they sell | Overlap |
+|---|---|---|
+| NOS Securitas; Vodafone + Prosegur | Alarm plans with cameras (§4) | Security only; ThingTracker could use the same camera |
+| SFR Maison Sécurisée (built by Altice Labs) | Hub, 2 motion detectors, a camera, a door/window detector (docs/12 §2) | Same camera; ThingTracker adds an information use |
+| Altice Cognitive Home | Reliable Security with alerts and video playback ([02-challenge](02-challenge.md)); Family Care; Aging in place. Brochure: scenarios "will be powered by generative AI to enable the automatic generation of scenario scripts" (docs/12 §5) | **High** for the rule builder (§5 row F); **none** for lost & found (row G) |
+
+**Differentiation.** The camera remembers where and when each thing was last seen, without storing video. Perception is local and limited to the zones the user draws. Actions reach the customer's own devices through Altice's MCP, and four new MCP tools let any assistant query that memory. Lead with the object memory, not the rule builder.
+
+docs/12 did not survey camera vendors, so **we do not claim that no home camera keeps a last-seen memory of objects.** That scan is still to do.
+
+## 8. Replication
+
+- **Same platform, same tab.** Cognitive Home is multi-tenant and white-label (docs/12 §2), so a new operator needs configuration, not new code. *Inference.*
+- **Costs are nearly country-neutral.** Only VAT, electricity and data residency differ.
+- **Language.** Portuguese and English sentences work; French is untested.
+- **France has more demand.** Connected-home use is 39.01 % in France against 23.99 % in Portugal; security devices are 14.16 % against 8.49 % (Eurostat 2024).
+- **The SFR sale.** The MoU was signed "with a view to acquiring SFR", subject to employee consultation and regulatory clearance (iliad, 6 Jun 2026). What happens to Maison Sécurisée is unknown, so ThingTracker should be pitched as a Cognitive Home feature for any licensee. The brochure names no other operator (docs/12 §2).
+
+## 9. Key risks to the business case
+
+| Risk | Effect | Mitigation |
+|---|---|---|
+| Perception does not fit on existing hardware | +€2.78 to €8.33 a month [C07, C08]; the add-on loses money | Light detector at a low frame rate; bundle |
+| Few MEO homes have a camera | The Portuguese add-on market is far below D03 | Bundle in Portugal, add-on in France |
+| Usage heavier than assumed (n = 1 per call) | AI up to €1.78 [C02] | Prompt caching, spending caps, more Haiku calls |
+| EU data residency | Uplift **unknown** [B05]. The Anthropic API does not guarantee EU-only processing ([executive summary](../deliverables/executive-summary/sumario-executivo.md)) | Bedrock EU regions or an open model hosted by Altice; both unpriced |
+| GDPR; EU AI Act on remote biometric identification | Adoption, legal cost | Zones, no stored video, face recognition optional and local |
+| Overlap with Altice's GenAI scenarios | Weaker differentiation | Lead with object memory |
+| SFR sale | France uncertain | Pitch it as a platform feature |
+| Older users: 8.8 % of 65–74s use connected-home systems in Portugal (docs/12 §3.7) | Low take-up | Family-facing use |
+| Take rate unknown | Revenue scales linearly [R rows] | A pilot |
+
+## 10. What we need from Altice to firm up the numbers
+
+1. MEO homes with an active Cognitive Home, and with a camera; the number of Maison Sécurisée subscribers.
+2. Spare CPU or NPU capacity on the gateway, hub, router or set-top box (E1).
+3. Camera hardware cost, and whether MEO will sell one.
+4. Take rate, price, churn, support cost and acquisition cost of past add-ons.
+5. Data-residency policy for the LLM: EU-only, Bedrock or self-hosted.
+6. The licence model per home, and which operators license Cognitive Home.
+7. Whether GenAI scenario scripts have shipped, and what the SFR sale means for Maison Sécurisée.

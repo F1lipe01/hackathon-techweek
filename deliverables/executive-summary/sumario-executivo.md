@@ -34,7 +34,7 @@ Até ao momento, a equipa desenvolveu um cliente MCP próprio, que lê o estado 
 
 ## Ferramentas de IA
 
-- **Interpretação de imagem.** Um modelo de IA multimodal (Claude, da Anthropic) interpreta as zonas recortadas, avalia situações ambíguas, responde a perguntas a partir da memória e converte as frases do utilizador em regras. O modelo recebe apenas recortes e contexto, nunca vídeo contínuo, e nunca é o único critério para disparar um alarme. Estima-se um custo de 0,26 USD por casa e por mês com o modelo mais pequeno, para 30 pedidos diários.
+- **Interpretação de imagem.** Um modelo de IA multimodal sob contrato (por exemplo, o Claude, da Anthropic) interpreta as zonas recortadas, avalia situações ambíguas, responde a perguntas a partir da memória e converte as frases do utilizador em regras. O modelo recebe apenas recortes e contexto, nunca vídeo contínuo, e nunca é o único critério para disparar um alarme. Estima-se um custo de 0,28 USD por casa e por mês com o modelo mais pequeno, para 30 pedidos diários (custo medido por pedido).
 - **Deteção contínua.** O seguimento de objetos recorre a detetores que reconhecem objetos descritos por texto (OWLv2 ou Grounding DINO, licença Apache-2.0) e ao ByteTrack (licença MIT), evitando modelos AGPL, como o YOLO da Ultralytics, que exigiriam uma licença comercial.
 - **Localização dos dados.** Como a API da Anthropic não garante o processamento exclusivamente na UE, a versão comercial poderá recorrer ao Claude nas regiões europeias do Amazon Bedrock ou a um modelo aberto alojado pela Altice.
 - **Desenvolvimento.** A equipa recorreu ao Claude Code (Claude Opus 5.5) na pesquisa, na programação e na redação, tendo validado os resultados e confirmado todos os números nas fontes primárias.

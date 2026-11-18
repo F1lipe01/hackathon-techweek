@@ -71,7 +71,7 @@ def main():
     manifest = json.loads(manifest_path.read_text())
     entry = next(c for c in manifest["clips"] if Path(c["file"]).stem == args.clip)
     video = STOCK / entry["file"]
-    queries = QUERIES[entry.get("queries_for", entry["scene"])]
+    queries = entry.get("queries") or QUERIES[entry.get("queries_for", entry["scene"])]   # a clip may name its own
 
     det = edge.Detector()
     total = duration(video)

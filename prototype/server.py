@@ -45,6 +45,15 @@ from store import CROPS, Store  # noqa: E402
 store = Store()
 brain = Brain(store)
 app = FastAPI(title="ThingTracker prototype")
+
+
+@app.middleware("http")
+async def no_cache_for_the_page(request, call_next):
+    """The page changes often while we build it: never let the browser keep an old copy."""
+    response = await call_next(request)
+    if request.url.path == "/" or request.url.path.startswith("/web/"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
 MIN_OBSERVE_GAP = 2.5  # seconds; protects the budget even if the page misbehaves
 _last_observe = {"t": 0.0}
 _obs_lock = threading.Lock()
@@ -131,6 +140,8 @@ def add_thing(payload: dict = Body(...)):
 
 @app.post("/api/observe")
 def observe(payload: dict = Body(...)):
+    if not brain.enabled:  # AI off: nothing is analysed or stored, so no rate limit is needed
+        return {"result": {"zones": [], "not_analysed": True}, "fired": [], "ai": False, "spend": store.snapshot()["spend"]}
     with _obs_lock:
         if time.time() - _last_observe["t"] < MIN_OBSERVE_GAP:
             raise HTTPException(429, "Too soon: one observation every 2.5 s at most")
@@ -144,6 +155,8 @@ def observe(payload: dict = Body(...)):
     things = store.things()
     sensors = [r for r in store.active_rules() if r["zone_id"] in {c["zone_id"] for c in crops}]
     result = _llm(brain.observe, crops, things, [{"id": r["id"], "zone_id": r["zone_id"], "question": r["question"]} for r in sensors])
+    if result.get("not_analysed"):
+        return {"result": result, "fired": [], "ai": False, "spend": store.snapshot()["spend"]}
 
     # keep the crops (only the chosen zones ever reach the server)
     stamp = time.strftime("%Y%m%d-%H%M%S")

@@ -7,10 +7,10 @@ compile()  Sonnet 5.5  a sentence (English or Portuguese) -> a virtual sensor (z
 Every call goes through _call(), which refuses to run once the cap is reached
 (TT_BUDGET_USD, default 3.00) and records the real token usage and cost.
 
-AI IS OFF BY DEFAULT. Without TT_AI=1 nothing is sent to Claude: each call returns a simulated
-answer built from local data, marked "(simulated)", at zero cost. Use it to test the layout and the flow.
+AI IS OFF BY DEFAULT. Without TT_AI=1 nothing is sent to Claude, at zero cost:
+- observe() analyses nothing and never invents sightings or alerts;
+- ask() and compile() return simulated answers built only from the memory and the sentence, marked "(simulated)".
 """
-import itertools
 import json
 import os
 import re
@@ -37,7 +37,6 @@ class Brain:
         self.enabled = os.environ.get("TT_AI") == "1"
         self.client = anthropic.Anthropic() if self.enabled else None  # reads ANTHROPIC_API_KEY from the environment
         self.lock = threading.Lock()
-        self._flip = itertools.cycle([False, True])
 
     # ------------------------------------------------------------------ plumbing
     def _call(self, kind, model, system, content, schema, max_tokens, thinking_off):
@@ -68,7 +67,7 @@ class Brain:
         """crops: [{zone_id, zone_name, jpeg_b64}]; things: [{id, name, description}];
         sensors: [{id, zone_id, question}] -> {zones: [...]}"""
         if not self.enabled:
-            return self._sim_observe(crops, things, sensors)
+            return {"zones": [], "not_analysed": True}  # AI off: never invent sightings or alerts
         content = []
         for c in crops:
             content.append({"type": "text", "text": f"Zone {c['zone_id']} \"{c['zone_name']}\":"})
@@ -166,20 +165,6 @@ class Brain:
 
 
     # ------------------------------------------------------------------ simulation (TT_AI unset): no API calls, no cost
-    def _sim_observe(self, crops, things, sensors):
-        """Each zone 'sees' one thing in turn; every sensor answers yes on alternate calls, so alerts can be tested."""
-        zones = []
-        for i, c in enumerate(crops):
-            shown = things[(int(time_slot()) + i) % len(things)]["id"] if things else None
-            hit = next(self._flip)
-            zones.append({
-                "zone_id": c["zone_id"], "scene": "(simulated) AI analysis is off",
-                "things": [{"thing_id": t["id"], "visible": t["id"] == shown, "where": "(simulated)" if t["id"] == shown else ""} for t in things],
-                "sensors": [{"sensor_id": s["id"], "answer": "yes" if hit else "no", "evidence": "(simulated)"}
-                            for s in sensors if s["zone_id"] == c["zone_id"]],
-            })
-        return {"zones": zones}
-
     def _sim_ask(self, question, memory):
         q = question.lower()
         for t in memory["things"]:
@@ -212,8 +197,3 @@ class Brain:
             "deadline": f"{hh:02d}:{m.group(2) or '00'}" if m else "",
             "action": action, "message": f"(simulated) {sentence.strip()}", "new_thing": "", "cooldown_s": 60,
         }
-
-
-def time_slot():
-    import time
-    return time.time() // 6

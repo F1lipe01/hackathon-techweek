@@ -19,6 +19,13 @@
     --app-font: "Montserrat", "Helvetica Neue", Arial, sans-serif;
     --step-small: 0.8125rem; --step-body: 0.9375rem; --step-lead: 1.125rem; --step-head: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem);
     --gutter: clamp(16px, 2.4vw, 40px);
+    /* One height drives both columns: the camera block (title + video + buttons) and the iPhone are the same
+       height. It fits the window's height and, side by side, its width too:
+       video + phone = 16/9 (h - 120) + 393/852 (h - 22) + 22 = 2.2391 h - 201.5 */
+    --gap: clamp(24px, 3.5vw, 64px);
+    --app-h: clamp(560px, calc(100svh - 120px), 880px);
+    --stage-w: calc((var(--app-h) - 120px) * 16 / 9);
+    --phone-w: calc((var(--app-h) - 22px) * 393 / 852 + 22px);
     --radius: 14px;
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   }
@@ -61,14 +68,17 @@
   .mode { font-size: var(--step-small); padding: 4px 10px; border-radius: 999px; background: var(--surface); color: var(--muted); }
   .mode.live { background: #fdecec; color: var(--app-red); }
 
-  .split { display: grid; gap: var(--gutter); padding: var(--gutter); align-items: start; }
-  @media (min-width: 1100px) { .split { grid-template-columns: minmax(0, 1fr) clamp(380px, 30vw, 440px); } }
+  .split { display: grid; gap: var(--gap); padding: var(--gutter); align-items: start; justify-content: center; }
+  @media (min-width: 1100px) {
+    :root { --app-h: min(clamp(560px, calc(100svh - 120px), 880px), calc((100vw - 2 * var(--gutter) - var(--gap) + 201px) / 2.2391)); }
+    .split { grid-template-columns: var(--stage-w) var(--phone-w); }
+  }
 }
 
 @layer camera {
-  .cam { display: grid; gap: 14px; min-width: 0; }
-  .cam-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
-  .cam-head h1 { font-size: var(--step-head); font-weight: 600; letter-spacing: -0.03em; }
+  .cam { display: grid; gap: 14px; min-width: 0; width: 100%; max-width: var(--stage-w); }
+  .cam-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; min-height: 50px; }
+  .cam-head h1 { font-size: clamp(1.5rem, 1.2rem + 0.8vw, 2rem); font-weight: 600; letter-spacing: -0.03em; line-height: 1; }
 
   .seg { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--surface-2); border-radius: 999px; }
   .seg label { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 0.45em 0.95em; border-radius: 999px; cursor: pointer; font-weight: 500; transition: background-color 160ms ease-out; }
@@ -97,10 +107,15 @@
   .status { color: var(--muted); font-size: var(--step-small); margin-left: auto; min-width: 0; }
   .btn[aria-pressed="true"] { background: var(--labs); color: #fff; }
 
-  .zone-form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 12px; background: var(--ground); border-radius: var(--radius); }
-  .zone-form label { font-weight: 500; }
-  .zone-form input { flex: 1 1 200px; min-width: 0; border: 0; border-radius: 999px; padding: 0.6em 1em; background: var(--surface); }
-
+  /* the name box sits next to the rectangle being drawn */
+  .zone-pop {
+    position: absolute; z-index: 4; display: flex; align-items: center; gap: 6px;
+    width: min(360px, calc(100% - 16px)); padding: 6px; border-radius: 16px; background: #fff;
+    box-shadow: 0 10px 28px rgb(0 0 0 / 0.28); /* floats over the video: the one shadow here */
+  }
+  .zone-pop input { flex: 1; min-width: 0; border: 0; border-radius: 999px; padding: 0.55em 0.9em; background: var(--surface); }
+  .zone-pop input:focus-visible { outline: 2px solid var(--labs); outline-offset: 0; }
+  .pop-x { border: 0; width: 34px; height: 34px; flex: none; border-radius: 999px; background: var(--surface); display: grid; place-items: center; cursor: pointer; }
   .privacy { font-size: var(--step-small); color: var(--muted); }
   .log-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
   .log-head h2 { font-size: var(--step-lead); font-weight: 600; }
@@ -114,33 +129,37 @@
 }
 
 @layer phone {
-  .phone-wrap { display: grid; justify-items: center; gap: 10px; min-width: 0; }
+  .phone-wrap { display: grid; justify-items: center; align-content: start; gap: 12px; min-width: 0; }
   .phone-note { font-size: var(--step-small); color: var(--muted); text-align: center; max-width: 40ch; }
-  /* iPhone frame at 9:16. The phone's width sets everything inside it (cqi units). */
+  /* iPhone frame at 9:16. Inside it, .device is laid out at 393 pt (an iPhone's width) and zoomed to fit,
+     so nothing reflows or overflows when the window is small: the whole screen scales, as on a real device. */
   .phone {
-    --pw: min(420px, 100%, calc((100svh - 150px) * 9 / 16));
-    position: relative; width: var(--pw); aspect-ratio: 9 / 16;
-    container-type: inline-size;
-    display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
-    background: var(--app-bg); color: var(--app-ink); font-family: var(--app-font);
-    border-radius: 56px; overflow: hidden;
+    /* iPhone 18: screen 1179 x 2556 px = 393 x 852 pt. Bezel 11 px each side. */
+    --pw: min(100%, var(--phone-w));
+    position: relative; width: var(--pw);
+    background: var(--app-bg); border-radius: 58px; overflow: hidden;
     border: 11px solid #0c0c0c; /* taste-skill-ignore: device bezel */
     box-shadow: 0 0 0 2px #3a3a3c; /* taste-skill-ignore: the frame's metal edge */
   }
-  .phone > .screen { grid-row: 2; }
-  .phone > .tabs { grid-row: 3; }
+  .device {
+    position: relative; width: 393px; height: 852px; /* zoomed by fitDevice() */
+    display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
+    color: var(--app-ink); font-family: var(--app-font);
+  }
+  .device > .screen { grid-row: 2; }
+  .device > .tabs { grid-row: 3; }
   .ios-status {
     grid-row: 1; position: relative; display: flex; align-items: center; justify-content: space-between;
-    height: 12.5cqi; padding: 1.2cqi 7cqi 0 9cqi;
-    font: 600 4.1cqi/1 -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; color: var(--app-ink);
+    height: 54px; padding: 4px 30px 0 40px;
+    font: 600 16px/1 -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; color: var(--app-ink);
   }
-  .island { position: absolute; left: 50%; top: 2.8cqi; transform: translateX(-50%);
-    width: 31cqi; height: 9cqi; border-radius: 999px; background: #000; }
-  .ios-icons { display: inline-flex; align-items: center; gap: 1.4cqi; }
-  .ios-icons svg { height: 3cqi; width: auto; fill: currentColor; }
-  .ios-icons svg:last-child { height: 3.2cqi; }
-  .home-indicator { position: absolute; left: 50%; bottom: 2cqi; transform: translateX(-50%);
-    width: 35cqi; height: 1.3cqi; border-radius: 999px; background: var(--app-ink); }
+  .island { position: absolute; left: 50%; top: 11px; transform: translateX(-50%);
+    width: 124px; height: 36px; border-radius: 999px; background: #000; }
+  .ios-icons { display: inline-flex; align-items: center; gap: 6px; }
+  .ios-icons svg { height: 11px; width: auto; fill: currentColor; }
+  .ios-icons svg:last-child { height: 12px; }
+  .home-indicator { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%);
+    width: 139px; height: 5px; border-radius: 999px; background: var(--app-ink); }
   .screen { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; }
   .app-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 20px 8px; }
   .app-head h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; }
@@ -200,7 +219,7 @@
   .switch input:checked + span::after { transform: translateX(18px); }
   .switch input:focus-visible + span { outline: 2px solid var(--labs); outline-offset: 2px; }
 
-  .tabs { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--app-bg); padding: 8px 2px 7cqi;
+  .tabs { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--app-bg); padding: 8px 2px 30px;
     box-shadow: 0 -1px 0 var(--app-line); /* taste-skill-ignore: the app's tab bar edge */ }
   .tabs button { position: relative; border: 0; background: none; color: #73727c; font: 500 0.72rem/1.2 var(--app-font); padding: 4px 0; cursor: pointer; display: grid; justify-items: center; gap: 4px; }
   .tabs .ti, .tabs svg { width: 26px; height: 26px; }
@@ -210,7 +229,7 @@
   .tabs button.dot::after { content: ""; position: absolute; top: 0; right: calc(50% - 18px); width: 9px; height: 9px; border-radius: 50%; background: var(--app-red); }
 
   .toast {
-    position: absolute; z-index: 5; left: 12px; right: 12px; top: 13cqi;
+    position: absolute; z-index: 5; left: 12px; right: 12px; top: 56px;
     background: #fff; color: var(--app-ink); border-radius: 20px; padding: 12px 14px;
     box-shadow: 0 10px 30px rgb(0 0 0 / 0.18); /* floats over the app: the one shadow */
     display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: center; font-size: 0.88rem;
@@ -228,7 +247,8 @@
     .btn:active { transform: none; }
   }
   @media (max-width: 520px) {
-    .phone { --pw: 100%; border-width: 0; border-radius: 0; box-shadow: none; aspect-ratio: auto; }
+    .phone { --pw: 100%; border-width: 0; border-radius: 0; box-shadow: none; }
+    .device { width: auto; height: auto !important; zoom: 1 !important; }
     .ios-status, .home-indicator { display: none; }
     .screen { grid-template-rows: auto auto; }
     .status { margin-left: 0; width: 100%; }

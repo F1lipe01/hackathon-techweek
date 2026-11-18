@@ -48,6 +48,13 @@
       <img id="kitimg" alt="Frame from the kit camera" hidden>
       <div class="zones" id="zones" aria-label="Zones being watched"></div>
       <div class="draw" id="draw" hidden></div>
+      <!-- naming a new zone happens right next to the rectangle you drew -->
+      <form class="zone-pop" id="zoneform" hidden>
+        <label for="zonename" class="sr">Name this zone</label>
+        <input id="zonename" maxlength="40" placeholder="Name this zone, e.g. Hall table" autocomplete="off" required>
+        <button class="btn primary" type="submit"><span class="ti" style="--i:url(/web/icons/tabler/check.svg)"></span>Save</button>
+        <button class="pop-x" type="button" id="zonecancel" aria-label="Cancel"><span class="ti" style="--i:url(/web/icons/tabler/x.svg)"></span></button>
+      </form>
       <p class="stage-msg" id="stagemsg">Starting the webcam…</p>
     </div>
     <input type="file" id="file" accept="video/*" hidden>
@@ -59,12 +66,6 @@
       <span class="status" id="status" aria-live="polite">Stopped</span>
     </div>
 
-    <form class="zone-form" id="zoneform" hidden>
-      <label for="zonename">Name this zone</label>
-      <input id="zonename" maxlength="40" placeholder="e.g. Hall table" required>
-      <button class="btn primary" type="submit">Save zone</button>
-      <button class="btn" type="button" id="zonecancel">Cancel</button>
-    </form>
 
     <p class="privacy"><b>Zones</b> are the only parts of the picture ThingTracker looks at: draw one over each place where things get left, like your desk or the table by the door. The rest of the picture never leaves this browser, and a zone is only analysed when it changes. <b>Desk</b> and <b>Hall table</b> are examples: press <i>Edit zones</i>, delete them with ×, and draw your own.</p>
 
@@ -78,6 +79,8 @@
   <!-- ======================= APP: a copy of the Altice app, plus the Things tab ======================= -->
   <section class="phone-wrap" aria-label="Altice app with the new Things tab">
     <div class="phone">
+     <!-- The screen is laid out at the real iPhone width (393 pt) and scaled as a whole to fit the frame (app.js: fitDevice). -->
+     <div class="device" id="device">
       <!-- iPhone status bar and Dynamic Island -->
       <div class="ios-status" aria-hidden="true">
         <span class="ios-time" id="iostime">9:41</span>
@@ -179,8 +182,9 @@
         <button type="button" data-tab="menu" class="dot"><span class="ti" style="--i:url(/web/icons/tabler/menu-2.svg)"></span>Menu</button>
       </nav>
       <span class="home-indicator" aria-hidden="true"></span>
+     </div>
     </div>
-    <p class="phone-note">Copy of the Altice app (light theme), on an iPhone frame at 9:16, with the new <b>Things</b> tab.</p>
+    <p class="phone-note">Copy of the Altice app (light theme) on an iPhone 18 screen (393 × 852 pt), with the new <b>Things</b> tab.</p>
   </section>
 </main>
 

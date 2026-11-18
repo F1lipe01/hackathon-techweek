@@ -113,11 +113,12 @@ $('editzones').addEventListener('click', () => {
   editing = !editing;
   $('editzones').setAttribute('aria-pressed', String(editing));
   $('editzones').lastElementChild.textContent = editing ? 'Done' : 'Edit zones';
-  drawEl.hidden = !editing; renderZones();
+  drawEl.hidden = !editing; if (!editing) cancelZone(); renderZones();
   stageMsg(editing ? 'Drag over the picture to draw a new zone (a table, the door, a shelf). Press × on a zone to delete it.' : '');
 });
 let drag = null;
 drawEl.addEventListener('pointerdown', (e) => {
+  if (pendingZone) cancelZone();
   const r = stage.getBoundingClientRect();
   drag = { x0: e.clientX - r.left, y0: e.clientY - r.top, box: document.createElement('div') };
   drag.box.className = 'zone'; drawEl.replaceChildren(drag.box); drawEl.setPointerCapture(e.pointerId);
@@ -136,8 +137,22 @@ drawEl.addEventListener('pointerup', (e) => {
   if (x2 - x1 < 20 || y2 - y1 < 20) { drawEl.replaceChildren(); return; }
   const clamp = (v) => Math.max(0, Math.min(1, v));
   pendingZone = { x: clamp((x1 - c.x) / c.w), y: clamp((y1 - c.y) / c.h), w: clamp((x2 - x1) / c.w), h: clamp((y2 - y1) / c.h) };
-  $('zoneform').hidden = false; $('zonename').focus();
+  placeNameBox(x1, y1, x2, y2);
 });
+// Put the name box right under the new rectangle, or above it, or inside it, whichever fits.
+function placeNameBox(x1, y1, x2, y2) {
+  const f = $('zoneform');
+  f.hidden = false;
+  const sw = stage.clientWidth, sh = stage.clientHeight, w = f.offsetWidth, h = f.offsetHeight;
+  const left = Math.max(8, Math.min(x1, sw - w - 8));
+  let top = y2 + 8;
+  if (top + h > sh - 8) top = y1 - h - 8;
+  if (top < 8) top = Math.min(Math.max(8, y1 + 8), sh - h - 8);
+  Object.assign(f.style, { left: left + 'px', top: top + 'px' });
+  $('zonename').focus();
+}
+function cancelZone() { pendingZone = null; $('zonename').value = ''; $('zoneform').hidden = true; drawEl.replaceChildren(); }
+$('zonename').addEventListener('keydown', (e) => { if (e.key === 'Escape') cancelZone(); });
 $('zoneform').addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = $('zonename').value.trim();
@@ -146,7 +161,7 @@ $('zoneform').addEventListener('submit', async (e) => {
   await saveZones([...state.zones, { id, name, ...pendingZone }]);
   pendingZone = null; $('zonename').value = ''; $('zoneform').hidden = true; drawEl.replaceChildren();
 });
-$('zonecancel').addEventListener('click', () => { pendingZone = null; $('zoneform').hidden = true; drawEl.replaceChildren(); });
+$('zonecancel').addEventListener('click', cancelZone);
 
 // ------------------------------------------------------------------ observation loop
 const full = document.createElement('canvas'), crop = document.createElement('canvas'), tiny = document.createElement('canvas');
@@ -181,13 +196,17 @@ async function observe(force = false) {
   busy = true; setStatus(`Analysing ${crops.length} zone${crops.length > 1 ? 's' : ''}…`);
   const t0 = performance.now();
   try {
-    await api('/api/observe', { method: 'POST', body: JSON.stringify({ crops: crops.map(({ zone_id, jpeg_b64 }) => ({ zone_id, jpeg_b64 })) }) });
+    const r = await api('/api/observe', { method: 'POST', body: JSON.stringify({ crops: crops.map(({ zone_id, jpeg_b64 }) => ({ zone_id, jpeg_b64 })) }) });
     crops.forEach((c) => { lastSent[c.zone_id] = { sig: c.sig, t: Date.now() }; });
+    if (r.ai === false) {
+      setStatus('AI is off: the picture was not analysed ($0). Start the server with TT_AI=1 to analyse it.');
+      return;
+    }
     renderZones(crops.map((c) => c.zone_id));
     setStatus(`Analysed at ${new Date().toLocaleTimeString('en-GB')} · ${((performance.now() - t0) / 1000).toFixed(1)} s`);
     await refresh();
   } catch (e) {
-    setStatus(e.message);
+    setStatus(/Too soon/.test(e.message) ? 'Waiting a moment between analyses…' : e.message);
     if (/Budget/.test(e.message)) stopWatching();
   } finally { busy = false; }
 }
@@ -289,7 +308,7 @@ function render() {
 
   const st = s.settings || {};
   $('spend').textContent = `AI spend ${usd(s.spend.usd)} of ${usd(st.budget_usd || 0)} · ${s.spend.calls} calls`;
-  $('mode').textContent = st.ai ? 'AI on: real calls cost money' : 'AI off: simulated answers, $0';
+  $('mode').textContent = st.ai ? 'AI on: real calls cost money' : 'AI off: nothing analysed, $0';
   $('mode').classList.toggle('live', !!st.ai);
   renderZones();
 
@@ -341,6 +360,16 @@ async function loadDevices() {
     $('devsrc').textContent = r.source === 'live' ? 'Live from the MCP.' : 'Not logged in to the MCP: showing the real readings from 16 Nov.';
   } catch (e) { $('devsrc').textContent = e.message; }
 }
+
+// Scale the 393-pt iPhone screen to the frame, so the app never reflows or overflows (see .device in app.css).
+const phone = document.querySelector('.phone'), device = $('device');
+function fitDevice() {
+  if (matchMedia('(max-width: 520px)').matches) { device.style.zoom = ''; device.style.height = ''; return; }
+  device.style.zoom = phone.clientWidth / 393;   // the 393 x 852 pt screen scales as a whole
+  device.style.height = '';
+}
+new ResizeObserver(fitDevice).observe(phone);
+fitDevice();
 
 // live clock in the iPhone status bar
 const tick = () => { $('iostime').textContent = new Date().toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit' }); };

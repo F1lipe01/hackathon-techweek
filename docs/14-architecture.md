@@ -35,7 +35,7 @@ Two principles shape everything below:
 
 **Constraints today:**
 - **The camera:** one Wi-Fi camera (Tuya SC034-WNV3), reachable as RTSP through the organisers' go2rtc relay: H.265, 2304 × 1296, 20 fps (checked with ffprobe, 18 Nov). Opening the stream costs about 5 s, because the decoder waits for a keyframe, so the prototype keeps one connection open and reads the latest frame from memory. No VLC or plug-in is needed.
-- **The MCP server has 18 tools, with no event history and no push.** Its login token lasts about 24 h.
+- **The MCP server has 18 tools, with no push notifications and no general event feed** (only the alarm history, `get_home_security_alarm_history`). Its login token lasts about 24 h.
 - **The kit's hub can't run vision models.** It's an LTE gateway, not a compute device.
 - **The demo** runs on a laptop.
 
@@ -43,7 +43,7 @@ Two principles shape everything below:
 
 ### In the home: the edge service
 
-Runs as one service per home. In production it would run on the operator's home gateway, if it has an NPU, or on a small edge box; in the demo, on a laptop. All of its models are open source and free for commercial use (Apache-2.0, checked on the model cards on 18 Nov).
+Runs as one service per home. In production it would run on the operator's home gateway, if it has an NPU, or on a small edge box; in the demo, on a laptop. All of its models are open source and free for commercial use (checked on the model cards on 18 Nov): OWLv2, DINOv2 and Depth Anything V2 Small are Apache-2.0, and ByteTrack is MIT. Only the Small size of Depth Anything V2 qualifies; Base, Large and Giant are CC-BY-NC-4.0, which forbids commercial use.
 
 | Component | What it does | Technology | Notes |
 |---|---|---|---|
@@ -96,19 +96,19 @@ Checked at each provider's own terms and documentation on 18 Nov 2026:
 
 | Option | Passes? | How | Watch out for |
 |---|---|---|---|
-| **Claude**, via Amazon Bedrock | Yes | `eu.` cross-region profile, only EU regions; inputs not used for training; AWS GDPR DPA | Anthropic's own API has **no EU option** (only "us" and "global"). Some models need 30-day review retention on Bedrock |
-| **Claude**, via Google Vertex AI | Yes | `eu` multi-region endpoint | |
-| **OpenAI**, via Azure (DataZone EU) | Yes | Processed in EU member states; not available to OpenAI; not used for training; Microsoft DPA | Avoid "Global" deployments |
-| **OpenAI** API with EU residency | Yes, with a condition | `eu.api.openai.com` in a new project | Images in that region need extra approval from OpenAI |
-| **Gemini**, via Vertex AI | Yes | `eu` endpoint, no training without permission, Cloud DPA | The Gemini developer API has no EU processing option; its free tier allows human review |
-| **Mistral** | Yes | EU hosting by default, `api.eu.mistral.ai`, DPA | Check the training opt-out on pay-as-you-go; avoid Labs/Preview models |
+| **Claude**, via Amazon Bedrock | Yes | `eu.` cross-region profile, called from an EU region (called from London or Zurich, it also routes there); inputs not used for training; AWS GDPR DPA | Anthropic's own API has **no EU option** (only "us" and "global"). On Bedrock, Claude Fable 5, 5.1 and 5.2 need 30-day review retention (`aws_review`); Haiku 5.5 and Sonnet 5.5 do not |
+| **Claude**, via Google Vertex AI | Yes | `eu` multi-region endpoint (EU member states only) | |
+| **OpenAI**, via Azure (DataZone EU) | Yes | Processed in the EU Data Zone, which may include EFTA countries (Norway, Switzerland); not available to OpenAI; not used for training; Microsoft DPA | Avoid "Global" deployments |
+| **OpenAI** API with EU residency | Yes, with conditions | `eu.api.openai.com` in a new project; the region is "Europe (EEA + Switzerland)" | Only eligible organisations can enable it; images in that region need extra approval from OpenAI |
+| **Gemini**, via Vertex AI | Yes | `eu` endpoint, no training without permission, Cloud DPA | The Gemini developer API has no EU processing option: data may be stored transiently or cached in any country. For users in the EEA, Switzerland or the UK its paid-tier data terms apply and only paid services may serve them, so the free tier, which allows human review, is not an option |
+| **Mistral** | Yes, with conditions | Stored data in the EU by default; EU inference only through `api.eu.mistral.ai` (EU and EFTA countries, at 1.1× the price); DPA | The default endpoint is global, with no commitment on where inference runs. Training on data is on by default: turn it off in the Admin panel's Privacy menu. Avoid Labs/Preview models |
 | DeepSeek or Kimi, **hosted** | **No** | — | Data stored in China (DeepSeek, Kimi app) or Singapore (Kimi API); training on content allowed; no DPA. Italy's Garante limited DeepSeek (Jan 2025); Berlin's DPA called its transfers to China unlawful (Jun 2025) |
 | **DeepSeek** open weights, run by Altice | Yes | MIT licence, vision-capable models | No data leaves Altice |
-| **Qwen** open weights, run by Altice | Yes | Qwen3.8-27B: Apache-2.0, vision-capable | Larger Qwen models use a community licence with display and resale clauses |
-| **Kimi** open weights, run by Altice | Yes, after a legal check | "Modified MIT", vision-capable | Display requirement above 100M users or $20M monthly revenue; Altice's group size needs a legal check |
-| Llama 3.2 / 4 vision | **No** | — | Its licence excludes companies whose principal place of business is in the EU (text-only Llama is fine) |
+| **Qwen** open weights, run by Altice | Yes; larger models after a legal check | Qwen3.8-27B: Apache-2.0, vision-capable | Larger models use the "Qwen Community License 1.0" (Flash-Next) or the "Qwen3.8-Max License" (2.4T). Both require showing the model name above 100M monthly users or US$20M monthly revenue. The real constraint is a separate licence for anyone running a "Model as a Service or AI Work Assistant business" (the Max licence adds a condition on group revenue above US$50M); internal use is exempt. Needs a legal check, as for Kimi |
+| **Kimi** open weights, run by Altice | Yes, after a legal check | K2.5: "Modified MIT"; K3 and K3.1-Pro: "Kimi K3 License"; vision-capable | K2.5 requires showing the model name above 100M monthly active users or US$20M monthly revenue. The K3 licence adds a separate agreement for model-as-a-service operators above US$20M revenue (licence §2–3). Altice's group size needs a legal check |
+| Llama 3.2 vision / Llama 4 | **No** | — | Their licences exclude companies whose principal place of business is in the EU from the multimodal models. Llama 4 Scout and Maverick are multimodal, so this covers them; only the Llama 3.x text models are fine |
 
-**The rule for any deployment:** always pin EU endpoints, never "global".
+**The rule for any deployment:** pin EU endpoints, called from an EU region, never "global". Some "EU" zones also include EEA or EFTA countries (Azure's EU Data Zone, OpenAI's Europe region, Mistral's EU endpoint).
 
 ## 4. How it works: the main flows
 
@@ -130,7 +130,7 @@ Two ways in, one flow:
 Then:
 1. *App:* "Show it to the camera". The user holds the thing in front of any camera and turns it slowly for about 3 s. A phone alternative is to take 3 photos.
 2. *Edge:* the detector boxes the thing in about 8 frames. DINOv2 turns the crops into a fingerprint, and the best crop becomes its photo.
-3. *Edge → platform:* **the thing's name and photo** (thumbnail), so the app can show it.
+3. *Edge → platform:* **the thing's name and photo** (thumbnail), so the app can show it, **and its fingerprint**, stored in the platform's database and associated with the customer.
 4. From now on, a detection of "keys" counts as **your keys** only if its fingerprint matches, which avoids confusing them with a visitor's.
 
 ### 4.3 Continuous tracking: last seen
@@ -196,7 +196,7 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
 | Camera | id, name, stream, masks | Edge, platform | While installed |
 | Place | id, name, camera, last box | Edge; names on the platform | While defined |
 | Thing | id, name, photo, category | Edge, platform | Until deleted |
-| Fingerprint | thing id, about 8 embeddings | **Edge only** | Until the thing is deleted |
+| Fingerprint | thing id, about 8 embeddings | Edge (for the local models); platform database, associated with the customer | Until the thing is deleted |
 | Sighting | thing, place, time, box, confidence, thumbnail | Edge | 30 days, then deleted |
 | Presence | known phone, home / away, time | Edge | 30 days |
 | Sensor | rule (§5), owner, active, history | Edge, platform | Until deleted |
@@ -210,7 +210,7 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
 |---|---|
 | Video, full frames | **Not for analysis.** The user's own live view and clips work as in the Altice app today, through its relay |
 | Faces, identities | **Only by opt-in.** Off by default; the household enrols a person, with that person's consent. The face template stays on the edge; an event may carry the name the household chose ("Ana arrived") |
-| Fingerprints (embeddings) | Never |
+| Fingerprints (embeddings) | Yes, to the platform's database, associated with the customer. A copy stays on the edge for the local models |
 | Thing names, place names, thumbnails of things | Yes, to the platform, so the app can show them |
 | Events (sensor fired, thing seen) | Yes, to the platform |
 | One crop of a zone | Only for an unclear case, to the language model under contract; not stored by it |

@@ -35,7 +35,7 @@ Dois princípios orientam tudo o que se descreve a seguir:
 
 Atualmente, aplicam-se as seguintes restrições:
 - Existe uma única câmara Wi-Fi (_Tuya SC034-WNV3_), acessível por RTSP (“_Real Time Streaming Protocol_”) através do _relay_ _go2rtc_ disponibilizado pela organização, em H.265, 2304 × 1296 e 20 fps (verificado com o _ffprobe_ a 18 de novembro). A abertura do _stream_ demora cerca de 5 s, porque o descodificador espera por uma imagem-chave, pelo que o protótipo mantém uma ligação aberta e lê da memória a imagem mais recente, sem necessidade do _VLC_ nem de qualquer _plug-in_.
-- O servidor MCP tem 18 ferramentas, sem histórico de eventos nem notificações _push_, e o _token_ de autenticação dura cerca de 24 h.
+- O servidor MCP tem 18 ferramentas, sem notificações _push_ nem um fluxo geral de eventos (existe apenas o histórico do alarme, `get_home_security_alarm_history`), e o _token_ de autenticação dura cerca de 24 h.
 - A central do kit não consegue executar modelos de visão, uma vez que é um _gateway_ LTE e não um equipamento de computação.
 - A demonstração corre num portátil.
 
@@ -43,7 +43,7 @@ Atualmente, aplicam-se as seguintes restrições:
 
 ### Em casa: o serviço local
 
-Cada casa tem uma instância do serviço local. Em produção, correria no _gateway_ residencial do operador, caso este disponha de uma NPU (“_Neural Processing Unit_”), ou numa pequena caixa _edge_; na demonstração, corre num portátil. Todos os modelos são _open-source_ e de uso comercial livre (Apache-2.0, conforme verificado nas fichas dos modelos a 18 de novembro).
+Cada casa tem uma instância do serviço local. Em produção, correria no _gateway_ residencial do operador, caso este disponha de uma NPU (“_Neural Processing Unit_”), ou numa pequena caixa _edge_; na demonstração, corre num portátil. Todos os modelos são _open-source_ e de uso comercial livre, conforme verificado nas fichas dos modelos a 18 de novembro: o _OWLv2_, o _DINOv2_ e o _Depth Anything V2 Small_ têm licença Apache-2.0, e o _ByteTrack_ tem licença MIT. Do _Depth Anything V2_, só a versão _Small_ cumpre este requisito, uma vez que as versões _Base_, _Large_ e _Giant_ têm licença CC-BY-NC-4.0, que proíbe o uso comercial.
 
 | Componente | Função | Tecnologia | Notas |
 |---|---|---|---|
@@ -96,19 +96,19 @@ As opções seguintes foram verificadas nos termos e na documentação de cada f
 
 | Opção | Cumpre? | Como | Cuidados |
 |---|---|---|---|
-| _Claude_, via _Amazon Bedrock_ | Sim | Perfil entre regiões `eu.`, só com regiões da UE; os dados de entrada não são usados para treino; DPA da AWS para o RGPD | A API da própria Anthropic não tem opção para a UE (só “us” e “global”). No _Bedrock_, alguns modelos exigem a retenção dos dados durante 30 dias, para revisão |
-| _Claude_, via _Google Vertex AI_ | Sim | _Endpoint_ multirregião `eu` | |
-| OpenAI, via _Azure_ (_DataZone EU_) | Sim | Processamento em Estados-Membros da UE; sem acesso por parte da OpenAI; sem uso para treino; DPA da Microsoft | Evitar as implementações “Global” |
-| API da OpenAI com residência na UE | Sim, com uma condição | `eu.api.openai.com`, num projeto novo | O envio de imagens nessa região exige uma aprovação adicional da OpenAI |
-| _Gemini_, via _Vertex AI_ | Sim | _Endpoint_ `eu`, treino só com autorização, DPA do Google Cloud | A API para programadores do _Gemini_ não tem opção de processamento na UE, e o nível gratuito admite revisão humana |
-| Mistral | Sim | Alojamento na UE por omissão, `api.eu.mistral.ai`, DPA | Confirmar a exclusão do treino no plano _pay-as-you-go_; evitar os modelos _Labs_ e _Preview_ |
+| _Claude_, via _Amazon Bedrock_ | Sim | Perfil entre regiões `eu.`, chamado a partir de uma região da UE (se for chamado a partir de Londres ou de Zurique, também encaminha os pedidos para essas regiões); os dados de entrada não são usados para treino; DPA da AWS para o RGPD | A API da própria Anthropic não tem opção para a UE (só “us” e “global”). No _Bedrock_, os modelos _Claude Fable 5_, _5.1_ e _5.2_ exigem a retenção dos dados durante 30 dias, para revisão (`aws_review`), o que não acontece com o _Claude Haiku 5.5_ nem com o _Claude Sonnet 5.5_ |
+| _Claude_, via _Google Vertex AI_ | Sim | _Endpoint_ multirregião `eu` (só Estados-Membros da UE) | |
+| OpenAI, via _Azure_ (_DataZone EU_) | Sim | Processamento na _Data Zone_ da UE, que pode incluir países da EFTA (Noruega, Suíça); sem acesso por parte da OpenAI; sem uso para treino; DPA da Microsoft | Evitar as implementações “Global” |
+| API da OpenAI com residência na UE | Sim, com condições | `eu.api.openai.com`, num projeto novo; a região é “_Europe (EEA + Switzerland)_” | Só as organizações elegíveis a podem ativar, e o envio de imagens nessa região exige uma aprovação adicional da OpenAI |
+| _Gemini_, via _Vertex AI_ | Sim | _Endpoint_ `eu`, treino só com autorização, DPA do Google Cloud | A API para programadores do _Gemini_ não tem opção de processamento na UE, e os dados podem ser guardados temporariamente ou em _cache_ em qualquer país. Aos utilizadores do EEE, da Suíça ou do Reino Unido aplicam-se os termos de dados do nível pago, e só os serviços pagos os podem servir, pelo que o nível gratuito, que admite revisão humana, não pode ser usado |
+| Mistral | Sim, com condições | Dados guardados na UE por omissão; inferência na UE só através de `api.eu.mistral.ai` (países da UE e da EFTA, a 1,1 vezes o preço do _endpoint_ global); DPA | O _endpoint_ por omissão é global, sem compromisso quanto ao local da inferência. O treino com os dados está ativo por omissão e desativa-se no menu _Privacy_ do _Admin panel_. Evitar os modelos _Labs_ e _Preview_ |
 | _DeepSeek_ ou _Kimi_, alojados pelos fornecedores | Não | | Dados guardados na China (_DeepSeek_, aplicação _Kimi_) ou em Singapura (API do _Kimi_); o treino com o conteúdo é permitido; sem DPA. A autoridade italiana de proteção de dados (Garante) limitou o _DeepSeek_ (janeiro de 2025), e a autoridade de proteção de dados de Berlim considerou ilegais as suas transferências para a China (junho de 2025) |
 | _DeepSeek_ (_open-weight_), alojado pela Altice | Sim | Licença MIT, modelos com visão | Nenhum dado sai da Altice |
-| _Qwen_ (_open-weight_), alojado pela Altice | Sim | _Qwen3.8-27B_: Apache-2.0, com visão | Os modelos _Qwen_ maiores usam uma licença comunitária com cláusulas de atribuição visível e de revenda |
-| _Kimi_ (_open-weight_), alojado pela Altice | Sim, após verificação jurídica | “MIT modificada”, com visão | Exige a atribuição visível acima de 100 milhões de utilizadores ou de 20 milhões de dólares de receita mensal; dada a dimensão do grupo Altice, é necessária uma verificação jurídica |
-| _Llama 3.2_ / _Llama 4_ com visão | Não | | A licença exclui as empresas cujo estabelecimento principal se situe na UE (o _Llama_ só de texto pode ser usado) |
+| _Qwen_ (_open-weight_), alojado pela Altice | Sim; os modelos maiores, após verificação jurídica | _Qwen3.8-27B_: Apache-2.0, com visão | Os modelos maiores usam a “_Qwen Community License 1.0_” (_Flash-Next_) ou a “_Qwen3.8-Max License_” (_2.4T_). Ambas exigem a indicação visível do nome do modelo acima de 100 milhões de utilizadores mensais ou de 20 milhões de dólares de receita mensal. A verdadeira restrição é a licença separada exigida a quem explore um “_Model as a Service or AI Work Assistant business_” (a licença _Max_ acrescenta uma condição sobre a receita do grupo acima de 50 milhões de dólares); o uso interno está isento. Exige uma verificação jurídica, como no caso do _Kimi_ |
+| _Kimi_ (_open-weight_), alojado pela Altice | Sim, após verificação jurídica | _K2.5_: “MIT modificada”; _K3_ e _K3.1-Pro_: “_Kimi K3 License_”; com visão | O _K2.5_ exige a indicação visível do nome do modelo acima de 100 milhões de utilizadores ativos mensais ou de 20 milhões de dólares de receita mensal. A licença do _K3_ acrescenta um acordo separado para os operadores de modelos como serviço (_model-as-a-service_) com receita superior a 20 milhões de dólares (§2–3 da licença). Dada a dimensão do grupo Altice, é necessária uma verificação jurídica |
+| _Llama 3.2_ com visão / _Llama 4_ | Não | | As licenças excluem dos modelos multimodais as empresas cujo estabelecimento principal se situe na UE. O _Llama 4 Scout_ e o _Llama 4 Maverick_ são multimodais e estão abrangidos; só os modelos de texto _Llama 3.x_ podem ser usados |
 
-Em qualquer implementação, fixam-se sempre os _endpoints_ da UE, e nunca o “global”.
+Em qualquer implementação, fixam-se os _endpoints_ da UE, chamados a partir de uma região da UE, e nunca o “global”. Algumas zonas “UE” incluem também países do EEE ou da EFTA (a _Data Zone_ da UE do _Azure_, a região europeia da OpenAI e o _endpoint_ europeu da Mistral).
 
 ## 4. Funcionamento: os fluxos principais
 
@@ -130,7 +130,7 @@ Há duas formas de começar e um único fluxo:
 Em seguida:
 1. Na aplicação, surge a indicação “Mostre-o à câmara”. O utilizador segura o objeto à frente de qualquer câmara e roda-o devagar durante cerca de 3 s. Em alternativa, pode tirar 3 fotografias com o telemóvel.
 2. No _edge_, o detetor delimita o objeto em cerca de 8 imagens, o _DINOv2_ converte os recortes numa assinatura visual e o melhor recorte passa a ser a fotografia do objeto.
-3. Do _edge_ para a plataforma seguem o nome do objeto e a sua fotografia (em miniatura), para que a aplicação os possa mostrar.
+3. Do _edge_ para a plataforma seguem o nome do objeto e a sua fotografia (em miniatura), para que a aplicação os possa mostrar, e a assinatura visual, que fica guardada na base de dados da plataforma, associada ao cliente.
 4. A partir daí, uma deteção de “chaves” só conta como as suas chaves se a assinatura visual corresponder, o que evita confundi-las com as chaves de uma visita.
 
 ### 4.3 Seguimento e última observação
@@ -198,7 +198,7 @@ Cada regra mostra ao utilizador, em linguagem corrente, o que observa e o que fa
 | Câmara | id, nome, _stream_, máscaras | _Edge_, plataforma | Enquanto estiver instalada |
 | Lugar | id, nome, câmara, última caixa delimitadora | _Edge_; os nomes também na plataforma | Enquanto estiver definido |
 | Objeto | id, nome, fotografia, categoria | _Edge_, plataforma | Até ser apagado |
-| Assinatura visual | id do objeto, cerca de 8 _embeddings_ | Só no _edge_ | Até o objeto ser apagado |
+| Assinatura visual | id do objeto, cerca de 8 _embeddings_ | _Edge_ (para os modelos locais); base de dados da plataforma, associada ao cliente | Até o objeto ser apagado |
 | Observação | objeto, lugar, hora, caixa, confiança, miniatura | _Edge_ | 30 dias; depois é apagada |
 | Presença | telemóvel conhecido, em casa / fora, hora | _Edge_ | 30 dias |
 | Sensor | regra (§5), proprietário, ativo, histórico | _Edge_, plataforma | Até ser apagado |
@@ -212,7 +212,7 @@ A tabela seguinte indica o que atravessa a fronteira da casa.
 |---|---|
 | Vídeo, imagens completas | Não são enviados para análise. A visualização em direto e as gravações do próprio utilizador continuam a funcionar como hoje na aplicação Altice, através do respetivo _relay_ |
 | Rostos, identidades | Só se a família o ativar. Desativado por omissão; a família regista uma pessoa, com o consentimento dessa pessoa. O padrão facial fica no _edge_; um evento pode levar o nome escolhido pela família (“A Ana chegou”) |
-| Assinaturas visuais (_embeddings_) | Nunca |
+| Assinaturas visuais (_embeddings_) | Sim, para a base de dados da plataforma, associadas ao cliente. Uma cópia fica no _edge_, para os modelos locais |
 | Nomes de objetos, nomes de lugares, miniaturas de objetos | Sim, para a plataforma, para que a aplicação os possa mostrar |
 | Eventos (sensor disparado, objeto visto) | Sim, para a plataforma |
 | Um recorte de uma zona | Só num caso duvidoso, para o modelo de linguagem sob contrato, que não o guarda |

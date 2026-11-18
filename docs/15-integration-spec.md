@@ -79,7 +79,7 @@ Result: `{ "thing": "glasses", "sightings": [ { "place": "Desk", "from": "…", 
 |---|---|
 | Connection | The edge opens **one outbound** connection to the platform (WebSocket or MQTT over TLS); no inbound ports in the home |
 | Identity | One credential per home edge, issued when the camera is added in the app; revocable from the app |
-| Edge → platform | Events (`thing.seen`, `thing.moved`, `sensor.fired`), thumbnails of things, answers to the Things tools |
+| Edge → platform | Events (`thing.seen`, `thing.moved`, `sensor.fired`), thumbnails and fingerprints of things, answers to the Things tools |
 | Platform → edge | Rules (compiled sensors), Things tool calls, "enrol now" requests, masks and places |
 | Offline | The edge keeps tracking and evaluating local rules; events queue and are sent when the link returns; device actions need the platform |
 | Language model | Called by the platform, never by the edge. The platform decides which model and region are used |
@@ -117,7 +117,7 @@ The thing's flow then runs as below.
 3. Edge: for about 3 s, detects the thing in the frames, keeps ~8 crops, computes the fingerprint, and returns a photo.
 4. App: shows the photo; the user confirms or retries.
 
-The fingerprint stays on the edge. Deleting the thing deletes it.
+The fingerprint is kept on the edge, for the local models, and in the platform's database, associated with the customer. Deleting the thing deletes it.
 
 ## 5. Sensors and scenarios
 
@@ -136,7 +136,7 @@ Proposed trigger, in the same shape as today's device triggers:
 
 | # | Need | Why | Today |
 |---|---|---|---|
-| 1 | An **event or push API**, or webhooks | Sensors must react to the door opening without polling | MCP has no events; we would have to poll |
+| 1 | An **event or push API**, or webhooks | Sensors must react to the door opening without polling | MCP has no push notifications and no general event feed (only the alarm history, `get_home_security_alarm_history`); we would have to poll |
 | 2 | **Local RTSP access** to the camera | Video should stay on the home network | Stream goes through a cloud relay (go2rtc) |
 | 3 | **Edge compute** in the home | Perception needs about 0.5 s per frame on a laptop GPU | The kit's LTE hub can't run vision models |
 | 4 | A way to **register new MCP tools** | For the four Things tools | Unknown |

@@ -1,6 +1,6 @@
 # Market research — evidence for choosing the use case
 
-State on **Tue 17 Nov 2026**. Every figure below was read at its primary source on 17 Nov 2026. Eurostat values were re-pulled through the Eurostat API with every non-geo dimension filtered explicitly. **Facts are in the tables.** Our own reasoning is marked **Inference**. Anything not confirmed at its source is marked **UNVERIFIED**.
+State on **Tue 17 Nov 2026**. Every figure below was read at its primary source on 17 Nov 2026; the MEO kit and ANACOM Q2 2026 items were updated on 18 Nov 2026. Eurostat values were re-pulled through the Eurostat API with every non-geo dimension filtered explicitly. **Facts are in the tables.** Our own reasoning is marked **Inference**. Anything not confirmed at its source is marked **UNVERIFIED**.
 
 Strength of evidence:
 - **Strong:** an official statistic, a law, or a WHO guideline, read at the source.
@@ -44,11 +44,11 @@ How it was checked: see the [verification log](#appendix--verification-log). The
 | Operator deployments | **SFR Maison Sécurisée** (France) is "a self-monitoring solution fully developed by Altice Labs", for "the Residential and Small Office/Home Office segments" | Apr 2024 | [Altice Labs blog](https://www.alticelabs.com/blog/connected-home-from-altice-labs-featured-in-the-recent-launch-by-sfr/) | Medium |
 | SFR offer today | Hub with 4G backup, 2 motion detectors, a camera and a door/window detector; alerts to trusted contacts. €19.99/month list price; SFR Box customers get €5/month off | Nov 2026 | [sfr.fr/maison](https://www.sfr.fr/maison/) | Medium |
 | **MEO is not named** in the brochure | Brochure p. 15 shows the SFR logo plus one logo with no label. "MEO" appears nowhere in the text | 2025 | brochure | Medium |
-| MEO consumer offer found | A third-party "Kit Alarme Starter Ajax" with no monthly fee and no monitoring centre. **No MEO smart-home subscription found**; meo.pt builds its pages with JavaScript, so this absence is not certain | Nov 2026 | [meo.pt, Ajax kit](https://www.meo.pt/alarme-para-casa-starter-ajax) | Medium |
+| MEO consumer offer found | A third-party "Kit Alarme Starter Ajax" with no service subscription and no monitoring centre. It includes a motion detector with a camera that takes photos automatically; there is no video camera. It can be paid at €7.78/month for 36 months plus €140.18 upfront (checked 18 Nov 2026). **No MEO smart-home subscription found**; meo.pt builds its pages with JavaScript, so this absence is not certain | Nov 2026 | [meo.pt, Ajax kit](https://www.meo.pt/alarme-para-casa-starter-ajax) | Medium |
 | MEO share of fixed broadband accesses | **40.9 %** of all fixed broadband accesses (NOS 33.3, Vodafone 21.7, DIGI/NOWO 3.3); **39.0 %** of residential accesses; 53.2 % of fibre | Q4 2025 | [ANACOM, internet access services 4T2025](https://www.anacom.pt/streaming/SAI4T2025.pdf?contentId=1828507&field=ATTACHED_FILE), Tabelas 4 and 6 | Strong |
 | Fixed broadband reach | 4,817 thousand fixed internet accesses; 90.6 residential accesses per 100 families | Q4 2025 | same | Strong |
 
-The Q2 2026 operator shares (press: MEO 40.4 %) could not be read at ANACOM, whose pages load by JavaScript. Q4 2025 is the latest verified quarter.
+Newer ANACOM data, read on 18 Nov 2026: in Q2 2026 MEO has **40.4 %** of all fixed accesses and **38.0 %** of residential accesses (ANACOM statistics portal, stat.anacom.pt, report REP-Y5V2, published 7 Sep 2026, Tabelas 4 and 6). The Q4 2025 figures above are correct for that quarter.
 
 ### Proxies: national household statistics (INE Census 2021)
 
@@ -63,7 +63,7 @@ Altice's own customer demographics are not public, and none are invented here.
 | Households with internet access | 91.1 % | 2025 | [INE IUTICF 2025](https://www.ine.pt/ngt_server/attachfileu.jsp?look_parentBoui=762433102&att_display=n&att_download=y); Eurostat `isoc_ci_in_h` 91.08 | Strong |
 | One-person households with internet (survey scope ages 16–74) | 85.09 % (FR 89.81, EU 90.17) | 2025 | [Eurostat `isoc_ci_in_h`](https://ec.europa.eu/eurostat/databrowser/view/isoc_ci_in_h/default/table?lang=en) | Strong |
 
-**Inference (an illustration, not a market size).** Suppose MEO's residential share (39.0 %) applied evenly to the 517,146 people aged 65+ living alone. The result is 517,146 × 0.39 = 201,687 people.
+**Inference (an illustration, not a market size).** Suppose MEO's residential share (39.0 %, Q4 2025) applied evenly to the 517,146 people aged 65+ living alone. The result is 517,146 × 0.39 = 201,687 people.
 - **This overstates the reach.** ANACOM counts accesses, not households of this type, and 36 % of people aged 65–74 have never used the internet (§3.3). Altice's real customer base is not public.
 - **Use it only to show the order of scale** in Q&A. Don't put it on a slide as a fact.
 
@@ -347,11 +347,13 @@ Each sentence uses a verified value with its source and year. Values are copied 
 - the Altice Labs SFR blog post;
 - the brochure text (segments, GenAI scenarios).
 
+**Re-checked at source on 18 Nov 2026:** the MEO Ajax kit page (photo-taking motion detector, no video camera, payment terms) and ANACOM's Q2 2026 report (REP-Y5V2, Tabelas 4 and 6).
+
 **Tested directly:** the IPMA open-data observations API (17 Nov, 227 stations, hourly temperature and humidity).
 
 **AI use:** the research agents, the re-checking pass and the advisor review were all AI-assisted. The team is responsible for the result and should be able to defend each figure from its source.
 
-**Checked by the research agents only** (page references recorded, not re-opened): WHO 2009 pages, DGEG social tariff, INE 2025 estimates, INE IUTICF, INUT, Pixie and Shane Co., SFR prices, the MEO Ajax kit.
+**Checked by the research agents only** (page references recorded, not re-opened): WHO 2009 pages, DGEG social tariff, INE 2025 estimates, INE IUTICF, INUT, Pixie and Shane Co., SFR prices. The MEO Ajax kit was re-checked on 18 Nov (above).
 
 **Discrepancies with the handoff, and inside the sources:**
 
@@ -374,7 +376,7 @@ Each sentence uses a verified value with its source and year. Values are copied 
 - **sfr.fr/maison has a hidden screen-reader price** (€9.99) that differs from the visible one.
 
 **Blocked sources:**
-- ANACOM's Q2 2026 operator shares (the page loads by JavaScript);
+- ANACOM's Q2 2026 operator shares (the page loads by JavaScript; read on 18 Nov through stat.anacom.pt, report REP-Y5V2);
 - DGPJ crime statistics (now a Power BI app);
 - an INSA repository PDF (anti-bot page);
 - Diário da República detail pages (JavaScript; the official issue PDFs were used instead);

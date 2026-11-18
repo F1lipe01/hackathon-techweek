@@ -79,7 +79,7 @@ Resultado: `{ "thing": "glasses", "sightings": [ { "place": "Desk", "from": "…
 |---|---|
 | Ligação | O _edge_ abre uma única ligação de saída para a plataforma (WebSocket ou MQTT sobre TLS), pelo que a casa não precisa de nenhuma porta de entrada aberta |
 | Identidade | Uma credencial por _edge_, ou seja, por casa, emitida quando a câmara é adicionada na aplicação e revogável a partir desta |
-| _Edge_ → plataforma | Eventos (`thing.seen`, `thing.moved`, `sensor.fired`), miniaturas dos objetos e respostas às ferramentas _Things_ |
+| _Edge_ → plataforma | Eventos (`thing.seen`, `thing.moved`, `sensor.fired`), miniaturas e assinaturas visuais dos objetos e respostas às ferramentas _Things_ |
 | Plataforma → _edge_ | Regras (sensores compilados), chamadas às ferramentas _Things_, pedidos para iniciar o registo de um objeto, máscaras e lugares |
 | Sem ligação | O _edge_ continua a seguir os objetos e o Motor de regras continua a avaliar as regras locais; os eventos ficam em fila e seguem quando a ligação é restabelecida, mas as ações sobre dispositivos dependem da plataforma |
 | Modelo de linguagem | Chamado pelo Serviço _ThingTracker_, na plataforma, que escolhe o modelo e a região utilizados, e nunca pelo _edge_ |
@@ -117,7 +117,7 @@ Em seguida, o registo do objeto decorre da seguinte forma:
 3. _Edge_: durante cerca de 3 s, o Registo de objetos deteta o objeto nas imagens, guarda cerca de 8 recortes, calcula a assinatura visual e devolve uma fotografia.
 4. Aplicação: mostra a fotografia, e o utilizador confirma-a ou repete o processo.
 
-A assinatura visual fica no _edge_ e é apagada quando o objeto é eliminado.
+A assinatura visual fica guardada no _edge_, para os modelos locais, e na base de dados da plataforma, associada ao cliente. É apagada quando o objeto é eliminado.
 
 ## 5. Sensores e cenários
 
@@ -136,7 +136,7 @@ O acionador proposto segue o formato dos atuais acionadores de dispositivo:
 
 | # | Necessidade | Motivo | Situação atual |
 |---|---|---|---|
-| 1 | Uma API de eventos ou de _push_, ou _webhooks_ | Os sensores têm de reagir à abertura da porta sem consultas periódicas | O MCP não tem eventos, pelo que seria necessário consultá-lo periodicamente |
+| 1 | Uma API de eventos ou de _push_, ou _webhooks_ | Os sensores têm de reagir à abertura da porta sem consultas periódicas | O MCP não tem notificações _push_ nem um fluxo geral de eventos (existe apenas o histórico do alarme, `get_home_security_alarm_history`), pelo que seria necessário consultá-lo periodicamente |
 | 2 | Acesso RTSP local à câmara | O vídeo deve ficar na rede da casa | O _stream_ passa por um _relay_ na nuvem (_go2rtc_) |
 | 3 | Capacidade de computação em casa (_edge_) | A perceção demora cerca de 0,5 s por imagem na GPU de um portátil; a câmara fica em repouso e os modelos de visão locais só correm quando há movimento ou som, a 1 a 2 imagens por segundo | A central LTE do kit não tem capacidade para correr modelos de visão |
 | 4 | Uma forma de acrescentar ferramentas ao servidor MCP | Para as quatro ferramentas _Things_ | Por apurar |

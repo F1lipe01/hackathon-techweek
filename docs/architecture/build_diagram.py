@@ -205,10 +205,10 @@ text(PERC[0] + PAD, foot_y + 14, f"* tempo medido × {WATTS} W × {str(EUR_KWH).
 
 # ---------------------------------------------------------------- home, row 2
 ENROL, MEM, ENG = (48, 362), (418, 626), (650, 866)
-box(*ENROL, R2, "_Context Builder_", ["Reúne o nome, a assinatura visual e o lugar habitual de cada objeto, para encontrar "
+box(*ENROL, R2, "Registo de objetos", ["Reúne o nome, a assinatura visual e o lugar habitual de cada objeto, para encontrar "
                                       "as suas chaves e não quaisquer chaves. Basta mostrar o objeto à câmara durante 3 s ou tirar 3 fotografias."])
-box(*MEM, R2, "Memória local", ["O quê, onde e quando", "Última vez e cronologia", "Quem está em casa", "Guardada 30 dias, sem vídeo"])
-box(*ENG, R2, "_Reasoning Engine_", ["Avalia as regras sobre a memória, a cada segundo.", "Resposta: nada, lembrar, avisar, agir ou escalar."])
+box(*MEM, R2, "Memória da casa", ["O quê, onde e quando", "Última vez e cronologia", "Quem está em casa", "Guardada 30 dias, sem vídeo"])
+box(*ENG, R2, "Motor de regras", ["Avalia as regras sobre a memória, a cada segundo.", "Resposta: nada, lembrar, avisar, agir ou escalar."])
 
 # ---------------------------------------------------------------- home, row 3: the Altice kit
 DEV = (48, 866)

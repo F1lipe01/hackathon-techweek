@@ -1,44 +1,42 @@
-// VIDEO 1, "the presentation": the ThingTracker product film (≈ 92 s, 1920 × 1080, 30 fps).
-// Scenes overlap by a few frames: each one exits faster than the next one enters.
+// VIDEO 1, "the presentation": the ThingTracker product film, storyboard v4 (video/STORYBOARD.md).
+// Composed at 1920 × 1080, 30 fps; the final is rendered at 4K with --scale=2. Every shot lasts whole beats of the
+// music bed (timeline.ts), so every cut lands on a beat; transitions happen inside the shots.
 import React from "react";
 import { AbsoluteFill, Sequence } from "remotion";
 import "./fonts";
-import { Backdrop, Finish } from "./ui";
-import { Opening, OPENING_FRAMES } from "./scenes/Opening";
-import { Register, REGISTER_FRAMES } from "./scenes/Register";
-import { Find, FIND_FRAMES } from "./scenes/Find";
-import { AppScene, APP_FRAMES } from "./scenes/AppScene";
-import { Safety, SAFETY_FRAMES } from "./scenes/Safety";
-import { Architecture, ARCH_FRAMES } from "./scenes/Architecture";
-import { End, END_FRAMES } from "./scenes/End";
+import { theme } from "../theme";
+import { Finish } from "./ui";
+import { MusicBed, RoomTone } from "./sound";
+import { SHOT_FRAMES, SHOT_ORDER, SHOT_START, TOTAL_FRAMES } from "./timeline";
+import { Montage, Stop } from "./shots/Montage";
+import { Brand } from "./shots/Brand";
+import { Register } from "./shots/Register";
+import { Ask } from "./shots/Ask";
+import { Leave } from "./shots/Leave";
+import { Turn } from "./shots/Turn";
+import { Cat, Dog, Elder, Night } from "./shots/Safety";
+import { How } from "./shots/How";
+import { End } from "./shots/End";
 
-const OVERLAP = 10;
+const COMPONENTS: Record<string, React.FC> = {
+  montage: Montage, stop: Stop, brand: Brand, register: Register, ask: Ask, leave: Leave, turn: Turn,
+  cat: Cat, dog: Dog, elder: Elder, night: Night, how: How, end: End,
+};
 
-const SCENES: { name: string; frames: number; C: React.FC }[] = [
-  { name: "Gancho e marca", frames: OPENING_FRAMES, C: Opening },
-  { name: "Registar", frames: REGISTER_FRAMES, C: Register },
-  { name: "Encontrar", frames: FIND_FRAMES, C: Find },
-  { name: "Perguntar e avisar", frames: APP_FRAMES, C: AppScene },
-  { name: "A app propõe (segurança)", frames: SAFETY_FRAMES, C: Safety },
-  { name: "Arquitetura", frames: ARCH_FRAMES, C: Architecture },
-  { name: "Fim", frames: END_FRAMES, C: End },
-];
-
-const starts = SCENES.reduce<number[]>((acc, s, i) => [...acc, i === 0 ? 0 : acc[i - 1] + SCENES[i - 1].frames - OVERLAP], []);
-
-/** Where each scene starts, in frames (also used for the report). */
-export const SCENE_STARTS = SCENES.map((s, i) => ({ name: s.name, from: starts[i], frames: s.frames }));
-
-export const DURATION = starts[starts.length - 1] + SCENES[SCENES.length - 1].frames;
+export const DURATION = TOTAL_FRAMES;
 
 export const Presentation: React.FC = () => (
-  <AbsoluteFill>
-    <Backdrop />
-    {SCENES.map(({ name, frames, C }, i) => (
-      <Sequence key={name} name={name} from={starts[i]} durationInFrames={frames}>
-        <C />
-      </Sequence>
-    ))}
+  <AbsoluteFill style={{ background: theme.colors.bg }}>
+    {SHOT_ORDER.map((name) => {
+      const C = COMPONENTS[name];
+      return (
+        <Sequence key={name} name={name} from={SHOT_START[name]} durationInFrames={SHOT_FRAMES[name]}>
+          <C />
+        </Sequence>
+      );
+    })}
     <Finish />
+    <MusicBed />
+    <RoomTone />
   </AbsoluteFill>
 );

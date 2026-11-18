@@ -1,42 +1,46 @@
-# Video 1 · Presentation · storyboard v3
+# Video 1 · Presentation · storyboard v4
 
-The bar: put it side by side with a Claude launch film and see no difference, frame by frame, in the 4K export (`--scale=2`, 3840×2160). The team's verdict on v2: idea 7, implementation 4. It lacked creativity and taste, every animation was the same, one title broke onto two lines, there were 8 repeated photos, and "nothing needs configuring" was abstract cards nobody understood.
+The bar is unchanged: side by side with a Claude launch film, frame by frame, in the 4K export (`--scale=2`). The team's review of v3 kept the start and the "Basta perguntar" part; v4 answers the rest of their notes.
+
+What changes from v3:
+- **A new opening:** a rapid-fire montage of everyday questions, one shot per beat with a boom, then a hard stop and the first clean tracking.
+- **No book in video 1** (video 2 covers it): no kit desk and no three-photo registration. The keys carry the story: registered in the app, found, and forgotten at the door.
+- **Brighter and airier throughout:** daylight, warm whites, no moody scene. Phones are composited over bright, defocused real homes, with depth of field, a soft shadow, a slight 3D tilt and camera moves; notifications arrive on a hand-held phone.
+- **The grandmother is a real older person:** her normal mornings, then the empty kitchen at noon.
+- **Sound on every move:** a whoosh on camera moves, a swipe on UI slides, a lock-on on each box, a shutter on photos, a boom on the montage cuts.
+- **End card:** "ThingTracker" and "by Altice Labs", text only.
 
 Rules for every frame:
-- **Show, don't tell.** Every use case is a scene: real footage (the lab or licensed stock in `public/stock/`, with real OWLv2 boxes from `public/stock/boxes/`), our boxes locking on, then the alert arriving on a phone. Words support the picture; they never replace it.
-- **One idea per shot**, with a clear focal point.
-- **Titles fit on one line** at their size. Measure them; never let a phrase wrap. If it doesn't fit, cut words.
-- **A varied motion vocabulary.** Do not reuse the same entrance twice in a row. The palette:
-  - a hard cut on the beat;
-  - the camera pushing in or pulling out on footage;
-  - a whip-pan with motion blur;
-  - a mask wipe with the ThingTracker corner brackets;
-  - a match cut (box → card, phone → phone);
-  - a parallax tilt of the phone;
-  - a counter rolling;
-  - a word-by-word reveal (at most twice in the film);
-  - a light leak or flash on the shutter.
-- **Fewer and better images:** 3 photos, not 8.
-- **Sound:** a music bed with the lift at the safety section. Effects on the action, 2–3 frames ahead of the picture: tap, shutter, lock-on, notification, door, floodlight. No cartoon whooshes. The audio files are in `public/audio/` (see its manifest).
-- **Claims.** Real numbers come only from `public/real/recognition.json`. Proposals and illustrations are labelled as such. The app UI is in English, every other text is in PT-PT.
+- **Show, don't tell.** Every use case is real footage, our box locking on, then the alert on a phone.
+- **Tracking is clean from the first frame.** Corner brackets that fit the object exactly (keyframed by hand against the footage where the detector's box is loose), a smooth lock-on, a label chip with the object's name. No scores in the montage; the real recognition numbers stay in video 2.
+- **One line per title**, measured in code; the render fails if a title wraps.
+- **A varied motion vocabulary:** hard cuts on the beat, camera push-ins, whip-pans with motion blur, a bracket mask, match cuts, a parallax tilt of the phone, rolling counters, light leaks. The word-by-word reveal is used at most twice.
+- **Honesty labels in small type:** "imagens de arquivo" on stock, "conceito" where the prototype does not do it today, "ilustração" for drawn effects. No knife box on stock (no clip has a real knife). No child's face. Stock people only from behind or in profile; nobody presented as an intruder.
+- **Language:** the app UI in English (it copies the English app); everything else in PT-PT.
 
-## Shot list (≈ 88 s)
+Review notes applied (Video 2 review, also binding here):
+- **Sound:** no beeps on lock-ons, no crinkly whooshes, no squeezed swipes. Lock-ons are soft clicks, transitions a low air whoosh, UI slides silent until the cleaner kit (`sfx/v3`) lands; booms only on the montage cuts, the stop hit before the drop.
+- **Labels and scores sit on top of their rectangles**, never in a sentence beside them. Boxes are attached to the image's transform, so they never jitter in a zoom.
+- **Something always moves;** no flicker, no harsh flashes, no repeated frames (calm shots are held stills with a smooth push, not slowed footage).
+- **Readable:** titles on one grid (x = 110 px; bottom-left on footage, mid-left beside phones), the camera pushes into the phone's UI element that matters, no tiny floating cards.
+- **Icons:** clean line icons that draw on (a key, a wallet, glasses, a bell); no wand, no stars, no colour emoji.
 
-| # | Time | Picture | Text on screen | Sound |
-|---|---|---|---|---|
-| 1 | 0–4 | Cold open: three quick real moments. Hands patting pockets by the door; a dog by an empty bowl; a cat landing on a kitchen counter. | (none) | music in, soft |
-| 2 | 4–8 | Black, then one line | “Onde deixei as chaves?”, then a hard cut to “O cão já comeu?” | hit-soft |
-| 3 | 8–14 | The kit camera's real desk footage; boxes lock on one by one (livro, garrafa, auscultadores); push in on the book; the brackets close into the ThingTracker mark. | “A câmara já vê tudo.”, then the logo and the line “A câmara da casa passa a saber onde estão as coisas.” | lock-on ×3, then hit-soft |
-| 4 | 14–24 | Register: the colleague's phone footage in a phone frame at real speed. Three shutters (front cover, angle, flat); each flash throws a photo card to the right; the 3 cards fold into the visual fingerprint (an abstract grid of 384 values), then the app's “Book added”. | “Três fotografias. Uma assinatura.” | shutter ×3, tap |
-| 5 | 24–32 | Find: the kit desk footage; the box draws around the book; a narrow mono panel prints 3 lines (OWLv2 → DINOv2 → 0,70 ≥ 0,62); the label “O teu livro · 0,70”. | “O teu livro. Não um livro qualquer.” | lock-on, soft confirm |
-| 6 | 32–40 | Ask: the phone tilts in (parallax); the question is typed; the answer card arrives with the photo, which scales up into the frame. | “Basta perguntar.” (one line) | typing-soft, notify-info |
-| 7 | 40–50 | Leave home: stock of a person leaving by the front door (from behind); the door sensor chip “porta aberta”; cut to hands holding a phone; the notification “Saíste sem o livro” lands with a gentle push-in. | “Uma frase torna-se um sensor.” | door-open, notify-safety |
-| 8 | 50–53 | Transition to the safety section: white out, then one line. | “Ninguém configura nada. A app percebe a casa.” | riser, music lift |
-| 9 | 53–60 | Cat and knife: stock of the cat on the counter with real boxes “gato” and “faca” (only if a knife is truly in frame) turning red; the proposal card appears first (“Avisar se o gato subir à bancada perto de uma faca?” → Ativar); then the alert on a phone. | “A cozinha mais segura.” | lock-on, notify-safety |
-| 10 | 60–66 | Dog: stock of the dog in the home with its box; a day timeline slides under it (tigela: 0 visitas hoje); the card “O cão ainda não comeu hoje.” | (card only) | tick, notify-info |
-| 11 | 66–72 | Older person: stock of the kitchen in the morning with a box “pessoa · 07:42”; then a split with an empty kitchen at 12:00 and the card on a relative's phone “Ninguém passou pela cozinha até ao meio-dia.” | “Quem cuida, fica descansado.” | notify-info |
-| 12 | 72–78 | Outdoor: the garden at night, a person by the gate with the box “pessoa · 02:14”; the floodlight comes on (a light flash); the card “Alguém no quintal.” Then a fast cut: a parcel at the door with the box and the card “Encomenda à porta.” | “Também lá fora.” | floodlight, notify-safety |
-| 13 | 78–84 | How it works, on one line of nodes with straight arrows, drawn in as a single stroke: Em casa (câmara → deteção de movimento) │ Altice (modelos de visão, só a zona que mudou → memória da casa → assistente → MCP) → app e dispositivos. | “Nenhum vídeo nem imagem completa sai de casa.” | swish |
-| 14 | 84–88 | The mark, “ThingTracker”, then “Ver, perceber, lembrar e agir.” and “Equipa IT-Porto · Desafio Altice Labs #3”. | | resolve, hit-soft |
+## Shot list (89 s on the fast music bed, 120 BPM: a beat is 15 frames)
 
-Labels on screen: "ilustração" or "proposta" wherever the prototype does not do it today; "imagens de arquivo" in small type on stock footage.
+| # | Picture | Text | Sound |
+|---|---|---|---|
+| 1 | Montage, one shot per beat over the bed's rising intro: keys on the hall table, a dog by its bowl, an older woman in the morning, sunglasses, a kettle, a parcel at the door, a hand locking the front door, a cat on the counter (a pill box and a wallet replace the kettle and the cat when their clips land). Clean bracket boxes and name chips. | One question per shot: “Onde estão as chaves?”, “O cão já comeu?”, “A minha mãe já acordou?”, “Onde deixei os óculos?”, “Deixei a chaleira ligada?”, “A encomenda chegou?”, “Fechei a porta?”, “O gato subiu à bancada?” | a boom on every cut |
+| 2 | Hard stop: one beat of white, just before the drop. | – | the stop hit, then silence |
+| 3 | On the drop: the keys on the hall table; the brackets lock on, the camera pushes in, the corners close into the ThingTracker mark. | “A câmara da casa passa a saber onde estão as coisas.” | lock-on, whoosh, boom |
+| 4 | Register: a phone over a bright, defocused living room; “Add thing” → “Keys” → the keys shown to the camera (push-in on the camera view) → “Keys added”. | “Mostra-se uma vez.” · ilustração | taps, shutters |
+| 5 | Ask: the phone tilts in; “Where are my keys?”; the answer card (push-in), whose photo grows into the frame: the hall table, the keys boxed. | “Basta perguntar.” | typing, notify, whoosh, lock-on |
+| 6 | A sentence becomes a sensor: the sensor card (push-in); whip-pan to the same hall as someone leaves by the door; a hand-held phone wakes with “Saíste sem as chaves.” | “Uma frase torna-se um sensor.” | typing, whip, door, notify |
+| 7 | How it works, in the music's breakdown: one line drawn in a single stroke. | “Nenhum vídeo nem imagem completa sai de casa.” | whoosh |
+| 8 | White-out, one line, the riser into the lift. | “Ninguém configura nada. A app percebe a casa.” | riser |
+| 9 | On the lift: a cat on a bright counter, the real “gato” box; the proposal accepted with one tap; the lamp turns red; the alert. | “A cozinha, mais segura.” · conceito | click, tap, notify |
+| 10 | The dog by its empty bowl, “cão” and “tigela” boxes; the day runs to 18:00; the alert. | (card only) · conceito | click, notify |
+| 11 | The grandmother's normal mornings (a real older woman, from behind, boxed); today, the kitchen empty until noon, the clock red at 12:00; the daughter's phone. | “Meio-dia, e a avó não veio à cozinha.” | click, tick, notify |
+| 12 | The night, lifted bright (a silhouette, boxed); then the next morning, the home's memory answers “What happened last night?” with the two unusual events, one pinned. | “O que aconteceu às 4h?” · conceito | whip, notify, tap |
+| 13 | End card on the bed's final hit, text only. | “ThingTracker” · “by Altice Labs” | the music's final hit |
+
+Assets: stock in `public/stock/` (licensed, with real OWLv2 boxes in `boxes/`), the music bed and sfx in `public/audio/` (see its manifest). Clips still to come are drawn as labelled placeholders until they land.

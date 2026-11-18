@@ -22,6 +22,9 @@ export const alpha = (hex: string, a: number): string => {
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
 };
 
+/** The daylight grade: a warm white lifted into footage. */
+export const grade = { warm: "#FFE7C6" } as const;
+
 export const shadow = {
   card: `0 30px 60px -24px ${alpha(theme.colors.ink, 0.28)}, 0 2px 6px ${alpha(theme.colors.ink, 0.06)}`,
   soft: `0 18px 40px -20px ${alpha(theme.colors.ink, 0.22)}`,

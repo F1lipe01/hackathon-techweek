@@ -21,7 +21,7 @@ Tudo o que não provém dos documentos 14 a 18 nem do protótipo é proposta, me
 - Os objetos aprendem-se com 8 vistas, como no protótipo; os animais, com vistas que a própria câmara recolhe durante um ou dois dias e que o cliente confirma; as pessoas, apenas com o consentimento explícito da própria pessoa ou, no caso de uma criança, de quem tem a responsabilidade parental, e o padrão facial nunca sai de casa.
 - Uma frase vaga como “avisa-me se a criança estiver em perigo” não dá origem a uma regra, mas a um plano com várias regras, que o modelo de linguagem escolhe num catálogo fechado de deteções, o código valida e o cliente confirma; o plano inclui ainda a lista do que o sistema não consegue vigiar.
 - A linha do tempo da casa é uma funcionalidade central, porque a mesma memória que serve para responder a “onde está o livro?” guarda os eventos, incluindo os invulgares (um latido às 4h), com a hora, a câmara e um recorte, durante 30 dias, e permite pesquisar (“o que aconteceu às 4h?”) e exportar um incidente para as autoridades com a confirmação de um adulto (secção 2).
-- Cada aviso tem um nível (informação, aviso ou urgente), leva a respetiva prova e passa para um segundo contacto se ninguém responder. A sirene e o alarme só atuam depois de um “sim”.
+- Cada aviso tem um nível (informação, aviso ou urgente), leva a respetiva prova e passa para um segundo contacto se ninguém responder. A sirene segue a escolha da família para cada regra: perguntar primeiro ou tocar logo (a criança em perigo é o exemplo de tocar logo). Armar o alarme pede sempre um “sim”.
 - A via híbrida recomendada no documento 17 (verificação de movimento em casa e análise da zona alterada nos servidores da Altice) obriga a reformular a promessa de privacidade e tem uma consequência pouco evidente, a de que o reconhecimento de pessoas só pode existir nas casas com capacidade de IA local.
 - Propõe-se um lançamento em três fases, com metas de qualidade medidas por caso de uso, antes da disponibilidade geral a 3,99 € por mês (secção 7).
 - Antes de qualquer piloto, a equipa tem de tomar cinco decisões, listadas na secção 10: onde corre a visão no lançamento, o que recebe o modelo de linguagem, se o reconhecimento de pessoas entra no lançamento, quem é o responsável pelo tratamento dos dados e qual é o limite aceitável de falsos alarmes.
@@ -403,7 +403,7 @@ Os avisos urgentes passam a outro contacto quando ninguém responde, segundo a s
 1. Aos 0 s, todos os destinatários recebem a notificação, com os botões “Já vi”, “Está tudo bem” e, se a regra o previr, “Tocar a sirene”.
 2. Aos 2 minutos, sem resposta, o aviso segue para o segundo contacto da lista, por notificação e por SMS.
 3. Aos 5 minutos, sem resposta, a MEO faz uma chamada de voz automática para o primeiro e para o segundo contacto, uma vantagem própria de um operador de telecomunicações.
-4. A sirene nunca toca sozinha; o botão “Tocar a sirene” só aparece no aviso, e só um “sim” explícito de um adulto a aciona. O mesmo se aplica a armar o alarme e a trancar uma fechadura.
+4. A sirene só toca sozinha se a família o escolheu ao criar a regra. Nos outros casos, o botão “Tocar a sirene” aparece no aviso, e só um “sim” explícito de um adulto a aciona. Armar o alarme e trancar uma fechadura pedem sempre esse “sim”.
 
 Para o caso C2, a sequência é mais lenta e mais suave: o primeiro familiar recebe o aviso, o segundo recebe-o 30 minutos depois e, se a família o contratar, um serviço de teleassistência é o terceiro contacto (hipótese).
 

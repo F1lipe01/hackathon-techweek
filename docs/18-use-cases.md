@@ -17,7 +17,7 @@ For each case:
 Three terms used throughout:
 - Place: each camera is one place ("Kitchen 1", "Living room 1", "Garden 1"). There are no zones drawn inside a place; surfaces (the counter, the stove) are found by name in every frame.
 - Feasibility: "today" means the prototype already does it; "small extension" means a new detector query or a new rule kind, with no new hardware; "future" means a new model, or a device the Altice platform would still have to support.
-- Actions: alerts reach the phone through the app's notification service, because the MCP server has no notification tool (to confirm with Altice). Device actions (light, plug) go through the MCP, with `update_device_capabilities`. The siren and the alarm act only after the user says "yes"; in the prototype neither is wired, and light and plug actions are simulated unless enabled.
+- Actions: alerts reach the phone through the app's notification service, because the MCP server has no notification tool (to confirm with Altice). Device actions (light, plug) go through the MCP, with `update_device_capabilities`. The siren follows the family's choice for each rule, made when the rule is created: ask first, or sound at once; arming the alarm always needs a "yes"; in the prototype neither is wired, and light and plug actions are simulated unless enabled.
 
 ## 1. Catalogue, in priority order
 
@@ -815,7 +815,7 @@ Before filming:
 ## 6. Value proposition
 
 - For the family: the camera already in the home starts warning about dangers nobody is watching (the knife within the cat's reach, the forgotten stove, the grandmother who has not come into the kitchen, someone in the garden at night) and answers "where is it?".
-- For the family: every alert comes from a sentence or from a proposal accepted with one tap; the siren never sounds without a "yes", and no full image leaves the home for analysis.
+- For the family: every alert comes from a sentence or from a proposal accepted with one tap; the siren sounds at once only where the family chose it, otherwise after a "yes"; and no full image leaves the home for analysis.
 - For Altice and MEO, differentiation: the cameras and sensors they already sell become a new service, inside the app and the MCP that already exist.
 - For Altice and MEO, revenue: an add-on of €3.99 a month, of which about €1.74 per home remains, and about 19,000 MEO homes in the expected case (business-case assumptions).
 - For Altice Labs: a platform service for any operator, and a reason to sell more sensors (outdoor cameras, floodlights, connected hob, leak sensor, smart lock).
@@ -824,7 +824,7 @@ Before filming:
 
 1. Two or three cameras per home is a team assumption, to validate with customers.
 2. Notification service: the MCP has no tool for alerts; which service the app uses is unknown.
-3. Siren: the MCP write tool accepts power, brightness, colour temperature and colour; how to sound the camera's or the hub's siren is still to confirm. In any case, only after a "yes".
+3. Siren: the MCP write tool accepts power, brightness, colour temperature and colour; how to sound the camera's or the hub's siren is still to confirm. It follows the family's choice for each rule: ask first, or sound at once.
 4. Other devices (connected hob or oven, leak sensor, smart lock, mailbox sensor, smart speaker, presence sensors): which ones the platform supports is unknown.
 5. Kit camera outdoors (IP65): to confirm with Altice.
 6. Maximum power of the kit plug: unknown.

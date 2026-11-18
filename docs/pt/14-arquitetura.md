@@ -152,7 +152,7 @@ Exemplo: “Põe a luz vermelha se a caneca ficar esquecida na secretária quand
 3. Da plataforma para o _edge_ segue a regra.
 4. No _edge_, o Motor de regras avalia-a sobre a memória a cada segundo, sem custo por verificação.
 5. Quando a regra dispara, segue um evento do _edge_ para a plataforma. A plataforma envia a ação através do MCP (`update_device_capabilities`, luz vermelha) e uma notificação para a aplicação, com a miniatura.
-6. As ações mais intrusivas (sirene, armar o alarme) pedem sempre primeiro um “sim” na aplicação.
+6. As ações mais intrusivas seguem a escolha que a família fez ao criar a regra: a sirene pode pedir primeiro um “sim” na aplicação ou tocar logo (por exemplo, com uma criança em perigo). Armar o alarme pede sempre primeiro um “sim”.
 
 ### 4.5 Uma pergunta
 
@@ -228,7 +228,7 @@ Aplicam-se os seguintes princípios:
   - os _tokens_ da plataforma ficam no _edge_, nunca na aplicação;
   - nenhum segredo no código;
   - cada ação fica registada com a regra e os elementos que a motivaram.
-- Segurança das ações: nada de ruidoso (sirene, alarme) acontece sem a confirmação do utilizador, e o modelo de linguagem nunca é o único fundamento de um alarme.
+- Segurança das ações: nada de ruidoso acontece sem a família o ter escolhido; a sirene só toca logo onde a regra o prevê, e nos outros casos depois de um “sim”; armar o alarme pede sempre confirmação. O modelo de linguagem nunca é o único fundamento de um alarme.
 
 ## 8. Desempenho e custo
 

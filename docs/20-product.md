@@ -21,7 +21,7 @@ Anything that does not come from documents 14 to 18 or from the prototype is a p
 - Objects are learnt from 8 views, as in the prototype; pets from views the camera itself collects over one or two days and the customer confirms; people only with the explicit consent of the person themselves or, for a child, of whoever holds parental responsibility, and the face template never leaves the home.
 - A vague sentence such as "tell me if the child is in danger" does not produce one rule but a plan of several rules, chosen by the language model from a closed catalogue of detections, validated by the code and confirmed by the customer, together with the list of what the system cannot watch.
 - The home timeline is a core feature, because the same memory that answers "where is the book?" keeps the events, including unusual ones (a bark at 4 am), with the time, the camera and a crop, for 30 days, and lets the family search ("what happened at 4 am?") and export an incident to the authorities with an adult's confirmation (section 2).
-- Every alert has a level (information, alert or urgent), carries its evidence and moves on to a second contact if nobody answers. The siren and the alarm act only after a "yes".
+- Every alert has a level (information, alert or urgent), carries its evidence and moves on to a second contact if nobody answers. The siren follows the family's choice for each rule: ask first, or sound at once (the child in danger is the example of sounding at once). Arming the alarm always needs a "yes".
 - The hybrid route recommended in document 17 (motion check at home and the changed region analysed on Altice servers) forces the privacy promise to be reworded and has a less obvious consequence: people recognition can only exist in homes with local AI capacity.
 - A three-phase launch is proposed, with quality targets measured per use case, before general availability at €3.99 a month (section 7).
 - Before any pilot, the team has to take five decisions, listed in section 10: where vision runs at launch, what the language model receives, whether people recognition is part of the launch, who is the data controller, and what number of false alarms is acceptable.
@@ -405,7 +405,7 @@ Urgent alerts move on to another contact when nobody answers, in the following s
 1. At 0 s, every recipient gets the notification, with the buttons "Seen it", "All fine" and, if the rule provides for it, "Sound the siren".
 2. At 2 minutes, with no answer, the alert goes to the second contact on the list, by notification and by SMS.
 3. At 5 minutes, with no answer, MEO places an automated voice call to the first and second contacts, an advantage only a telecoms operator has.
-4. The siren never sounds on its own: the "Sound the siren" button only appears on the alert, and only an explicit "yes" from an adult triggers it. The same applies to arming the alarm and locking a lock.
+4. The siren sounds on its own only if the family chose that when creating the rule. Otherwise the "Sound the siren" button appears on the alert, and only an explicit "yes" from an adult triggers it. Arming the alarm and locking a lock always need that "yes".
 
 For case C2, the sequence is slower and gentler: the first relative gets the alert, the second gets it 30 minutes later and, if the family subscribes to one, a telecare service is the third contact (hypothesis).
 

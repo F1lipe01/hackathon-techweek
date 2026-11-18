@@ -17,7 +17,7 @@ Para cada caso, indica-se:
 Três termos usados em todo o documento:
 - Lugar: cada câmara é um lugar (“Cozinha 1”, “Sala 1”, “Jardim 1”). Dentro de um lugar não há zonas desenhadas; as superfícies (a bancada, o fogão) são encontradas pelo nome em cada imagem.
 - Viabilidade: “hoje” significa que o protótipo já o faz; “pequena extensão” significa uma nova pesquisa ao detetor ou um novo tipo de regra, sem equipamento novo; “futuro” significa um modelo novo ou um dispositivo que a plataforma da Altice ainda teria de suportar.
-- Ações: os avisos chegam ao telemóvel pelo serviço de notificações da aplicação, porque o servidor MCP não tem uma ferramenta de notificações (a confirmar com a Altice). As ações sobre os dispositivos (luz, tomada) seguem pelo MCP, com `update_device_capabilities`. A sirene e o alarme só atuam depois de um “sim” do utilizador; no protótipo, nenhum dos dois está ligado, e as ações sobre a luz e a tomada são simuladas, salvo se forem ativadas.
+- Ações: os avisos chegam ao telemóvel pelo serviço de notificações da aplicação, porque o servidor MCP não tem uma ferramenta de notificações (a confirmar com a Altice). As ações sobre os dispositivos (luz, tomada) seguem pelo MCP, com `update_device_capabilities`. A sirene segue a escolha da família para cada regra, feita ao criá-la: perguntar primeiro ou tocar logo; armar o alarme pede sempre um “sim”; no protótipo, nenhum dos dois está ligado, e as ações sobre a luz e a tomada são simuladas, salvo se forem ativadas.
 
 ## 1. Catálogo, por ordem de prioridade
 
@@ -815,7 +815,7 @@ Antes de filmar:
 ## 6. Proposta de valor
 
 - Para a família: a câmara que já existe em casa passa a avisar dos perigos que ninguém está a ver (a faca ao alcance do gato, o fogão esquecido, a avó que não veio à cozinha, alguém no jardim de noite) e a responder a “onde está?”.
-- Para a família: cada aviso nasce de uma frase ou de uma proposta aceite com um toque; a sirene nunca toca sem um “sim”, e nenhuma imagem completa sai de casa para análise.
+- Para a família: cada aviso nasce de uma frase ou de uma proposta aceite com um toque; a sirene só toca logo onde a família o escolheu, e nos outros casos depois de um “sim”; e nenhuma imagem completa sai de casa para análise.
 - Para a Altice e a MEO, diferenciação: as câmaras e os sensores que já vendem passam a ser um serviço novo, dentro da aplicação e do MCP que já existem.
 - Para a Altice e a MEO, receita: uma mensalidade adicional de 3,99 €, de que restam cerca de 1,74 € por casa, e cerca de 19 000 casas MEO no cenário esperado (pressupostos da viabilidade de negócio).
 - Para a Altice Labs: um serviço de plataforma para qualquer operador, que dá razões para vender mais sensores (câmaras exteriores, holofotes, placa conectada, inundação, fechadura).
@@ -824,7 +824,7 @@ Antes de filmar:
 
 1. Duas ou três câmaras por casa é um pressuposto da equipa, por validar com clientes.
 2. Serviço de notificações: o MCP não tem uma ferramenta para avisos; falta saber que serviço a aplicação usa.
-3. Sirene: a ferramenta de escrita do MCP aceita ligar e desligar, brilho, temperatura de cor e cor; falta confirmar como se aciona a sirene da câmara ou da central. Em qualquer caso, só depois de um “sim”.
+3. Sirene: a ferramenta de escrita do MCP aceita ligar e desligar, brilho, temperatura de cor e cor; falta confirmar como se aciona a sirene da câmara ou da central. Segue a escolha da família para cada regra: perguntar primeiro ou tocar logo.
 4. Outros dispositivos (placa ou forno conectados, sensor de inundação, fechadura, sensor da caixa do correio, coluna inteligente, sensores de presença): falta saber quais a plataforma suporta.
 5. Câmara do kit no exterior (proteção IP65): falta confirmar com a Altice.
 6. Potência máxima da tomada do kit: desconhecida.

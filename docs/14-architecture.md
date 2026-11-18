@@ -152,7 +152,7 @@ Example: "Turn the light red if the mug is left on the desk when everyone is out
 3. *Platform → edge:* **the rule.**
 4. *Edge:* the rules engine evaluates it every second on the memory, at no cost per check.
 5. When it fires: *edge → platform:* **an event.** The platform sends the action through MCP (`update_device_capabilities`, light red) and a notification to the app, with the thumbnail.
-6. **Disruptive actions** (siren, arming the alarm) always ask for a "yes" in the app first.
+6. **Disruptive actions.** The siren follows the choice the family made when creating the rule: ask first in the app, or sound at once (for example, a child in danger). Arming the alarm always asks for a "yes" first.
 
 ### 4.5 A question
 
@@ -228,7 +228,7 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
   - platform tokens kept on the edge, never in the app;
   - secrets never in code;
   - every action logged with its rule and evidence.
-- **Safety:** nothing loud (siren, alarm) without the user's confirmation. The language model is never the only evidence for an alarm.
+- **Safety:** nothing loud happens unless the family chose it: the siren sounds at once only where the rule says so, otherwise after a "yes"; arming the alarm always needs one. The language model is never the only evidence for an alarm.
 
 ## 8. Performance and cost
 

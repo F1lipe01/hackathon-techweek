@@ -31,7 +31,9 @@ How the project moved, day by day: what changed, why, and what the team said. Gi
   - v3: the team liked the start and "Basta perguntar", but the sound was poor and the picture too dark.
   - v4 was rejected: a fast footage montage, one clip reused, drawn app screens.
   - Lesson: lock a shot-by-shot storyboard with the team before rendering, and film real actions.
-  - Storyboard v5, then v5.1 after research; v5.1 is being built now.
+  - Storyboard v5, then v5.1 after research.
+  - v5.1 was built and rendered at 23:37. Rejected: the pace and the effects are slow, the opening doesn't work, text pop-ups have no sound, there is no sound on the actions (keys, the dog eating), and the stock and placeholder wallet shots look fake. The team liked only the end card animation, which needs a sound.
+  - Next: research how to fake real actions convincingly (someone photographing an object, replacing a real phone's screen with tracked or green-screen footage) and how to pace and sound a product film, then prove one shot before rebuilding the film.
 - **Video 2 (the real lab example).**
   - The 37 s proof with 3 photos and the real score of 0,70 against a 0,62 threshold.
   - Redesigned on a bright home.

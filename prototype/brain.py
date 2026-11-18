@@ -527,6 +527,37 @@ class Brain:
         return (f"Encontrei {len(names)} que correspondem: {opts}. De qual se trata?" if lang == "pt"
                 else f"You have {len(names)} of those: {opts}. Which one?")
 
+    # "Where is my book?" about a thing nobody registered: the answer says so and how to add it, from the code, so
+    # a small model never invents a place for it ("O livro está a ser tratado pelo telemóvel").
+    _ASK_THING = re.compile(
+        r"^(?:onde (?:é que )?(?:está|estão|esta|estao|fica|ficam|anda|andam|deixei|pus|guardei)|quando (?:é que )?"
+        r"(?:vi|viste)|viste|vês|ves|encontras|where (?:is|are|did i (?:leave|put))|have you seen|did you see|"
+        r"when did i (?:last )?see)\s+(.+?)[\s?.!]*$", re.I)
+    _NOT_A_THING = {"casa", "home", "câmara", "camara", "camera", "tudo", "everything", "alguém", "someone", "it", "isso"}
+    _PT_ART = {"o": ("o", "lo", "o"), "a": ("a", "la", "a"), "os": ("os", "los", "os"), "as": ("as", "las", "as"),
+               "meu": ("o teu", "lo", "o"), "minha": ("a tua", "la", "a"), "meus": ("os teus", "los", "os"),
+               "minhas": ("as tuas", "las", "as")}
+
+    def _unknown_thing(self, question, lang):
+        """The answer for a question about one thing that is not registered, or None if it is not such a question."""
+        m = self._ASK_THING.match(question.strip())
+        if not m:
+            return None
+        words = m.group(1).strip().split()
+        if len(words) > 2 and words[0].lower() in ("o", "a", "os", "as") and words[1].lower() in self._PT_ART:
+            words = words[1:]                     # "as minhas chaves": the possessive decides ("as tuas chaves")
+        first = words[0].lower() if words else ""
+        noun = " ".join(words[1:] if first in (*self._PT_ART, "my", "the", "your") and len(words) > 1 else words)
+        if not noun or noun.lower() in self._NOT_A_THING or len(noun.split()) > 4:
+            return None
+        if lang == "pt":
+            art, inf, imp = self._PT_ART.get(first.lower(), ("", "lo", "o"))
+            return (f"Ainda não conheço {art + ' ' if art else ''}{noun}. Podes adicioná-{inf} no separador Things: "
+                    f"carrega em + e mostra-{imp} à câmara durante alguns segundos.")
+        them = noun.lower().endswith("s")
+        return (f"I don't know your {noun} yet. Add {'them' if them else 'it'} in the Things tab: press + and show "
+                f"{'them' if them else 'it'} to the camera for a few seconds.")
+
     def _local_ask(self, question, memory):
         """The code decides which things the question is about (and so thing_id and candidates);
         the model writes the answer, in the user's language, from the facts it is given and nothing else."""
@@ -534,6 +565,9 @@ class Brain:
         things = memory["things"]
         by_id = {t["thing_id"]: t for t in things}
         ids = self._match(question, things)
+        unknown = None if ids else self._unknown_thing(question, lang)
+        if unknown:
+            return {"answer": unknown, "thing_id": ""}
         day = None
         now_ = f"Now: {self._day(memory['now'])}."
         system = (
@@ -896,7 +930,8 @@ class Brain:
             if ids:
                 t = next(x for x in memory["things"] if x["thing_id"] == ids[0])
                 return {"answer": self._fact_answer(t, "pt"), "thing_id": t["thing_id"]}
-            return {"answer": "Não encontrei isso na memória da casa.", "thing_id": ""}
+            return {"answer": self._unknown_thing(question, "pt") or "Não encontrei isso na memória da casa.",
+                    "thing_id": ""}
         if found:
             t, last = found[0], found[0]["last_seen"]
             if not last:
@@ -905,7 +940,8 @@ class Brain:
             room = f", {last['room']}" if last.get("room") else ""
             return {"answer": f"On the {last['zone'].lower()}{room}, at {last['when'].split(' ')[-1]}.",
                     "thing_id": t["thing_id"]}
-        return {"answer": "I couldn't find that in the home's memory.", "thing_id": ""}
+        return {"answer": self._unknown_thing(question, "en") or "I couldn't find that in the home's memory.",
+                "thing_id": ""}
 
     def _sim_compile(self, sentence, zones, things):
         low = sentence.lower()

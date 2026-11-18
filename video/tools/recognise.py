@@ -13,7 +13,8 @@ It imports the edge service's classes (prototype/edge.py runs its loop only unde
      the first at or above 0.62 counts as the book; the place comes from edge.place_of with the places OWLv2 found,
      and edge.Motion is run over the kit footage to show when the service would wake up;
   3. negative controls: the best box for other objects on the desk (and the wallet in the phone recording),
-     compared with the same fingerprint.
+     compared with the same fingerprint;
+  4. the same recognition and controls with a 3-view fingerprint (views 1, 5 and 8), written as "views3".
 Writes video/public/real/recognition.json (plus src/real/recognition.ts, the same data for the edit), the 8 view
 crops in public/real/views/, the kit crop and the control crops. Deterministic: the same footage gives the same numbers.
 """
@@ -37,6 +38,7 @@ KIT = FOOT / "kit-desk.mp4"
 PREVIEW = (0, 65, 392, 589)        # the phone camera's preview inside the 392x850 screen recording
 SAMPLE_FPS = 2                      # the edge loop checks twice a second
 MATCH = 0.62                        # edge.py --match default
+VIEWS3 = (1, 5, 8)                  # the 3 photos the video shows: front cover, an angle, flat on the desk
 QUERY = "a photo of book"           # edge.query_for({"name": "Book"}) and enrol_step's f"a photo of {query}"
 
 
@@ -171,7 +173,7 @@ def main():
     print("motion at", [m["t"] for m in mlog if m["moved"]], flush=True)
 
     # 3. Negative controls: other objects on the same desk, against the book's fingerprint
-    controls = []
+    controls, ctrl_vecs = [], {}
     for label, q in [("garrafa", "a photo of bottle"), ("carteira", "a photo of wallet"),
                      ("auscultadores", "a photo of earbuds case"), ("teclado", "a photo of keyboard")]:
         d = det(kit, [q], threshold=0.05)
@@ -179,7 +181,9 @@ def main():
             controls.append({"label": label, "query": q, "box": None, "score": None})
             continue
         _, s, b = max(d, key=lambda x: x[1])
-        sim = float((emb([edge.tight_crop(kit, b)]) @ fp.T).max())
+        cv = emb([edge.tight_crop(kit, b)])[0]
+        ctrl_vecs[label] = cv
+        sim = float((fp @ cv).max())
         edge.tight_crop(kit, b).save(OUT / f"control-{label}.jpg", quality=92)
         controls.append({"label": label, "query": q, "box": [r(x, 1) for x in b], "owl_score": r(s, 3), "score": r(sim, 3)})
         print(f"control {label}: box {[round(x) for x in b]} owl {s:.2f} similarity {sim:.3f}", flush=True)
@@ -191,8 +195,10 @@ def main():
         d = det(img, ["a photo of wallet"], threshold=0.05)
         if d:
             _, s, b = max(d, key=lambda x: x[1])
-            sim = float((emb([edge.tight_crop(img, b)]) @ fp.T).max())
+            wv = emb([edge.tight_crop(img, b)])[0]
+            sim = float((fp @ wv).max())
             if wal is None or s > wal["owl_score"]:
+                ctrl_vecs["carteira (telemóvel)"] = wv
                 edge.tight_crop(img, b).save(OUT / "control-carteira-telemovel.jpg", quality=92)
                 wal = {"label": "carteira (telemóvel)", "t": tw, "box_preview_px": [r(x, 1) for x in b],
                        "owl_score": r(s, 3), "score": r(sim, 3)}
@@ -200,6 +206,26 @@ def main():
         print(f"phone wallet at {wal['t']}s: owl {wal['owl_score']} similarity {wal['score']}", flush=True)
 
     primary = next((c for c in controls if c["label"] == "garrafa" and c["score"] is not None), controls[0])
+
+    # 4. The same recognition with only 3 of the 8 views as the fingerprint (the 3 photos the video shows)
+    idx = [n - 1 for n in VIEWS3]
+    fp3 = fp[idx]
+    pair = [float(fp3[i] @ fp3[j]) for i in range(len(idx)) for j in range(i + 1, len(idx))]
+    per3 = [r(x, 3) for x in (fp3 @ book_vec)]
+    score3 = max(per3)
+    ctrl3 = {k: r(float((fp3 @ v).max()), 3) for k, v in ctrl_vecs.items()}
+    views3 = {
+        "note": "Fingerprint made of 3 of the 8 kept views (front cover, an angle, flat on the desk); the same max over "
+                "views and the same 0.62 threshold. The 3 views are distinct under edge.enrol_step's rule (cos < 0.97).",
+        "views": [{"n": n, "file": views[n - 1]["file"], "t": views[n - 1]["t"]} for n in VIEWS3],
+        "max_cos_between_views": r(max(pair), 3),
+        "kit": {"frame_s": frame_s, "book_box": [r(x, 1) for x in book[1]], "per_view": per3, "score": score3,
+                "best_view": VIEWS3[per3.index(score3)], "threshold": MATCH, "recognised": bool(score3 >= MATCH)},
+        "control": {"label": primary["label"], "query": primary["query"], "box": primary["box"],
+                    "score": ctrl3.get(primary["label"])},
+        "controls": [{"label": k, "score": v} for k, v in ctrl3.items()],
+    }
+    print(f"3 views {VIEWS3}: per view {per3}, score {score3}, control {ctrl3}", flush=True)
     result = {
         "note": "Computed by video/tools/recognise.py with prototype/edge.py's Detector (OWLv2 base patch16 ensemble), "
                 "Embedder (DINOv2 small) and its registration and recognition logic.",
@@ -221,6 +247,7 @@ def main():
         "control": {"label": primary["label"], "query": primary["query"], "box": primary["box"],
                     "owl_score": primary.get("owl_score"), "score": primary["score"]},
         "controls": controls + ([wal] if wal else []),
+        "views3": views3,
     }
     text = json.dumps(result, indent=1, ensure_ascii=False)
     (OUT / "recognition.json").write_text(text)

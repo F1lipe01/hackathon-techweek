@@ -743,5 +743,77 @@ export const R = {
    "owl_score": 0.782,
    "score": 0.257
   }
- ]
+ ],
+ "views3": {
+  "note": "Fingerprint made of 3 of the 8 kept views (front cover, an angle, flat on the desk); the same max over views and the same 0.62 threshold. The 3 views are distinct under edge.enrol_step's rule (cos < 0.97).",
+  "views": [
+   {
+    "n": 1,
+    "file": "real/views/view-1.jpg",
+    "t": 1.3
+   },
+   {
+    "n": 5,
+    "file": "real/views/view-5.jpg",
+    "t": 23.03
+   },
+   {
+    "n": 8,
+    "file": "real/views/view-8.jpg",
+    "t": 36.1
+   }
+  ],
+  "max_cos_between_views": 0.764,
+  "kit": {
+   "frame_s": 10.0,
+   "book_box": [
+    1208.0,
+    364.0,
+    1376.3,
+    486.4
+   ],
+   "per_view": [
+    0.474,
+    0.582,
+    0.698
+   ],
+   "score": 0.698,
+   "best_view": 8,
+   "threshold": 0.62,
+   "recognised": true
+  },
+  "control": {
+   "label": "garrafa",
+   "query": "a photo of bottle",
+   "box": [
+    1074.5,
+    241.4,
+    1165.2,
+    473.8
+   ],
+   "score": 0.098
+  },
+  "controls": [
+   {
+    "label": "garrafa",
+    "score": 0.098
+   },
+   {
+    "label": "carteira",
+    "score": 0.031
+   },
+   {
+    "label": "auscultadores",
+    "score": 0.046
+   },
+   {
+    "label": "teclado",
+    "score": 0.087
+   },
+   {
+    "label": "carteira (telemóvel)",
+    "score": 0.255
+   }
+  ]
+ }
 } as const;

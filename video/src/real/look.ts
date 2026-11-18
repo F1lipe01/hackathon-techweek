@@ -17,6 +17,7 @@ export const look = {
 export const pt = (v: number, d = 2) => v.toFixed(d).replace(".", ",");
 export const mmss = (t: number) => `0:${String(Math.floor(t)).padStart(2, "0")}`;
 
-export type Cue = { at: number; file: string; volume?: number };
+/** A sound cue: `file` is a key of SFX in audio.ts; `dur` (frames) cuts it short with a quick fade. */
+export type Cue = { at: number; file: string; volume?: number; dur?: number };
 
 export const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;

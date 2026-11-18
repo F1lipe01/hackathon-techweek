@@ -1,52 +1,54 @@
-// 3 · Pergunta and 4 · Sensor: our app (a copy of the Altice app, simulated data), recorded on screen.
+// 3 · Na app: our app (a copy of the Altice app, simulated data), recorded on screen. Three passages at real speed,
+// cut together: the question and its answer, the sentence that creates the sensor, the door and the message.
 import React from "react";
-import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { theme } from "../theme";
 import { IPHONE, IPhone, VideoAt } from "./devices";
-import { Body, Chip, Heading, Overline, Rise } from "./layers";
+import { Chip, Heading, Overline } from "./layers";
 import { clamp, Cue, look } from "./look";
-import { buildMap, frameOf, srcAt } from "./timemap";
 
 const { c, a } = look;
+
 // footage/app-book.mp4 from 33 s, re-encoded with regular keyframes (the original's sparse full-range keyframes made
 // Remotion show frames seconds off). Times below stay in the original recording's seconds.
 const APP = "real/app-book-33s.mp4";
 const APP_T0 = 33;
-// app-book.marks.json, plus the moments measured on the frames: the replies appear at 39.2 and 48.2,
-// the sensor fires at 53.94 (mark "alert") and the notification banner slides in at 54.55.
-const MARK = { typeQ: 35.117, sentQ: 37.73, answerQ: 39.2, typeS: 42.816, sentS: 46.752, answerS: 48.2, door: 53.943, alert: 54.55 };
+// app-book.marks.json, plus moments measured on the frames: the replies appear at 39.2 and 48.2, the sensor fires
+// at 53.94 (mark "alert") and the notification banner slides in at 54.55.
+const MARK = { sentQ: 37.73, answerQ: 39.2, sentS: 46.752, answerS: 48.2, door: 53.943, banner: 54.55 };
 
-/** Speed by source second: [until, speed] segments, blended over `ramp` seconds at each boundary. */
-const piecewise = (segs: [number, number][], ramp = 0.35) => (s: number) => {
-  let i = segs.findIndex(([until]) => s < until);
-  if (i < 0) i = segs.length - 1;
-  const [until, v] = segs[i];
-  const next = segs[i + 1];
-  if (next && s > until - ramp) {
-    const t = (s - (until - ramp)) / ramp;
-    return v + (next[1] - v) * t * t * (3 - 2 * t);
-  }
-  return v;
-};
+const SEGS = [
+  { from: 36.55, to: 41.0 },
+  { from: 45.7, to: 49.8 },
+  { from: 53.4, to: 57.4 },
+].map((s) => ({ ...s, len: Math.round((s.to - s.from) * theme.fps) }));
+const LEAD = 6;
+const SEG_START = SEGS.reduce<number[]>((acc, s, i) => [...acc, i === 0 ? LEAD : acc[i - 1] + SEGS[i - 1].len], []);
+const at = (seg: number, t: number) => SEG_START[seg] + Math.round((t - SEGS[seg].from) * theme.fps);
+export const APP_FRAMES = SEG_START[2] + SEGS[2].len;
+export const APP_CUES: Cue[] = [
+  { at: SEG_START[0], file: "typing", dur: at(0, MARK.sentQ) - SEG_START[0] - 2 },
+  { at: at(0, MARK.sentQ), file: "tick" },
+  { at: SEG_START[1], file: "typing", dur: at(1, MARK.sentS) - SEG_START[1] - 2 },
+  { at: at(1, MARK.sentS), file: "tick" },
+  { at: at(2, MARK.door), file: "door" },
+  { at: at(2, MARK.banner) - 1, file: "notify" },
+];
 
 const PHONE_H = 960;
 const PK = PHONE_H / IPHONE.h;
 const PHONE_W = IPHONE.w * PK;
-const PHONE_X = 1300 - PHONE_W / 2;
+const PHONE_X = 1330 - PHONE_W / 2;
 const PHONE_Y = (1080 - PHONE_H) / 2;
 
-/** The phone with the app, zoomed on a point of its screen (u, v in 0..1) and moved to (tx, ty) on screen. */
-const AppPhone: React.FC<{ second: number; zoom: number; u: number; v: number; tx: number; ty: number; enter: number }> = ({
-  second, zoom, u, v, tx, ty, enter,
-}) => {
+/** The phone, zoomed on a point of its screen (u, v in 0..1) placed at (tx, ty). */
+const AppPhone: React.FC<{ second: number; zoom: number; u: number; v: number; tx: number; ty: number }> = ({ second, zoom, u, v, tx, ty }) => {
   const fx = (IPHONE.sx + u * IPHONE.sw) * PK;
   const fy = (IPHONE.sy + v * IPHONE.sh) * PK;
-  const dx = (tx - (PHONE_X + fx)) * (zoom - 1) / Math.max(0.001, zoom - 1);
-  const dy = (ty - (PHONE_Y + fy)) * (zoom - 1) / Math.max(0.001, zoom - 1);
-  const k = Math.min(1, (zoom - 1) / 0.8);
+  const k = Math.min(1, (zoom - 1) / 0.6);
   return (
-    <div style={{ position: "absolute", left: PHONE_X, top: PHONE_Y, transformOrigin: `${fx}px ${fy}px`, opacity: enter,
-      transform: `translate(${dx * k}px, ${dy * k + interpolate(enter, [0, 1], [60, 0])}px) scale(${zoom})` }}>
+    <div style={{ position: "absolute", left: PHONE_X, top: PHONE_Y, transformOrigin: `${fx}px ${fy}px`,
+      transform: `translate(${(tx - (PHONE_X + fx)) * k}px, ${(ty - (PHONE_Y + fy)) * k}px) scale(${zoom})` }}>
       <IPhone height={PHONE_H}>
         <VideoAt src={APP} second={second - APP_T0} />
       </IPhone>
@@ -54,144 +56,86 @@ const AppPhone: React.FC<{ second: number; zoom: number; u: number; v: number; t
   );
 };
 
-const LeftColumn: React.FC<{ children: React.ReactNode; width?: number }> = ({ children, width = 760 }) => (
-  <div style={{ position: "absolute", left: 140, top: 0, bottom: 0, width, display: "flex", flexDirection: "column", justifyContent: "center", gap: 22 }}>
-    {children}
+const Caption: React.FC<{ from: number; to: number; children: React.ReactNode; style?: React.CSSProperties }> = ({ from, to, children, style }) => {
+  const frame = useCurrentFrame();
+  const o = interpolate(frame, [from, from + 8, to - 1, to], [0, 1, 1, 0], { ...clamp, easing: theme.ease.out });
+  if (o <= 0) return null;
+  return <div style={{ opacity: o, transform: `translateY(${(1 - Math.min(1, (frame - from) / 8)) * 12}px)`, ...style }}>{children}</div>;
+};
+
+const Answer: React.FC<{ label: string; text: string; tone?: string }> = ({ label, text, tone = c.ink }) => (
+  <div style={{ padding: "18px 22px", borderRadius: 16, background: c.white, border: look.cardBorder, boxShadow: `0 16px 36px -24px ${a(c.ink, 0.45)}`,
+    maxWidth: 640 }}>
+    <div style={{ fontFamily: theme.fonts.mono, fontSize: 17, color: c.inkDim, marginBottom: 6 }}>{label}</div>
+    <div style={{ fontFamily: theme.fonts.display, fontSize: 31, fontWeight: 500, color: tone, lineHeight: 1.25 }}>{text}</div>
   </div>
 );
 
-const Prototype: React.FC<{ delay: number }> = ({ delay }) => (
-  <Rise delay={delay}>
-    <Chip mono bg={a(c.white, 0.8)} color={c.inkDim} style={{ fontSize: 17 }}>Interface: protótipo · dados simulados</Chip>
-  </Rise>
-);
-
-// ---------------------------------------------------------------- 3 · Pergunta
-const QMAP = buildMap(33.75, 41.0, piecewise([[35.05, 1], [37.65, 2.2], [99, 1]]));
-const Q_HOLD = 56;
-export const PERGUNTA_FRAMES = 6 + QMAP.length + Q_HOLD;
-export const PERGUNTA_SFX: Cue[] = [{ at: 6 + frameOf(QMAP, MARK.answerQ), file: "tick.wav", volume: 0.4 }];
-
-export const Pergunta: React.FC = () => {
+/** The contact sensor's event over the app, which has no screen of its own for it. */
+const DoorChip: React.FC<{ from: number; to: number }> = ({ from, to }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const f = frame - 6;
-  const src = srcAt(QMAP, f);
-  const enter = spring({ frame, fps, config: theme.spring.smooth });
-  const ansF = frameOf(QMAP, MARK.answerQ);
-  const z = interpolate(f, [frameOf(QMAP, MARK.sentQ) + 4, ansF + 22], [1, 1.7], { ...clamp, easing: theme.ease.inOut });
-  const ans = spring({ frame: f - ansF - 6, fps, config: theme.spring.smooth });
+  const o = interpolate(frame, [from, from + 6, to, to + 8], [0, 1, 1, 0], { ...clamp, easing: theme.ease.out });
+  if (o <= 0) return null;
   return (
-    <AbsoluteFill>
-      <AppPhone second={src} zoom={z} u={0.42} v={0.5} tx={1290} ty={560} enter={enter} />
-      <LeftColumn>
-        <Rise delay={4}><Overline>3 · Pergunta</Overline></Rise>
-        <Rise delay={8}><Heading size={64}>“Onde está o meu livro?”</Heading></Rise>
-        <Rise delay={12}><Body size={28}>Uma pergunta ao assistente da app. A resposta traz o lugar, a hora e a fotografia.</Body></Rise>
-        <div style={{ opacity: ans, transform: `translateY(${interpolate(ans, [0, 1], [24, 0])}px)`, marginTop: 8, padding: "20px 24px",
-          borderRadius: 18, background: c.white, border: look.cardBorder, boxShadow: `0 18px 40px -24px ${a(c.ink, 0.45)}`, maxWidth: 620 }}>
-          <div style={{ fontFamily: theme.fonts.mono, fontSize: 17, color: c.inkDim, marginBottom: 6 }}>resposta</div>
-          <div style={{ fontFamily: theme.fonts.display, fontSize: 32, fontWeight: 500, color: c.ink, lineHeight: 1.25 }}>
-            Na secretária, na Work Room, às 16:30.
-          </div>
-        </div>
-        <Prototype delay={18} />
-      </LeftColumn>
-    </AbsoluteFill>
-  );
-};
-
-// ---------------------------------------------------------------- 4 · Sensor
-const SMAP = buildMap(42.55, 57.0, piecewise([[46.45, 2.6], [48.9, 1], [53.5, 7], [53.85, 1], [54.5, 0.45], [99, 1]], 0.25));
-const S_HOLD = 46;
-export const SENSOR_FRAMES = 6 + SMAP.length + S_HOLD;
-export const SENSOR_SFX: Cue[] = [
-  { at: 6 + frameOf(SMAP, MARK.answerS), file: "confirm.wav", volume: 0.35 },
-  { at: 6 + frameOf(SMAP, MARK.door), file: "tick.wav", volume: 0.45 },
-  { at: 6 + frameOf(SMAP, MARK.alert) - 2, file: "ping.wav", volume: 0.55 },
-];
-
-const Step: React.FC<{ at: number; title: string; detail: string; tone: string; last?: boolean }> = ({ at, title, detail, tone, last }) => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const p = spring({ frame: frame - at, fps, config: theme.spring.snappy });
-  const on = frame >= at;
-  const ring = on ? interpolate(frame - at, [0, 24], [0, 1], { ...clamp, easing: theme.ease.out }) : 0;
-  return (
-    <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-      <div style={{ position: "relative", width: 30, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <div style={{ width: 26, height: 26, borderRadius: 26, marginTop: 6, background: on ? tone : c.bg, border: `3px solid ${on ? tone : look.dimLine}`,
-          boxSizing: "border-box", transform: `scale(${on ? 0.8 + 0.2 * p : 1})` }} />
-        {on && ring < 1 ? (
-          <div style={{ position: "absolute", top: 6, width: 26, height: 26, borderRadius: 26, border: `2px solid ${tone}`,
-            transform: `scale(${1 + ring * 1.4})`, opacity: 1 - ring }} />
-        ) : null}
-        {!last ? <div style={{ width: 2, height: 60, background: look.dimLine, marginTop: 6 }} /> : null}
-      </div>
-      <div style={{ opacity: on ? 0.35 + 0.65 * p : 0.35, transform: `translateX(${on ? (1 - p) * 10 : 0}px)` }}>
-        <div style={{ fontFamily: theme.fonts.display, fontSize: 32, fontWeight: 600, color: c.ink }}>{title}</div>
-        <div style={{ fontFamily: theme.fonts.mono, fontSize: 19, color: c.inkDim, marginTop: 4 }}>{detail}</div>
-      </div>
-    </div>
-  );
-};
-
-/** The contact sensor's event, shown over the app while it happens (the app itself has no screen for it). */
-const DoorChip: React.FC<{ at: number; until: number }> = ({ at, until }) => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  if (frame < at || frame > until + 12) return null;
-  const pin = spring({ frame: frame - at, fps, config: theme.spring.bouncy });
-  const pout = interpolate(frame, [until, until + 10], [0, 1], { ...clamp, easing: theme.ease.in });
-  const pulse = interpolate((frame - at) % 30, [0, 30], [0, 1], clamp);
-  return (
-    <div style={{ position: "absolute", left: 1300, top: 700, transform: `translate(-50%, -50%) scale(${pin * (1 - 0.15 * pout)})`,
-      opacity: 1 - pout, display: "flex", alignItems: "center", gap: 16, padding: "16px 26px 16px 18px", borderRadius: 999,
-      background: c.white, boxShadow: `0 24px 50px -18px ${a(c.ink, 0.5)}`, border: look.cardBorder, whiteSpace: "nowrap" }}>
-      <div style={{ position: "relative", width: 44, height: 44, borderRadius: 44, background: c.bgAlt, display: "flex",
-        alignItems: "center", justifyContent: "center" }}>
-        <div style={{ position: "absolute", inset: 0, borderRadius: 44, border: `2px solid ${c.ink}`, transform: `scale(${1 + pulse * 0.6})`,
-          opacity: 1 - pulse }} />
-        {/* a door, ajar */}
-        <div style={{ width: 16, height: 24, border: `3px solid ${c.ink}`, borderRadius: 2, boxSizing: "border-box",
+    <div style={{ position: "absolute", left: 1330, top: 720, transform: `translate(-50%, -50%) translateY(${(1 - o) * 10}px)`, opacity: o,
+      display: "flex", alignItems: "center", gap: 14, padding: "14px 24px 14px 16px", borderRadius: 999, background: c.white,
+      boxShadow: `0 20px 44px -18px ${a(c.ink, 0.5)}`, border: look.cardBorder, whiteSpace: "nowrap" }}>
+      <div style={{ width: 40, height: 40, borderRadius: 40, background: c.bgAlt, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 15, height: 22, border: `3px solid ${c.ink}`, borderRadius: 2, boxSizing: "border-box",
           transform: "perspective(60px) rotateY(-35deg)", transformOrigin: "left center" }} />
       </div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ fontFamily: theme.fonts.display, fontSize: 28, fontWeight: 600, color: c.ink }}>Sensor de contacto · porta aberta</div>
-        <div style={{ fontFamily: theme.fonts.mono, fontSize: 17, color: c.inkDim }}>porta da rua · o livro ficou na secretária</div>
-      </div>
+      <div style={{ fontFamily: theme.fonts.display, fontSize: 27, fontWeight: 600, color: c.ink }}>Sensor de contacto · porta aberta</div>
     </div>
   );
 };
 
-export const Sensor: React.FC = () => {
+export const App: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const f = frame - 6;
-  const src = srcAt(SMAP, f);
-  const enter = spring({ frame, fps, config: theme.spring.smooth });
-  const alertF = frameOf(SMAP, MARK.alert);
-  const zIn = interpolate(f, [frameOf(SMAP, MARK.sentS) - 6, frameOf(SMAP, MARK.answerS) + 10], [1, 1.45], { ...clamp, easing: theme.ease.inOut });
-  const zOut = interpolate(f, [frameOf(SMAP, 50), frameOf(SMAP, 52.5)], [0, 1], { ...clamp, easing: theme.ease.inOut });
-  const zNote = interpolate(f, [alertF + 4, alertF + 34], [0, 1], { ...clamp, easing: theme.ease.inOut });
-  const z = interpolate(zOut, [0, 1], [zIn, 1]) + zNote * 1.0;
-  const v = interpolate(zNote, [0, 1], [0.6, 0.06]);
-  const ty = interpolate(zNote, [0, 1], [600, 330]);
+  const seg = Math.max(0, SEG_START.filter((s) => frame >= s).length - 1);
+  const local = Math.max(0, frame - SEG_START[seg]);
+  const src = Math.min(SEGS[seg].to, SEGS[seg].from + local / theme.fps);
+  const cutIn = seg > 0 ? interpolate(local, [0, 5], [1, 0], { ...clamp, easing: theme.ease.out }) : 0;
+
+  // framing per passage: the answer, the reply, then the notification
+  const io = { ...clamp, easing: theme.ease.inOut };
+  let zoom = 1;
+  let v = 0.5;
+  let ty = 560;
+  if (seg === 0) {
+    zoom = interpolate(frame, [at(0, MARK.answerQ) - 4, at(0, MARK.answerQ) + 26], [1, 1.45], io);
+    v = 0.55;
+  } else if (seg === 1) {
+    zoom = 1.3;
+    v = 0.66;
+    ty = 600;
+  } else {
+    const p = interpolate(frame, [at(2, MARK.banner) + 6, at(2, MARK.banner) + 40], [0, 1], io);
+    zoom = 1 + 0.75 * p;
+    v = interpolate(p, [0, 1], [0.5, 0.06]);
+    ty = interpolate(p, [0, 1], [560, 330]);
+  }
+
+  const S0 = SEG_START[0], S1 = SEG_START[1], S2 = SEG_START[2], END = APP_FRAMES + 20;
   return (
     <AbsoluteFill>
-      <AppPhone second={src} zoom={z} u={0.5} v={v} tx={1330} ty={ty} enter={enter} />
-      <DoorChip at={6 + frameOf(SMAP, MARK.door)} until={6 + alertF + 6} />
-      <LeftColumn width={660}>
-        <Rise delay={4}><Overline>4 · Sensor</Overline></Rise>
-        <Rise delay={8}><Heading size={58}>“Avisa-me se eu sair de casa sem o livro.”</Heading></Rise>
-        <Rise delay={12}><Body size={28}>Uma frase cria o sensor. Quando a porta abre e o livro fica, chega a mensagem.</Body></Rise>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
-          <Step at={6 + frameOf(SMAP, MARK.answerS)} title="Regra criada" detail="sair de casa sem o livro" tone={c.teal} />
-          <Step at={6 + frameOf(SMAP, MARK.door)} title="Porta aberta" detail="sensor de contacto da porta da rua" tone={c.ink} />
-          <Step at={6 + alertF} title="Mensagem no telemóvel" detail="notificação: saíste sem o livro" tone={c.alert} last />
-        </div>
-        <Prototype delay={18} />
-      </LeftColumn>
+      <AppPhone second={src} zoom={zoom} u={0.5} v={v} tx={1330} ty={ty} />
+      <AbsoluteFill style={{ background: c.bg, opacity: cutIn * 0.9 }} />
+      <DoorChip from={at(2, MARK.door)} to={at(2, MARK.banner) + 4} />
+
+      <div style={{ position: "absolute", left: 140, top: 300, width: 720, display: "flex", flexDirection: "column", gap: 22 }}>
+        <Caption from={0} to={END}><Overline>3 · Na app</Overline></Caption>
+        <Caption from={S0} to={S1}><Heading size={60}>“Onde está o meu livro?”</Heading></Caption>
+        <Caption from={at(0, MARK.answerQ) + 2} to={S1}><Answer label="resposta" text="Na secretária, na Work Room, às 16:30." /></Caption>
+        <Caption from={S1} to={S2}><Heading size={56}>“Avisa-me se eu sair de casa sem o livro.”</Heading></Caption>
+        <Caption from={at(1, MARK.answerS) + 2} to={S2}><Answer label="resposta" text="Sensor criado: sair de casa sem o livro." /></Caption>
+        <Caption from={S2} to={END}><Heading size={56}>A porta abre; o livro fica na secretária.</Heading></Caption>
+        <Caption from={at(2, MARK.banner) + 2} to={END}><Answer label="mensagem no telemóvel" text="Saíste sem o livro." tone={c.alert} /></Caption>
+      </div>
+      <div style={{ position: "absolute", left: 140, top: 880 }}>
+        <Caption from={0} to={END}>
+          <Chip mono bg={a(c.white, 0.8)} color={c.inkDim} style={{ fontSize: 17 }}>Interface: protótipo · dados simulados</Chip>
+        </Caption>
+      </div>
     </AbsoluteFill>
   );
 };

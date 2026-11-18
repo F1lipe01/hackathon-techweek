@@ -1,41 +1,42 @@
-// Video 2, "the real example": the book photographed in the lab, registered, recognised on the kit camera,
-// then asked about and watched by a sensor. Recognition numbers come from video/tools/recognise.py (recognition.ts).
+// Video 2, "the real example": the proof that it runs. The book photographed in the lab (3 photos), recognised on
+// the kit camera with the numbers of edge.py's code (recognition.ts, from video/tools/recognise.py), then the
+// question, the sensor and the message in the app prototype.
 import React from "react";
-import { AbsoluteFill, Audio, Sequence, staticFile } from "remotion";
+import { AbsoluteFill, Audio, interpolate, Sequence, staticFile } from "remotion";
 import "./fonts";
-import { Pergunta, PERGUNTA_FRAMES, PERGUNTA_SFX, Sensor, SENSOR_FRAMES, SENSOR_SFX } from "./AppScenes";
+import { App, APP_CUES, APP_FRAMES } from "./AppScenes";
+import { BED, SFX } from "./audio";
 import { EndCard, END_FRAMES } from "./EndCard";
-import { Identificacao, IDENT_FRAMES, IDENT_SFX } from "./Identificacao";
+import { IDENT_CUES, IDENT_FRAMES, Identificacao } from "./Identificacao";
 import { BgMesh, Grade, Grain, SceneShell, Vignette } from "./layers";
 import { Cue } from "./look";
 import { Opening, OPENING_FRAMES } from "./Opening";
-import { Registo, REGISTO_FRAMES, REGISTO_SFX } from "./Registo";
+import { Registo, REGISTO_CUES, REGISTO_FRAMES } from "./Registo";
 
-const OVERLAP = 10;
+const OVERLAP = 8;
 const SCENES: [React.FC, number, Cue[]][] = [
   [Opening, OPENING_FRAMES, []],
-  [Registo, REGISTO_FRAMES, REGISTO_SFX],
-  [Identificacao, IDENT_FRAMES, IDENT_SFX],
-  [Pergunta, PERGUNTA_FRAMES, PERGUNTA_SFX],
-  [Sensor, SENSOR_FRAMES, SENSOR_SFX],
+  [Registo, REGISTO_FRAMES, REGISTO_CUES],
+  [Identificacao, IDENT_FRAMES, IDENT_CUES],
+  [App, APP_FRAMES, APP_CUES],
   [EndCard, END_FRAMES, []],
 ];
 const STARTS = SCENES.reduce<number[]>((acc, _, i) => [...acc, i === 0 ? 0 : acc[i - 1] + SCENES[i - 1][1] - OVERLAP], []);
 
 export const DURATION = STARTS[STARTS.length - 1] + SCENES[SCENES.length - 1][1];
 
-// every cue on the video's clock: a soft whoosh into each scene, then the scene's own cues
-const CUES: Cue[] = SCENES.flatMap(([, , cues], i) => [
-  ...(i > 0 ? [{ at: STARTS[i] - 6, file: "whoosh.wav", volume: 0.18 }] : []),
-  ...cues.map((q) => ({ ...q, at: STARTS[i] + q.at })),
-]);
+const clampBoth = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
+const CUES: Cue[] = [
+  ...SCENES.flatMap(([, , cues], i) => cues.map((q) => ({ ...q, at: STARTS[i] + q.at }))),
+  { at: STARTS[SCENES.length - 1] + 2, file: "logo" },
+];
 
 export const RealExample: React.FC = () => (
   <AbsoluteFill>
     <BgMesh />
     {SCENES.map(([Scene, dur], i) => (
       <Sequence key={i} from={STARTS[i]} durationInFrames={dur} premountFor={30}>
-        <SceneShell dur={dur} enter={i === 0 ? 1 : 14}>
+        <SceneShell dur={dur} enter={i === 0 ? 1 : 10} exit={i === SCENES.length - 1 ? 1 : 8}>
           <Scene />
         </SceneShell>
       </Sequence>
@@ -43,9 +44,12 @@ export const RealExample: React.FC = () => (
     <Grade />
     <Grain />
     <Vignette />
-    {CUES.map((q, i) => (
-      <Sequence key={`a${i}`} from={Math.max(0, q.at)} durationInFrames={45}>
-        <Audio src={staticFile(`real/sfx/${q.file}`)} volume={q.volume ?? 0.5} />
+    <Audio src={staticFile(BED.file)} trimBefore={BED.from}
+      volume={(f) => BED.volume * interpolate(f, [0, 24, DURATION - 24, DURATION], [0, 1, 1, 0], clampBoth)} />
+    {CUES.filter((q) => SFX[q.file]).map((q, i) => (
+      <Sequence key={`a${i}`} from={Math.max(0, q.at)} durationInFrames={q.dur ?? 120}>
+        <Audio src={staticFile(SFX[q.file].file)}
+          volume={(f) => (q.volume ?? 1) * SFX[q.file].volume * (q.dur ? interpolate(f, [q.dur - 5, q.dur], [1, 0], clampBoth) : 1)} />
       </Sequence>
     ))}
   </AbsoluteFill>

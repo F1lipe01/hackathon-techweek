@@ -57,14 +57,14 @@ export const Rise: React.FC<{ delay?: number; y?: number; children: React.ReactN
 
 /** A scene's wrapper: a short scale-through entrance and a faster exit. */
 export const SceneShell: React.FC<{ dur: number; children: React.ReactNode; enter?: number; exit?: number; delay?: number }> = ({
-  dur, children, enter = 14, exit = 10, delay = 4,
+  dur, children, enter = 10, exit = 8, delay = 3,
 }) => {
   const frame = useCurrentFrame();
   const pin = enter <= 1 ? 1 : interpolate(frame, [delay, delay + enter], [0, 1], { ...clamp, easing: theme.ease.out });
   const pout = interpolate(frame, [dur - exit, dur], [0, 1], { ...clamp, easing: theme.ease.in });
-  const scale = interpolate(pin, [0, 1], [0.965, 1]) * interpolate(pout, [0, 1], [1, 1.035]);
+  const scale = interpolate(pin, [0, 1], [0.99, 1]);
   return (
-    <AbsoluteFill style={{ opacity: pin * (1 - pout), transform: `scale(${scale})`, filter: pout > 0 ? `blur(${pout * 6}px)` : undefined }}>
+    <AbsoluteFill style={{ opacity: pin * (1 - pout), transform: `scale(${scale})` }}>
       {children}
     </AbsoluteFill>
   );

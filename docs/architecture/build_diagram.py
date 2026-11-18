@@ -274,9 +274,10 @@ PW = PX1 - PX0 - 2 * PAD
 rect(PX0, APP[0], PX1 - PX0, APP[1] - APP[0], stroke="#C9D2E3")
 stack(APP[0] + 30, APP[1] - PAD - 4, [
     (24, lambda y: (text(PX0 + PAD, y, "Aplicação Altice", 16, 700, "#1A2233"),
-                    text(PX0 + PAD, y + 24, "Novo separador “Things”", 13.5, 700, BLUE))),
-    *[para_block(PX0 + PAD, PW, t) for t in ["Adicionar um objeto: sugerido, mostrado à câmara ou 3 fotografias",
-                                             "Sensores a partir de uma frase", "Perguntar: “Onde estão as chaves?”",
+                    text(PX0 + PAD, y + 24, "Novo separador “Things” e assistente", 13.5, 700, BLUE))),
+    *[para_block(PX0 + PAD, PW, t) for t in ["Adicionar um objeto: mostrado à câmara, que guarda 8 vistas",
+                                             "Assistente em todos os separadores: “Onde está a carteira?”",
+                                             "Sensores a partir de uma frase",
                                              "Avisos; vídeo em direto, como hoje"]],
 ])
 

@@ -77,7 +77,7 @@ A caixa _edge_ completa, sempre ligada a 15 W, custa 2,59 € por mês em eletri
 |---|---|---|
 | Serviço _ThingTracker_ | É o _host_ MCP e o único componente que chama o modelo de linguagem. Recebe os pedidos da aplicação e os eventos das casas pelo canal seguro e executa o ciclo: envia ao modelo o pedido e a lista de ferramentas disponíveis, chama no servidor MCP a ferramenta que o modelo escolher e devolve o resultado ao modelo, até haver uma resposta. Escolhe o modelo e a região e limita o gasto por casa | Proposto; no protótipo, este papel cabe ao `prototype/server.py` |
 | Servidor MCP | Controlo de dispositivos, cenários e estado de segurança (hoje com 18 ferramentas). Propõe-se acrescentar quatro ferramentas _Things_: `list_things`, `create_thing`, `get_thing_last_seen` e `get_thing_timeline` | As ferramentas atuais já existem; as ferramentas _Things_ são propostas |
-| Aplicação Altice | Um novo separador _Things_: objetos sugeridos, registo de objetos, lugares e máscaras, sensores a partir de uma frase, “Perguntar” e avisos | Proposto; o protótipo encontra-se na pasta `prototype/` do repositório |
+| Aplicação Altice | Um novo separador _Things_ (objetos registados, sensores e sugestões) e um botão do assistente em todos os separadores, para perguntas e sensores descritos numa frase; lugares, máscaras e avisos | Proposto; o protótipo encontra-se na pasta `prototype/` do repositório |
 | Notificações | Os avisos chegam ao telemóvel pelo serviço de notificações que a aplicação já usa | A confirmar com a Altice (§11) |
 
 ### O modelo de linguagem

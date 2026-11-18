@@ -164,14 +164,8 @@ def edge_observe(payload: dict = Body(...)):
 # ---------------------------------------------------------------------- visual registration (fingerprints)
 # The edge keeps its own copy of each fingerprint; this file stands in for the copy in the Altice platform's
 # database, associated with the customer, so a new or reset home device can get it back.
-FINGERPRINTS = CROPS.parent / "fingerprints.json"
 ENROL = {}
 ENROL_VIEWS, ENROL_SECONDS = 8, 40
-
-
-def _fingerprints():
-    import json
-    return json.loads(FINGERPRINTS.read_text()) if FINGERPRINTS.exists() else {}
 
 
 @app.post("/api/things/{tid}/enrol")
@@ -199,7 +193,6 @@ def edge_task():
 @app.post("/api/edge/enrol")
 def edge_enrol(payload: dict = Body(...)):
     """Progress while the edge collects views, then the finished fingerprint (vectors and a few crops)."""
-    import json
     tid = payload.get("thing_id")
     if not ENROL or ENROL.get("thing_id") != tid:
         return {"ok": False}
@@ -211,11 +204,9 @@ def edge_enrol(payload: dict = Body(...)):
     for i, b64 in enumerate(payload.get("crops_b64", [])[:ENROL_VIEWS]):
         names.append(f"{stamp}-{tid}-view{i}.jpg")
         (CROPS / names[-1]).write_bytes(base64.b64decode(b64))
-    fps = _fingerprints()
-    fps[tid] = {"model": payload.get("model", ""), "vectors": payload.get("vectors", []), "created": time.time()}
-    FINGERPRINTS.write_text(json.dumps(fps))
     store.set_fingerprint(tid, {"n": len(payload.get("vectors", [])), "crops": names, "created": time.time(),
-                                "model": payload.get("model", "")})
+                                "model": payload.get("model", "")},
+                          vectors=payload.get("vectors", []), model=payload.get("model", ""))
     store.add_event("thing", f"{ENROL['name']} registered: a visual fingerprint from {len(names)} views.",
                     thing_id=tid, crop=names[0] if names else None)
     ENROL.clear()
@@ -225,15 +216,11 @@ def edge_enrol(payload: dict = Body(...)):
 @app.get("/api/edge/fingerprints")
 def edge_fingerprints():
     """Lets the home device restore its fingerprints from the platform copy."""
-    return _fingerprints()
+    return store.fingerprints()
 
 
 @app.delete("/api/things/{tid}/fingerprint")
 def delete_fingerprint(tid: str):
-    import json
-    fps = _fingerprints()
-    fps.pop(tid, None)
-    FINGERPRINTS.write_text(json.dumps(fps))
     store.set_fingerprint(tid, None)
     return {"ok": True}
 
@@ -262,10 +249,9 @@ def suggest_for_profile(kind, score):
     now_ = time.time()
     hits = [t for t in _profile_hits.get(kind, []) if now_ - t < 600] + [now_]
     _profile_hits[kind] = hits
-    done = store.state.setdefault("suggested", [])
-    if kind in done or len(hits) < 3:
+    if kind in store.suggested() or len(hits) < 3:
         return
-    done.append(kind)
+    store.mark_suggested(kind)
     title, sentence = PROFILE_SUGGESTIONS[kind]
     store.add_event("suggest", f"{title}. Suggested sensor: “{sentence}”", title=title, sentence=sentence)
 
@@ -273,7 +259,7 @@ def suggest_for_profile(kind, score):
 def _stay_start(thing_id, place):
     """When the thing's current stay in this place began (sightings less than 5 min apart), or None."""
     start, prev_ts = None, None
-    for o in reversed(store.state["observations"]):
+    for o in reversed(store.observations(thing_id)):
         if o["thing_id"] != thing_id:
             continue
         if o["zone_name"] != place or (prev_ts and prev_ts - o["ts"] > 300):
@@ -292,7 +278,7 @@ def rules_engine():
             kind, mins = r.get("kind"), float(r.get("minutes") or 0)
             try:
                 if kind == "left_for":
-                    last = next((o for o in reversed(store.state["observations"]) if o["thing_id"] == r.get("thing_id")), None)
+                    last = store.last_seen(r.get("thing_id"))
                     place = r.get("place") or (last or {}).get("zone_name")
                     if last and last["zone_name"] == place and now_ - last["ts"] < 120:
                         start = _stay_start(r["thing_id"], place)
@@ -312,7 +298,7 @@ def rules_engine():
                     elif lp > r.get("seen_person", 0):
                         store.update_rule(r["id"], seen_person=lp)
                 elif kind == "seen_in":
-                    last = next((o for o in reversed(store.state["observations"]) if o["thing_id"] == r.get("thing_id")), None)
+                    last = store.last_seen(r.get("thing_id"))
                     if last and now_ - last["ts"] < 10 and (not r.get("place") or last["zone_name"] == r["place"]):
                         fire(r, crop=last.get("crop"), evidence=f"Seen on the {last['zone_name']}.")
             except Exception as e:  # one bad rule must not stop the engine
@@ -334,7 +320,48 @@ def state():
 
 @app.get("/api/devices")
 def devices():
-    return actions.devices()
+    """The home as the Altice app shows it, from the local database (a copy of the platform's home, rooms, devices)."""
+    return store.home()
+
+
+def _status(d):
+    """A device's status line, written as the Altice app writes it."""
+    caps = {c.get("name"): c.get("value") for c in d.get("capabilities", []) if isinstance(c, dict)}
+    online = str(d.get("operStatus", "")).lower() not in ("offline", "disconnected")
+    if not online:
+        return "Disconnected"
+    t = d.get("type")
+    if t == "contactSensor":
+        return "Open" if caps.get("sensorState") == "alarm" else "Closed"
+    if t == "plug":
+        return f"{float(caps.get('instantPower') or 0):.1f} W".replace(".", ",")
+    if t == "temperatureSensor":
+        return f"{caps.get('temperatureValue')} °C | {caps.get('humidityValue')} %"
+    return "On"
+
+
+def sync_from_platform():
+    """When the MCP session is live, refresh the device statuses in the local database (read-only tool)."""
+    res = actions.devices()
+    if res.get("source") == "live":
+        devs = res["data"].get("devices", [])
+        store.sync_devices([{"id": d["id"], "status": _status(d)} for d in devs],
+                           f"Synced from the Altice platform at {time.strftime('%H:%M')}")
+
+
+threading.Thread(target=sync_from_platform, daemon=True).start()
+
+
+@app.get("/api/things/{tid}/sightings")
+def thing_sightings(tid: str):
+    """The home's memory for one thing: where and when the camera saw it, oldest first."""
+    return {"sightings": store.observations(tid, limit=50)}
+
+
+@app.delete("/api/things/{tid}")
+def delete_thing(tid: str):
+    store.delete_thing(tid)
+    return {"ok": True}
 
 
 @app.put("/api/zones")
@@ -421,10 +448,28 @@ def ask(payload: dict = Body(...)):
     if not q:
         raise HTTPException(400, "question is required")
     out = _llm(brain.ask, q, store.memory_for_llm())
-    thing = next((t for t in store.snapshot()["things"] if t["id"] == out.get("thing_id")), None)
+    things = {t["id"]: t for t in store.snapshot()["things"]}
+    thing = things.get(out.get("thing_id"))
     crop = thing["last_seen"].get("crop") if thing and thing.get("last_seen") else None
     store.add_event("ask", f"\"{q}\": {out['answer']}", crop=crop)
-    return {**out, "crop": crop}
+    return {**out, "crop": crop, "thing": thing, "candidates": [things[c] for c in out.get("candidates", []) if c in things]}
+
+
+RULE_WORDS = ("tell me", "notify", "alert me", "warn me", "let me know", "remind me", "turn ", "switch ", "when ",
+              "avisa", "lembra", "notifica", "liga ", "desliga", "quando ")
+
+
+@app.post("/api/assistant")
+def assistant(payload: dict = Body(...)):
+    """The app's assistant button: a question gets an answer from the home's memory; a sentence that asks to be
+    told or to act becomes a sensor. Both go through the ThingTracker service, the only caller of the language model."""
+    text = str(payload.get("text", "")).strip()[:300]
+    if not text:
+        raise HTTPException(400, "text is required")
+    low = text.lower()
+    if any(w in low for w in RULE_WORDS) and not low.rstrip().endswith("?"):
+        return {"kind": "sensor", "sensor": add_rule({"sentence": text})}
+    return {"kind": "answer", **ask({"question": text})}
 
 
 @app.post("/api/rules")

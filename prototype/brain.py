@@ -234,16 +234,18 @@ class Brain:
             for t in loose[:4]:
                 last = t["last_seen"]
                 opts.append(f"{t['name']}" + (f" (on the {last['zone'].lower()} at {last['when'].split(' ')[-1]})" if last else " (not seen yet)"))
-            return {"answer": f"You have {len(loose)} of those: " + "; ".join(opts) + ". Which one? (simulated answer)", "thing_id": ""}
+            return {"answer": f"You have {len(loose)} of those. Which one?", "thing_id": "",
+                    "candidates": [t["thing_id"] for t in loose[:4]]}
         found = exact or loose or [t for t in memory["things"] if t["thing_id"] in q]
         if found:
             t, last = found[0], found[0]["last_seen"]
             if not last:
-                return {"answer": f"I haven't seen your {t['name'].lower()} yet. (simulated answer)", "thing_id": t["thing_id"]}
+                return {"answer": f"I haven't seen your {t['name'].lower()} yet.", "thing_id": t["thing_id"]}
             where = f", {last['where']}" if last.get("where") else ""
-            return {"answer": f"Your {t['name'].lower()}: last seen at {last['when'].split(' ')[-1]}, on the {last['zone'].lower()}{where}. (simulated answer)",
+            room = f", {last['room']}" if last.get("room") else ""
+            return {"answer": f"On the {last['zone'].lower()}{room}, at {last['when'].split(' ')[-1]}.",
                     "thing_id": t["thing_id"]}
-        return {"answer": "I couldn't find that in my memory. (simulated answer)", "thing_id": ""}
+        return {"answer": "I couldn't find that in the home's memory.", "thing_id": ""}
 
     def _sim_compile(self, sentence, zones, things):
         low = sentence.lower()

@@ -4,13 +4,19 @@ Workspace of team **IT-Porto** for **Challenge #3 — Altice Labs: Connected Hom
 
 Everything received or discussed so far is filed here: organiser material, kick-off notes, our brainstorm, access details and the deliverable templates.
 
-## Status — Mon 16 Nov 2026 (kick-off day)
+## Status — Wed 18 Nov 2026
 
-- Done: registered as a team of three, hardware kit collected and inventoried from photos, team credentials received, MCP guide and templates received, kick-off and challenge Q&A attended.
-- Done since: **MCP connected and tested** (our own client, `mcp/client/`; reads and a plug on/off write verified), kit Wi-Fi up via the Redmi hotspot, Plug online. Facts for the project discussion: [docs/11-project-baseline.md](docs/11-project-baseline.md).
-- Not done: Camera (no power adapter) and Light (not reaching the cloud) online, idea chosen, mentor checkpoint booked, executive summary written.
-- This repo is private on GitHub at `F1lipe01/hackathon-techweek`. Simon and Mushahid have been added as collaborators.
-- Gaps and to-dos are listed in [docs/07-open-questions.md](docs/07-open-questions.md).
+- **Solution chosen: ThingTracker.** The home's camera becomes a source of information: it learns the things a family registers and finds them again. A sentence becomes a sensor, and the assistant answers "where is my book?". Read [AGENTS.md](AGENTS.md) first.
+- **Report (1st deliverable, due today 19:00):** 2 pages, fact-checked, on the official template: `deliverables/executive-summary/sumario-executivo-IT-Porto.pdf`. Submitted through the Google Form by the team.
+- **Prototype:** runs end to end on the kit camera.
+  - Visual registration (8 views → a DINOv2 fingerprint) and recognition (OWLv2 candidates matched to the fingerprint).
+  - Live boxes, a local rules engine and a local SQLite database.
+  - An exact copy of the Altice app, with the new *Things* tab and the assistant button.
+- **Documents:** architecture, integration spec and business case in English (`docs/14–16`) and in Portuguese (`docs/pt/`), the versions on Google Drive. The business case also comes as a 9-page PDF with charts.
+- **Next (Fri 20 Nov):**
+  - the executive summary and the deck;
+  - the product video, from screen recordings of the use case with the yellow book;
+  - pitch practice.
 
 ## Deadlines
 
@@ -45,6 +51,11 @@ No extensions (late = possible disqualification), pitch time cut strictly. Full 
 | [docs/14-architecture.md](docs/14-architecture.md) | **ThingTracker architecture:** components, flows, the sensor language, data model, privacy, measured performance and cost, decisions with alternatives, open questions. Diagram in [docs/architecture/](docs/architecture/) |
 | [docs/15-integration-spec.md](docs/15-integration-spec.md) | **Integration with the Altice platform:** the four Things MCP tools, the edge ↔ platform channel, enrolment, scenarios, what we need from Altice |
 | [docs/16-business-case.md](docs/16-business-case.md) | **Business case:** market funnel, pricing, unit economics, operator revenue, risks; model in `16-business-case-model.csv` |
+| [AGENTS.md](AGENTS.md) | **Read first:** the project, where things live, how to run the prototype, conventions, the rules that must not be broken, key decisions |
+| [prototype/](prototype/) | **The working prototype:** server and rules engine, edge service (OWLv2 + DINOv2 on the kit camera), SQLite database, the Altice app copy with the Things tab and the assistant |
+| [deliverables/executive-summary/](deliverables/executive-summary/) | **The 2-page report** (PT-PT) built on the official template, with its figures |
+| [docs/pt/](docs/pt/) | Architecture, integration spec and business case in European Portuguese (the Drive versions) |
+| [docs/business-case/](docs/business-case/) | Business-case charts and the 9-page PDF (`viabilidade-negocio.pdf`) |
 | [deliverables/use-case-report/](deliverables/use-case-report/) | **Top 5 use cases** as a PDF report: problem, what we have, what to build, why, pitch and Q&A for each |
 | [deliverables/](deliverables/) | Official templates and our drafts |
 | [mcp/](mcp/) | MCP client config templates from the official guide |

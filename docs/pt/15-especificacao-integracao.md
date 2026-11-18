@@ -32,7 +32,8 @@ Componentes novos:
 | Serviço _ThingTracker_ | Plataforma Altice | Converte frases em regras e responde a perguntas, com o modelo de linguagem e as ferramentas MCP |
 | Ferramentas _Things_ | Servidor MCP da plataforma | `list_things`, `create_thing`, `get_thing_last_seen` e `get_thing_timeline` |
 | Acionador `thingTracker` | Modelo de cenários da plataforma | Permite que um cenário comece quando uma condição sobre objetos se cumpre |
-| Separador “_Things_” | Aplicação Altice | Registo de objetos, perguntas, sensores e sugestões |
+| Separador “_Things_” | Aplicação Altice | Objetos registados, por divisão, sensores e sugestões, com os mesmos componentes dos outros quatro separadores |
+| Botão do assistente | Aplicação Altice, em todos os separadores | Perguntas (“onde está o livro?”) e sensores descritos numa frase |
 
 Ferramentas MCP existentes, usadas sem alterações:
 
@@ -51,7 +52,7 @@ A Figura 1 mostra as mensagens trocadas entre os componentes, desde a frase até
 
 **Figura 1** – Da frase à ação: mensagens entre a aplicação, a plataforma, o modelo de linguagem e a casa.
 
-1. O utilizador escreve a frase no separador “_Things_”. A aplicação envia-a ao Serviço _ThingTracker_.
+1. O utilizador escreve a frase no assistente. A aplicação envia-a ao Serviço _ThingTracker_.
 2. O serviço envia ao modelo de linguagem a frase, os objetos registados (resultado de `list_things`), os dispositivos da casa (`get_home_devices`) e a lista das ferramentas MCP disponíveis.
 3. O modelo devolve uma regra estruturada: quando o sensor de contacto da porta abrir, se a carteira continuar na secretária 2 minutos depois, a lâmpada fica vermelha e o utilizador recebe um aviso.
 4. O serviço grava a regra como cenário, com `post_new_scenario`. A parte sobre a porta usa o acionador de dispositivo que já existe; a parte sobre a carteira usa o novo acionador `thingTracker` (secção 7). A regra aparece na lista de cenários da aplicação.
@@ -63,7 +64,7 @@ O modelo de linguagem é chamado uma única vez, no passo 2. Daí em diante, a r
 
 ## 4. Segundo exemplo: “onde está a carteira?”
 
-1. A aplicação envia a pergunta ao Serviço _ThingTracker_.
+1. O utilizador escreve a pergunta no assistente, um botão presente em todos os separadores da aplicação, que a envia ao Serviço _ThingTracker_.
 2. O serviço envia-a ao modelo de linguagem, com as ferramentas _Things_ disponíveis.
 3. O modelo chama `list_things`. Se houver mais do que um objeto que corresponda à pergunta (por exemplo, duas carteiras), responde com uma pergunta: “Qual delas?”.
 4. Com o objeto identificado, o modelo chama `get_thing_last_seen`. A plataforma obtém a resposta da memória da casa, através do serviço local.
@@ -207,4 +208,6 @@ O sensor de contacto da porta comunica a porta aberta como `sensorState` com o v
 | Perguntas | Respondidas a partir da memória da casa; se vários objetos corresponderem à pergunta, a aplicação pergunta qual |
 | Sensores | Criados a partir de uma frase e avaliados por um Motor de regras local; as ações sobre dispositivos são simuladas até serem ativadas |
 | Ferramentas _Things_ | Disponíveis como _endpoints_ HTTP do servidor da equipa (`/api/state`, `/api/things`, `/api/ask`), com os mesmos dados |
+| Base de dados | SQLite local (`prototype/data/home.db`): uma cópia da casa, das divisões e dos dispositivos da plataforma, no modelo desta, e as tabelas do _ThingTracker_ (objetos, assinaturas visuais, deteções, sensores, eventos) |
+| Aplicação | Cópia fiel da aplicação Altice (ecrãs, medidas, cores e transições captados na versão beta a 18 de novembro de 2026), com o separador “_Things_” e o botão do assistente |
 | Ligação casa ↔ plataforma | Um único servidor local desempenha os dois papéis |

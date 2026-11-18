@@ -42,7 +42,19 @@
  "rule_en": "“Tell me if the child is in danger”",
  "model_pt": "O modelo de linguagem define o perigo: facas, fogão, janelas",
  "model_en": "The language model defines danger: knives, stove, windows",
- "alert_pt": "A criança está junto a uma faca na bancada.",
- "alert_en": "The child is next to a knife on the counter.",
- "source": "Photo: stock preview supplied by the team, child's face blurred. Boxes drawn on the photo for the figure."
+ "alert_pt": "Queres ligar o alarme da casa?",
+ "alert_en": "Sound the home alarm?",
+ "source": "Photo: stock preview supplied by the team, child's face blurred. Boxes drawn on the photo for the figure.",
+ "t3_pt": "Alerta",
+ "t3_en": "Alert",
+ "alert3": {
+  "head_pt": "ALERTA ENVIADO",
+  "head_en": "ALERT SENT",
+  "body_pt": "A criança está em perigo.",
+  "body_en": "The child is in danger.",
+  "meta_pt": "Cozinha · 16h30",
+  "meta_en": "Kitchen · 16:30",
+  "note_pt": "O aviso chega ao telemóvel dos pais com a fotografia do momento.",
+  "note_en": "The alert reaches the parents’ phone with a photo of the moment."
+ }
 }

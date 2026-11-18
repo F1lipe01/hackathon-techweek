@@ -214,8 +214,8 @@ def exemplo_real():
     gap, top, h = 30, 6, 300
     X0 = 1.5                                   # inset: the outer strokes stay inside the image
     cw = (W - 3 * gap - 2 * X0) / 4
-    titles = L(["Registo visual", "Deteção", "Pergunta", "Regra e ação"],
-               ["Visual enrolment", "Detection", "Question", "Rule and action"])
+    titles = L(["Registo visual", "Deteção", spec.get("t3_pt", "Pergunta"), "Regra e ação"],
+               ["Visual enrolment", "Detection", spec.get("t3_en", "Question"), "Rule and action"])
     for i, title in enumerate(titles):
         x = X0 + i * (cw + gap)
         f.rect(x, top, cw, h)
@@ -268,22 +268,34 @@ def exemplo_real():
                               f"Only when there is motion: OWLv2 finds candidates and DINOv2 confirms it is the enrolled {en}."),
            iw, 13.5, 17.5)
 
-    # 3. the question, the answer with the photo, and the disambiguation
+    # 3. the alert sent to the phone with the photo of the moment (spec "alert"), or the question and its answer
     x = X0 + 2 * (cw + gap) + ix
-    q = L(spec.get("q_pt", f"Onde está {art} {pt}?"), spec.get("q_en", f"Where is my {en}?"))
-    qw = width(q, 14.5) + 24
-    f.rect(x + iw - qw, vy, qw, 32, fill=BLUE, stroke=None, rx=16)
-    f.text(x + iw - qw / 2, vy + 21, q, 14.5, False, "#FFF", "middle")
-    f.rect(x, vy + 42, iw, 62, fill="#EEF3FB", stroke=None, rx=14)
-    photo(f, FOTOS / spec["answer"], x + 8, vy + 50, 46, 46, rx=8)
-    ans = wrap(L(spec.get("answer_pt", f"Na {place}, às {hour}."), spec.get("answer_en", f"On the {place}, at {hour}.")), iw - 72, 14)
-    for j, ln in enumerate(ans[:3]):
-        f.text(x + 64, vy + 73 - (len(ans) - 1) * 8.5 + j * 17, ln, 14, False, INK)
-    f.rect(x, vy + 112, iw, 46, fill="#F4F5F7", stroke=None, rx=12)
-    f.text(x + iw / 2, vy + 131, L(f"Se houver duas, pergunta:", "If there are two, it asks:"), 13.5, False, INK, "middle")
-    f.text(x + iw / 2, vy + 149, L("“Qual delas?”", "“Which one?”"), 13.5, False, INK, "middle")
-    f.para(x, vy + 184, L("A memória da casa responde com o último local e a hora.",
-                          "The home memory answers with the last place and time."), iw, 13.5, 17.5)
+    if spec.get("alert3"):
+        al = spec["alert3"]
+        ch = 168
+        f.rect(x, vy, iw, ch, fill="#FFF", stroke=LINE, rx=14)
+        f.o.append(f'<circle cx="{x + 16}" cy="{vy + 17}" r="5" fill="#D2403A"/>')
+        f.text(x + 27, vy + 21.5, L(al["head_pt"], al["head_en"]), 11, True, "#D2403A")
+        photo(f, FOTOS / spec["answer"], x + 10, vy + 32, iw - 20, 84, rx=8)
+        f.text(x + 10, vy + 136, L(al["body_pt"], al["body_en"]), 13.5, True, INK)
+        f.text(x + 10, vy + 155, L(al["meta_pt"], al["meta_en"]), 12, False, MUTED)
+        f.para(x, vy + ch + 26, L(al["note_pt"], al["note_en"]), iw, 13.5, 17.5)
+        q, ans = "", []
+    else:
+        q = L(spec.get("q_pt", f"Onde está {art} {pt}?"), spec.get("q_en", f"Where is my {en}?"))
+        qw = width(q, 14.5) + 24
+        f.rect(x + iw - qw, vy, qw, 32, fill=BLUE, stroke=None, rx=16)
+        f.text(x + iw - qw / 2, vy + 21, q, 14.5, False, "#FFF", "middle")
+        f.rect(x, vy + 42, iw, 62, fill="#EEF3FB", stroke=None, rx=14)
+        photo(f, FOTOS / spec["answer"], x + 8, vy + 50, 46, 46, rx=8)
+        ans = wrap(L(spec.get("answer_pt", f"Na {place}, às {hour}."), spec.get("answer_en", f"On the {place}, at {hour}.")), iw - 72, 14)
+        for j, ln in enumerate(ans[:3]):
+            f.text(x + 64, vy + 73 - (len(ans) - 1) * 8.5 + j * 17, ln, 14, False, INK)
+        f.rect(x, vy + 112, iw, 46, fill="#F4F5F7", stroke=None, rx=12)
+        f.text(x + iw / 2, vy + 131, L(f"Se houver duas, pergunta:", "If there are two, it asks:"), 13.5, False, INK, "middle")
+        f.text(x + iw / 2, vy + 149, L("“Qual delas?”", "“Which one?”"), 13.5, False, INK, "middle")
+        f.para(x, vy + 184, L("A memória da casa responde com o último local e a hora.",
+                              "The home memory answers with the last place and time."), iw, 13.5, 17.5)
 
     # 4. a safety rule written as a sentence, evaluated at home, and the notification it sends: the alarm sounds only
     #    if the user says so (architecture: the siren needs a "yes")

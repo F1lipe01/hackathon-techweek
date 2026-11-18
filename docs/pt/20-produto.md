@@ -63,7 +63,7 @@ A tabela seguinte indica o que esta especificação dá como disponível e o que
 
 Todas as _things_ entram pelo mesmo botão (+) do separador _Things_, que abre a pergunta “O que queres acompanhar?” com quatro opções (um objeto, um animal, uma pessoa, uma câmara), ao passo que as regras se criam no assistente, presente em todos os separadores. Os ecrãs seguem o padrão que a aplicação já usa para adicionar um dispositivo (documento 15, secção 6), com um passo por ecrã, um botão principal fixo no fundo e um diálogo de confirmação para cancelar. A tabela seguinte resume o que muda de um tipo para outro.
 
-| | Objeto | Animal | Pessoa | Câmara |
+| Aspeto | Objeto | Animal | Pessoa | Câmara |
 |---|---|---|---|---|
 | Como se aprende | 8 vistas, mostradas à câmara ou fotografadas com o telemóvel | Vistas recolhidas pela câmara durante 1 a 2 dias e confirmadas pelo cliente | Padrão facial calculado em casa, só com consentimento | Uma análise da divisão |
 | Pesquisa ao detetor | A categoria, em inglês (“a bunch of keys”) | “a cat” ou “a dog” e a aparência descrita | “a person”, “a child” | Superfícies e objetos comuns |

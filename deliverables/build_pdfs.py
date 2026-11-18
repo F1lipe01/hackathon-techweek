@@ -9,10 +9,12 @@
   deliverables/english/ThingTracker - Business case (EN).pdf     docs/16-business-case.md
   deliverables/english/ThingTracker - Operator costs (EN).pdf    docs/17-operator-costs.md
   deliverables/english/ThingTracker - Use cases (EN).pdf         docs/18-use-cases.md
+  deliverables/english/ThingTracker - Product (EN).pdf           docs/20-product.md (figures from docs/product/build_flows.py)
   deliverables/pt/ThingTracker · Arquitetura.pdf                 docs/pt/14-arquitetura.md
   deliverables/pt/ThingTracker · Especificação de integração.pdf docs/pt/15-especificacao-integracao.md
   deliverables/pt/ThingTracker · Custos para o operador.pdf      docs/pt/17-custos-operador.md
   deliverables/pt/ThingTracker · Casos de uso.pdf                docs/pt/18-casos-de-uso.md
+  deliverables/pt/ThingTracker · Produto.pdf                     docs/pt/20-produto.md
 
 The English figures are drawn first (each script's --lang en writes *.en.* files or charts-en/). Nothing Portuguese
 is redrawn here: the Portuguese PDFs use the committed figures, and the Portuguese report keeps its own build.py.
@@ -33,7 +35,7 @@ STEPS = [
     ["deliverables/executive-summary/build.py", "--lang", "en"],
     ["docs/business-case/build_graficos.py", "--lang", "en"],
     [PDF, "--lang", "en"],
-    *([PDF, "--doc", doc, *lang] for doc in ["architecture", "integration", "operator-costs", "use-cases"]
+    *([PDF, "--doc", doc, *lang] for doc in ["architecture", "integration", "operator-costs", "use-cases", "product"]
       for lang in (["--lang", "en"], [])),
 ]
 

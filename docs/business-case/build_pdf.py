@@ -16,6 +16,7 @@ The same layout serves the other documents, in both languages (see DOCS below):
     python3 docs/business-case/build_pdf.py --doc integration [--lang en]   # docs/pt/15-..., docs/15-integration-spec.md
     python3 docs/business-case/build_pdf.py --doc operator-costs [--lang en]  # docs/pt/17-custos-operador.md, docs/17-...
     python3 docs/business-case/build_pdf.py --doc use-cases [--lang en]     # docs/pt/18-casos-de-uso.md, docs/18-use-cases.md
+    python3 docs/business-case/build_pdf.py --doc product [--lang en]       # docs/pt/20-produto.md, docs/20-product.md
 English documents use English numbers (€1.74, 19,000, 1.2 %). For these documents the reader also takes fenced code
 blocks, `code`, *italics*, nested bullets and "{width=…}" after an image; a link to a file in the repo is printed as
 its text. --out writes the PDF elsewhere.
@@ -75,11 +76,15 @@ DOCS = {
                           None, PT_TEAM, "Casos de uso · Equipa IT-Porto", None),
     ("use-cases", "en"): (ROOT / "docs" / "18-use-cases.md", ENGLISH / "ThingTracker - Use cases (EN).pdf",
                           None, EN_TEAM, "Use cases · Team IT-Porto", None),
+    ("product", "pt"): (ROOT / "docs" / "pt" / "20-produto.md", PORTUGUESE / "ThingTracker · Produto.pdf",
+                        None, PT_TEAM, "Produto · Equipa IT-Porto", None),
+    ("product", "en"): (ROOT / "docs" / "20-product.md", ENGLISH / "ThingTracker - Product (EN).pdf",
+                        None, EN_TEAM, "Product · Team IT-Porto", None),
 }
 EN = False          # set by --lang en in main()
 KEEP_ROWS = 10      # a table of up to this many rows never splits across pages (6 for the documents other than the business case)
 KEEP_LISTS = False  # True for the other documents: a list of up to 8 items stays on one page
-NARROW_NUM = False  # operator costs and use cases: a column of short figures takes only the width it needs
+NARROW_NUM = False  # operator costs, use cases, product: a column of short figures takes only the width it needs
 
 
 # ---------------------------------------------------------------- Markdown subset
@@ -111,14 +116,27 @@ def parse(md):
             blocks.append(("table", rows[0], rows[2:]))
         elif ln.startswith("- ") or re.match(r"\d+\. ", ln):
             kind, items = ("ul" if ln.startswith("- ") else "ol"), []
-            while i < len(lines) and (lines[i].startswith("- ") if kind == "ul" else re.match(r"\d+\. ", lines[i])):
+            first = int(re.match(r"\d+", ln).group()) if kind == "ol" else 1
+
+            def is_item(line):
+                return line.startswith("- ") if kind == "ul" else re.match(r"\d+\. ", line)
+
+            while i < len(lines) and is_item(lines[i]):
                 items.append(re.sub(r"^(- |\d+\. )", "", lines[i]))
                 i += 1
-                while i < len(lines) and re.match(r"\s{2,}- ", lines[i]):     # nested bullets belong to the item above
+                while i < len(lines) and re.match(r"\s{2,}\S", lines[i]):
                     items[-1] = items[-1] if isinstance(items[-1], tuple) else (items[-1], [])
-                    items[-1][1].append(lines[i].strip()[2:])
+                    if re.match(r"\s{2,}- ", lines[i]):              # nested bullets belong to the item above
+                        items[-1][1].append(lines[i].strip()[2:])
+                    else:                                             # an indented line continues the item (an answer
+                        items[-1] = (*items[-1][:2], *items[-1][2:], lines[i].strip())   # under its question)
                     i += 1
-            blocks.append((kind, items))
+                j = i                                                 # blank lines between two items: still one list
+                while j < len(lines) and not lines[j].strip():
+                    j += 1
+                if j > i and j < len(lines) and is_item(lines[j]) and isinstance(items[-1], tuple) and len(items[-1]) > 2:
+                    i = j
+            blocks.append((kind, items, first))
         else:
             para = []
             while i < len(lines) and lines[i].strip() and not starts.match(lines[i]):
@@ -232,9 +250,10 @@ def kpis(text, tiles=KPIS):
 def items_html(items):
     out = []
     for t in items:
-        if isinstance(t, tuple):                                 # an item with nested bullets
-            t, sub = t
-            out.append(f"<li>{inline(t)}<ul>" + "".join(f"<li>{inline(x)}</li>" for x in sub) + "</ul></li>")
+        if isinstance(t, tuple):                                 # an item with nested bullets or continuation lines
+            t, sub, *more = t
+            out.append(f"<li>{inline(t)}" + (f'<div class="more">{inline(" ".join(more))}</div>' if more else "")
+                       + ("<ul>" + "".join(f"<li>{inline(x)}</li>" for x in sub) + "</ul>" if sub else "") + "</li>")
         else:
             out.append(f"<li>{inline(t)}</li>")
     return "".join(out)
@@ -268,7 +287,8 @@ def body_html(md, doc=DOC, tiles=KPIS):
             parts.append(table(b[1], b[2]))
         elif b[0] in ("ul", "ol"):
             keep = ' class="keep"' if KEEP_LISTS and len(b[1]) <= 8 else ""
-            parts.append(f"<{b[0]}{keep}>" + items_html(b[1]) + f"</{b[0]}>")
+            start = f' start="{b[2]}"' if b[0] == "ol" and b[2] != 1 else ""
+            parts.append(f"<{b[0]}{keep}{start}>" + items_html(b[1]) + f"</{b[0]}>")
         elif b[0] == "code":
             parts.append(f"<pre><code>{html.escape(b[1], quote=False)}</code></pre>")
         else:
@@ -330,6 +350,8 @@ ul.keep, ol.keep { break-inside: avoid; }
 a.url { overflow-wrap: anywhere; }
 .narrow { width: 1%%; }
 .roomy { min-width: 6.2em; }
+li .more { margin-top: 1.5pt; }
+li:has(> .more) { break-inside: avoid; }
 code { font: 0.86em Menlo, "SF Mono", Consolas, monospace; overflow-wrap: anywhere; }
 pre { font-size: 7.6pt; line-height: 1.45; background: #F3F5F7; border-radius: 4pt; padding: 6pt 8pt; margin: 2pt 0 8pt;
       white-space: pre-wrap; break-inside: avoid; }
@@ -347,7 +369,7 @@ def main():
     EN = args.lang == "en"
     if args.doc != "business-case":
         KEEP_ROWS, KEEP_LISTS = 6, True
-    NARROW_NUM = args.doc in ("operator-costs", "use-cases")
+    NARROW_NUM = args.doc in ("operator-costs", "use-cases", "product")
     doc, out, title, meta, footer, tiles = DOCS[(args.doc, args.lang)]
     out = args.out or out
     out.parent.mkdir(parents=True, exist_ok=True)

@@ -63,7 +63,7 @@ The table below shows what this specification takes as available and what exists
 
 All things come in through the same (+) button on the Things tab, which opens the question "What do you want to keep track of?" with four options (an object, a pet, a person, a camera), while rules are created in the assistant, present on every tab. The screens follow the pattern the app already uses to add a device (document 15, section 6): one step per screen, a main button fixed at the bottom and a confirmation dialog to cancel. The table below summarises what changes from one kind to another.
 
-| | Object | Pet | Person | Camera |
+| Aspect | Object | Pet | Person | Camera |
 |---|---|---|---|---|
 | How it is learnt | 8 views, shown to the camera or photographed with the phone | Views collected by the camera over 1 to 2 days and confirmed by the customer | Face template computed in the home, only with consent | One room scan |
 | Detector query | The category, in English ("a bunch of keys") | "a cat" or "a dog" and the described appearance | "a person", "a child" | Surfaces and common objects |

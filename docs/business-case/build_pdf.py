@@ -14,6 +14,8 @@ The same layout serves the other documents, in both languages (see DOCS below):
     python3 docs/business-case/build_pdf.py --lang en                       # docs/16-business-case.md
     python3 docs/business-case/build_pdf.py --doc architecture [--lang en]  # docs/pt/14-arquitetura.md, docs/14-architecture.md
     python3 docs/business-case/build_pdf.py --doc integration [--lang en]   # docs/pt/15-..., docs/15-integration-spec.md
+    python3 docs/business-case/build_pdf.py --doc operator-costs [--lang en]  # docs/pt/17-custos-operador.md, docs/17-...
+    python3 docs/business-case/build_pdf.py --doc use-cases [--lang en]     # docs/pt/18-casos-de-uso.md, docs/18-use-cases.md
 English documents use English numbers (€1.74, 19,000, 1.2 %). For these documents the reader also takes fenced code
 blocks, `code`, *italics*, nested bullets and "{width=…}" after an image; a link to a file in the repo is printed as
 its text. --out writes the PDF elsewhere.
@@ -64,10 +66,20 @@ DOCS = {
                             "Especificação de integração · Equipa IT-Porto", None),
     ("integration", "en"): (ROOT / "docs" / "15-integration-spec.md", ENGLISH / "ThingTracker - Integration spec (EN).pdf",
                             "ThingTracker – Integration specification", EN_TEAM, "Integration specification · Team IT-Porto", None),
+    # title None: the document's own first heading is the title (it says "at 500,000 homes", for instance)
+    ("operator-costs", "pt"): (ROOT / "docs" / "pt" / "17-custos-operador.md", PORTUGUESE / "ThingTracker · Custos para o operador.pdf",
+                               None, PT_TEAM, "Custos para o operador · Equipa IT-Porto", None),
+    ("operator-costs", "en"): (ROOT / "docs" / "17-operator-costs.md", ENGLISH / "ThingTracker - Operator costs (EN).pdf",
+                               None, EN_TEAM, "Operator costs · Team IT-Porto", None),
+    ("use-cases", "pt"): (ROOT / "docs" / "pt" / "18-casos-de-uso.md", PORTUGUESE / "ThingTracker · Casos de uso.pdf",
+                          None, PT_TEAM, "Casos de uso · Equipa IT-Porto", None),
+    ("use-cases", "en"): (ROOT / "docs" / "18-use-cases.md", ENGLISH / "ThingTracker - Use cases (EN).pdf",
+                          None, EN_TEAM, "Use cases · Team IT-Porto", None),
 }
 EN = False          # set by --lang en in main()
 KEEP_ROWS = 10      # a table of up to this many rows never splits across pages (6 for the documents other than the business case)
 KEEP_LISTS = False  # True for the other documents: a list of up to 8 items stays on one page
+NARROW_NUM = False  # operator costs and use cases: a column of short figures takes only the width it needs
 
 
 # ---------------------------------------------------------------- Markdown subset
@@ -157,8 +169,19 @@ def inline(s):
         return '<a href="{}">{}</a>'.format(html.escape(url), text)
 
     s = re.sub(r"\[([^\]]+)\]\(([^)\s]+)\)", keep, s)          # links first: URLs hold underscores
+    urls = []
+
+    def bare(m):                                                 # a URL written out, as in a list of sources
+        url, tail = m.group(0), ""
+        while url and (url[-1] in ".,;:" or (url[-1] == ")" and url.count(")") > url.count("("))):
+            url, tail = url[:-1], url[-1] + tail
+        urls.append(url)
+        return f"\x02{len(urls) - 1}\x02{tail}"
+
+    s = re.sub(r"https?://[^\s<>\"]+", bare, s)
     s = emphasis(html.escape(s, quote=False))
     s = re.sub("\x00(\\d+)\x00", link, s)
+    s = re.sub("\x02(\\d+)\x02", lambda m: '<a class="url" href="{0}">{0}</a>'.format(html.escape(urls[int(m.group(1))])), s)
     return re.sub("\x01(\\d+)\x01", lambda m: f"<code>{html.escape(codes[int(m.group(1))], quote=False)}</code>", s)
 
 
@@ -174,11 +197,14 @@ def table(head, body):
         figures = [c for c in cells if (NUMERIC_EN if EN else NUMERIC).match(c) and len(c) <= 40]
         if cells and len(figures) >= 0.5 * len(cells):
             num_cols.add(j)
+    narrow = {j for j in num_cols if NARROW_NUM and all(len(r[j].replace("_", "")) <= 24 for r in body if j < len(r))}
 
     def cls(j, c=None):
         out = []
         if j in num_cols:
             out.append("num")
+        if j in narrow:                                  # with a minimum width only when few: wider would overflow the page
+            out.append("narrow" if len(narrow) > 4 else "narrow roomy")
         if c is not None and len(c.replace("_", "")) <= (24 if j in num_cols else 12):
             out.append("nowrap")                         # short cells stay on one line; headers may wrap
         return f' class="{" ".join(out)}"' if out else ""
@@ -301,6 +327,9 @@ tr.total td { border-top: 0.75pt solid #8B95A1; }
 tbody tr:last-child td { border-bottom: 0.75pt solid #AEB6C0; }
 li > ul { margin: 2pt 0 0; }
 ul.keep, ol.keep { break-inside: avoid; }
+a.url { overflow-wrap: anywhere; }
+.narrow { width: 1%%; }
+.roomy { min-width: 6.2em; }
 code { font: 0.86em Menlo, "SF Mono", Consolas, monospace; overflow-wrap: anywhere; }
 pre { font-size: 7.6pt; line-height: 1.45; background: #F3F5F7; border-radius: 4pt; padding: 6pt 8pt; margin: 2pt 0 8pt;
       white-space: pre-wrap; break-inside: avoid; }
@@ -309,19 +338,22 @@ pre code { font-size: 1em; }
 
 
 def main():
-    global EN, KEEP_ROWS, KEEP_LISTS
+    global EN, KEEP_ROWS, KEEP_LISTS, NARROW_NUM
     ap = argparse.ArgumentParser(description="Lay out a ThingTracker document as an A4 PDF.")
-    ap.add_argument("--doc", choices=["business-case", "architecture", "integration"], default="business-case")
+    ap.add_argument("--doc", choices=sorted({d for d, _ in DOCS}), default="business-case")
     ap.add_argument("--lang", choices=["pt", "en"], default="pt")
     ap.add_argument("--out", type=Path, help="PDF to write instead of the default")
     args = ap.parse_args()
     EN = args.lang == "en"
     if args.doc != "business-case":
         KEEP_ROWS, KEEP_LISTS = 6, True
+    NARROW_NUM = args.doc in ("operator-costs", "use-cases")
     doc, out, title, meta, footer, tiles = DOCS[(args.doc, args.lang)]
     out = args.out or out
     out.parent.mkdir(parents=True, exist_ok=True)
     md = doc.read_text(encoding="utf8")
+    if title is None:                                            # the document's own first heading
+        title = inline(re.search(r"^# (.+)$", md, re.M).group(1))
     plain = re.sub(r"<[^>]+>", "", title)
     page = (f'<!doctype html><html lang="{"en" if EN else "pt-PT"}"><meta charset="utf-8"><title>{plain}</title>'
             f"<style>{font_faces()}{CSS % {'footer': footer}}</style><body>"
@@ -332,7 +364,7 @@ def main():
         src.write_text(page, encoding="utf8")
         subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--no-pdf-header-footer", "--allow-file-access-from-files",
                         "--virtual-time-budget=5000", f"--print-to-pdf={out}", src.as_uri()], check=True, capture_output=True)
-    print(f"built {out.relative_to(ROOT)}")
+    print(f"built {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
 
 
 if __name__ == "__main__":

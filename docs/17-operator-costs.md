@@ -49,7 +49,7 @@ We found no published benchmark of OWLv2 or DINOv2 on a T4 or an L4. We therefor
 | NVIDIA T4 | 65 TFLOPS [S1] | 16.2 TFLOPS | 14.0 | 39.3 |
 | NVIDIA L4 | 121 TFLOPS (242 with sparsity, halved) [S2] | 30.2 TFLOPS | 26.1 | 73.1 |
 | Jetson Orin Nano Super | 16.8 TFLOPS (67 sparse INT8 TOPS [S6], ÷4, **ASSUMPTION**) | 4.2 TFLOPS | 3.6 | 10.1 |
-| MacBook M1 Pro (measured) | – | 1.8 TFLOPS | 1.6 | – |
+| MacBook M1 Pro (measured) | — (measured, not derived from a peak) | 1.8 TFLOPS | 1.6 | Not calculated |
 
 ## 4. Option A: a device in every home
 
@@ -78,8 +78,8 @@ Memory prices have pushed small computers up: the Raspberry Pi 5 4 GB cost $60 a
 | Datacentre space and cooling | 1,004 kW × €150/kW (**ASSUMPTION**) | €151 k | €301 k |
 | Operations | 8 % of hardware a year (**ASSUMPTION**) | €224 k | €448 k |
 | Network | 79 Gbps at the peak × €0.50 per Mbps (**ASSUMPTION**) | €40 k | €79 k |
-| **Total a month** | | **€1,203 k** | **€2,407 k** |
-| **Per home / per camera** | | **€2.41 / €2.41** | **€4.81 / €2.41** |
+| **Total a month** | Depreciation + energy + space + operations + network | **€1,203 k** | **€2,407 k** |
+| **Per home / per camera** | Total ÷ 500,000 homes / ÷ cameras | **€2.41 / €2.41** | **€4.81 / €2.41** |
 
 Sized for the peak, the cards are busy only 21 % of the time on average. That idle capacity is the real cost the mentor pointed at.
 

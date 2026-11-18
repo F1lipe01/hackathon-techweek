@@ -49,7 +49,7 @@ PRESSUPOSTO: uma _GPU_ com _TensorRT_ em FP16 atinge 25 % do seu máximo FP16 de
 | NVIDIA _T4_ | 65 TFLOPS [S1] | 16,2 TFLOPS | 14,0 | 39,3 |
 | NVIDIA _L4_ | 121 TFLOPS (242 com esparsidade, a dividir por dois) [S2] | 30,2 TFLOPS | 26,1 | 73,1 |
 | _Jetson Orin Nano Super_ | 16,8 TFLOPS (67 TOPS INT8 esparsos [S6], ÷ 4, PRESSUPOSTO) | 4,2 TFLOPS | 3,6 | 10,1 |
-| _MacBook_ M1 Pro (medido) | – | 1,8 TFLOPS | 1,6 | – |
+| _MacBook_ M1 Pro (medido) | — (medido, não derivado de um máximo) | 1,8 TFLOPS | 1,6 | Não calculado |
 
 ## 4. Opção A: um equipamento em cada casa
 
@@ -78,8 +78,8 @@ O preço da memória fez subir o dos pequenos computadores: o _Raspberry Pi 5_ d
 | Espaço e refrigeração no centro de dados | 1004 kW × 150 €/kW (PRESSUPOSTO) | 151 mil € | 301 mil € |
 | Operação | 8 % do equipamento por ano (PRESSUPOSTO) | 224 mil € | 448 mil € |
 | Rede | 79 Gbps no pico × 0,50 € por Mbps (PRESSUPOSTO) | 40 mil € | 79 mil € |
-| Total por mês | | 1203 mil € | 2407 mil € |
-| Por casa / por câmara | | 2,41 € / 2,41 € | 4,81 € / 2,41 € |
+| Total por mês | Amortização + energia + espaço + operação + rede | 1203 mil € | 2407 mil € |
+| Por casa / por câmara | Total ÷ 500 000 casas / ÷ câmaras | 2,41 € / 2,41 € | 4,81 € / 2,41 € |
 
 Dimensionadas para o pico, as placas só estão ocupadas, em média, 21 % do tempo. Essa capacidade parada é o custo real a que o mentor se referia.
 

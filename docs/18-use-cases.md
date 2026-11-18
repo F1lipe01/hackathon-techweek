@@ -674,7 +674,7 @@ The maximum total is 30. It is the team's self-assessment, for discussion.
 
 Chosen to cover the child at risk, pets, the older person, security, lost and found, and the cases that show the camera as a source of information (C3, V2, T1 and T2). The two home-timeline cases, T1 (24 points) and T2 (22), took the places of the parcel at the door (E5, 19) and the person in the garden at night (E2, 18). Outdoors and security are represented by T2.
 
-| # | Case | Catalogue | Impact | Novelty | Feasibility | Demo | Criteria | Privacy (risk) | Total |
+| # | Case | Cat. | Imp. | Nov. | Feas. | Demo | Crit. | Priv. | Total |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | Leaving without the book, the wallet or the keys | V1 | 3 | 4 | 5 | 5 | 5 | 1 | 27 |
 | 2 | Knife on the counter with the cat nearby | S1 | 4 | 4 | 4 | 4 | 5 | 1 | 26 |
@@ -686,6 +686,8 @@ Chosen to cover the child at risk, pets, the older person, security, lost and fo
 | 8 | Too late: what was near the child | T1 | 4 | 5 | 4 | 4 | 5 | 4 | 24 |
 | 9 | The cat has not been to its bowl | C1 | 3 | 3 | 5 | 3 | 4 | 1 | 23 |
 | 10 | What happened at 4 a.m.? | T2 | 4 | 5 | 3 | 4 | 4 | 4 | 22 |
+
+Cat.: catalogue case; Imp.: impact; Nov.: novelty; Feas.: feasibility; Crit.: criteria; Priv.: privacy (risk, from 1 to 5, counted in the total as 6 minus the risk).
 
 ### 5.3 The reason for each score
 

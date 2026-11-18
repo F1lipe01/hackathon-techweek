@@ -674,7 +674,7 @@ O total máximo é 30. É uma autoavaliação da equipa, para discussão.
 
 Escolhidos para cobrir a criança em risco, os animais, a pessoa idosa, a segurança, os perdidos e achados e os casos que mostram a câmara como fonte de informação (C3, V2, T1 e T2). Os dois casos da linha do tempo da casa, T1 (24 pontos) e T2 (22), entraram para o lugar da encomenda à porta (E5, 19) e da pessoa no jardim à noite (E2, 18). O exterior e a segurança ficam representados por T2.
 
-| # | Caso | Catálogo | Impacto | Novidade | Viabilidade | Demonstração | Critérios | Privacidade (risco) | Total |
+| # | Caso | Cat. | Imp. | Nov. | Viab. | Demo | Crit. | Priv. | Total |
 |---|---|---|---|---|---|---|---|---|---|
 | 1 | Sair sem o livro, a carteira ou as chaves | V1 | 3 | 4 | 5 | 5 | 5 | 1 | 27 |
 | 2 | Faca na bancada e o gato por perto | S1 | 4 | 4 | 4 | 4 | 5 | 1 | 26 |
@@ -686,6 +686,8 @@ Escolhidos para cobrir a criança em risco, os animais, a pessoa idosa, a segura
 | 8 | Chegar tarde demais: o que esteve perto da criança | T1 | 4 | 5 | 4 | 4 | 5 | 4 | 24 |
 | 9 | O gato não foi à taça | C1 | 3 | 3 | 5 | 3 | 4 | 1 | 23 |
 | 10 | O que aconteceu às 4h? | T2 | 4 | 5 | 3 | 4 | 4 | 4 | 22 |
+
+Cat.: caso no catálogo; Imp.: impacto; Nov.: novidade; Viab.: viabilidade; Demo: demonstração; Crit.: critérios; Priv.: privacidade (risco, de 1 a 5, que entra no total como 6 menos o risco).
 
 ### 5.3 A razão de cada nota
 

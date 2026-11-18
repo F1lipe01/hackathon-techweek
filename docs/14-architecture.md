@@ -77,11 +77,25 @@ Called by the platform, never by the edge directly, and only for three jobs:
 | **Answer a question** | The question and the relevant part of the memory, as text | A sentence and a reference to a sighting (with its photo) | When asked |
 | **Judge an unclear case** | One crop and the rule's question | Yes, no or unsure, with evidence | Rarely: only when local confidence is low |
 
-**Which model:** any capable model, under a contract that guarantees no training on our data, a data processing agreement (DPA) and processing in the EU. Two ways to meet that condition:
-- **Hosted with EU processing:** Claude via Amazon Bedrock EU, OpenAI with EU residency, Gemini on Vertex AI in the EU, Mistral.
-- **Open-weight models run by Altice in its own EU infrastructure:** Qwen, DeepSeek, Kimi, Mistral. No provider sees the data, which also removes the trust question for models from China.
+**Which model:** any capable model, under a contract that guarantees no training on our data, a data processing agreement (DPA) and processing in the EU. The prototype uses Claude Haiku 5.5 and Sonnet 5.5.
 
-The prototype uses Claude Haiku 5.5 and Sonnet 5.5.
+Checked at each provider's own terms and documentation on 18 Nov 2026:
+
+| Option | Passes? | How | Watch out for |
+|---|---|---|---|
+| **Claude**, via Amazon Bedrock | Yes | `eu.` cross-region profile, only EU regions; inputs not used for training; AWS GDPR DPA | Anthropic's own API has **no EU option** (only "us" and "global"). Some models need 30-day review retention on Bedrock |
+| **Claude**, via Google Vertex AI | Yes | `eu` multi-region endpoint | |
+| **OpenAI**, via Azure (DataZone EU) | Yes | Processed in EU member states; not available to OpenAI; not used for training; Microsoft DPA | Avoid "Global" deployments |
+| **OpenAI** API with EU residency | Yes, with a condition | `eu.api.openai.com` in a new project | Images in that region need extra approval from OpenAI |
+| **Gemini**, via Vertex AI | Yes | `eu` endpoint, no training without permission, Cloud DPA | The Gemini developer API has no EU processing option; its free tier allows human review |
+| **Mistral** | Yes | EU hosting by default, `api.eu.mistral.ai`, DPA | Check the training opt-out on pay-as-you-go; avoid Labs/Preview models |
+| DeepSeek or Kimi, **hosted** | **No** | — | Data stored in China (DeepSeek, Kimi app) or Singapore (Kimi API); training on content allowed; no DPA. Italy's Garante limited DeepSeek (Jan 2025); Berlin's DPA called its transfers to China unlawful (Jun 2025) |
+| **DeepSeek** open weights, run by Altice | Yes | MIT licence, vision-capable models | No data leaves Altice |
+| **Qwen** open weights, run by Altice | Yes | Qwen3.8-27B: Apache-2.0, vision-capable | Larger Qwen models use a community licence with display and resale clauses |
+| **Kimi** open weights, run by Altice | Yes, after a legal check | "Modified MIT", vision-capable | Display requirement above 100M users or $20M monthly revenue; Altice's group size needs a legal check |
+| Llama 3.2 / 4 vision | **No** | — | Its licence excludes companies whose principal place of business is in the EU (text-only Llama is fine) |
+
+**The rule for any deployment:** always pin EU endpoints, never "global".
 
 ## 4. How it works: the main flows
 

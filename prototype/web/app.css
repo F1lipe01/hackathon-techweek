@@ -31,13 +31,9 @@
     --font: "Switzer", "Helvetica Neue", Arial, sans-serif;
     --app-font: "Montserrat", "Helvetica Neue", Arial, sans-serif;
     --step-small: 0.8125rem; --step-body: 0.9375rem;
-    /* the page: one grid that fills the window. Columns: camera (the rest) | phone; rows: camera | notes.
-       The phone takes the full height, unless that would make it wider than a third of the window. */
-    --head-h: 60px; --gutter: 28px; --col-gap: 32px; --row-gap: 20px;
-    --avail-h: calc(100svh - var(--head-h) - var(--gutter));
-    --cap-h: 40px;                                            /* the caption under the phone */
-    --info-h: 132px;                                          /* the notes under the camera */
-    --phone-w: min(calc((var(--avail-h) - var(--cap-h)) * 1350 / 2760), 32vw);
+    /* the page: one grid; the phone column is sized by the window, the camera takes the rest */
+    --head-h: 64px; --gutter: clamp(16px, 2.2vw, 32px); --gap: clamp(16px, 1.6vw, 24px);
+    --phone-w: clamp(300px, 26vw, 420px);
     --radius: 14px;
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --app-fade: cubic-bezier(0.2, 0, 0, 1);   /* the app's screen crossfade: fast start, ease out (280-300 ms) */
@@ -58,68 +54,77 @@
   code { font-size: 0.92em; }
 }
 
-/* ---------------------------------------------------------------- the page: one grid, every edge shared */
+/* ---------------------------------------------------------------- the page: one grid, three compositions */
 @layer layout {
   .top { height: var(--head-h); display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 var(--gutter); }
   .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.125rem; letter-spacing: -0.03em; flex: none; }
   .brand svg { width: 26px; height: 26px; }
-  .mode { flex: none; font-size: var(--step-small); padding: 4px 12px; border-radius: 999px; background: var(--ground); color: var(--muted); }
+  .mode { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--step-small); padding: 5px 12px; border-radius: 999px; background: var(--ground); color: var(--muted); }
   .mode.live { background: #fdecec; color: var(--app-red); }
+  h2 { font-size: 0.875rem; font-weight: 600; color: var(--ink); }
 
-  /* small screens: one column, read from top to bottom */
-  .split { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "info" "phone"; gap: var(--row-gap);
-    padding: 0 var(--gutter) var(--gutter); }
-  .stage { grid-area: stage; }
-  .info { grid-area: info; }
-  .phone-wrap { grid-area: phone; display: grid; gap: 12px; align-content: start; justify-self: center; width: min(100%, 380px); }
+  /* phone: one column, the app right after the camera */
+  .split { display: grid; gap: var(--gap); padding: 0 var(--gutter) var(--gutter); grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "stage" "phone" "steps" "activity"; }
+  .stage { grid-area: stage; } .steps { grid-area: steps; } .activity { grid-area: activity; }
+  .phone-wrap { grid-area: phone; justify-self: center; width: min(100%, 400px); }
+  .phone { width: 100%; }
 
-  /* text: left-aligned, as wide as the block it belongs to */
-  h2 { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.01em; color: var(--ink); }
-  .caption, .about p { font-size: 0.875rem; line-height: 1.5; color: var(--muted); text-align: left; }
-
-  /* desktop and tablet in landscape: the whole page on one screen, the camera takes all the room the phone leaves */
-  @media (min-width: 1000px) and (min-height: 560px) {
-    body { height: 100svh; overflow: hidden; display: grid; grid-template-rows: var(--head-h) minmax(0, 1fr); }
-    /* the camera row is 16:9 at the column's width, never taller than the window allows; the notes take what is left */
-    .split { min-height: 0; grid-template-columns: minmax(0, 1fr) var(--phone-w); grid-template-rows: auto minmax(var(--info-h), 1fr);
-      grid-template-areas: "stage phone" "info phone"; column-gap: var(--col-gap); }
+  /* tablet: the camera across the top; the phone beside the steps and the activity */
+  @media (min-width: 700px) {
+    .split { grid-template-columns: var(--phone-w) minmax(0, 1fr); grid-template-areas: "stage stage" "phone steps" "activity activity";
+      align-items: start; }
+    .steps { align-self: stretch; }
     .phone-wrap { width: var(--phone-w); justify-self: stretch; }
-    .phone { width: var(--phone-w); }
+  }
+  /* desktop: the camera and everything about it on the left; the phone on the right, kept in view while the page scrolls */
+  @media (min-width: 1100px) {
+    .split { grid-template-columns: minmax(0, 1fr) var(--phone-w); grid-template-areas: "stage phone" "steps phone" "activity phone";
+      grid-template-rows: auto auto 1fr; }
+    .phone-wrap { position: sticky; top: var(--gutter); }
   }
 }
 
 @layer camera {
-  /* the camera fills its cell; the picture covers it when the crop is small, else it is letterboxed (app.js: fitStage) */
-  .stage { position: relative; min-width: 0; min-height: 0; background: #000; border-radius: var(--radius); overflow: hidden; aspect-ratio: 16 / 9; }
-  @media (min-width: 1000px) and (min-height: 560px) { .stage { max-height: calc(var(--avail-h) - var(--info-h) - var(--row-gap)); } }
+  /* the camera: 16:9, as wide as its grid area (the kit camera is 16:9, so the picture fills it exactly) */
+  .stage { position: relative; justify-self: stretch; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: var(--radius); overflow: hidden; }
   .stage video, .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .stage[data-fit="cover"] video, .stage[data-fit="cover"] img { object-fit: cover; }
   /* the camera burns its clock into the top-left corner: our labels go along the bottom */
   .stage-top { position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; pointer-events: none; }
-  .place { color: #fff; font-weight: 600; font-size: 0.95rem; letter-spacing: -0.01em; padding: 6px 12px; border-radius: 999px; background: rgb(0 0 0 / 0.55); white-space: nowrap; }
+  .place { flex: none; color: #fff; font-weight: 600; font-size: 0.95rem; letter-spacing: -0.01em; padding: 6px 12px; border-radius: 999px; background: rgb(0 0 0 / 0.55); white-space: nowrap; }
   .stage-msg { position: absolute; inset: 0 0 auto 0; padding: 10px 16px; color: #fff; background: rgb(0 0 0 / 0.6); font-size: var(--step-small); }
   .stage-msg:empty { display: none; }
 
-  /* under the camera: "How it works" (one part) and the activity (two parts), headings on one line */
-  .info { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--row-gap) var(--col-gap); align-content: start; min-height: 0; }
-  @media (min-width: 760px) { .info { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); } }
-  .about, .activity { display: grid; gap: 10px; align-content: start; min-width: 0; min-height: 0; }
-  .log-head { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+  /* how it works: equal cards; four across under a wide camera, stacked beside the phone on a tablet */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: st;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
+  /* tablet: the four steps share the phone's height, one above the other */
+  @media (min-width: 700px) and (max-width: 1099px) { .steps { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(4, 1fr); } }
+  .steps li { counter-increment: st; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 4px 12px; align-content: start;
+    padding: 16px; background: var(--ground); border-radius: var(--radius); }
+  .steps li::before { content: counter(st); grid-row: span 2; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
+    background: #e5f2fb; color: var(--labs); font-weight: 600; font-size: 0.8125rem; }
+  .steps b { font-weight: 600; font-size: 0.9375rem; line-height: 28px; }
+  .steps span { font-size: 0.875rem; line-height: 1.5; color: var(--muted); }
+
+  /* activity: the latest eight events as cards in the same rhythm as the steps */
+  .activity { display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .log-head { display: flex; align-items: baseline; gap: 12px; min-width: 0; padding-top: 6px; }
   .status { color: var(--muted); font-size: var(--step-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .spend { margin-left: auto; font-size: var(--step-small); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  /* activity: one row of cards, newest first; older ones drop out of sight instead of piling up */
-  .log { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    grid-template-rows: 72px; grid-auto-rows: 0; column-gap: 8px; row-gap: 0; overflow: hidden; }
-  .log li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; height: 72px; padding: 10px 12px;
-    background: var(--ground); border-radius: 12px; font-size: 0.78rem; line-height: 1.35; overflow: hidden; }
-  .log li img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
-  .log li > time { width: 48px; text-align: center; font-weight: 600; }
+  .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+  .log li:nth-child(n + 9) { display: none; }
+  .log li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; min-height: 76px; padding: 12px 14px;
+    background: var(--ground); border-radius: var(--radius); font-size: 0.8125rem; line-height: 1.4; }
+  .log li img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; }
+  .log li > time { width: 52px; text-align: center; font-weight: 600; }
   .log li span { min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
   .log time { color: var(--muted); font-variant-numeric: tabular-nums; }
   .log .alert { background: #fdecec; }
   .log small { display: block; color: var(--muted); overflow-wrap: anywhere; }
   .log:empty::before { content: "Nothing yet. Register a thing in the app, then move it in front of the camera."; grid-column: 1 / -1;
-    display: flex; align-items: center; height: 72px; padding: 0 14px; border-radius: 12px; background: var(--ground); color: var(--muted); font-size: 0.8125rem; }
+    display: flex; align-items: center; min-height: 76px; padding: 0 16px; border-radius: var(--radius); background: var(--ground); color: var(--muted); font-size: 0.875rem; }
 
   /* live boxes from the edge service */
   .boxes { position: absolute; pointer-events: none; transition: opacity 300ms var(--ease-out); }
@@ -135,7 +140,7 @@
   .box.person b { background: rgb(0 0 0 / 0.5); font-weight: 500; }
   .box.profile { border-color: #1E8E4E; }
   .box.profile b { background: #1E8E4E; }
-  .edge-pill { font-size: 0.78rem; padding: 5px 11px; border-radius: 999px; background: rgb(255 255 255 / 0.9); color: #0A3FA3; white-space: nowrap; }
+  .edge-pill { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 0.78rem; padding: 5px 11px; border-radius: 999px; background: rgb(255 255 255 / 0.9); color: #0A3FA3; white-space: nowrap; }
   .edge-pill[data-state="active"] { background: #E7F6EC; color: #146C35; }
   .edge-pill[data-state="registering"] { background: #FDF0E4; color: #8A3D00; }
 }

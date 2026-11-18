@@ -31,8 +31,7 @@
   <span class="mode" id="mode">Prototype</span>
 </header>
 
-<!-- One grid fills the window: the camera and its notes on the left, the phone on the right.
-     Every block starts on the same left edge and fills its column exactly. -->
+<!-- One grid, three compositions (app.css): desktop, tablet, phone. Every block fills its grid area exactly. -->
 <main class="split">
   <!-- ======================= CAMERA: what the system sees ======================= -->
   <div class="stage" id="stage" role="img" aria-label="Kit camera, Work Room, with the boxes the models draw">
@@ -43,15 +42,17 @@
     <p class="stage-msg" id="stagemsg">Connecting to the kit camera…</p>
   </div>
 
-  <section class="info" aria-label="How it works and recent activity">
-    <div class="about">
-      <h2>How it works</h2>
-      <p>The camera stays idle until something moves. Then the models on this computer find the things you registered, recognise each one by its visual fingerprint and keep only a small crop of it.</p>
-    </div>
-    <div class="activity">
-      <div class="log-head"><h2>Activity</h2><span class="status" id="status" aria-live="polite"></span><span class="spend" id="spend"></span></div>
-      <ol class="log" id="log"></ol>
-    </div>
+  <!-- how it works: four equal cards; the fourth is the app on the right -->
+  <ol class="steps" aria-label="How it works">
+    <li><b>Wakes on motion</b><span>The camera stays idle. A cheap check of the picture wakes the models only when something moves.</span></li>
+    <li><b>Finds candidates</b><span>OWLv2 looks for the things this home registered, by name, and boxes each candidate.</span></li>
+    <li><b>Recognises yours</b><span>DINOv2 compares each candidate with the thing's visual fingerprint: your book, not any book.</span></li>
+    <li><b>Answers in the app</b><span>A small crop and the place go to the home's memory. Ask the assistant on any tab of the app.</span></li>
+  </ol>
+
+  <section class="activity" aria-label="Recent activity">
+    <div class="log-head"><h2>Activity</h2><span class="status" id="status" aria-live="polite"></span><span class="spend" id="spend"></span></div>
+    <ol class="log" id="log"></ol>
   </section>
 
   <!-- ======================= APP: a copy of the Altice app, plus the Things tab ======================= -->
@@ -99,7 +100,6 @@
      </div>
      <img class="frame" src="/web/iphone-frame.svg" alt="" aria-hidden="true">
     </div>
-    <p class="caption">The Altice app as it is today, with the new Things tab and the assistant on every tab.</p>
   </section>
 </main>
 

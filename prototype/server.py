@@ -13,6 +13,7 @@ Reads ANTHROPIC_API_KEY and CAMERA_RTSP_URL from the repo's .env; neither is eve
 """
 import base64
 import os
+import re
 import subprocess
 import threading
 import time
@@ -460,8 +461,28 @@ def ask(payload: dict = Body(...)):
     return {**out, "crop": crop, "thing": thing, "candidates": [things[c] for c in out.get("candidates", []) if c in things]}
 
 
-RULE_WORDS = ("tell me", "notify", "alert me", "warn me", "let me know", "remind me", "turn ", "switch ", "when ",
-              "avisa", "lembra", "notifica", "liga ", "desliga", "quando ")
+# A sentence that asks to be told, or to act, becomes a sensor; anything else is a question. "When"/"quando" alone
+# says nothing: "Quando vi o livro" is a question, "When the door opens, turn the light red" is a rule.
+_REQUEST = re.compile(r"\b(tell me|notify|alert me|warn me|let me know|remind me|send me|avisa|avise|lembra|notifica|"
+                      r"diz-me|diga-me|manda-me|alerta-me)")
+_REQUEST_ASKS = re.compile(r"\b(tell me|let me know|diz-me|diga-me)\s+(where|what|which|who|how|onde|o que|qual|quais|"
+                           r"quem|como)\b")
+_ACTION = re.compile(r"\b(turn|switch|liga|desliga|acende|apaga)\b")
+_ASKS = re.compile(r"^(where|what|which|who|whose|how|did|do|does|have|has|had|is|are|was|were|onde|qual|quais|quem|"
+                   r"como|o que|que|viste|vi|viu|há|houve|esteve|estava|está|estão|já)\b")
+_AUX = re.compile(r"^(when|quando)\s+(did|do|does|was|were|is|are|have|has|had|é que|foi|vi|viste|viu|esteve|estava|"
+                  r"deixei|saí|tive)\b")
+
+
+def is_rule(text):
+    low = text.lower().strip()
+    if low.endswith("?") or re.match(r"^(did|do|does|have|has|was|were)\b", low):
+        return False
+    if _REQUEST.search(low):
+        return not _REQUEST_ASKS.search(low)
+    if _ASKS.match(low) or _AUX.match(low):
+        return False
+    return bool(_ACTION.search(low))
 
 
 @app.post("/api/assistant")
@@ -471,8 +492,7 @@ def assistant(payload: dict = Body(...)):
     text = str(payload.get("text", "")).strip()[:300]
     if not text:
         raise HTTPException(400, "text is required")
-    low = text.lower()
-    if any(w in low for w in RULE_WORDS) and not low.rstrip().endswith("?"):
+    if is_rule(text):
         return {"kind": "sensor", "sensor": add_rule({"sentence": text})}
     return {"kind": "answer", **ask({"question": text})}
 

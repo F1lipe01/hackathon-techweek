@@ -17,7 +17,7 @@ from pathlib import Path
 import anthropic
 import uvicorn
 from fastapi import Body, FastAPI, HTTPException
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 HERE = Path(__file__).resolve().parent
@@ -40,6 +40,7 @@ load_env({"ANTHROPIC_API_KEY", "CAMERA_RTSP_URL"})
 
 import actions  # noqa: E402  (after the environment is loaded)
 from brain import Brain, BudgetExceeded  # noqa: E402
+from kitcam import KitCamera  # noqa: E402
 from store import CROPS, Store  # noqa: E402
 
 store = Store()
@@ -241,20 +242,40 @@ def reset():
     return {"ok": True}
 
 
+kit = KitCamera(os.environ["CAMERA_RTSP_URL"]) if os.environ.get("CAMERA_RTSP_URL") else None
+
+
+def _kit():
+    if not kit:
+        raise HTTPException(404, "CAMERA_RTSP_URL is not set in .env")
+    return kit
+
+
 @app.get("/api/kit/frame.jpg")
 def kit_frame():
-    url = os.environ.get("CAMERA_RTSP_URL")
-    if not url:
-        raise HTTPException(404, "CAMERA_RTSP_URL is not set in .env")
-    try:
-        p = subprocess.run(["ffmpeg", "-loglevel", "error", "-rtsp_transport", "tcp", "-i", url, "-frames:v", "1",
-                            "-vf", "scale=1280:-2", "-f", "image2", "-vcodec", "mjpeg", "pipe:1"],
-                           capture_output=True, timeout=12)
-    except subprocess.TimeoutExpired:
+    """The newest frame from the persistent connection: instant once the stream is open."""
+    frame = _kit().latest()
+    if not frame:
         raise HTTPException(504, "The kit camera stream did not answer in 12 s")
-    if p.returncode != 0 or not p.stdout:
-        raise HTTPException(502, "The kit camera stream returned no frame")
-    return Response(p.stdout, media_type="image/jpeg", headers={"Cache-Control": "no-store"})
+    return Response(frame, media_type="image/jpeg", headers={"Cache-Control": "no-store"})
+
+
+@app.get("/api/kit/stream.mjpg")
+def kit_stream():
+    """Live view for an <img>: every new frame, as multipart MJPEG. No plugin, no VLC."""
+    cam = _kit()
+
+    def parts():
+        for frame in cam.frames_forever():
+            yield b"--frame\r\nContent-Type: image/jpeg\r\nContent-Length: " + str(len(frame)).encode() + b"\r\n\r\n" + frame + b"\r\n"
+
+    return StreamingResponse(parts(), media_type="multipart/x-mixed-replace; boundary=frame",
+                             headers={"Cache-Control": "no-store"})
+
+
+@app.get("/api/kit/status")
+def kit_status():
+    return _kit().status()
 
 
 app.mount("/crops", StaticFiles(directory=CROPS), name="crops")

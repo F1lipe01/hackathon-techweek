@@ -27,14 +27,14 @@ Two principles shape everything below:
 | F4 | Act on the home's devices | Same path as the app | MCP tools (`update_device_capabilities`, security status) |
 | F5 | Add a thing: suggested, or shown to the camera | About 10 s per thing | Room scan suggestions; 3-second enrolment |
 | F6 | Survive a camera that moves or zooms | No manual redrawing | Places are found by name in every frame, not stored as pixels (§4.3) |
-| N1 | Privacy | No video or full frames leave the home; no identities | Privacy guard, local perception, data rules (§7) |
+| N1 | Privacy | No video or full frames leave the home for analysis; people are recognised only if the household opts in | Privacy guard, local perception, data rules (§7) |
 | N2 | Cost | Under €0.50 cloud AI per home per month | Measured per-call costs × usage, see [business case](16-business-case.md) |
 | N3 | Latency, event to action | ≤ 3 s | §8 |
 | N4 | Adoption by Altice | No new app, no new device path | A tab in the existing app; MCP tools; platform scenarios |
 | N5 | Replication | Any operator on the platform | Multi-tenant platform service; edge software, not custom hardware |
 
 **Constraints today:**
-- **The camera:** one Wi-Fi camera (Tuya SC034-WNV3, "HD"), reachable as RTSP through a relay. On 18 Nov the stream did not answer.
+- **The camera:** one Wi-Fi camera (Tuya SC034-WNV3), reachable as RTSP through the organisers' go2rtc relay: H.265, 2304 × 1296, 20 fps (checked with ffprobe, 18 Nov). Opening the stream costs about 5 s, because the decoder waits for a keyframe, so the prototype keeps one connection open and reads the latest frame from memory. No VLC or plug-in is needed.
 - **The MCP server has 18 tools, with no event history and no push.** Its login token lasts about 24 h.
 - **The kit's hub can't run vision models.** It's an LTE gateway, not a compute device.
 - **The demo** runs on a laptop.
@@ -53,11 +53,23 @@ Runs as one service per home. In production it would run on the operator's home 
 | **Perception: tracking** | Keeps the identity of each detection across frames | ByteTrack (MIT) | Makes "the mug moved from desk to sofa" possible |
 | **Perception: fingerprints** | Compares a detection with the enrolled thing | DINOv2 image embeddings | Distinguishes your keys from a visitor's |
 | **Perception: depth** | Relative distance in the picture, from a single camera | Depth Anything V2 Small | Separates "on the table" from "behind it". Approximate, not lidar |
-| **Perception: people** | Presence and count; posture for falls or climbing (later) | Person detection; a pose model in a later phase | **Never identifies people** |
+| **Perception: people** | Presence and count; posture for falls or climbing (later). Recognises a household member only if the household enrolled that person, with their consent | Person detection; on-device face recognition (opt-in); a pose model in a later phase | **Off by default.** Face templates never leave the home |
 | **Scene memory** | Sightings: thing, place, time, position, thumbnail. Last-seen index and timelines. Who is home, from known phones on the Wi-Fi | Local database | Kept 30 days; no video |
 | **Sensor engine** | Evaluates the compiled rules against the memory every second; chooses a response on the ladder: nothing, remember, tell, act, escalate | Deterministic rule engine | Calls the language model only for unclear cases |
 | **Enrolment** | Turns about 3 seconds of a thing held in front of a camera into ~8 crops, its fingerprint and its photo | Detection + DINOv2 | Also accepts 3 phone photos |
 | **Secure channel** | One outbound, authenticated connection to the Altice platform | mTLS / OAuth, as the platform requires | The only way in or out of the edge |
+
+**Footprint of the local models.** Size on disk is the Hugging Face weights file (fp32). Time is measured on our laptop's GPU (Apple, MPS). Electricity assumes 1 frame per second on a 15 W edge box (business case B15) at €0.2367/kWh (Portugal, Eurostat `nrg_pc_204`, first half of 2026).
+
+| Model | Job | Size on disk | Time measured | Electricity a month | Published benchmark |
+|---|---|---|---|---|---|
+| OWLv2 base, patch16 ensemble | Detect things, places and people by name | 0.62 GB | 0.57 s per frame | ≈ €1.48 | 40.5 AP on rare LVIS classes, zero-shot ([scenic README](https://github.com/google-research/scenic/tree/main/scenic/projects/owl_vit)) |
+| ByteTrack | Track detections across frames | no weights (CPU) | negligible | ≈ €0 | 80.3 MOTA on MOT17 test ([paper](https://arxiv.org/abs/2110.06864)) |
+| DINOv2 small (ViT-S/14) | Fingerprint of your thing | 0.09 GB | 22 ms per crop | ≈ €0.06 (1 crop/s) | 81.1 % ImageNet-1k, linear probe ([README](https://github.com/facebookresearch/dinov2)) |
+| Depth Anything V2 Small | Near / far without lidar | 0.10 GB | 55 ms per frame | ≈ €0.14 | 95.3 % on DA-2K ([paper](https://arxiv.org/abs/2406.09414), Table 3) |
+| **Total** | | **0.81 GB** | **≈ 0.65 s per frame** | **≈ €1.68** | |
+
+The whole edge box, always on at 15 W, costs €2.59 a month in electricity (business case C10); the models above are part of that, not extra.
 
 ### On the Altice platform
 
@@ -195,8 +207,8 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
 
 | Data | Leaves the home? |
 |---|---|
-| Video, full frames | **Never** |
-| Faces, identities | **Never.** People are detected for presence only |
+| Video, full frames | **Not for analysis.** The user's own live view and clips work as in the Altice app today, through its relay |
+| Faces, identities | **Only by opt-in.** Off by default; the household enrols a person, with that person's consent. The face template stays on the edge; an event may carry the name the household chose ("Ana arrived") |
 | Fingerprints (embeddings) | Never |
 | Thing names, place names, thumbnails of things | Yes, to the platform, so the app can show them |
 | Events (sensor fired, thing seen) | Yes, to the platform |
@@ -204,9 +216,9 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
 | Questions and sentences | Yes, to the language model under contract |
 
 **Principles applied:**
-- **Data minimisation** (GDPR Art. 5(1)(c)) and **privacy by design** (Art. 25): masks, frames dropped after use, no video, no identities.
+- **Data minimisation** (GDPR Art. 5(1)(c)) and **privacy by design** (Art. 25): masks, frames dropped after use, no video stored by ThingTracker, people recognition off by default.
 - **A DPIA** (Art. 35) is expected for cameras in homes; we would prepare it with Altice before any pilot.
-- **No biometric identification** in this version. Remote biometric identification is high-risk under the EU AI Act; opt-in, on-device recognition of household members is a later, legally reviewed phase.
+- **Recognising people is opt-in only:** off by default, per person, with explicit consent (GDPR Art. 9(2)(a)), processed on the edge. The EU AI Act lists remote biometric identification as high-risk, so this feature needs a legal review and a DPIA before launch, as the executive summary says.
 - **Security:**
   - one authenticated outbound channel per home;
   - no open ports on the edge;
@@ -243,7 +255,7 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
 | D5 | **A tab in the existing Altice app** | A separate ThingTracker app | One app, one login, one place for alerts; the shortest path for Altice to ship |
 | D6 | **Model-agnostic language model under contract** | Commit to one provider | Lets Altice choose by price, EU residency or self-hosting; avoids lock-in |
 | D7 | **One secure channel from home to platform** | Each component calls the cloud | One thing to secure and audit; the platform controls which model sees what |
-| D8 | **No face identification in version 1** | Recognise household members | Legal risk (AI Act, GDPR Art. 9) and trust; presence is enough for the launch use cases |
+| D8 | **Recognising people: opt-in, on the device** | Never; or always on | The authorised-people scenarios need it. Off by default, consent per person and on-device processing keep the legal risk (AI Act, GDPR Art. 9) and the trust question manageable |
 
 ## 10. Prototype vs target
 

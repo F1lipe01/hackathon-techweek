@@ -55,6 +55,7 @@ async function useSource(next) {
   source = next;
   if (stream) { stream.getTracks().forEach((t) => t.stop()); stream = null; }
   clearInterval(kitTimer);
+  if (next !== 'kit') kitimg.removeAttribute('src');   // closes the live connection
   video.hidden = next === 'kit'; kitimg.hidden = next !== 'kit';
   if (next === 'webcam') {
     stageMsg('Starting the webcam…');
@@ -67,17 +68,11 @@ async function useSource(next) {
     stageMsg('Choose a clip recorded with the camera. It plays as if it were live.');
     $('file').click();
   } else {
-    stageMsg('Asking the kit camera for a frame…');
-    const pull = async () => {
-      try {
-        const r = await fetch('/api/kit/frame.jpg?t=' + Date.now());
-        if (!r.ok) throw new Error((await r.json().catch(() => ({}))).detail || r.status);
-        const url = URL.createObjectURL(await r.blob());
-        kitimg.onload = () => { URL.revokeObjectURL(url); stageMsg(''); renderZones(); };
-        kitimg.src = url;
-      } catch (e) { stageMsg('The kit camera is not answering: ' + e.message); }
-    };
-    pull(); kitTimer = setInterval(pull, 2000);
+    // Live view: the server keeps one RTSP connection open and streams each new frame (MJPEG), no plug-in needed.
+    stageMsg('Connecting to the kit camera… (about 5 s, waiting for a keyframe)');
+    kitimg.onload = () => { stageMsg(''); renderZones(); };
+    kitimg.onerror = () => stageMsg('The kit camera is not answering. Is it powered and on the Wi-Fi?');
+    kitimg.src = '/api/kit/stream.mjpg?t=' + Date.now();
   }
   renderZones();
 }

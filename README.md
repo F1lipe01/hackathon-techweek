@@ -51,6 +51,7 @@ No extensions (late = possible disqualification), pitch time cut strictly. Full 
 | [docs/14-architecture.md](docs/14-architecture.md) | **ThingTracker architecture:** components, flows, the sensor language, data model, privacy, measured performance and cost, decisions with alternatives, open questions. Diagram in [docs/architecture/](docs/architecture/) |
 | [docs/15-integration-spec.md](docs/15-integration-spec.md) | **Integration with the Altice platform:** the four Things MCP tools, the edge ↔ platform channel, enrolment, scenarios, what we need from Altice |
 | [docs/16-business-case.md](docs/16-business-case.md) | **Business case:** market funnel, pricing, unit economics, operator revenue, risks; model in `16-business-case-model.csv` |
+| [DELIVERABLES.md](DELIVERABLES.md) | **What we hand in and when:** the official deliverables and deadlines, the pitches, the supporting material, Thursday's plan, the Drive folders |
 | [AGENTS.md](AGENTS.md) | **Read first:** the project, where things live, how to run the prototype, conventions, the rules that must not be broken, key decisions |
 | [prototype/](prototype/) | **The working prototype:** server and rules engine, edge service (OWLv2 + DINOv2 on the kit camera), SQLite database, the Altice app copy with the Things tab and the assistant |
 | [deliverables/executive-summary/](deliverables/executive-summary/) | **The 2-page report** (PT-PT) built on the official template, with its figures |

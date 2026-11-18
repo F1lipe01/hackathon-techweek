@@ -166,7 +166,9 @@ def observe(payload: dict = Body(...)):
                 store.add_observation(t["thing_id"], zone, t.get("where", ""), crop_names.get(zone["id"]))
                 moved = not prev or prev.get("zone_id") != zone["id"] or time.time() - prev["ts"] > 600
                 if moved:
-                    store.add_event("seen", f"{by_name[t['thing_id']]} seen on the {zone['name'].lower()}, {t.get('where', '')}.",
+                    where = t.get("where", "")
+                    tail = f" {where}" if where.startswith("(") else (f", {where}" if where else "")
+                    store.add_event("seen", f"{by_name[t['thing_id']]} seen on the {zone['name'].lower()}{tail}.",
                                     thing_id=t["thing_id"], crop=crop_names.get(zone["id"]))
         for s in z.get("sensors", []):
             rule = next((r for r in sensors if r["id"] == s.get("sensor_id")), None)

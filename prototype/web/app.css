@@ -116,16 +116,33 @@
 @layer phone {
   .phone-wrap { display: grid; justify-items: center; gap: 10px; min-width: 0; }
   .phone-note { font-size: var(--step-small); color: var(--muted); text-align: center; max-width: 40ch; }
+  /* iPhone frame at 9:16. The phone's width sets everything inside it (cqi units). */
   .phone {
-    position: relative; width: 100%; max-width: 420px; /* a phone stays phone-sized on purpose */
-    height: min(860px, calc(100svh - 130px)); min-height: 620px;
-    display: grid; grid-template-rows: minmax(0, 1fr) auto;
+    --pw: min(420px, 100%, calc((100svh - 150px) * 9 / 16));
+    position: relative; width: var(--pw); aspect-ratio: 9 / 16;
+    container-type: inline-size;
+    display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
     background: var(--app-bg); color: var(--app-ink); font-family: var(--app-font);
-    border-radius: 40px; overflow: hidden;
-    border: 10px solid #111; /* taste-skill-ignore: device bezel */
+    border-radius: 56px; overflow: hidden;
+    border: 11px solid #0c0c0c; /* taste-skill-ignore: device bezel */
+    box-shadow: 0 0 0 2px #3a3a3c; /* taste-skill-ignore: the frame's metal edge */
   }
+  .phone > .screen { grid-row: 2; }
+  .phone > .tabs { grid-row: 3; }
+  .ios-status {
+    grid-row: 1; position: relative; display: flex; align-items: center; justify-content: space-between;
+    height: 12.5cqi; padding: 1.2cqi 7cqi 0 9cqi;
+    font: 600 4.1cqi/1 -apple-system, "SF Pro Text", "Helvetica Neue", Arial, sans-serif; color: var(--app-ink);
+  }
+  .island { position: absolute; left: 50%; top: 2.8cqi; transform: translateX(-50%);
+    width: 31cqi; height: 9cqi; border-radius: 999px; background: #000; }
+  .ios-icons { display: inline-flex; align-items: center; gap: 1.4cqi; }
+  .ios-icons svg { height: 3cqi; width: auto; fill: currentColor; }
+  .ios-icons svg:last-child { height: 3.2cqi; }
+  .home-indicator { position: absolute; left: 50%; bottom: 2cqi; transform: translateX(-50%);
+    width: 35cqi; height: 1.3cqi; border-radius: 999px; background: var(--app-ink); }
   .screen { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; }
-  .app-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 26px 20px 8px; }
+  .app-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 20px 8px; }
   .app-head h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; }
   .app-head .ti { width: 26px; height: 26px; }
   .head-icons { display: flex; gap: 18px; }
@@ -183,7 +200,7 @@
   .switch input:checked + span::after { transform: translateX(18px); }
   .switch input:focus-visible + span { outline: 2px solid var(--labs); outline-offset: 2px; }
 
-  .tabs { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--app-bg); padding: 10px 2px 16px;
+  .tabs { display: grid; grid-template-columns: repeat(5, 1fr); background: var(--app-bg); padding: 8px 2px 7cqi;
     box-shadow: 0 -1px 0 var(--app-line); /* taste-skill-ignore: the app's tab bar edge */ }
   .tabs button { position: relative; border: 0; background: none; color: #73727c; font: 500 0.72rem/1.2 var(--app-font); padding: 4px 0; cursor: pointer; display: grid; justify-items: center; gap: 4px; }
   .tabs .ti, .tabs svg { width: 26px; height: 26px; }
@@ -193,7 +210,7 @@
   .tabs button.dot::after { content: ""; position: absolute; top: 0; right: calc(50% - 18px); width: 9px; height: 9px; border-radius: 50%; background: var(--app-red); }
 
   .toast {
-    position: absolute; z-index: 5; left: 12px; right: 12px; top: 12px;
+    position: absolute; z-index: 5; left: 12px; right: 12px; top: 13cqi;
     background: #fff; color: var(--app-ink); border-radius: 20px; padding: 12px 14px;
     box-shadow: 0 10px 30px rgb(0 0 0 / 0.18); /* floats over the app: the one shadow */
     display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 12px; align-items: center; font-size: 0.88rem;
@@ -211,7 +228,8 @@
     .btn:active { transform: none; }
   }
   @media (max-width: 520px) {
-    .phone { border-width: 0; border-radius: 0; height: auto; min-height: 0; }
+    .phone { --pw: 100%; border-width: 0; border-radius: 0; box-shadow: none; aspect-ratio: auto; }
+    .ios-status, .home-indicator { display: none; }
     .screen { grid-template-rows: auto auto; }
     .status { margin-left: 0; width: 100%; }
   }

@@ -112,9 +112,9 @@ async function saveZones(zones) {
 $('editzones').addEventListener('click', () => {
   editing = !editing;
   $('editzones').setAttribute('aria-pressed', String(editing));
-  $('editzones').lastElementChild.textContent = editing ? 'Done' : 'Draw zones';
+  $('editzones').lastElementChild.textContent = editing ? 'Done' : 'Edit zones';
   drawEl.hidden = !editing; renderZones();
-  stageMsg(editing ? 'Drag over the picture to draw a zone: a table, the door, a shelf.' : '');
+  stageMsg(editing ? 'Drag over the picture to draw a new zone (a table, the door, a shelf). Press × on a zone to delete it.' : '');
 });
 let drag = null;
 drawEl.addEventListener('pointerdown', (e) => {
@@ -341,6 +341,10 @@ async function loadDevices() {
     $('devsrc').textContent = r.source === 'live' ? 'Live from the MCP.' : 'Not logged in to the MCP: showing the real readings from 16 Nov.';
   } catch (e) { $('devsrc').textContent = e.message; }
 }
+
+// live clock in the iPhone status bar
+const tick = () => { $('iostime').textContent = new Date().toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit' }); };
+tick(); setInterval(tick, 15000);
 
 useSource('webcam');
 refresh();

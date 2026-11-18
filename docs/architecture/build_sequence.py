@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Draw the integration spec's Figure 1: the messages from a sentence to an action, as a sequence diagram (PT).
 
-    python3 docs/architecture/build_sequence.py     # writes sequencia-regra.svg and .png (with Chrome)
+    python3 docs/architecture/build_sequence.py              # writes sequencia-regra.svg and .png (with Chrome)
+    python3 docs/architecture/build_sequence.py --lang en    # the English figure: sequencia-regra.en.svg and .en.png
 
 Text is measured with Lato (deliverables/executive-summary/.fonts) and wrapped to its box; every arrow is straight
 and one-way, labelled above its line.
 """
+import argparse
 import subprocess
 from pathlib import Path
 
@@ -16,6 +18,10 @@ FONTS = HERE.parents[1] / "deliverables" / "executive-summary" / ".fonts"
 INK, MUTED, LINE, BLUE, SOFT = "#1F2328", "#56606C", "#CFD5DC", "#0084D6", "#EEF3FB"
 W = 1200
 _f = {}
+_args = argparse.ArgumentParser(description="Draw the integration spec's sequence figure.")
+_args.add_argument("--lang", choices=["pt", "en"], default="pt", help="pt (default) or en")
+EN = _args.parse_args().lang == "en"
+SUFFIX = ".en" if EN else ""
 
 
 def width(s, size, bold=False):
@@ -53,13 +59,19 @@ def text(x, y, s, size=14, bold=False, fill=INK, anchor="middle", italic=False):
 COLS = [("Aplicação", "no telemóvel"), ("Serviço ThingTracker", "plataforma Altice"),
         ("Modelo de linguagem", "fornecedor sob contrato"), ("Servidor MCP e cenários", "plataforma Altice"),
         ("Serviço local", "em casa, junto da câmara"), ("Dispositivos", "sensor da porta, lâmpada")]
+if EN:
+    COLS = [("App", "on the phone"), ("ThingTracker service", "Altice platform"),
+            ("Language model", "provider under contract"), ("MCP server, scenarios", "Altice platform"),
+            ("Edge service", "in the home, by the camera"), ("Devices", "door sensor, light")]
+    for name, sub in COLS:                       # the Portuguese headers were checked by eye; the English are measured
+        assert width(name, 15, True) <= 176 - 16 and width(sub, 12.5) <= 176 - 16, name
 X = [100 + i * 200 for i in range(len(COLS))]
 TOP = 20
 
 # column headers
 for x, (name, sub) in zip(X, COLS):
     o.append(f'<rect x="{x - 88}" y="{TOP}" width="176" height="56" rx="10" fill="#FFF" stroke="{LINE}" stroke-width="1.2"/>')
-    if "ThingTracker" in name:                    # product names in italics, as in the report
+    if "ThingTracker" in name and not EN:         # product names in italics, as in the Portuguese report
         o.append(f'<text x="{x}" y="{TOP + 25}" font-size="15" font-weight="700" fill="{INK}" text-anchor="middle">'
                  f'{esc(name.replace("ThingTracker", ""))}<tspan font-style="italic">ThingTracker</tspan></text>')
     else:
@@ -81,6 +93,21 @@ ROWS = [
     (7, 3, 5, "update_device_capabilities: lâmpada vermelha"),
     (7, 3, 0, "aviso, com a miniatura da carteira"),
 ]
+if EN:
+    ROWS = [
+        (1, 0, 1, "“Tell me if I leave home without my wallet”"),
+        (2, 1, 2, "sentence, things, devices and MCP tools"),
+        (3, 2, 1, "structured rule"),
+        (4, 1, 3, "post_new_scenario"),
+        (5, 3, 4, "condition: wallet on the desk for 2 min"),
+        ("gap", "Later, the front door opens"),
+        (6, 5, 3, "door open (sensorState: alarm)"),
+        (6, 3, 4, "door event"),
+        ("note", 4, "Rules engine: wallet still on the desk"),
+        (6, 4, 3, "sensor.fired"),
+        (7, 3, 5, "update_device_capabilities: red light"),
+        (7, 3, 0, "alert, with the wallet’s thumbnail"),
+    ]
 
 y = TOP + 56 + 56
 marks = []
@@ -124,14 +151,14 @@ svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W
        'markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1.8 L10 5 L0 8.2 Z" '
        f'fill="{INK}"/></marker></defs><rect width="{W}" height="{H}" fill="#FFF"/>{lifelines}' + "".join(o) + "</svg>")
 # the lifelines go under the boxes and labels: draw them first, then put the header boxes back on top
-(HERE / "sequencia-regra.svg").write_text(svg, encoding="utf8")
+(HERE / f"sequencia-regra{SUFFIX}.svg").write_text(svg, encoding="utf8")
 chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-html = HERE / ".seq.html"
+html = HERE / f".seq{SUFFIX}.html"
 html.write_text(f'<html><head><style>@font-face{{font-family:Lato;src:url("file://{FONTS}/Lato-regular.ttf")}}'
                 f'@font-face{{font-family:Lato;font-weight:700;src:url("file://{FONTS}/Lato-bold.ttf")}}'
                 f'body{{margin:0}}</style></head><body>{svg}</body></html>')
 subprocess.run([chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=2",
-                f"--window-size={W},{H}", f"--screenshot={HERE / 'sequencia-regra.png'}", f"file://{html}"],
+                f"--window-size={W},{H}", f"--screenshot={HERE / f'sequencia-regra{SUFFIX}.png'}", f"file://{html}"],
                check=True, capture_output=True)
 html.unlink()
-print(f"wrote sequencia-regra.svg and .png ({W}x{H})")
+print(f"wrote sequencia-regra{SUFFIX}.svg and .png ({W}x{H})")

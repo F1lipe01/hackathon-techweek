@@ -7,7 +7,13 @@
 Text is measured with the template's Lato (extracted to .fonts/) and wrapped to each box. Every arrow is
 straight, and a two-way flow is two arrows, each with its own label.
     python3 figuras.py
+
+With --lang en, the English edition's figures instead, and nothing Portuguese is rewritten:
+  figura-exemplo.en.svg   Figure 1 in English, from the same photos
+  arquitetura.en.svg      copied from docs/architecture/thingtracker-architecture.en.svg (build_diagram.py --lang en)
+    python3 figuras.py --lang en
 """
+import argparse
 import base64
 import re
 import struct
@@ -23,6 +29,12 @@ TABLER = ROOT / "prototype" / "web" / "icons" / "tabler"
 W = 1000
 INK, MUTED, LINE, BLUE, DEEP, ARROW = "#1F2328", "#56606C", "#CFD5DC", "#0084D6", "#0A3FA3", "#6B7480"
 _f = {}
+EN = False          # set by --lang en: exemplo_real() then writes the English Figure 1
+
+
+def L(pt, en):
+    """The Portuguese text, or its English with --lang en."""
+    return en if EN else pt
 
 
 def font(size, bold=False):
@@ -46,6 +58,15 @@ def wrap(s, max_w, size, bold=False):
         else:
             cur = t
     return lines + ([cur] if cur else [])
+
+
+def balanced(s, max_w, size, bold=False):
+    """Wrap to as few lines as wrap() needs, but with lines of even length, so no word is left alone."""
+    lines = wrap(s, max_w, size, bold)
+    w = max_w
+    while len(lines) > 1 and len(wrap(s, w - 1, size, bold)) == len(lines):
+        w -= 1
+    return wrap(s, w, size, bold)
 
 
 def esc(t):
@@ -177,15 +198,23 @@ def photo(f, path, x, y, w, h, rx=8):
                f'clip-path="url(#{cid})" href="data:image/jpeg;base64,{data}"/>')
 
 
+# English for the values in fotos.json that are written in Portuguese
+PLACES_EN = {"mesa da entrada": "hall table", "secretária": "desk"}
+
+
 def exemplo_real():
     import json
     from PIL import Image
     spec = json.loads((FOTOS / "fotos.json").read_text())
     en, pt, art = spec["obj_en"], spec["obj_pt"], spec["art"]
+    place, hour, score = spec["place"], spec["time"], spec["score"]
+    if EN:
+        place, hour, score = PLACES_EN[place], hour.replace("h", ":"), score.replace(",", ".")
     f = Fig(312)
     gap, top, h = 30, 6, 300
     cw = (W - 3 * gap) / 4
-    titles = ["Registo visual", "Deteção", "Pergunta", "Regra e ação"]
+    titles = L(["Registo visual", "Deteção", "Pergunta", "Regra e ação"],
+               ["Visual enrolment", "Detection", "Question", "Rule and action"])
     for i, title in enumerate(titles):
         x = i * (cw + gap)
         f.rect(x, top, cw, h)
@@ -203,8 +232,10 @@ def exemplo_real():
     th = tw * 2 / 3
     for k, v in enumerate(spec["views"][:2 * cols]):
         photo(f, FOTOS / v, x + (k % cols) * (tw + 6), vy + (k // cols) * (th + 6), tw, th, rx=6)
-    f.para(x, vy + 2 * th + 6 + 26, f"O nome “_{en}_” pesquisa o objeto; as imagens geram uma assinatura digital e visual da _thing_, "
-           "guardada em casa e na base de dados da Altice.", iw, 13.5, 17.5)
+    f.para(x, vy + 2 * th + 6 + 26, L(f"O nome “_{en}_” pesquisa o objeto; as imagens geram uma assinatura digital e visual da _thing_, "
+                                      "guardada em casa e na base de dados da Altice.",
+                                      f"The name “{en}” is the search term; the images make a digital and visual fingerprint of "
+                                      "the thing, stored at home and in Altice’s database."), iw, 13.5, 17.5)
 
     # 2. detection: the scene, with the box the edge drew
     x = cw + gap + ix
@@ -217,41 +248,44 @@ def exemplo_real():
     b = spec["box"]
     bx, by, bw, bh = ox + b[0] * s, oy + b[1] * s, (b[2] - b[0]) * s, (b[3] - b[1]) * s
     f.rect(bx, by, bw, bh, fill="none", stroke=BLUE, rx=3, sw=2.2)
-    lab = f"{pt.capitalize()} · sua {spec['score']}"
+    lab = L(f"{pt.capitalize()} · sua {score}", f"Your {en} · {score}")
     lw = width(lab, 12.5, True) + 12
     ly = by - 20 if by - 20 > vy + 2 else by + bh + 2
     lx = min(bx, x + iw - lw - 2)
     f.rect(lx, ly, lw, 18, fill=BLUE, stroke=None, rx=4)
     f.text(lx + 6, ly + 13, lab, 12.5, True, "#FFF")
-    f.para(x, vy + sh + 26, "Só quando há movimento: o _OWLv2_ encontra candidatos e o _DINOv2_ confirma que é "
-           f"{art} {pt} registad{art}.", iw, 13.5, 17.5)
+    f.para(x, vy + sh + 26, L("Só quando há movimento: o _OWLv2_ encontra candidatos e o _DINOv2_ confirma que é "
+                              f"{art} {pt} registad{art}.",
+                              f"Only when there is motion: OWLv2 finds candidates and DINOv2 confirms it is the enrolled {en}."),
+           iw, 13.5, 17.5)
 
     # 3. the question, the answer with the photo, and the disambiguation
     x = 2 * (cw + gap) + ix
-    q = f"Onde está {art} {pt}?"
+    q = L(f"Onde está {art} {pt}?", f"Where is my {en}?")
     qw = width(q, 14.5) + 24
     f.rect(x + iw - qw, vy, qw, 32, fill=BLUE, stroke=None, rx=16)
     f.text(x + iw - qw / 2, vy + 21, q, 14.5, False, "#FFF", "middle")
     f.rect(x, vy + 42, iw, 62, fill="#EEF3FB", stroke=None, rx=14)
     photo(f, FOTOS / spec["answer"], x + 8, vy + 50, 46, 46, rx=8)
-    ans = wrap(f"Na {spec['place']}, às {spec['time']}.", iw - 72, 14)
+    ans = wrap(L(f"Na {place}, às {hour}.", f"On the {place}, at {hour}."), iw - 72, 14)
     for j, ln in enumerate(ans[:3]):
         f.text(x + 64, vy + 73 - (len(ans) - 1) * 8.5 + j * 17, ln, 14, False, INK)
     f.rect(x, vy + 112, iw, 46, fill="#F4F5F7", stroke=None, rx=12)
-    f.text(x + iw / 2, vy + 131, f"Se houver duas, pergunta:", 13.5, False, INK, "middle")
-    f.text(x + iw / 2, vy + 149, "“Qual delas?”", 13.5, False, INK, "middle")
-    f.para(x, vy + 184, "A memória da casa responde com o último local e a hora.", iw, 13.5, 17.5)
+    f.text(x + iw / 2, vy + 131, L(f"Se houver duas, pergunta:", "If there are two, it asks:"), 13.5, False, INK, "middle")
+    f.text(x + iw / 2, vy + 149, L("“Qual delas?”", "“Which one?”"), 13.5, False, INK, "middle")
+    f.para(x, vy + 184, L("A memória da casa responde com o último local e a hora.",
+                          "The home memory answers with the last place and time."), iw, 13.5, 17.5)
 
     # 4. sentence → service → language model with MCP tools → scenario via MCP → evaluated at home → action via MCP
     x = 3 * (cw + gap) + ix
-    chain = [(f"“Avisa-me se sair sem {art} {pt}”", "#EEF3FB", INK),
-             ("Serviço _ThingTracker_", "#FFF", INK),
-             ("Modelo de linguagem, com as ferramentas MCP", "#FFF", INK),
-             ("Regra gravada como cenário (MCP)", "#FFF", INK),
-             ("Avaliada em casa; ação pelo MCP", "#FFF", INK)]
+    chain = [(L(f"“Avisa-me se sair sem {art} {pt}”", f"“Tell me if I leave without my {en}”"), "#EEF3FB", INK),
+             (L("Serviço _ThingTracker_", "ThingTracker service"), "#FFF", INK),
+             (L("Modelo de linguagem, com as ferramentas MCP", "Language model, with the MCP tools"), "#FFF", INK),
+             (L("Regra gravada como cenário (MCP)", "Rule saved as a scenario (MCP)"), "#FFF", INK),
+             (L("Avaliada em casa; ação pelo MCP", "Evaluated at home; action through MCP"), "#FFF", INK)]
     y = vy
     for k, (t, fill, col) in enumerate(chain):
-        lines = wrap(t, iw - 16, 13.5)
+        lines = balanced(t, iw - 16, 13.5) if EN else wrap(t, iw - 16, 13.5)
         ph = 12 + 16 * len(lines)
         f.rect(x, y, iw, ph, fill=fill, stroke=None if fill != "#FFF" else LINE, rx=8)
         for j, ln in enumerate(lines):
@@ -260,7 +294,11 @@ def exemplo_real():
             f.arrow(x + iw / 2, y + ph + 1, x + iw / 2, y + ph + 9)
         y += ph + 10
     assert y - 10 <= top + h - 6, f"panel 4 overflows by {y - 10 - (top + h - 6):.0f}"
-    f.save("figura-exemplo.svg")
+    if EN:                                   # labels drawn without wrapping must still fit their panel
+        for s_ in (q, L("", "If there are two, it asks:")):
+            assert width(s_, 14.5) + 24 <= iw, s_
+        assert len(ans) <= 3, ans
+    f.save(L("figura-exemplo.svg", "figura-exemplo.en.svg"))
 
 
 # ---------------------------------------------------------------- figure 2: how it works
@@ -348,8 +386,16 @@ def arquitetura():
 
 
 if __name__ == "__main__":
-    exemplo_real() if (FOTOS / "fotos.json").exists() else exemplo()
-    arquitetura()
     import shutil
-    shutil.copy(ROOT / "docs" / "architecture" / "thingtracker-architecture.svg", HERE / "arquitetura.svg")
-    print("copied arquitetura.svg from docs/architecture")
+    args = argparse.ArgumentParser(description="Draw the report's figures.")
+    args.add_argument("--lang", choices=["pt", "en"], default="pt", help="pt (default) or en")
+    if args.parse_args().lang == "en":
+        EN = True
+        exemplo_real()
+        shutil.copy(ROOT / "docs" / "architecture" / "thingtracker-architecture.en.svg", HERE / "arquitetura.en.svg")
+        print("copied arquitetura.en.svg from docs/architecture")
+    else:
+        exemplo_real() if (FOTOS / "fotos.json").exists() else exemplo()
+        arquitetura()
+        shutil.copy(ROOT / "docs" / "architecture" / "thingtracker-architecture.svg", HERE / "arquitetura.svg")
+        print("copied arquitetura.svg from docs/architecture")

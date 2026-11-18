@@ -7,7 +7,13 @@ Outputs, next to this script:
   sumario-executivo-IT-Porto.pdf   the file to submit (HTML replica of the template, printed by Chrome)
 
 Standard library only, plus Google Chrome. Run:  python3 build.py
+
+The English edition, for teammates who do not read Portuguese (run figuras.py --lang en first):
+    python3 build.py --lang en       # sumario-executivo.en.md -> deliverables/english/ThingTracker - Report (EN).pdf
+--src and --out choose another source or PDF path. The English edition is a PDF only: the template's labels
+("Equipa", "Sumário Executivo", "Figura", the footer) are translated, and no DOCX is written.
 """
+import argparse
 import html
 import os
 import re
@@ -29,7 +35,16 @@ FIG_W_CM = 15.9  # text width of the template is 15.93 cm
 FIG_ALT = {"figura-exemplo": "Exemplo do ThingTracker: uma frase, a câmara vê, a casa lembra, a casa age",
            "figura-arquitetura": "Como funciona o ThingTracker: em casa, na plataforma Altice e no modelo de linguagem",
            "arquitetura": "Arquitetura do ThingTracker: em casa, na plataforma Altice e no modelo de linguagem",
-           "fluxo": "Fluxo do ThingTracker: ver, filtrar, perceber, lembrar, agir"}
+           "fluxo": "Fluxo do ThingTracker: ver, filtrar, perceber, lembrar, agir",
+           "figura-exemplo.en": "ThingTracker example: visual enrolment, detection, a question, a rule and its action",
+           "arquitetura.en": "ThingTracker architecture: at home, on the Altice platform and in the language model"}
+
+# the template's words in each language; Portuguese is the template as the organisers wrote it
+WORDS = {"pt": {"team": "Equipa", "challenge": "Desafio", "doc": "Sumário Executivo", "figure": "Figura",
+                "sources": "Fontes:", "edition": "4ª Edição", "lang": "pt-PT"},
+         "en": {"team": "Team", "challenge": "Challenge", "doc": "Executive Summary", "figure": "Figure",
+                "sources": "Sources:", "edition": "4th Edition", "lang": "en"}}
+LANG = "pt"         # set from --lang in main()
 
 
 # ---------- source parsing ----------
@@ -47,7 +62,7 @@ def parse(md):
     def flush():
         if para:
             text = " ".join(para)
-            kind = "sources" if text.startswith("Fontes:") else "p"
+            kind = "sources" if text.startswith(WORDS[LANG]["sources"]) else "p"
             blocks.append((kind, text))
             para.clear()
 
@@ -261,7 +276,7 @@ def inline_html(text):
     return "".join(out)
 
 
-def build_pdf(tmp, meta, blocks, fontdir):
+def build_pdf(tmp, meta, blocks, fontdir, out):
     import base64
     logo = base64.b64encode((tmp / "docx/word/media/image1.png").read_bytes()).decode()
     # header image at the template's size (5.31 x 1.31 cm), as SVG so it stays sharp
@@ -273,11 +288,11 @@ def build_pdf(tmp, meta, blocks, fontdir):
         '<svg xmlns="http://www.w3.org/2000/svg" width="8cm" height="1.0cm" viewBox="0 0 302 38" '
         'font-family="Arial, Helvetica, sans-serif" text-anchor="end">'
         '<text x="302" y="16" font-size="14.67" font-weight="700" fill="#000">AVEIRO TECH CITY - HACKATHON</text>'
-        '<text x="302" y="33" font-size="13.33" fill="#7f7f7f">Sumário Executivo – 2026</text></svg>', encoding="utf8")
+        f'<text x="302" y="33" font-size="13.33" fill="#7f7f7f">{WORDS[LANG]["doc"]} – 2026</text></svg>', encoding="utf8")
     (tmp / "footer.svg").write_text(
         '<svg xmlns="http://www.w3.org/2000/svg" width="9cm" height="0.9cm" viewBox="0 0 340 34" font-family="Arial, Helvetica, sans-serif" font-size="10.7" fill="#7f7f7f">'
         '<text x="0" y="12" font-weight="700">AVEIRO TECH CITY</text>'
-        '<text x="0" y="28"><tspan font-weight="700">Aveiro Tech City Hackathon </tspan>– 4ª Edição</text></svg>',
+        f'<text x="0" y="28"><tspan font-weight="700">Aveiro Tech City Hackathon </tspan>– {WORDS[LANG]["edition"]}</text></svg>',
         encoding="utf8")
 
     parts, items, n_fig = [], [], 0
@@ -300,7 +315,7 @@ def build_pdf(tmp, meta, blocks, fontdir):
             parts.append(f'<p class="sources">{inline_html(text)}</p>')
         elif kind == "caption":
             n_fig += 1
-            parts.append(f'<p class="caption"><b>Figura {n_fig}</b> – {inline_html(text)}</p>')
+            parts.append(f'<p class="caption"><b>{WORDS[LANG]["figure"]} {n_fig}</b> – {inline_html(text)}</p>')
         elif kind == "fig":
             parts.append(f'<figure><img src="{(HERE / (text + ".png")).as_uri()}" alt="{x(FIG_ALT.get(text, text))}"></figure>')
     close_list()
@@ -327,13 +342,14 @@ figure img { width: 100%; display: block; }
 .sources { font-size: 7.5pt; line-height: 1.25; color: #666; margin-top: 6pt; }
 .caption { font-size: 8.5pt; line-height: 1.25; color: #555; text-align: center; margin: -3pt 0 7pt; }
 """
-    page = (f'<!doctype html><html lang="pt-PT"><meta charset="utf-8"><title>{OUT}</title><style>{css}</style><body>'
-            f'<div class="t1">Equipa {x(meta["equipa"])}</div>'
-            f'<div class="t2">Desafio {x(meta["desafio"])} - Sumário Executivo</div>'
+    wd = WORDS[LANG]
+    team, challenge = meta.get("equipa", meta.get("team")), meta.get("desafio", meta.get("challenge"))
+    page = (f'<!doctype html><html lang="{wd["lang"]}"><meta charset="utf-8"><title>{out.stem}</title><style>{css}</style><body>'
+            f'<div class="t1">{wd["team"]} {x(team)}</div>'
+            f'<div class="t2">{wd["challenge"]} {x(challenge)} - {wd["doc"]}</div>'
             + "".join(parts) + "</body></html>")
     src = tmp / "page.html"
     src.write_text(page, encoding="utf8")
-    out = HERE / f"{OUT}.pdf"
     subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
                     "--virtual-time-budget=3000", f"--print-to-pdf={out}", src.as_uri()],
                    check=True, capture_output=True)
@@ -341,7 +357,19 @@ figure img { width: 100%; display: block; }
 
 
 def main():
-    meta, blocks = parse(SOURCE.read_text(encoding="utf8"))
+    global LANG
+    ap = argparse.ArgumentParser(description="Build the executive summary (the report) as PDF, and DOCX in Portuguese.")
+    ap.add_argument("--lang", choices=["pt", "en"], default="pt", help="pt (default): the report to submit; en: the English edition")
+    ap.add_argument("--src", type=Path, help="Markdown source (default: sumario-executivo.md, or sumario-executivo.en.md with --lang en)")
+    ap.add_argument("--out", type=Path, help="PDF to write (default: sumario-executivo-IT-Porto.pdf next to this script, "
+                                             "or deliverables/english/ThingTracker - Report (EN).pdf with --lang en)")
+    args = ap.parse_args()
+    LANG = args.lang
+    en = LANG == "en"
+    source = args.src or (HERE / "sumario-executivo.en.md" if en else SOURCE)
+    out = args.out or (HERE.parents[1] / "deliverables" / "english" / "ThingTracker - Report (EN).pdf" if en else HERE / f"{OUT}.pdf")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    meta, blocks = parse(source.read_text(encoding="utf8"))
     with tempfile.TemporaryDirectory() as t:
         tmp = Path(t)
         with zipfile.ZipFile(TEMPLATE) as z:
@@ -349,10 +377,10 @@ def main():
         fontdir = tmp / "docx" / "word" / "fonts"
         for name in dict.fromkeys(t for k, t in blocks if k == "fig"):
             render_figure(tmp, fontdir, name)
-        docx = build_docx(tmp, meta, blocks)
-        pdf = build_pdf(tmp, meta, blocks, fontdir)
+        docx = None if en else build_docx(tmp, meta, blocks)
+        pdf = build_pdf(tmp, meta, blocks, fontdir, out)
     words = sum(len(re.sub(r"[*`_]", "", t).split()) for k, t in blocks if k not in ("fig", "caption"))
-    print(f"built {docx}\nbuilt {pdf}\nwords: {words}")
+    print((f"built {docx}\n" if docx else "") + f"built {pdf}\nwords: {words}")
 
 
 if __name__ == "__main__":

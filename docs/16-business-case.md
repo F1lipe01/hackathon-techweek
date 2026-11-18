@@ -1,48 +1,58 @@
 # Business case — ThingTracker
 
-State on **Wed 18 Nov 2026**. The charts are built from [the model](16-business-case-model.csv) by [`business-case/build_charts.py`](business-case/build_charts.py). Every number is either sourced or marked as our assumption; the details and sources are at the end.
+State on **Wed 18 Nov 2026**. The charts are built from [the model](16-business-case-model.csv) by `business-case/build_graficos.py --lang en`, which stops if a chart shows a value that this text does not. Every number is either sourced or marked as our assumption; the details and sources are at the end.
 
 ## In one minute
 
 - **Who pays:** households pay their operator a small monthly fee; Altice Labs supplies ThingTracker on its Cognitive Home platform.
-- **How many:** about 19,000 MEO homes in the expected case, 1.2% of MEO's fixed-broadband homes.
+- **How many:** about 19,000 MEO homes in the expected case, 1.2 % of MEO's fixed-broadband homes.
 - **Per home:** €3.99 a month leaves about €1.74 after the AI, the servers, support and the cost of winning the customer.
 - **The condition:** the local AI must run on hardware already in the home. With a box per home, the add-on loses money.
 - **Price:** a fraction of today's camera alarm plans in Portugal, which start at €34.99 a month.
 
 ## 1. The market
 
-![About 19,000 MEO homes in the expected case](business-case/charts/1-market.png)
+![About 19,000 MEO homes in the expected case](business-case/charts-en/1-market.png)
 
-MEO has about 1.58 million homes with fixed broadband (ANACOM, Q4 2025). About one person in four in Portugal already uses a connected-home system (Eurostat 2024). If one in twenty of them subscribes, which is our assumption, that makes about 19,000 homes. The range we model runs from about 2,700 to 52,000.
+Figure 1 – About 19,000 MEO homes in the expected case
+
+MEO has about 1.58 million homes with fixed broadband (ANACOM, Q4 2025). About one person in four in Portugal already uses a connected-home system (Eurostat 2024). If one in twenty of them subscribes, which is our assumption, that makes about 19,000 homes (Figure 1). The range we model runs from about 2,700 to 52,000.
 
 ## 2. One home, one month
 
-![Each subscriber leaves about €1.74 a month](business-case/charts/2-one-home.png)
+![Each subscriber leaves about €1.74 a month](business-case/charts-en/2-one-home.png)
 
-The language model costs about €0.43 per home a month, because it is called only when a sensor is created, a question is asked or a case is unclear. The cameras are watched by free, local models. The other costs are our assumptions.
+Figure 2 – Each subscriber leaves about €1.74 a month
+
+Figure 2 shows what is left of the monthly fee after the costs. The language model costs about €0.43 per home a month, because it is called only when a sensor is created, a question is asked or a case is unclear. The cameras are watched by free, local models. The other costs are our assumptions.
 
 ## 3. Where the AI runs decides the case
 
-![Where the AI runs decides the case](business-case/charts/3-hardware.png)
+![Where the AI runs decides the case](business-case/charts-en/3-hardware.png)
 
-The local vision models are the heavy part. If they run on a router, gateway or camera already in the home, every subscriber leaves money; with a box per home, the add-on loses money. Whether Altice's home hardware has spare capacity is therefore the first question for Altice (see *What we need from Altice* below).
+Figure 3 – Where the AI runs decides the case
+
+The local vision models are the heavy part. If they run on a router, gateway or camera already in the home, every subscriber leaves money; with a box per home, the add-on loses money (Figure 3). Whether Altice's home hardware has spare capacity is therefore the first question for Altice (see *What we need from Altice* below).
 
 ## 4. Price
 
-![A fraction of what a camera plan costs](business-case/charts/4-prices.png)
+![A fraction of what a camera plan costs](business-case/charts-en/4-prices.png)
 
-Camera alarm plans in Portugal start at €34.99 a month at NOS (a campaign price, plus €7.50 a month for each extra indoor camera) and at €45.50 at Vodafone. ThingTracker is proposed at €3.99 for a home that already has a camera, or €7.50 with a camera.
+Figure 4 – A fraction of what a camera plan costs
+
+Camera alarm plans in Portugal start at €34.99 a month at NOS (a campaign price, plus €7.50 a month for each extra indoor camera) and at €45.50 at Vodafone. ThingTracker is proposed at €3.99 for a home that already has a camera, or €7.50 with a camera (Figure 4).
 
 ## 5. What MEO can earn
 
-![Revenue grows with every home that joins](business-case/charts/5-revenue.png)
+![Revenue grows with every home that joins](business-case/charts-en/5-revenue.png)
 
-Revenue grows in a straight line with the share of homes that subscribe; the expected case (1.2%) sits between the 1% and 2% columns. These are scenarios, not forecasts: a pilot would give the real take rate.
+Figure 5 – Revenue grows with every home that joins
+
+Revenue grows in a straight line with the share of homes that subscribe; the expected case (1.2 %) sits between the 1 % and 2 % columns of Figure 5. These are scenarios, not forecasts: a pilot would give the real take rate.
 
 ## 6. Beyond Portugal
 
-France fits better. SFR Maison Sécurisée already includes a camera, and connected-home use is higher (39% of people, against 24% in Portugal). The expected case there is about 115,000 homes. SFR is being sold ([iliad, 6 Jun 2026](https://www.iliad.fr/media/CP_ILD_060626_Eng_227f572f6d.pdf)), so ThingTracker should be offered as a platform feature for any operator.
+France fits better. SFR Maison Sécurisée already includes a camera, and connected-home use is higher (39 % of people, against 24 % in Portugal). The expected case there is about 115,000 homes. SFR is being sold ([iliad, 6 Jun 2026](https://www.iliad.fr/media/CP_ILD_060626_Eng_227f572f6d.pdf)), so ThingTracker should be offered as a platform feature for any operator.
 
 ---
 
@@ -56,7 +66,7 @@ France fits better. SFR Maison Sécurisée already includes a camera, and connec
 |---|---|---|
 | Household | A monthly fee on its operator bill | Last-seen answers, sensors from one sentence, actions on its own devices |
 | Operator (MEO, SFR) | Altice Labs, under a licence model that is **unknown** | Revenue on its existing base; an answer to the NOS and Vodafone camera plans (D3) |
-| Altice Labs | — | A feature for every operator on Cognitive Home, a white-label, multi-tenant B2B2C platform sold to telcos (docs/12 §2) |
+| Altice Labs | Not applicable | A feature for every operator on Cognitive Home, a white-label, multi-tenant B2B2C platform sold to telcos (docs/12 §2) |
 
 The operator already holds the bill, the app and the devices that the Model Context Protocol (MCP) server acts on. Portugal has room to grow: 23.99 % of people used a connected-home system in 2024, against 33.04 % in the EU (Eurostat, docs/12 §3.7). MEO sells an Ajax alarm kit with no monthly fee whose only camera is a motion detector that takes photos when it detects motion; its shop also sells third-party video cameras (meo.pt, loja.meo.pt/seguranca, checked 18 Nov 2026).
 
@@ -66,9 +76,9 @@ The operator already holds the bill, the app and the devices that the Model Cont
 
 | Step | Low | Base | High | Source |
 |---|---|---|---|---|
-| Residential fixed broadband accesses | 4,052 k | 4,052 k | 4,052 k | [ANACOM 4T2025](https://www.anacom.pt/streaming/SAI4T2025.pdf?contentId=1828507&field=ATTACHED_FILE), Tabela 5 |
-| × MEO share of residential accesses | 39.0 % | 39.0 % | 39.0 % | ANACOM 4T2025, Tabela 6 |
-| = MEO residential accesses [D01] | 1,580 k | 1,580 k | 1,580 k | |
+| Residential fixed broadband accesses | 4,052 k | 4,052 k | 4,052 k | [ANACOM Q4 2025](https://www.anacom.pt/streaming/SAI4T2025.pdf?contentId=1828507&field=ATTACHED_FILE), Table 5 |
+| × MEO share of residential accesses | 39.0 % | 39.0 % | 39.0 % | ANACOM Q4 2025, Table 6 |
+| = MEO residential accesses [D01] | 1,580 k | 1,580 k | 1,580 k | Product of the two rows above |
 | × homes ready for an add-on [D02] | 8.49 % | 23.99 % | 33.04 % | PROXY, Eurostat 2024: PT security devices / PT any connected-home system / EU average |
 | × take rate [B22] | 2 % | 5 % | 10 % | **ASSUMPTION** |
 | = **subscribing homes** [D05] | **2.7 k** | **19.0 k** | **52.2 k** | 0.17 % / 1.20 % / 3.30 % of the MEO base |
@@ -93,17 +103,17 @@ Caveats: ANACOM counts accesses, not homes, and Eurostat counts individuals. MEO
 | Vodafone + Prosegur Alarms | "desde €45,5/mês" | 360° camera in the base package | [vodafone.pt](https://www.vodafone.pt/alarmes-prosegur.html) |
 | NOS Securitas, apartment | €34.99/month campaign (€39.99 struck through); 36 months | Motion detector with camera in the kit; each extra indoor camera **+€7.50/month** | [nos.pt alarm](https://www.nos.pt/alarmes/alarme-casa), [nos.pt cameras](https://www.nos.pt/alarmes/equipamentos/camaras-vigilancia) |
 | SFR Maison Sécurisée | €19.99/month, no commitment; €14.99 for SFR Box customers; the €99 "pack alerte vidéo" must be bought | Included | [sfr.fr/maison](https://www.sfr.fr/maison/), checked 18 Nov 2026; docs/12 §2 |
-| MEO | Ajax Starter kit, no service subscription | Motion detector with a camera that takes photos; no video camera | meo.pt, checked 18/11/2026 |
+| MEO | Ajax Starter kit, no service subscription | Motion detector with a camera that takes photos; no video camera | meo.pt, checked 18 Nov 2026 |
 
 | Our option (**ASSUMPTION**) | Retail incl. VAT | Net of 23 % VAT | Fits | Why this price |
 |---|---|---|---|---|
 | A. Camera + Things bundle [B21] | €7.50 | €6.10 | MEO | What NOS charges for each extra indoor camera |
 | B. Add-on [B20] | €2.99 / €3.99 / €4.99 | €2.43 / €3.24 / €4.06 | Homes with a platform camera, e.g. Maison Sécurisée | €4.99 is 25 % of SFR's price (33 % of the €14.99 SFR Box price), 14 % of NOS's and 11 % of Vodafone's |
-| C. Inside an alarm plan | €0 extra | — | Retention | Value is lower churn, **unknown** |
+| C. Inside an alarm plan | €0 extra | €0 | Retention | Value is lower churn, **unknown** |
 
 ### D4. Unit economics per home per month
 
-Continuous perception runs locally. The cloud is called only for these three kinds of call:
+Perception runs locally, and only when there is motion or sound. The cloud is called only for these three kinds of call:
 
 | Call | Model | Measured cost per call | Calls a month, low / base / high (**ASSUMPTION**) |
 |---|---|---|---|
@@ -124,13 +134,13 @@ By contrast, sending one busy zone to the cloud costs up to $0.37 an hour ([prot
 | Cloud backend [B07] | 0.05 | 0.10 | 0.25 | **ASSUMPTION** |
 | Support [C03] | 0.17 | 0.42 | 1.25 | **ASSUMPTION**: 0.25 / 0.5 / 1 contacts a year at €8 / €10 / €15 |
 | Acquisition [C04] | 0.28 | 0.56 | 1.11 | **ASSUMPTION**: €10 / €20 / €40 over 36 months |
-| **Running cost** [C05] | **0.60** | **1.51** | **4.39** | |
+| **Running cost** [C05] | **0.60** | **1.51** | **4.39** | Sum of the four rows above |
 
 **Edge options.** Hardware prices are rough **ASSUMPTIONS**, amortised over 36 months to match NOS's commitment.
 
 | Option | Hardware | €/month | Household electricity (€0.2367/kWh, Eurostat) |
 |---|---|---|---|
-| E1: existing gateway or camera | €0 | 0 | — (feasibility **unknown**) |
+| E1: existing gateway or camera | €0 | 0 | Not estimated (feasibility **unknown**) |
 | E2: small box with an NPU | €60 / €100 / €150 | 1.67 / 2.78 / 4.17 | 0.52 / 0.86 / 1.38 (3 / 5 / 8 W) |
 | E3: GPU-class box | €200 / €300 / €400 | 5.56 / 8.33 / 11.11 | 1.73 / 2.59 / 4.32 (10 / 15 / 25 W) |
 
@@ -138,8 +148,8 @@ By contrast, sending one busy zone to the cloud costs up to $0.37 an hour ([prot
 
 | Offer | E1 | E2 | E3 |
 |---|---|---|---|
-| Add-on €2.99 [M01] | 0.92 (1.83 to −1.96) | — | — |
-| Add-on €3.99 [M02, M04] | **1.74** (2.65 to −1.15) | −1.04 | — |
+| Add-on €2.99 [M01] | 0.92 (1.83 to −1.96) | Not calculated | Not calculated |
+| Add-on €3.99 [M02, M04] | **1.74** (2.65 to −1.15) | −1.04 | Not calculated |
 | Add-on €4.99 [M03, M05, M06] | 2.55 (3.46 to −0.34) | −0.23 | −5.78 |
 | Bundle €7.50, camera supplied (€25 / €40 / €60, **ASSUMPTION**) [M07–M09] | 3.48 | 0.70 | −4.85 |
 

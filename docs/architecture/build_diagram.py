@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Build docs/architecture/thingtracker-architecture.svg (and .png with Chrome), in European Portuguese.
+With --lang en, the same diagram in English: thingtracker-architecture.en.svg and .en.png; the Portuguese files are
+left untouched. Every Portuguese string is looked up in EN_TEXT, so a string without a translation stops the build.
 
 Every position comes from the grid below, so boxes line up and every line is straight.
 Body text is measured with the font Chrome renders (Helvetica Neue) and wrapped to each box's padded width.
-    python3 docs/architecture/build_diagram.py
+    python3 docs/architecture/build_diagram.py [--lang en]
 """
+import argparse
 import base64
 import re
 import struct
@@ -18,6 +21,11 @@ ROOT = HERE.parents[1]
 ICONS = HERE / "icons"                                  # cropped from the Altice app (Add device list)
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 FONT = "/System/Library/Fonts/HelveticaNeue.ttc"
+_args = argparse.ArgumentParser(description="Draw the ThingTracker architecture diagram.")
+_args.add_argument("--lang", choices=["pt", "en"], default="pt", help="pt (default) or en")
+LANG = _args.parse_args().lang
+EN = LANG == "en"
+SUFFIX = ".en" if EN else ""
 
 # ---------------------------------------------------------------- grid
 W = 1700
@@ -34,7 +42,103 @@ PAD = 18                                               # inner padding of every 
 APP, SVC, MCP = (R1[0], 340), (380, 550), (590, R3[1])   # app, ThingTracker service (the MCP host), MCP server
 PX0, PX1 = 988, 1250                                   # platform box x-range
 LX0, LX1 = 1414, 1654                                  # language model panel x-range
-LLM_OUT_1, LLM_BACK_1 = ["frase, pergunta,", "caso duvidoso"], ["regra, resposta,", "veredicto"]
+# English text for --lang en, keyed by the Portuguese it replaces (number formats change with the words)
+EN_TEXT = {
+    "Arquitetura do ThingTracker: perceção local em casa, um canal seguro para a plataforma Altice "
+    "e um modelo de linguagem sob contrato": "ThingTracker architecture: local perception in the home, a secure channel to the "
+                                             "Altice platform and a language model under contract",
+    "Arquitetura do ThingTracker": "ThingTracker architecture",
+    "Em casa · serviço local do _ThingTracker_": "In the home · ThingTracker edge service",
+    "Corre no _gateway_ da casa ou numa pequena caixa (um portátil, na demonstração). A análise fica em casa.":
+        "Runs on the home gateway or on a small box (a laptop in the demo). The analysis stays in the home.",
+    "Plataforma Altice": "Altice platform",
+    "_Cognitive Home_": "Cognitive Home",
+    "Modelo de linguagem": "Language model",
+    "Chamado só quando é preciso": "Called only when needed",
+    "FRONTEIRA DA CASA": "HOUSE BOUNDARY",
+    "Câmaras RTSP": "RTSP cameras",
+    "Em repouso até haver movimento ou som; só então lê 1 a 2 imagens por segundo.":
+        "Idle until there is motion or sound; only then reads 1 to 2 frames per second.",
+    "Câmara do kit: H.265 · 2304 × 1296 · 20 fps, via _relay_": "Kit camera: H.265 · 2304 × 1296 · 20 fps, via a relay",
+    "Filtro de privacidade": "Privacy guard",
+    "Máscaras nunca analisadas; imagens apagadas após a análise. ": "Masks never analysed; frames deleted after analysis. ",
+    "Pessoas contadas, não reconhecidas, salvo com consentimento.": "People counted, not recognised, except with consent.",
+    "Perceção · modelos _open-source_ locais": "Perception · local open-source models",
+    "Deteção por nome": "Detection by name", "_OWLv2_ base": "OWLv2 base", "LVIS (raras): 40,5 AP": "LVIS (rare): 40.5 AP",
+    "Seguimento": "Tracking", "_ByteTrack_": "ByteTrack", "sem pesos · CPU": "no weights · CPU",
+    "MOT17: 80,3 MOTA": "MOT17: 80.3 MOTA",
+    "Assinatura visual": "Visual fingerprint", "_DINOv2 small_": "DINOv2 small", "ImageNet: 81,1 %": "ImageNet: 81.1 %",
+    "Lugares": "Places", "_OWLv2_ (o mesmo)": "OWLv2 (the same)", "+0 GB · +0 €": "+0 GB · +€0",
+    "secretária, sofá, porta…": "desk, sofa, door…",
+    "Profundidade": "Depth", "_Depth Anything V2_": "Depth Anything V2", "DA-2K: 95,3 %": "DA-2K: 95.3 %",
+    "Pessoas": "People", "conhecidas: opcional": "known people: opt-in",
+    "Por modelo: espaço em disco · eletricidade por mês* · resultado publicado":
+        "Per model: disk size · electricity a month* · published benchmark",
+    "Registo de objetos": "Object enrolment",
+    "Reúne o nome, a assinatura visual e o lugar habitual de cada objeto, para encontrar ":
+        "Gathers each thing’s name, visual fingerprint and usual place, to find ",
+    "as suas chaves e não quaisquer chaves. Basta mostrar o objeto à câmara durante 3 s ou tirar 3 fotografias.":
+        "your keys and not just any keys. Just show it to the camera for 3 s or take 3 photos.",
+    "Memória da casa": "Home memory",
+    "O quê, onde e quando": "What, where and when", "Última vez e cronologia": "Last seen and timeline",
+    "Quem está em casa": "Who is home", "Guardada 30 dias, sem vídeo": "Kept 30 days, no video",
+    "Motor de regras": "Rules engine",
+    "Avalia as regras sobre a memória, a cada segundo.": "Evaluates the rules on the memory, every second.",
+    "Resposta: nada, lembrar, avisar, agir ou escalar.": "Response: nothing, remember, tell, act or escalate.",
+    "Dispositivos da casa (kit Altice)": "Home devices (Altice kit)",
+    "Os comandos passam pela plataforma, como hoje: nenhum caminho novo.":
+        "Commands go through the platform, as today: no new path.",
+    "Câmara": "Camera", "vídeo, sirene, visão noturna": "video, siren, night vision",
+    "Lâmpada": "Smart light", "cor, branco e cenas": "colour, white and scenes",
+    "Tomada": "Smart plug", "liga e desliga aparelhos": "turns appliances on and off", "Wi-Fi · mede kWh": "Wi-Fi · kWh meter",
+    "Central": "Security hub", "sirene, armar, _gateway_ LTE": "siren, arming, LTE gateway",
+    "Contacto": "Contact sensor", "abertura de porta ou janela": "door or window opening",
+    "Fumo": "Smoke sensor", "alarme, sirene de 85 dB": "alarm, 85 dB siren", "EN 14604, ótico": "EN 14604, optical",
+    "Clima": "Climate sensor", "temperatura e humidade": "temperature and humidity",
+    "Aplicação Altice": "Altice app", "Novo separador “Things” e assistente": "New “Things” tab and assistant",
+    "Registar um objeto: mostrá-lo à câmara": "Enrol a thing: show it to the camera",
+    "Assistente em todos os separadores": "Assistant on every tab",
+    "Sensores a partir de uma frase": "Sensors from one sentence",
+    "Avisos; vídeo em direto, como hoje": "Alerts; live video, as today",
+    "Serviço _ThingTracker_": "ThingTracker service", "O único que chama o modelo": "The only caller of the model",
+    "Ciclo: modelo ↔ ferramentas MCP": "Loop: model ↔ MCP tools", "Escolhe o modelo e a região": "Chooses the model and region",
+    "Limita o gasto por casa": "Caps spending per home", "Recebe os eventos das casas": "Receives the homes’ events",
+    "Servidor MCP": "MCP server",
+    "18 ferramentas da Altice: dispositivos, cenários e segurança": "18 Altice tools: devices, scenarios and security",
+    "objetos e pessoas iniciam cenários": "things and people start scenarios",
+    "+ Ferramentas _Things_ (novas)": "+ Things tools (new)",
+    "+ Acionador _thingTracker_ (novo)": "+ thingTracker trigger (new)",
+    "Alojados, processamento na UE": "Hosted, EU processing",
+    "_Open-weight_, alojados pela Altice": "Open-weight, hosted by Altice",
+    "Só com: sem treino com os nossos dados, acordo de tratamento de dados, processamento na UE":
+        "Only with: no training on our data, a data processing agreement, EU processing",
+    "Frase → regra": "Sentence → rule", "uma vez, ao criar um sensor": "once, when a sensor is made",
+    "Responder a perguntas": "Answer questions", "a partir da memória, em texto": "from the memory, as text",
+    "Avaliar casos duvidosos": "Judge unclear cases", "a partir de um recorte, raramente": "from one crop, rarely",
+    "Custo do modelo de linguagem": "Language model cost",
+    "≈ 0,43 € por casa e por mês": "≈ €0.43 per home a month",
+    "cenário base (0,10 a 1,78 €)": "base case (€0.10 to €1.78)",
+    "Qualquer modelo capaz,": "Any capable model,", "sob contrato": "under contract",
+    "assinaturas": "fingerprints", "observações": "sightings", "objetos": "things",
+    "canal": "secure", "seguro": "channel", "comandos": "commands",
+    "respostas, avisos": "answers, alerts", "pedidos": "requests", "resultados": "results", "chamadas": "calls",
+    "frase, pergunta,": "sentence, question,", "caso duvidoso": "unclear case",
+    "regra, resposta,": "rule, answer,", "veredicto": "verdict",
+    "Atravessa a fronteira da casa": "Crosses the house boundary",
+    "   ·   Sai: eventos, objetos, um recorte se um caso for duvidoso   ·   Entra: regras e comandos   ·   ":
+        "   ·   Out: events, things, one crop if a case is unclear   ·   In: rules and commands   ·   ",
+    "Só por escolha do utilizador:": "Only by the user’s choice:",
+    " vídeo em direto, como hoje; reconhecer pessoas registadas pela família":
+        " live video, as today; recognising people the household enrolled",
+}
+
+
+def t(s):
+    """The string in the diagram's language: Portuguese as written, or its English from EN_TEXT."""
+    return EN_TEXT[s] if EN else s
+
+
+LLM_OUT_1, LLM_BACK_1 = [t("frase, pergunta,"), t("caso duvidoso")], [t("regra, resposta,"), t("veredicto")]
 INK, MUTED, BLUE, DEEP, LINE, FAINT = "#111", "#555", "#0084D6", "#003399", "#D0D0D0", "#777"
 
 # energy per model: time measured on our laptop GPU x the edge box's power x the Portuguese price
@@ -50,7 +154,9 @@ E_OWL, E_DINO, E_DEPTH = eur_month(0.57), eur_month(0.022), eur_month(0.055)
 
 
 def eur_pt(v):
-    """Electricity a month in Portuguese format; below a cent it says so instead of showing 0,00."""
+    """Electricity a month in Portuguese format (English with --lang en); below a cent it says so instead of 0,00."""
+    if EN:
+        return "< €0.01/mo*" if v < 0.01 else f"≈ €{v:.2f}/mo*"
     return "< 0,01 €/mês*" if v < 0.01 else f"≈ {v:.2f} €/mês*".replace(".", ",")
 
 out = []
@@ -84,6 +190,13 @@ def esc(t):
     return t.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
+def fits(s, max_w, size=13.5, weight=400):
+    """English only: a line that is not wrapped must still fit its box."""
+    if EN:
+        assert width(s, size, weight) <= max_w, f"'{s}' is {width(s, size, weight):.0f} wide, room {max_w:.0f}"
+    return s
+
+
 def text(x, y, s, size=13.5, weight=400, fill="#333", anchor="start", family=None):
     fam = f' font-family="{family}"' if family else ""
     body = re.sub(r"(?<![\w])_([^_]+)_(?![\w])", lambda m: f'<tspan font-style="italic">{m.group(1)}</tspan>', esc(s))
@@ -107,7 +220,7 @@ def paragraphs(x, y, max_w, paras, size=13.5, lead=19, fill="#333", weight=400):
 def box(x0, x1, row, title, paras):
     y0, y1 = row
     rect(x0, y0, x1 - x0, y1 - y0)
-    text(x0 + PAD, y0 + 30, title, 16, 700, INK)
+    text(x0 + PAD, y0 + 30, fits(title, x1 - x0 - 2 * PAD, 16, 700), 16, 700, INK)
     end = paragraphs(x0 + PAD, y0 + 54, x1 - x0 - 2 * PAD, paras)
     assert end - 19 <= y1 - 12, f"text overflows the box '{title}'"
 
@@ -159,9 +272,9 @@ def logo_tile(x, y, name, caption):
 # ---------------------------------------------------------------- canvas and bands
 out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
            'font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" '
-           'aria-label="Arquitetura do ThingTracker: perceção local em casa, um canal seguro para a plataforma Altice '
-           'e um modelo de linguagem sob contrato">')
-out.append('<title>Arquitetura do ThingTracker</title>')
+           f'aria-label="{t("Arquitetura do ThingTracker: perceção local em casa, um canal seguro para a plataforma Altice "
+                            "e um modelo de linguagem sob contrato")}">')
+out.append(f'<title>{t("Arquitetura do ThingTracker")}</title>')
 out.append('<defs>'
            '<marker id="a" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="#333"/></marker>'
            f'<marker id="b" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="{BLUE}"/></marker>'
@@ -169,17 +282,18 @@ out.append('<defs>'
 out.append(f'<rect width="{W}" height="{H}" fill="#FFF"/>')
 
 rect(HOME[0], BAND_TOP, HOME[1] - HOME[0], BAND_BOTTOM - BAND_TOP, fill="#F6F6F6", stroke=None, rx=20)
-text(48, 100, "Em casa · serviço local do _ThingTracker_", 20, 700, "#000")
-text(48, 122, "Corre no _gateway_ da casa ou numa pequena caixa (um portátil, na demonstração). A análise fica em casa.", 13.5, 400, MUTED)
+text(48, 100, t("Em casa · serviço local do _ThingTracker_"), 20, 700, "#000")
+text(48, 122, fits(t("Corre no _gateway_ da casa ou numa pequena caixa (um portátil, na demonstração). A análise fica em casa."),
+                   BOUNDARY_X - 60 - 48), 13.5, 400, MUTED)
 rect(PLAT[0], BAND_TOP, PLAT[1] - PLAT[0], BAND_BOTTOM - BAND_TOP, fill="#EEF3FB", stroke=None, rx=20)
-text(PX0, 100, "Plataforma Altice", 20, 700, "#1A2233")
-text(PX0, 122, "_Cognitive Home_", 13.5, 400, MUTED)
+text(PX0, 100, t("Plataforma Altice"), 20, 700, "#1A2233")
+text(PX0, 122, t("_Cognitive Home_"), 13.5, 400, MUTED)
 rect(CLOUD[0], BAND_TOP, CLOUD[1] - CLOUD[0], BAND_BOTTOM - BAND_TOP, fill=DEEP, stroke=None, rx=20)
-text(LX0, 100, "Modelo de linguagem", 20, 700, "#FFF")
-text(LX0, 122, "Chamado só quando é preciso", 13.5, 400, "#C9D6F0")
+text(LX0, 100, fits(t("Modelo de linguagem"), LX1 - LX0, 20, 700), 20, 700, "#FFF")
+text(LX0, 122, fits(t("Chamado só quando é preciso"), LX1 - LX0), 13.5, 400, "#C9D6F0")
 
 out.append(f'<line x1="{BOUNDARY_X}" y1="{BAND_TOP + 6}" x2="{BOUNDARY_X}" y2="{BAND_BOTTOM - 6}" stroke="{BLUE}" stroke-width="2.5" stroke-dasharray="8 7"/>')
-out.append(f'<text font-size="12" font-weight="700" fill="{BLUE}" letter-spacing="1" transform="translate({BOUNDARY_X - 6} {R1[1] - 60}) rotate(-90)">FRONTEIRA DA CASA</text>')
+out.append(f'<text font-size="12" font-weight="700" fill="{BLUE}" letter-spacing="1" transform="translate({BOUNDARY_X - 6} {R1[1] - 60}) rotate(-90)">{t("FRONTEIRA DA CASA")}</text>')
 
 # ---------------------------------------------------------------- home, row 1
 # Cameras above the privacy guard, in one column as wide as Enrolment below, so lines stay long and even
@@ -187,55 +301,63 @@ COL = (48, 362)
 CAM_ROW = (R1[0], R1[0] + 110)
 GUARD_ROW = (R1[1] - 110, R1[1])
 PERC = (386, 866)
-box(*COL, CAM_ROW, "Câmaras RTSP", ["Em repouso até haver movimento ou som; só então lê 1 a 2 imagens por segundo."])
-text(COL[0] + PAD, CAM_ROW[1] - PAD, "Câmara do kit: H.265 · 2304 × 1296 · 20 fps, via _relay_", 11, 400, FAINT)
-box(*COL, GUARD_ROW, "Filtro de privacidade", ["Máscaras nunca analisadas; imagens apagadas após a análise. "
-                                               "Pessoas contadas, não reconhecidas, salvo com consentimento."])
+box(*COL, CAM_ROW, t("Câmaras RTSP"), [t("Em repouso até haver movimento ou som; só então lê 1 a 2 imagens por segundo.")])
+text(COL[0] + PAD, CAM_ROW[1] - PAD, fits(t("Câmara do kit: H.265 · 2304 × 1296 · 20 fps, via _relay_"), COL[1] - COL[0] - 2 * PAD, 11),
+     11, 400, FAINT)
+box(*COL, GUARD_ROW, t("Filtro de privacidade"), [t("Máscaras nunca analisadas; imagens apagadas após a análise. ")
+                                                  + t("Pessoas contadas, não reconhecidas, salvo com consentimento.")])
 rect(PERC[0], R1[0], PERC[1] - PERC[0], R1[1] - R1[0], stroke=BLUE, sw=2)
-text(PERC[0] + PAD, R1[0] + 30, "Perceção · modelos _open-source_ locais", 16, 700, INK)
+text(PERC[0] + PAD, R1[0] + 30, t("Perceção · modelos _open-source_ locais"), 16, 700, INK)
+GB = (lambda s: s.replace(",", ".")) if EN else (lambda s: s)
 chips = [
-    ("Deteção por nome", "_OWLv2_ base", f"0,62 GB · {eur_pt(E_OWL)}", "LVIS (raras): 40,5 AP"),
-    ("Seguimento", "_ByteTrack_", "sem pesos · CPU", "MOT17: 80,3 MOTA"),
-    ("Assinatura visual", "_DINOv2 small_", f"0,09 GB · {eur_pt(E_DINO)}", "ImageNet: 81,1 %"),
-    ("Lugares", "_OWLv2_ (o mesmo)", "+0 GB · +0 €", "secretária, sofá, porta…"),
-    ("Profundidade", "_Depth Anything V2_", f"0,10 GB · {eur_pt(E_DEPTH)}", "DA-2K: 95,3 %"),
-    ("Pessoas", "_OWLv2_ (o mesmo)", "+0 GB · +0 €", "conhecidas: opcional"),
+    (t("Deteção por nome"), t("_OWLv2_ base"), GB("0,62 GB · ") + eur_pt(E_OWL), t("LVIS (raras): 40,5 AP")),
+    (t("Seguimento"), t("_ByteTrack_"), t("sem pesos · CPU"), t("MOT17: 80,3 MOTA")),
+    (t("Assinatura visual"), t("_DINOv2 small_"), GB("0,09 GB · ") + eur_pt(E_DINO), t("ImageNet: 81,1 %")),
+    (t("Lugares"), t("_OWLv2_ (o mesmo)"), t("+0 GB · +0 €"), t("secretária, sofá, porta…")),
+    (t("Profundidade"), t("_Depth Anything V2_"), GB("0,10 GB · ") + eur_pt(E_DEPTH), t("DA-2K: 95,3 %")),
+    (t("Pessoas"), t("_OWLv2_ (o mesmo)"), t("+0 GB · +0 €"), t("conhecidas: opcional")),
 ]
 CW, CH, CG = (PERC[1] - PERC[0] - 2 * PAD - 16) // 3, 70, 8
-for i, (t, model, stats, bench) in enumerate(chips):
+for i, (title, model, stats, bench) in enumerate(chips):
     cx = PERC[0] + PAD + (i % 3) * (CW + CG)
     cy = R1[0] + 46 + (i // 3) * (CH + 6)
     rect(cx, cy, CW, CH, fill="#E6F2FB", stroke=None, rx=8)
-    text(cx + 10, cy + 17, t, 12.5, 700, DEEP)
+    text(cx + 10, cy + 17, title, 12.5, 700, DEEP)
     text(cx + 10, cy + 33, model, 12.5)
     text(cx + 10, cy + 49, stats, 10.5, 400, MUTED)
     text(cx + 10, cy + 62, bench, 10.5, 400, MUTED)
-    assert max(width(model, 12.5), width(stats, 10.5), width(bench, 10.5)) <= CW - 20, t
+    assert max(width(model, 12.5), width(stats, 10.5), width(bench, 10.5)) <= CW - 20, title
+    fits(title, CW - 20, 12.5, 700)
 foot_y = R1[0] + 46 + 2 * CH + 6 + 18
-text(PERC[0] + PAD, foot_y, "Por modelo: espaço em disco · eletricidade por mês* · resultado publicado", 11, 400, MUTED)
-text(PERC[0] + PAD, foot_y + 14, f"* tempo medido × {WATTS} W × {str(EUR_KWH).replace('.', ',')} €/kWh (PT), com {ACTIVE_HOURS} h de movimento por dia (exemplo)", 11, 400, MUTED)
+text(PERC[0] + PAD, foot_y, t("Por modelo: espaço em disco · eletricidade por mês* · resultado publicado"), 11, 400, MUTED)
+text(PERC[0] + PAD, foot_y + 14, fits(f"* measured time × {WATTS} W × €{EUR_KWH}/kWh (PT), with {ACTIVE_HOURS} h of motion a day (example)",
+                                      PERC[1] - PERC[0] - 2 * PAD, 11) if EN else
+     f"* tempo medido × {WATTS} W × {str(EUR_KWH).replace('.', ',')} €/kWh (PT), com {ACTIVE_HOURS} h de movimento por dia (exemplo)", 11, 400, MUTED)
 
 # ---------------------------------------------------------------- home, row 2
 ENROL, MEM, ENG = (48, 362), (418, 626), (650, 866)
-box(*ENROL, R2, "Registo de objetos", ["Reúne o nome, a assinatura visual e o lugar habitual de cada objeto, para encontrar "
-                                      "as suas chaves e não quaisquer chaves. Basta mostrar o objeto à câmara durante 3 s ou tirar 3 fotografias."])
-box(*MEM, R2, "Memória da casa", ["O quê, onde e quando", "Última vez e cronologia", "Quem está em casa", "Guardada 30 dias, sem vídeo"])
-box(*ENG, R2, "Motor de regras", ["Avalia as regras sobre a memória, a cada segundo.", "Resposta: nada, lembrar, avisar, agir ou escalar."])
+box(*ENROL, R2, t("Registo de objetos"), [t("Reúne o nome, a assinatura visual e o lugar habitual de cada objeto, para encontrar ")
+                                         + t("as suas chaves e não quaisquer chaves. Basta mostrar o objeto à câmara durante 3 s ou tirar 3 fotografias.")])
+box(*MEM, R2, t("Memória da casa"), [t("O quê, onde e quando"), t("Última vez e cronologia"), t("Quem está em casa"),
+                                    t("Guardada 30 dias, sem vídeo")])
+box(*ENG, R2, t("Motor de regras"), [t("Avalia as regras sobre a memória, a cada segundo."),
+                                    t("Resposta: nada, lembrar, avisar, agir ou escalar.")])
 
 # ---------------------------------------------------------------- home, row 3: the Altice kit
 DEV = (48, 866)
 rect(DEV[0], R3[0], DEV[1] - DEV[0], R3[1] - R3[0])
-title = "Dispositivos da casa (kit Altice)"
+title = t("Dispositivos da casa (kit Altice)")
 text(DEV[0] + PAD, R3[0] + 30, title, 16, 700, INK)
 text(DEV[0] + PAD + width(title, 16, 700) + 12, R3[0] + 30,
-     "Os comandos passam pela plataforma, como hoje: nenhum caminho novo.", 13.5, 400, MUTED)
-devices = [("camera", "Câmara", "vídeo, sirene, visão noturna", "Tuya SC034-WNV3"),
-           ("light", "Lâmpada", "cor, branco e cenas", "E27 · Wi-Fi"),
-           ("plug", "Tomada", "liga e desliga aparelhos", "Wi-Fi · mede kWh"),
-           ("security-hub", "Central", "sirene, armar, _gateway_ LTE", "MS-WES1AS"),
-           ("contact-sensor", "Contacto", "abertura de porta ou janela", "MS-D3D"),
-           ("smoke-sensor", "Fumo", "alarme, sirene de 85 dB", "EN 14604, ótico"),
-           ("temperature-sensor", "Clima", "temperatura e humidade", "Nedis ZBSC10WT")]
+     fits(t("Os comandos passam pela plataforma, como hoje: nenhum caminho novo."), DEV[1] - DEV[0] - 2 * PAD - width(title, 16, 700) - 12),
+     13.5, 400, MUTED)
+devices = [("camera", t("Câmara"), t("vídeo, sirene, visão noturna"), "Tuya SC034-WNV3"),
+           ("light", t("Lâmpada"), t("cor, branco e cenas"), "E27 · Wi-Fi"),
+           ("plug", t("Tomada"), t("liga e desliga aparelhos"), t("Wi-Fi · mede kWh")),
+           ("security-hub", t("Central"), t("sirene, armar, _gateway_ LTE"), "MS-WES1AS"),
+           ("contact-sensor", t("Contacto"), t("abertura de porta ou janela"), "MS-D3D"),
+           ("smoke-sensor", t("Fumo"), t("alarme, sirene de 85 dB"), t("EN 14604, ótico")),
+           ("temperature-sensor", t("Clima"), t("temperatura e humidade"), "Nedis ZBSC10WT")]
 TG, TP = 8, 8                                           # gap between tiles, padding inside a tile
 TW = (DEV[1] - DEV[0] - 2 * PAD - (len(devices) - 1) * TG) / len(devices)
 TH = R3[1] - R3[0] - 46 - 14
@@ -273,38 +395,39 @@ def para_block(x, max_w, s, size=13.5, lead=19, fill="#333", weight=400):
 PW = PX1 - PX0 - 2 * PAD
 rect(PX0, APP[0], PX1 - PX0, APP[1] - APP[0], stroke="#C9D2E3")
 stack(APP[0] + 30, APP[1] - PAD - 4, [
-    (24, lambda y: (text(PX0 + PAD, y, "Aplicação Altice", 16, 700, "#1A2233"),
-                    text(PX0 + PAD, y + 24, "Novo separador “Things” e assistente", 13.5, 700, BLUE))),
-    *[para_block(PX0 + PAD, PW, t) for t in ["Registar um objeto: mostrá-lo à câmara",
-                                             "Assistente em todos os separadores",
-                                             "Sensores a partir de uma frase",
-                                             "Avisos; vídeo em direto, como hoje"]],
+    (24, lambda y: (text(PX0 + PAD, y, t("Aplicação Altice"), 16, 700, "#1A2233"),
+                    text(PX0 + PAD, y + 24, fits(t("Novo separador “Things” e assistente"), PW, 13.5, 700), 13.5, 700, BLUE))),
+    *[para_block(PX0 + PAD, PW, t(s)) for s in ["Registar um objeto: mostrá-lo à câmara",
+                                                "Assistente em todos os separadores",
+                                                "Sensores a partir de uma frase",
+                                                "Avisos; vídeo em direto, como hoje"]],
 ])
 
 # the host: the only component that talks to the language model, and the client of the MCP server
 rect(PX0, SVC[0], PX1 - PX0, SVC[1] - SVC[0], stroke=BLUE, sw=2)
 stack(SVC[0] + 30, SVC[1] - PAD - 4, [
-    (24, lambda y: (text(PX0 + PAD, y, "Serviço _ThingTracker_", 16, 700, "#1A2233"),
-                    text(PX0 + PAD, y + 24, "O único que chama o modelo", 13.5, 700, BLUE))),
-    *[para_block(PX0 + PAD, PW, t) for t in ["Ciclo: modelo ↔ ferramentas MCP", "Escolhe o modelo e a região",
-                                             "Limita o gasto por casa", "Recebe os eventos das casas"]],
+    (24, lambda y: (text(PX0 + PAD, y, t("Serviço _ThingTracker_"), 16, 700, "#1A2233"),
+                    text(PX0 + PAD, y + 24, fits(t("O único que chama o modelo"), PW, 13.5, 700), 13.5, 700, BLUE))),
+    *[para_block(PX0 + PAD, PW, t(s)) for s in ["Ciclo: modelo ↔ ferramentas MCP", "Escolhe o modelo e a região",
+                                                "Limita o gasto por casa", "Recebe os eventos das casas"]],
 ])
 
 rect(PX0, MCP[0], PX1 - PX0, MCP[1] - MCP[0], stroke="#C9D2E3")
-desc_span, desc_draw = para_block(PX0 + PAD, PW, "18 ferramentas da Altice: dispositivos, cenários e segurança")
-trig_span, trig_draw = para_block(PX0 + PAD, PW, "objetos e pessoas iniciam cenários")
+desc_span, desc_draw = para_block(PX0 + PAD, PW, t("18 ferramentas da Altice: dispositivos, cenários e segurança"))
+trig_span, trig_draw = para_block(PX0 + PAD, PW, t("objetos e pessoas iniciam cenários"))
 
 
 def tools(y):
-    text(PX0 + PAD, y, "+ Ferramentas _Things_ (novas)", 13.5, 700, BLUE)
-    for i, t in enumerate(["list_things", "create_thing", "get_thing_last_seen", "get_thing_timeline"]):
-        text(PX0 + PAD + (i // 2) * 92, y + 20 + (i % 2) * 16, t, 11, 400, DEEP, family="Menlo, monospace")
+    text(PX0 + PAD, y, fits(t("+ Ferramentas _Things_ (novas)"), PW, 13.5, 700), 13.5, 700, BLUE)
+    for i, name in enumerate(["list_things", "create_thing", "get_thing_last_seen", "get_thing_timeline"]):
+        text(PX0 + PAD + (i // 2) * 92, y + 20 + (i % 2) * 16, name, 11, 400, DEEP, family="Menlo, monospace")
 
 
 stack(MCP[0] + 30, MCP[1] - PAD - 4, [
-    (24 + desc_span, lambda y: (text(PX0 + PAD, y, "Servidor MCP", 16, 700, "#1A2233"), desc_draw(y + 24))),
+    (24 + desc_span, lambda y: (text(PX0 + PAD, y, t("Servidor MCP"), 16, 700, "#1A2233"), desc_draw(y + 24))),
     (20 + 16, tools),
-    (22 + trig_span, lambda y: (text(PX0 + PAD, y, "+ Acionador _thingTracker_ (novo)", 13.5, 700, BLUE), trig_draw(y + 22))),
+    (22 + trig_span, lambda y: (text(PX0 + PAD, y, fits(t("+ Acionador _thingTracker_ (novo)"), PW, 13.5, 700), 13.5, 700, BLUE),
+                                trig_draw(y + 22))),
 ])
 
 L0, L1 = R1[0], R3[1]
@@ -314,30 +437,31 @@ X, LW = LX0 + PAD, LX1 - LX0 - 2 * PAD
 
 def logos(heading, items):
     def draw(y):
-        text(X, y, heading, 12.5, 700, "#C9D6F0")
+        text(X, y, fits(heading, LW, 12.5, 700), 12.5, 700, "#C9D6F0")
         for i, (n, cap) in enumerate(items):
             logo_tile(X + i * 54, y + 10, n, cap)
     return 10 + 57, draw
 
 
 def jobs(y):
-    for k, (t, s) in enumerate([("Frase → regra", "uma vez, ao criar um sensor"), ("Responder a perguntas", "a partir da memória, em texto"),
-                                ("Avaliar casos duvidosos", "a partir de um recorte, raramente")]):
-        text(X, y + k * 46, t, 13.5, 700, "#FFF")
-        text(X, y + k * 46 + 18, s, 13.5, 400, "#C9D6F0")
+    for k, (job, s) in enumerate([("Frase → regra", "uma vez, ao criar um sensor"), ("Responder a perguntas", "a partir da memória, em texto"),
+                                  ("Avaliar casos duvidosos", "a partir de um recorte, raramente")]):
+        text(X, y + k * 46, fits(t(job), LW, 13.5, 700), 13.5, 700, "#FFF")
+        text(X, y + k * 46 + 18, fits(t(s), LW), 13.5, 400, "#C9D6F0")
 
 
 def measured(y):
-    text(X, y, "Custo do modelo de linguagem", 12.5, 700, "#C9D6F0")
-    text(X, y + 20, "≈ 0,43 € por casa e por mês", 13.5, 700, "#FFF")
-    text(X, y + 38, "cenário base (0,10 a 1,78 €)", 13.5, 400, "#C9D6F0")
+    text(X, y, fits(t("Custo do modelo de linguagem"), LW, 12.5, 700), 12.5, 700, "#C9D6F0")
+    text(X, y + 20, fits(t("≈ 0,43 € por casa e por mês"), LW, 13.5, 700), 13.5, 700, "#FFF")
+    text(X, y + 38, fits(t("cenário base (0,10 a 1,78 €)"), LW), 13.5, 400, "#C9D6F0")
 
 
 ys = stack(L0 + 30, L1 - PAD - 4, [
-    (20, lambda y: (text(X, y, "Qualquer modelo capaz,", 16, 700, "#FFF"), text(X, y + 20, "sob contrato", 16, 700, "#FFF"))),
-    logos("Alojados, processamento na UE", [("claude", "Claude"), ("openai", "OpenAI"), ("gemini", "Gemini"), ("mistral", "Mistral")]),
-    logos("_Open-weight_, alojados pela Altice", [("qwen", "Qwen"), ("deepseek", "DeepSeek"), ("kimi", "Kimi")]),
-    para_block(X, LW, "Só com: sem treino com os nossos dados, acordo de tratamento de dados, processamento na UE", 13, 18, "#FFF", 700),
+    (20, lambda y: (text(X, y, fits(t("Qualquer modelo capaz,"), LW, 16, 700), 16, 700, "#FFF"),
+                    text(X, y + 20, t("sob contrato"), 16, 700, "#FFF"))),
+    logos(t("Alojados, processamento na UE"), [("claude", "Claude"), ("openai", "OpenAI"), ("gemini", "Gemini"), ("mistral", "Mistral")]),
+    logos(t("_Open-weight_, alojados pela Altice"), [("qwen", "Qwen"), ("deepseek", "DeepSeek"), ("kimi", "Kimi")]),
+    para_block(X, LW, t("Só com: sem treino com os nossos dados, acordo de tratamento de dados, processamento na UE"), 13, 18, "#FFF", 700),
     (2 * 46 + 18, jobs),
     (38, measured),
 ])
@@ -366,33 +490,39 @@ def pair_v(x, y_top, y_bottom, up_label, down_label):
 
 
 # perception reads the fingerprints from the memory and writes sightings to it
-pair_v(MEM[0] + 104, R1[1], R2[0], "assinaturas", "observações")
+pair_v(MEM[0] + 104, R1[1], R2[0], t("assinaturas"), t("observações"))
 arrow(f"M{ENROL[1]} {mid2} H{MEM[0] - 4}")
-label((ENROL[1] + MEM[0]) // 2, mid2 - 10, ["objetos"], "middle")
+label((ENROL[1] + MEM[0]) // 2, mid2 - 10, [fits(t("objetos"), MEM[0] - ENROL[1] - 8, 12, 700)], "middle")
 arrow(f"M{MEM[1]} {mid2} H{ENG[0] - 4}")
 # the two lines that cross the house boundary, labelled inside the corridor
 arrow(f"M{ENG[1]} {mid2} H{PX0 - 4}", color=BLUE, both=True, width=2.5)
-label(878, mid2 - 26, ["canal", "seguro"])
+label(878, mid2 - 26, [t("canal"), t("seguro")])
 arrow(f"M{PX0} {mid3} H{DEV[1] + 4}")
-label(878, mid3 - 11, ["comandos"])
+label(878, mid3 - 11, [fits(t("comandos"), BOUNDARY_X - 878 - 8, 12, 700)])
 PXM = (PX0 + PX1) // 2
-pair_v(PXM, APP[1], SVC[0], "respostas, avisos", "pedidos")
-pair_v(PXM, SVC[1], MCP[0], "resultados", "chamadas")
+pair_v(PXM, APP[1], SVC[0], t("respostas, avisos"), t("pedidos"))
+pair_v(PXM, SVC[1], MCP[0], t("resultados"), t("chamadas"))
 # the service is the only box that talks to the language model
+for s in LLM_OUT_1 + LLM_BACK_1:
+    fits(s, LX0 - PX1 - 12 - 4, 12)
 pair_h(PX1, LX0, (SVC[0] + SVC[1]) // 2, LLM_OUT_1, LLM_BACK_1)
 
 # ---------------------------------------------------------------- legend
 rect(24, LEGEND_Y, W - 48, 50, fill="#F6F6F6", stroke=None, rx=12)
+LEGEND = [(t("Atravessa a fronteira da casa"), 700), (t("   ·   Sai: eventos, objetos, um recorte se um caso for duvidoso   ·   Entra: regras e comandos   ·   "), 400),
+          (t("Só por escolha do utilizador:"), 700), (t(" vídeo em direto, como hoje; reconhecer pessoas registadas pela família"), 400)]
+if EN:
+    assert sum(width(s, 14, wt) for s, wt in LEGEND) <= W - 48 - 48, "the legend overflows"
 out.append(f'<text x="48" y="{LEGEND_Y + 31}" font-size="14" fill="#333">'
-           f'<tspan font-weight="700" fill="{BLUE}">Atravessa a fronteira da casa</tspan>'
-           '<tspan>   ·   Sai: eventos, objetos, um recorte se um caso for duvidoso   ·   Entra: regras e comandos   ·   </tspan>'
-           '<tspan font-weight="700">Só por escolha do utilizador:</tspan>'
-           '<tspan> vídeo em direto, como hoje; reconhecer pessoas registadas pela família</tspan></text>')
+           f'<tspan font-weight="700" fill="{BLUE}">{LEGEND[0][0]}</tspan>'
+           f'<tspan>{LEGEND[1][0]}</tspan>'
+           f'<tspan font-weight="700">{LEGEND[2][0]}</tspan>'
+           f'<tspan>{LEGEND[3][0]}</tspan></text>')
 out.append("</svg>")
 
-svg_path = HERE / "thingtracker-architecture.svg"
+svg_path = HERE / f"thingtracker-architecture{SUFFIX}.svg"
 svg_path.write_text("\n".join(out) + "\n")
-png = HERE / "thingtracker-architecture.png"
+png = HERE / f"thingtracker-architecture{SUFFIX}.png"
 subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=2",
                 f"--window-size={W},{H}", f"--screenshot={png}", svg_path.as_uri()], check=True, capture_output=True)
 print("built", svg_path.name, "and", png.name, f"({W}x{H}); energy €/month at {ACTIVE_HOURS} h of movement a day:",

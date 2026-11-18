@@ -206,9 +206,15 @@ def build_docx(tmp, meta, blocks):
     t1 = next(p for p in paras if "NOME DA EQUIPA" in "".join(re.findall(r"<w:t[^>]*>([^<]*)</w:t>", p)))
     t2 = next(p for p in paras if "Sumário Executivo" in "".join(re.findall(r"<w:t[^>]*>([^<]*)</w:t>", p)))
 
-    def retitle(p, text):
+    def retitle(p, text, half_points=None):
         first = re.search(r"<w:r [^>]*>\s*<w:rPr>.*?</w:rPr>", p, re.S).group(0)
+        if half_points:                       # the challenge line must fit on one line
+            first = re.sub(r'<w:sz w:val="\d+"\s*/>', f'<w:sz w:val="{half_points}"/>', first)
+            first = re.sub(r'<w:szCs w:val="\d+"\s*/>', f'<w:szCs w:val="{half_points}"/>', first)
         ppr = re.search(r"<w:pPr>.*?</w:pPr>", p, re.S).group(0)
+        if half_points:
+            ppr = re.sub(r'<w:sz w:val="\d+"\s*/>', f'<w:sz w:val="{half_points}"/>', ppr)
+            ppr = re.sub(r'<w:szCs w:val="\d+"\s*/>', f'<w:szCs w:val="{half_points}"/>', ppr)
         return f"<w:p>{ppr}{first}<w:t xml:space=\"preserve\">{x(text)}</w:t></w:r></w:p>"
 
     rels_path = src / "word" / "_rels" / "document.xml.rels"
@@ -222,7 +228,7 @@ def build_docx(tmp, meta, blocks):
     rels_path.write_text(rels, encoding="utf8")
 
     body = (retitle(t1, f"Equipa {meta['equipa']}")
-            + retitle(t2, f"Desafio {meta['desafio']} - Sumário Executivo")
+            + retitle(t2, f"Desafio {meta['desafio']} - Sumário Executivo", half_points=23)
             + '<w:p><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:p>'
             + w_blocks(blocks, rids) + sect)
     doc_path.write_text(f"{head}<w:body>{body}</w:body></w:document>", encoding="utf8")
@@ -309,7 +315,7 @@ def build_pdf(tmp, meta, blocks, fontdir):
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body { margin: 0; font: 10.5pt/1.265 Arial, Helvetica, sans-serif; color: #000; }
 .t1 { font: 700 18pt/1.3 Lato, sans-serif; color: #4bd26c; text-align: center; }
-.t2 { font: 700 15pt/1.3 Lato, sans-serif; color: #666; text-align: center; margin: 2pt 0 8pt; }
+.t2 { font: 700 11.5pt/1.3 Lato, sans-serif; white-space: nowrap; color: #666; text-align: center; margin: 2pt 0 8pt; }
 h2 { font: 700 14pt/1.3 Lato, sans-serif; color: #4bd26c; margin: 10pt 0 4pt; break-after: avoid; }
 p { margin: 0 0 5pt; }
 ul { margin: 0 0 5pt; padding-left: 0.5cm; }

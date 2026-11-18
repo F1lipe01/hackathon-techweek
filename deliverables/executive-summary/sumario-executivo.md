@@ -17,9 +17,9 @@ A solução proposta, o _ThingTracker_, transforma a câmara da casa num sensor 
 
 [[figura: figura-exemplo | Do registo visual de um objeto à ação]]
 
-Para registar um objeto, o utilizador indica o nome na aplicação e mostra-o à câmara durante alguns segundos. O nome em inglês (“_keys_”) serve de pesquisa ao detetor local e as imagens geram uma assinatura visual, guardada nos modelos locais e na base de dados da Altice do cliente. O utilizador pode então perguntar “onde estão as chaves?”; havendo mais do que umas, o sistema pergunta quais.
+Para registar um objeto, o utilizador indica o nome na aplicação e mostra-o à câmara durante alguns segundos. O nome em inglês (“_wallet_”) serve de pesquisa ao detetor local e as imagens geram uma assinatura visual, guardada nos modelos locais e na base de dados da Altice do cliente. O utilizador pode então perguntar “onde está a carteira?”; havendo mais do que uma, o sistema pergunta qual.
 
-Uma frase como “avisa-me se sair de casa sem as chaves” segue para o Serviço _ThingTracker_, que a envia ao modelo de linguagem com os objetos registados e as ferramentas MCP disponíveis. O modelo devolve uma regra estruturada, gravada como cenário da plataforma através do MCP; a regra é avaliada em casa e as ações seguem pelo MCP. O mesmo princípio aplica-se a outros casos:
+Uma frase como “avisa-me se sair de casa sem a carteira” segue para o Serviço _ThingTracker_, que a envia ao modelo de linguagem com os objetos registados e as ferramentas MCP disponíveis. O modelo devolve uma regra estruturada, gravada como cenário da plataforma através do MCP; a regra é avaliada em casa e as ações seguem pelo MCP. O mesmo princípio aplica-se a outros casos:
 
 - Crianças: se uma criança trepar uma estante, a sirene toca e os pais recebem um aviso.
 - Animais e plantas: “avisa-me se o gato não beber água até às 18h”.
@@ -31,7 +31,7 @@ O sistema também propõe cenários a partir do perfil da casa: se a câmara det
 
 [[figura: arquitetura | Arquitetura do _ThingTracker_: em casa, na plataforma Altice e no modelo de linguagem]]
 
-Até ao momento, a equipa ligou-se ao MCP, acedeu ao vídeo em direto da câmara do kit e construiu um protótipo que deteta objetos, responde a perguntas e executa regras com essa câmara.
+Até ao momento, a equipa ligou-se ao MCP, acedeu ao vídeo em direto da câmara do kit e construiu um protótipo que deteta objetos, responde a perguntas e executa regras.
 
 ## Ferramentas de IA
 

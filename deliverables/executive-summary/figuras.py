@@ -73,6 +73,12 @@ class Fig:
         self.o.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="{rx}" fill="{fill}"{st}{d}/>')
 
     def arrow(self, x1, y1, x2, y2, color=ARROW):
+        # stop the line at the base of the head (9 units long), so its end never shows beside the tip
+        ln = ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5 or 1
+        ux, uy = (x2 - x1) / ln, (y2 - y1) / ln
+        x2, y2 = x2 - ux * 9, y2 - uy * 9
+        if ln < 10:                       # shorter than the head: a 1-unit stub keeps the head pointing the right way
+            x1, y1 = x2 - ux, y2 - uy
         self.o.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{color}" '
                       f'stroke-width="1.6" marker-end="url(#ah)"/>')
 
@@ -92,7 +98,7 @@ class Fig:
 
     def save(self, name):
         svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {self.h}" width="{W}" height="{self.h}" '
-               'font-family="Lato, Arial, sans-serif"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" '
+               'font-family="Lato, Arial, sans-serif"><defs><marker id="ah" viewBox="0 0 10 10" refX="0" refY="5" '
                f'markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 1.6 L10 5 L0 8.4 Z" fill="{ARROW}"/>'
                f'</marker></defs><rect width="{W}" height="{self.h}" fill="#FFF"/>' + "".join(self.o) + "</svg>")
         (HERE / name).write_text(svg, encoding="utf8")
@@ -192,10 +198,12 @@ def exemplo_real():
 
     # 1. registration: six of the real views, then what they become
     x, vy = ix, top + 50
-    tw, th = (iw - 2 * 6) / 3, 58
-    for k, v in enumerate(spec["views"][:6]):
-        photo(f, FOTOS / v, x + (k % 3) * (tw + 6), vy + (k // 3) * (th + 6), tw, th, rx=6)
-    f.para(x, vy + 2 * th + 6 + 26, f"O nome “_{en}_” pesquisa o objeto; {len(spec['views'])} vistas geram a assinatura visual, "
+    cols = 2 if len(spec["views"]) <= 4 else 3
+    tw = (iw - (cols - 1) * 6) / cols
+    th = tw * 2 / 3
+    for k, v in enumerate(spec["views"][:2 * cols]):
+        photo(f, FOTOS / v, x + (k % cols) * (tw + 6), vy + (k // cols) * (th + 6), tw, th, rx=6)
+    f.para(x, vy + 2 * th + 6 + 26, f"O nome “_{en}_” pesquisa o objeto; as vistas geram a assinatura visual, "
            "guardada em casa e na base de dados da Altice.", iw, 13.5, 17.5)
 
     # 2. detection: the scene, with the box the edge drew
@@ -226,8 +234,9 @@ def exemplo_real():
     f.text(x + iw - qw / 2, vy + 21, q, 14.5, False, "#FFF", "middle")
     f.rect(x, vy + 42, iw, 62, fill="#EEF3FB", stroke=None, rx=14)
     photo(f, FOTOS / spec["answer"], x + 8, vy + 50, 46, 46, rx=8)
-    f.text(x + 64, vy + 69, f"Na {spec['place']},", 14.5, True)
-    f.text(x + 64, vy + 89, f"às {spec['time']}.", 14.5, False, INK)
+    ans = wrap(f"Na {spec['place']}, às {spec['time']}.", iw - 72, 14)
+    for j, ln in enumerate(ans[:3]):
+        f.text(x + 64, vy + 73 - (len(ans) - 1) * 8.5 + j * 17, ln, 14, False, INK)
     f.rect(x, vy + 112, iw, 46, fill="#F4F5F7", stroke=None, rx=12)
     f.text(x + iw / 2, vy + 131, f"Se houver duas, pergunta:", 13.5, False, INK, "middle")
     f.text(x + iw / 2, vy + 149, "“Qual delas?”", 13.5, False, INK, "middle")

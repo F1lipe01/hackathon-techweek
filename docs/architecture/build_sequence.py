@@ -102,7 +102,7 @@ for row in ROWS:
     step, a, b, label = row
     xa, xb = X[a], X[b]
     d = 1 if xb > xa else -1
-    x1, x2 = xa + d * 6, xb - d * 6
+    x1, x2 = xa + d * 6, xb - d * 6 - d * 9     # the line stops at the base of the 9-unit head
     span = abs(xb - xa) - 40
     lines = wrap(label, span, 13)
     ly = y - 8 - 16 * (len(lines) - 1)
@@ -120,7 +120,7 @@ H = y + 6
 lifelines = "".join(f'<line x1="{x}" y1="{TOP + 56}" x2="{x}" y2="{H - 10}" stroke="{LINE}" stroke-width="1.2" stroke-dasharray="4 4"/>'
                     for x in X)
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
-       'font-family="Lato, Arial, sans-serif"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" '
+       'font-family="Lato, Arial, sans-serif"><defs><marker id="ah" viewBox="0 0 10 10" refX="0" refY="5" '
        'markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto"><path d="M0 1.8 L10 5 L0 8.2 Z" '
        f'fill="{INK}"/></marker></defs><rect width="{W}" height="{H}" fill="#FFF"/>{lifelines}' + "".join(o) + "</svg>")
 # the lifelines go under the boxes and labels: draw them first, then put the header boxes back on top

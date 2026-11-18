@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1700 894" width="1700" height="894" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Arquitetura do ThingTracker: perceção local em casa, um canal seguro para a plataforma Altice e um modelo de linguagem sob contrato">
 <title>Arquitetura do ThingTracker</title>
-<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="#333"/></marker><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="#0084D6"/></marker></defs>
+<defs><marker id="a" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="#333"/></marker><marker id="b" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="#0084D6"/></marker></defs>
 <rect width="1700" height="894" fill="#FFF"/>
 <rect x="24" y="64" width="922" height="748" rx="20" fill="#F6F6F6"/>
 <text x="48" y="100" font-size="20" font-weight="700" fill="#000" text-anchor="start">Em casa · serviço local do <tspan font-style="italic">ThingTracker</tspan></text>
@@ -187,32 +187,32 @@
 <text x="1432" y="732.0" font-size="12.5" font-weight="700" fill="#C9D6F0" text-anchor="start">Custo do modelo de linguagem</text>
 <text x="1432" y="752.0" font-size="13.5" font-weight="700" fill="#FFF" text-anchor="start">≈ 0,43 € por casa e por mês</text>
 <text x="1432" y="770.0" font-size="13.5" font-weight="400" fill="#C9D6F0" text-anchor="start">cenário base (0,10 a 1,78 €)</text>
-<path d="M205 260 V276" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<path d="M362 335 H382" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<path d="M515 430 V394" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M205.0 260.0 V265.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M362.0 335.0 H371.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M515.0 430.0 V405.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="505" y="414" font-size="12" font-weight="400" fill="#0084D6" text-anchor="end">assinaturas</text>
-<path d="M529 390 V426" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M529.0 390.0 V415.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="539" y="414" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">observações</text>
-<path d="M362 505 H414" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M362.0 505.0 H403.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="390" y="495" font-size="12" font-weight="700" fill="#0084D6" text-anchor="middle">objetos</text>
-<path d="M626 505 H646" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<path d="M866 505 H984" fill="none" stroke="#0084D6" stroke-width="2.5" marker-start="url(#b)" marker-end="url(#b)"/>
+<path d="M626.0 505.0 H635.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M877.0 505.0 H973.0" fill="none" stroke="#0084D6" stroke-width="2.5" marker-start="url(#b)" marker-end="url(#b)"/>
 <text x="878" y="479" font-size="12" font-weight="700" fill="#0084D6" text-anchor="start">canal</text>
 <text x="878" y="494" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">seguro</text>
-<path d="M988 706 H870" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M988.0 706.0 H881.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="878" y="695" font-size="12" font-weight="700" fill="#0084D6" text-anchor="start">comandos</text>
-<path d="M1112 380 V344" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M1112.0 380.0 V355.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="1102" y="364" font-size="12" font-weight="400" fill="#0084D6" text-anchor="end">respostas, avisos</text>
-<path d="M1126 340 V376" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M1126.0 340.0 V365.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="1136" y="364" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">pedidos</text>
-<path d="M1112 590 V554" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M1112.0 590.0 V565.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="1102" y="574" font-size="12" font-weight="400" fill="#0084D6" text-anchor="end">resultados</text>
-<path d="M1126 550 V586" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M1126.0 550.0 V575.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="1136" y="574" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">chamadas</text>
-<path d="M1250 458 H1410" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M1250.0 458.0 H1399.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="1262" y="433" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">frase, pergunta,</text>
 <text x="1262" y="448" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">caso duvidoso</text>
-<path d="M1414 472 H1254" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<path d="M1414.0 472.0 H1265.0" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="1262" y="491" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">regra, resposta,</text>
 <text x="1262" y="506" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">veredicto</text>
 <rect x="24" y="828" width="1652" height="50" rx="12" fill="#F6F6F6"/>

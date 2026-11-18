@@ -120,8 +120,20 @@ def icon(name, x, y, h):
     return w
 
 
+HEAD = 11   # arrowhead length (marker 11 units, reference point at its base)
+
+
 def arrow(d, color="#333", both=False, width=2):
+    """A straight arrow. The line stops at the base of each head, so its end never shows beside the narrow tip."""
     m = "b" if color == BLUE else "a"
+    x0, y0, kind, v = re.fullmatch(r"M(-?[\d.]+) (-?[\d.]+) ([HV])(-?[\d.]+)", d.strip()).groups()
+    x0, y0, v = float(x0), float(y0), float(v)
+    a0, a1 = (x0, v) if kind == "H" else (y0, v)
+    sign = 1 if a1 > a0 else -1
+    a1 -= sign * HEAD
+    if both:
+        a0 += sign * HEAD
+    d = f"M{a0} {y0} H{a1}" if kind == "H" else f"M{x0} {a0} V{a1}"
     start = f' marker-start="url(#{m})"' if both else ""
     out.append(f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{width}"{start} marker-end="url(#{m})"/>')
 
@@ -151,8 +163,8 @@ out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width
            'e um modelo de linguagem sob contrato">')
 out.append('<title>Arquitetura do ThingTracker</title>')
 out.append('<defs>'
-           '<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="#333"/></marker>'
-           f'<marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="{BLUE}"/></marker>'
+           '<marker id="a" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="#333"/></marker>'
+           f'<marker id="b" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path d="M0 1.8 L10 5 L0 8.2 Z" fill="{BLUE}"/></marker>'
            '</defs>')
 out.append(f'<rect width="{W}" height="{H}" fill="#FFF"/>')
 

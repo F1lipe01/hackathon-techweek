@@ -1,0 +1,22 @@
+{
+ "obj_en": "wallet",
+ "obj_pt": "carteira",
+ "art": "a",
+ "place": "mesa da entrada",
+ "time": "15h02",
+ "score": "0,84",
+ "views": [
+  "registo-1.jpg",
+  "registo-2.jpg",
+  "registo-3.jpg",
+  "registo-4.jpg"
+ ],
+ "scene": "detecao.jpg",
+ "box": [
+  551,
+  303,
+  659,
+  359
+ ],
+ "answer": "resposta.jpg"
+}

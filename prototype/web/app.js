@@ -145,17 +145,23 @@ function renderEdge(e) {
     : ['Camera idle', ` · waiting for movement · ${n(e.checked)} checks, ${n(e.analysed)} analyses`];
   pill.innerHTML = `${esc(head)}<span class="more">${esc(more)}</span>`;
 }
+const devName = (id) => (state.home?.devices || []).find((d) => d.id === id)?.name;
 function renderLog() {
   $('log').innerHTML = state.events.map((e) => {
     const t = new Date(e.ts * 1000).toLocaleTimeString('en-GB');
-    const act = e.action?.tool ? `<small>${e.action.live ? 'MCP' : 'MCP (simulated, not sent)'}: ${esc(e.action.tool)} ${esc(JSON.stringify(e.action.arguments))} → ${esc(e.action.result)}</small>` : '';
+    // the device action: the exact MCP calls, sent (live) or only written down (dry run, the default)
+    const calls = e.action?.calls || (e.action?.tool ? [{ tool: e.action.tool, arguments: e.action.arguments }] : []);
+    const act = calls.length ? `<small title="${esc(calls.map((c) => `${c.tool} ${JSON.stringify(c.arguments)}`).join('\n'))}">${e.action.live ? 'MCP, sent' : 'MCP dry run, not sent'}: ${calls.map((c) => `${esc(c.tool)} ${esc(devName(c.arguments.deviceId) || c.arguments.deviceName || '')} ${esc(JSON.stringify(c.arguments.body ?? c.arguments))}`).join(', then ')}${e.action.live ? ` → ${esc(e.action.result)}` : ''}</small>` : '';
     const ev = e.evidence ? `<small>${esc(e.evidence)}</small>` : '';
     return `<li class="${e.kind === 'alert' ? 'alert' : ''}">${e.crop ? `<img src="${crop(e.crop)}" alt="">` : `<time>${t.slice(0, 5)}</time>`}<span>${e.crop ? `<time>${t.slice(0, 5)}</time> · ` : ''}${esc(e.text)}${ev}${act}</span></li>`;
   }).join('');
   const st = state.settings || {};
   $('spend').textContent = `AI spend $${(state.spend.usd || 0).toFixed(4)} of $${(st.budget_usd || 0).toFixed(2)} · ${state.spend.calls} calls`;
-  $('mode').textContent = st.ai ? 'AI on: answers by the language model (costs money)' : 'AI off: answers and sensors by templates, $0';
-  $('mode').classList.toggle('live', !!st.ai);
+  // what is real right now: who answers, where the device states come from, whether actions reach the home
+  const who = st.ai ? 'Claude answers (costs money)' : st.llm === 'local' ? 'Local text model, $0' : 'Templates, $0';
+  const devs = state.door?.live ? 'devices live from the MCP' : 'devices: copy of 18 Nov';
+  $('mode').textContent = `${who} · ${devs} · ${st.live_actions ? 'actions LIVE' : 'actions dry run'}`;
+  $('mode').classList.toggle('live', !!(st.ai || st.live_actions));
 }
 
 // ------------------------------------------------------------------ the app (right): building blocks
@@ -195,6 +201,8 @@ function renderTabs() {
     b.classList.toggle('on', on);
     b.querySelector('.tab-ic').innerHTML = TAB_ICON[b.dataset.tab][on ? 1 : 0];
   });
+  const dot = document.querySelector('#tabs .tab-dot');      // the Menu tab's dot: only when something is unread
+  if (dot) dot.hidden = !unreadCount();
 }
 function setTab(t) {
   ui.tab = t;
@@ -277,12 +285,15 @@ function renderAreas() {
     <div class="empty areas-empty">${(sec2 ? I.shield : I.bolt).replace('<svg', '<svg class="art"')}<h3>Welcome to ${sec2 ? 'security' : 'energy'}!</h3><p>See the amazing features that we have for you!</p>
     <button type="button" class="btn-p" data-act="stub" data-title="${sec2 ? 'Security' : 'Energy'}" style="height:46px;padding:0 44px">Let's try</button></div>`;
 }
-function unreadCount() { return 73 + state.events.filter((e) => e.kind === 'alert' && !ui.read.has(e.id)).length; }
+// Notifications: ThingTracker's alerts, the door and devices going on or off line (server.py), never made-up rows.
+const NOTE_KINDS = ['alert', 'door', 'device'];
+const notes = () => state.events.filter((e) => NOTE_KINDS.includes(e.kind));
+function unreadCount() { return notes().filter((e) => !ui.read.has(e.id)).length; }
 function renderMenu() {
   const tb = shell('menu', ahead(homeName(), [[I.plus, 'add-device', 'Add device']]));
   tb.innerHTML = `<h3 class="gtitle">Home</h3><div class="group">${row(I.wand, 'Scenarios', 'scenarios')}${row(I.door, 'Rooms', 'rooms')}${row(I.home, 'Houses management', 'stub')}</div>
     <h3 class="gtitle">Account</h3><div class="group">${row(I.user, 'Profile', 'stub')}
-      <button type="button" class="row" data-act="notifications">${I.bell}<span>Notifications</span><span class="badge">${unreadCount()}</span></button>${row(I.gear, 'App settings', 'settings')}</div>
+      <button type="button" class="row" data-act="notifications">${I.bell}<span>Notifications</span>${unreadCount() ? `<span class="badge">${unreadCount()}</span>` : I.chevR}</button>${row(I.gear, 'App settings', 'settings')}</div>
     <h3 class="gtitle">Support</h3><div class="group">${row(I.help, 'Help', 'stub')}<button type="button" class="row danger" data-act="stub" data-title="Log out">${I.logout}<span>Log out</span><span></span></button></div>
     <p class="powered">Powered by Altice Labs</p>`;
 }
@@ -444,15 +455,14 @@ function roomsPage() {
     <div class="st grey">${(state.home?.devices || []).filter((d) => d.room_id === r.id).length} device</div></span><span></span></div>`).join('')}
     <div class="bottom-bar" style="margin-top:420px"><button type="button" class="btn-p" data-act="stub" data-title="Add room">Add room</button></div>`);
 }
-const REAL_NOTES = [['Camera is online.', '2h 51min ago'], ['Plug is online.', '2h 51min ago'], ['Plug is offline.', '2h 53min ago'], ['Camera is offline.', '2h 56min ago'], ['Camera is online.', '3h 2min ago']];
 function notificationsPage() {
   push(() => {
-    const ours = state.events.filter((e) => e.kind === 'alert');
+    const list = notes();
     return `${phead('', '', `<button type="button" class="ibtn" data-act="stub" data-title="Filter" aria-label="Filter">${I.filter}</button>`)}<div class="ptitle">Notifications</div>
-      <div class="unread-h"><b>Unread (${unreadCount()})</b><span data-act="mark-read" role="button" style="cursor:pointer">Mark all as read</span></div><p class="day">Today</p>
-      ${ours.map((e) => `<div class="nrow ${ui.read.has(e.id) ? 'read' : ''}"><span>${I.bellC}</span><span><b>${esc(e.title || 'ThingTracker')}</b><small>${esc(e.text)} · ${ago(e.ts)}</small>
-        ${e.crop ? `<img class="crop" src="${crop(e.crop)}" alt="">` : ''}<span class="tag">Things</span></span>${I.chevR}</div>`).join('')}
-      ${REAL_NOTES.map(([t, a]) => `<div class="nrow"><span>${I.bellC}</span><span><b>${esc(t)}</b><small>${esc(a)}</small><span class="tag">Device</span></span>${I.chevR}</div>`).join('')}`;
+      <div class="unread-h"><b>Unread (${unreadCount()})</b><span data-act="mark-read" role="button" style="cursor:pointer">Mark all as read</span></div>
+      ${list.length ? '' : '<div class="empty"><p>No notifications yet.</p></div>'}
+      ${list.map((e) => { const thing = e.kind === 'alert'; return `<div class="nrow ${ui.read.has(e.id) ? 'read' : ''}"><span>${I.bellC}</span><span><b>${esc(thing ? e.title || 'ThingTracker' : e.device || 'Device')}</b><small>${esc(e.text)} · ${ago(e.ts)}</small>
+        ${e.crop ? `<img class="crop" src="${crop(e.crop)}" alt="">` : ''}<span class="tag">${thing ? 'Things' : 'Device'}</span></span>${I.chevR}</div>`; }).join('')}`;
   }, { live: true });
 }
 function settingsPage() {
@@ -589,7 +599,7 @@ device.addEventListener('click', async (e) => {
     case 'rooms': roomsPage(); break;
     case 'notifications': notificationsPage(); break;
     case 'settings': settingsPage(); break;
-    case 'mark-read': state.events.filter((x) => x.kind === 'alert').forEach((x) => ui.read.add(x.id)); store.set('tt-read', [...ui.read]); refreshPage(); break;
+    case 'mark-read': notes().forEach((x) => ui.read.add(x.id)); store.set('tt-read', [...ui.read]); refreshPage(); renderTabs(); break;
     case 'stub': stub(el.dataset.title || el.textContent.trim()); break;
     case 'assistant': openAssistant(); break;
     case 'send': ask($('askfield')?.value); break;
@@ -641,7 +651,7 @@ async function refresh() {
   renderEdge(state.edge); renderLog(); renderDoor(state.door);
   // re-render the app only when its data changed, so a tap is never lost to a redraw
   const sig = JSON.stringify([state.home, state.things, state.rules, state.enrol, state.events.length, state.events[0]?.id]);
-  if (sig !== lastSig) { lastSig = sig; if (!stack.length) renderTab(ui.tab); else refreshPage(); }
+  if (sig !== lastSig) { lastSig = sig; renderTabs(); if (!stack.length) renderTab(ui.tab); else refreshPage(); }
   for (const e of state.events) {
     if (seen.has(e.id)) continue;
     seen.add(e.id);
@@ -665,8 +675,8 @@ simDoor.addEventListener('click', async () => {
   refresh();
 });
 function renderDoor(d) {
-  simDoor.title = d?.live ? 'The Contact sensor is live through the MCP; this button adds a simulated opening.'
-    : 'The MCP session is not live: this simulates the Contact sensor on the front door.';
+  simDoor.hidden = !!d?.live;    // the real Contact sensor drives the door while the MCP session is live
+  simDoor.title = 'The MCP session is not live: this simulates the Contact sensor on the front door.';
 }
 
 // Scale the 402 x 874 pt screen to the frame, so the app never reflows: the whole screen scales, as on a real device.

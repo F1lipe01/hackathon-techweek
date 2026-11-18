@@ -463,3 +463,11 @@
   .sim-door:disabled { color: var(--muted); cursor: default; }
   @media (hover: hover) and (pointer: fine) { .sim-door:hover:not(:disabled) { box-shadow: inset 0 0 0 1px #c9d2de; } }
 }
+
+/* an alert in the activity shows all of it: the message, the evidence and the exact MCP calls (sent, or a dry run).
+   In the camera layer, where the activity's three-line clamp is. */
+@layer camera {
+  .log li.alert span { -webkit-line-clamp: 14; }
+  /* wide screens: the alert takes two columns, so it stays about as tall as the cards beside it */
+  @media (min-width: 900px) { .log li.alert { grid-column: span 2; } }
+}

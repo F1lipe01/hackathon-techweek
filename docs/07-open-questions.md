@@ -60,6 +60,18 @@ From [12-market-research.md](12-market-research.md). Mentor questions for the ch
   Full list: [use-case report §9](../deliverables/use-case-report/top5-use-cases.md) | Us, Wednesday morning or Thursday; the scenario question goes to the mentors |
 | 30 | **Owners for the build streams** (engine, conversation, story) and the **LLM/coding-assistant names** for the Sumário's AI section | Team, before Wed 19:00 |
 
+## Gaps from the v4 redesign (17 Nov, Casa Atenta)
+
+From [the v4 summary](../deliverables/use-case-report/top5-summary.md). The camera is now central, so blocker 1b is urgent.
+
+| # | What | Who can resolve it |
+|---|---|---|
+| 31 | **Camera sound both ways.** The label says two-way audio. Whether Altice's go2rtc relay carries the microphone track, and can send sound back to the speaker (go2rtc ≥ 1.9.9 with `?backchannel=1`), is unknown. Test with `ffprobe` and a 2-second sound once the camera has power; the fallback is the laptop speaker | Us, then the mentors |
+| 32 | **May we run a vision model on the camera feed** for object memory, and is an indoor camera acceptable to Altice if it stores objects, not people? | Mentors, at the checkpoint |
+| 33 | **Microphone and the law.** Lei 58/2019 art. 19.º n.º 4 bans sound capture by video surveillance, and Código Penal art. 199.º covers recording words without consent. Design: push-to-talk only, no audio stored. Not legal advice | Accept as a design rule |
+| 34 | **Phone presence on our hotspot.** Untested whether the Mac can see a team phone (not the Redmi, which is the hotspot) by ping and ARP, and how a locked iPhone answers | Us, 5-minute test |
+| ~~35~~ | **Done for Track Things** (18 Nov): `deliverables/executive-summary/sumario-executivo-IT-Porto.pdf`, 2 pages. The team still has to read it, add any other AI tool it used to the last section, and submit it on the Google Form | Team, before Wed 19:00 |
+
 ## Decisions the team has to make
 
 | # | What | By when |
@@ -70,3 +82,13 @@ From [12-market-research.md](12-market-research.md). Mentor questions for the ch
 | 18 | Which access point or hotspot we take to Aveiro | Before Friday |
 | 19 | Whether anyone needs an absence declaration for Friday | Ask Rui or Marta |
 | 20 | Whether the repository we submit on Friday is this one, cleaned of `sources/`, or a separate code-only one | Before Fri 17:30 |
+
+## Gaps from the Track Things decision (18 Nov)
+
+| # | What | Who can resolve it |
+|---|---|---|
+| 36 | **Reading the camera stream with our code.** The ffprobe probe through the go2rtc relay got no answer on 18 Nov. The camera has a `streamingSwitch` capability that may need to be on; we have not changed it | Ask the mentors (checkpoint question 2) before touching it |
+| 37 | **Detection rate for small objects (keys) is unmeasured** | Us, Thursday, with the camera in its demo position |
+| 38 | **Indoor-camera acceptance in Portugal: no data.** Plan: ask 20 people before Friday | Team |
+| 39 | **Brand not chosen.** Options sheet: `assets/brand/options/brand-options.html`. The report keeps the template's Lato and Arial whatever is chosen | Team, before building the slides |
+| 40 | **"Test Motion" and the team's "Detect-motion" scenario both fire on camera motion** and set the light to different colours. Turn one off before testing the other | Team |

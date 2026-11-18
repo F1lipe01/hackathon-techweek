@@ -27,3 +27,6 @@ __pycache__/
 venv/
 dist/
 build/
+
+# Local design-check screenshots (tasteskill inspector)
+.taste-skill/

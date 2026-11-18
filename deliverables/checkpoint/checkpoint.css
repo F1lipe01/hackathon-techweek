@@ -1,0 +1,13 @@
+@page { size: A4; margin: 11mm 13mm 10mm 13mm; }
+html { font-size: 9.2pt; }
+body { line-height: 1.36; }
+h1 { font-size: 16pt; color: #0A7680; }
+h2 { font-size: 11pt; color: #0A7680; border-bottom-color: #0A7680; margin: 7pt 0 3pt; }
+blockquote { background: #EEF6F6; border-left-color: #0A7680; font-size: 9.8pt; margin: 4pt 0; padding: 4pt 8pt; }
+.lead { font-size: 9.8pt; margin-bottom: 2pt; }
+table { margin: 2pt 0 3pt; }
+th, td { padding: 2pt 4.5pt; }
+ol, ul { margin: 2pt 0 3pt; }
+li { margin: 1pt 0; }
+p { margin: 3pt 0; }
+code { font-size: 8.2pt; }

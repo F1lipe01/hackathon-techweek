@@ -47,5 +47,7 @@ Every team prepares the full pitch: finalists are only revealed on stage.
 
 ## 5. Google Drive
 
-- **Intermediate Report:** frozen snapshot of everything as it stood at the 18 Nov submission.
-- **Final Delivery:** what goes to the jury on Friday, in `PT`, `EN` and `Vídeos`.
+Top folder: [ThingTracker · IT-Porto](https://drive.google.com/drive/folders/1od32qKAF9P1XIRdQMtGOZECnQJnBglFQ).
+
+- **[Intermediate Report](https://drive.google.com/drive/folders/1FFxQeJb7TEwyftpC4mSGjBfS7m_Wz3Fy):** frozen snapshot of everything as it stood at the 18 Nov submission. It holds the submitted report, the architecture, the integration spec and the business case, the English folder and the working files.
+- **[Final Delivery](https://drive.google.com/drive/folders/1TD6lCVgIP86cm_mTKGniPXZgh0oH4mS4):** what goes to the jury on Friday, in `PT`, `EN` and `Vídeos`. `Vídeos` already holds video 2, the real example (37 s).

@@ -6,7 +6,7 @@ const video = $('video'), kitimg = $('kitimg'), stage = $('stage'), zonesEl = $(
 const OBSERVE_EVERY = 3000, HEARTBEAT = 45000, CHANGE_THRESHOLD = 10;
 
 let state = { zones: [], things: [], rules: [], events: [], spend: { usd: 0, calls: 0 }, settings: {} };
-let source = 'webcam', stream = null, kitTimer = null, watchTimer = null, busy = false;
+let source = 'kit', stream = null, kitTimer = null, watchTimer = null, busy = false;
 let editing = false, pendingZone = null;
 const lastSent = {};           // zone_id -> {sig, t}
 const seenEvents = new Set();  // for alerts that slide in
@@ -25,7 +25,7 @@ const ti = (name) => `<span class="ti" style="--i:url(/web/icons/tabler/${name}.
 const ICONS = { key: 'fluent/key', purse: 'fluent/purse', glasses: 'fluent/glasses', mobile_phone: 'fluent/mobile_phone',
   hot_beverage: 'fluent/hot_beverage', laptop: 'fluent/laptop', remote: 'remote' };
 const thingIcon = (t) => {
-  const crop = t.last_seen?.crop;
+  const crop = t.last_seen?.crop || t.fingerprint?.crops?.[0];
   if (crop) return `<img class="crop" src="/crops/${encodeURIComponent(crop)}" alt="">`;
   return ICONS[t.icon] ? `<img src="/web/icons/${ICONS[t.icon]}.svg" alt="">` : mark;
 };
@@ -57,13 +57,8 @@ async function useSource(next) {
   clearInterval(kitTimer);
   if (next !== 'kit') kitimg.removeAttribute('src');   // closes the live connection
   video.hidden = next === 'kit'; kitimg.hidden = next !== 'kit';
-  if (next === 'webcam') {
-    stageMsg('Starting the webcam…');
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 1280 } }, audio: false });
-      video.srcObject = stream; await video.play(); stageMsg('');
-    } catch { stageMsg('No access to the webcam. Allow the camera in the browser, or choose “Recorded video”.'); }
-  } else if (next === 'file') {
+  // The computer's own camera is never used: the home's camera is the kit camera.
+  if (next === 'file') {
     video.srcObject = null;
     stageMsg('Choose a clip recorded with the camera. It plays as if it were live.');
     $('file').click();
@@ -87,6 +82,7 @@ new ResizeObserver(() => renderZones()).observe(stage);
 
 // ------------------------------------------------------------------ zones
 function renderZones(flash = []) {
+  zonesEl.hidden = source === 'kit' && !editing;   // on the kit camera the edge service finds the places itself
   const c = contentRect();
   zonesEl.replaceChildren(...state.zones.map((z) => {
     const el = document.createElement('div');
@@ -253,6 +249,40 @@ $('thingform').addEventListener('submit', (e) => {
     $('thingname').value = ''; $('thingform').hidden = true; refresh();
   });
 });
+$('things').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-enrol]'); if (!b) return;
+  try {
+    await api(`/api/things/${encodeURIComponent(b.dataset.enrol)}/enrol`, { method: 'POST' });
+    if (source !== 'kit') document.querySelector('input[name="src"][value="kit"]')?.click();
+    refresh();
+  } catch (err) { toast('Could not start the registration', err.message); }
+});
+$('suggestions').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-suggest]'); if (!b) return;
+  const ev = state.events.find((x) => x.id === b.dataset.suggest); if (!ev) return;
+  try {
+    const r = await api('/api/rules', { method: 'POST', body: JSON.stringify({ sentence: ev.sentence }) });
+    toast('New sensor', r.title); refresh();
+  } catch (err) { toast('Could not create the sensor', err.message); }
+});
+
+// What the edge service sees, drawn over the kit camera: one box per object, person or registration view.
+const boxesEl = $('boxes');
+async function drawBoxes() {
+  if (source !== 'kit' || document.hidden) { boxesEl.replaceChildren(); return; }
+  let b;
+  try { b = await api('/api/edge/boxes'); } catch { return; }
+  const r = contentRect();
+  Object.assign(boxesEl.style, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px' });
+  boxesEl.dataset.stale = b.age > 4 ? '1' : '';
+  if (b.age > 20) { boxesEl.replaceChildren(); return; }
+  boxesEl.innerHTML = b.boxes.map((x) => {
+    const [x1, y1, x2, y2] = x.box;
+    return `<div class="box ${esc(x.kind)}" style="left:${x1 * 100}%;top:${y1 * 100}%;width:${(x2 - x1) * 100}%;height:${(y2 - y1) * 100}%"><b>${esc(x.label)}</b></div>`;
+  }).join('');
+}
+setInterval(drawBoxes, 700);
+
 $('rules').addEventListener('change', async (e) => {
   const id = e.target.dataset?.rule; if (!id) return;
   await api(`/api/rules/${encodeURIComponent(id)}`, { method: 'PATCH', body: JSON.stringify({ active: e.target.checked }) });
@@ -292,7 +322,8 @@ function renderEdge(e) {
   pill.hidden = false;
   pill.dataset.state = e.state;
   const n = (v) => Number(v || 0).toLocaleString('en');
-  pill.textContent = e.state === 'active'
+  pill.textContent = e.state === 'registering' ? 'Camera: registering a thing'
+    : e.state === 'active'
     ? `Camera: movement, analysing · ${n(e.analysed)} analyses`
     : `Camera idle, waiting for movement · ${n(e.checked)} checks, ${n(e.analysed)} analyses`;
 }
@@ -306,7 +337,13 @@ function render() {
   $('things').innerHTML = s.things.map((t) => {
     const l = t.last_seen;
     const sub = l ? `<span class="sub">${esc(l.zone_name)} · ${when(l.ts)}${l.where ? ` · ${esc(l.where)}` : ''}</span>` : '<span class="sub none">Not seen yet</span>';
-    return `<li class="card"><span class="ic">${thingIcon(t)}</span><span><b>${esc(t.name)}</b>${sub}</span><span></span></li>`;
+    const en = s.enrol && s.enrol.thing_id === t.id ? s.enrol : null, fp = t.fingerprint;
+    let side = '';
+    if (en) side = `<span class="enrol-prog" role="progressbar" aria-valuemin="0" aria-valuemax="${en.target}" aria-valuenow="${en.got}" style="--p:${en.got / en.target}"><span>${en.got}/${en.target}</span></span>`;
+    else if (!fp) side = `<button type="button" class="mini" data-enrol="${esc(t.id)}">${ti('focus-2')}Register</button>`;
+    const views = fp ? `<span class="views" title="Visual fingerprint: ${fp.n} views">${fp.crops.slice(0, 5).map((c) => `<img src="/crops/${encodeURIComponent(c)}" alt="">`).join('')}<small>${fp.n} views</small></span>` : '';
+    const sub2 = en ? '<span class="sub">Show it to the kit camera and turn it slowly</span>' : sub;
+    return `<li class="card thing"><span class="ic">${thingIcon(t)}</span><span><b>${esc(t.name)}</b>${sub2}${views}</span>${side}</li>`;
   }).join('');
 
   $('sensors-title').textContent = `Sensors (${s.rules.length})`;
@@ -316,6 +353,12 @@ function render() {
       <label class="switch"><input type="checkbox" data-rule="${esc(r.id)}" ${r.active ? 'checked' : ''} aria-label="Turn on ${esc(r.title)}"><span></span></label>
     </li>`).join('') || '<li class="empty-note">No sensors yet. Describe one in a sentence above.</li>';
 
+  const sugg = s.events.filter((e) => e.kind === 'suggest' && !s.rules.some((r) => r.sentence === e.sentence)).slice(0, 3);
+  $('suggest').hidden = !sugg.length;
+  $('suggestions').innerHTML = sugg.map((e) => `
+    <li class="card"><span class="ic">${ti('sparkles')}</span>
+      <span><b>${esc(e.title)}</b><span class="q">“${esc(e.sentence)}”</span></span>
+      <button type="button" class="mini" data-suggest="${esc(e.id)}">${ti('circle-plus')}Add</button></li>`).join('');
   const alerts = s.events.filter((e) => e.kind === 'alert').slice(0, 8);
   $('alerts').innerHTML = alerts.map((e) => `
     <li class="card"><span class="ic">${e.crop ? `<img class="crop" src="/crops/${encodeURIComponent(e.crop)}" alt="">` : mark}</span>
@@ -399,7 +442,7 @@ tick(); setInterval(tick, 15000);
 // live: the edge keeps adding sightings and alerts, so keep the screen current while it is visible
 setInterval(() => { if (!document.hidden) refresh(); }, 3000);
 
-useSource('webcam');
+useSource('kit');
 refresh();
 // open a tab from the address, e.g. http://127.0.0.1:8765/#devices
 const startTab = document.querySelector(`.tabs button[data-tab="${location.hash.slice(1)}"]`);

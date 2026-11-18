@@ -24,38 +24,8 @@ def _today_at(hh, mm):
 
 
 def seed():
-    zones = [
-        {"id": "z1", "name": "Desk", "x": 0.05, "y": 0.45, "w": 0.5, "h": 0.5},
-        {"id": "z2", "name": "Hall table", "x": 0.6, "y": 0.5, "w": 0.35, "h": 0.45},
-    ]
-    things = [
-        {"id": "keys", "name": "Keys", "description": "a key ring with two or three keys", "icon": "key"},
-        {"id": "wallet", "name": "Wallet", "description": "a leather wallet", "icon": "purse"},
-        {"id": "glasses", "name": "Glasses", "description": "reading glasses", "icon": "glasses"},
-        {"id": "phone", "name": "Phone", "description": "a smartphone", "icon": "mobile_phone"},
-        {"id": "mug", "name": "Mug", "description": "a coffee mug", "icon": "hot_beverage"},
-        {"id": "laptop", "name": "Laptop", "description": "a laptop computer", "icon": "laptop"},
-        {"id": "remote", "name": "TV remote", "description": "a black TV remote control", "icon": "remote"},
-    ]
-    seen = [
-        ("keys", "z2", "Hall table", "next to the bowl", 8, 42),
-        ("wallet", "z2", "Hall table", "on the right, by the keys", 8, 40),
-        ("glasses", "z1", "Desk", "on the notebook", 9, 15),
-        ("laptop", "z1", "Desk", "in the middle", 9, 50),
-        ("mug", "z1", "Desk", "left of the laptop", 9, 58),
-    ]
-    obs = [{"id": uuid.uuid4().hex[:10], "ts": _today_at(h, m), "thing_id": t, "zone_id": z, "zone_name": zn,
-            "where": w, "crop": None, "demo": True} for t, z, zn, w, h, m in seen]
-    rules = [{
-        "id": "r-demo", "sentence": "Tell me if the mug is left on the desk.",
-        "title": "Mug left on the desk", "zone_id": "z1", "question": "Is there a mug on the desk?",
-        "trigger_when": "yes", "mode": "when_true", "deadline": "", "action": "notify",
-        "message": "The mug was left on the desk.", "new_thing": "", "cooldown_s": 600,
-        "active": False, "last_fired": 0, "demo": True,
-    }]
-    events = [{"id": uuid.uuid4().hex[:10], "ts": _today_at(8, 43), "kind": "seen",
-               "text": "Keys seen on the hall table.", "demo": True}]
-    return {"zones": zones, "things": things, "observations": obs, "rules": rules, "events": events,
+    """An empty home: things appear only when the user adds them, and are tracked only once registered."""
+    return {"zones": [], "things": [], "observations": [], "rules": [], "events": [],
             "spend": {"usd": 0.0, "calls": []}}
 
 
@@ -135,6 +105,17 @@ class Store:
             self.state["things"].append({"id": tid, "name": name, "description": description, "icon": "dot"})
             self._save()
             return tid
+
+    def set_fingerprint(self, thing_id, info):
+        """Visual registration: how many views, a few crops and when. The vectors live in data/fingerprints.json."""
+        with self.lock:
+            for t in self.state["things"]:
+                if t["id"] == thing_id:
+                    if info:
+                        t["fingerprint"] = info
+                    else:
+                        t.pop("fingerprint", None)
+            self._save()
 
     def add_observation(self, thing_id, zone, where, crop_name):
         with self.lock:

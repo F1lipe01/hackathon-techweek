@@ -151,10 +151,123 @@ def edge_observe(payload: dict = Body(...)):
             _last_crop[tid] = now_
         elif prev:
             crop = prev.get("crop")
-        store.add_observation(tid, zone, "", crop)
+        store.add_observation(tid, zone, str(sgt.get("note", ""))[:60], crop)
         if moved:
             store.add_event("seen", f"{known[tid]} seen " + ("in the room." if place == "room" else f"on the {place}."), thing_id=tid, crop=crop)
+    if "boxes" in payload:
+        EDGE["boxes"], EDGE["boxes_at"] = payload["boxes"][:30], now_
+    for kind, score in (payload.get("profile") or {}).items():
+        suggest_for_profile(kind, score)
     return {"ok": True}
+
+
+# ---------------------------------------------------------------------- visual registration (fingerprints)
+# The edge keeps its own copy of each fingerprint; this file stands in for the copy in the Altice platform's
+# database, associated with the customer, so a new or reset home device can get it back.
+FINGERPRINTS = CROPS.parent / "fingerprints.json"
+ENROL = {}
+ENROL_VIEWS, ENROL_SECONDS = 8, 40
+
+
+def _fingerprints():
+    import json
+    return json.loads(FINGERPRINTS.read_text()) if FINGERPRINTS.exists() else {}
+
+
+@app.post("/api/things/{tid}/enrol")
+def start_enrol(tid: str):
+    t = next((t for t in store.things() if t["id"] == tid), None)
+    if not t:
+        raise HTTPException(404, "unknown thing")
+    if not edge_online():
+        raise HTTPException(409, "The camera service is not running")
+    ENROL.clear()
+    ENROL.update(thing_id=tid, name=t["name"], query=(t.get("description") or t["name"]).lower(),
+                 until=time.time() + ENROL_SECONDS, got=0, target=ENROL_VIEWS)
+    store.add_event("thing", f"Registering {t['name']}: show it to the camera and turn it slowly.", thing_id=tid)
+    return ENROL
+
+
+@app.get("/api/edge/task")
+def edge_task():
+    if ENROL and time.time() > ENROL["until"]:
+        store.add_event("thing", f"Registration of {ENROL['name']} stopped: the camera did not see it well enough.")
+        ENROL.clear()
+    return {"enrol": dict(ENROL) or None}
+
+
+@app.post("/api/edge/enrol")
+def edge_enrol(payload: dict = Body(...)):
+    """Progress while the edge collects views, then the finished fingerprint (vectors and a few crops)."""
+    import json
+    tid = payload.get("thing_id")
+    if not ENROL or ENROL.get("thing_id") != tid:
+        return {"ok": False}
+    ENROL["got"] = int(payload.get("got", ENROL["got"]))
+    if not payload.get("done"):
+        return {"ok": True}
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    names = []
+    for i, b64 in enumerate(payload.get("crops_b64", [])[:ENROL_VIEWS]):
+        names.append(f"{stamp}-{tid}-view{i}.jpg")
+        (CROPS / names[-1]).write_bytes(base64.b64decode(b64))
+    fps = _fingerprints()
+    fps[tid] = {"model": payload.get("model", ""), "vectors": payload.get("vectors", []), "created": time.time()}
+    FINGERPRINTS.write_text(json.dumps(fps))
+    store.set_fingerprint(tid, {"n": len(payload.get("vectors", [])), "crops": names, "created": time.time(),
+                                "model": payload.get("model", "")})
+    store.add_event("thing", f"{ENROL['name']} registered: a visual fingerprint from {len(names)} views.",
+                    thing_id=tid, crop=names[0] if names else None)
+    ENROL.clear()
+    return {"ok": True}
+
+
+@app.get("/api/edge/fingerprints")
+def edge_fingerprints():
+    """Lets the home device restore its fingerprints from the platform copy."""
+    return _fingerprints()
+
+
+@app.delete("/api/things/{tid}/fingerprint")
+def delete_fingerprint(tid: str):
+    import json
+    fps = _fingerprints()
+    fps.pop(tid, None)
+    FINGERPRINTS.write_text(json.dumps(fps))
+    store.set_fingerprint(tid, None)
+    return {"ok": True}
+
+
+@app.get("/api/edge/boxes")
+def edge_boxes():
+    return {"boxes": EDGE.get("boxes", []), "age": time.time() - EDGE.get("boxes_at", 0), "enrol": dict(ENROL) or None,
+            "state": EDGE["state"], "online": edge_online()}
+
+
+# ---------------------------------------------------------------------- suggestions from the home's profile
+PROFILE_SUGGESTIONS = {
+    "child": ("Children at home", "Tell me if the children are doing something wrong, something that could hurt them, or acting strangely."),
+    "dog": ("A dog at home", "Tell me if the dog has not drunk water by 6 pm."),
+    "cat": ("A cat at home", "Tell me if the cat has not drunk water by 6 pm."),
+}
+
+
+_profile_hits = {}
+
+
+def suggest_for_profile(kind, score):
+    """Suggest a sensor only after the camera has seen a child or a pet clearly, in 3 analyses within 10 minutes."""
+    if kind not in PROFILE_SUGGESTIONS or float(score) < 0.45:
+        return
+    now_ = time.time()
+    hits = [t for t in _profile_hits.get(kind, []) if now_ - t < 600] + [now_]
+    _profile_hits[kind] = hits
+    done = store.state.setdefault("suggested", [])
+    if kind in done or len(hits) < 3:
+        return
+    done.append(kind)
+    title, sentence = PROFILE_SUGGESTIONS[kind]
+    store.add_event("suggest", f"{title}. Suggested sensor: “{sentence}”", title=title, sentence=sentence)
 
 
 def _stay_start(thing_id, place):
@@ -214,7 +327,8 @@ threading.Thread(target=rules_engine, daemon=True).start()
 def state():
     s = store.snapshot()
     s["settings"] = {"live_actions": actions.LIVE, "ai": brain.enabled, "budget_usd": brain.cap, "kit_camera": bool(os.environ.get("CAMERA_RTSP_URL"))}
-    s["edge"] = {**EDGE, "online": edge_online()}
+    s["edge"] = {k: v for k, v in EDGE.items() if k != "boxes"} | {"online": edge_online()}
+    s["enrol"] = dict(ENROL) or None
     return s
 
 

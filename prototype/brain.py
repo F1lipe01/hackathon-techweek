@@ -224,14 +224,25 @@ class Brain:
     # ------------------------------------------------------------------ simulation (TT_AI unset): no API calls, no cost
     def _sim_ask(self, question, memory):
         q = question.lower()
-        for t in memory["things"]:
-            if t["name"].lower() in q or t["thing_id"] in q:
+        words = set(re.findall(r"[a-zà-ú]+", q))
+        stop = {"my", "the", "where", "are", "is", "a", "an", "of", "do", "you", "see", "have"}
+        exact = [t for t in memory["things"] if t["name"].lower() in q]
+        loose = [t for t in memory["things"]
+                 if (set(re.findall(r"[a-zà-ú]+", t["name"].lower())) - stop) & words]
+        if not exact and len(loose) > 1:              # several things fit: ask which one, as a person would
+            opts = []
+            for t in loose[:4]:
                 last = t["last_seen"]
-                if not last:
-                    return {"answer": f"I haven't seen your {t['name'].lower()} yet. (simulated answer)", "thing_id": t["thing_id"]}
-                where = f", {last['where']}" if last.get("where") else ""
-                return {"answer": f"Your {t['name'].lower()}: last seen at {last['when'].split(' ')[-1]}, on the {last['zone'].lower()}{where}. (simulated answer)",
-                        "thing_id": t["thing_id"]}
+                opts.append(f"{t['name']}" + (f" (on the {last['zone'].lower()} at {last['when'].split(' ')[-1]})" if last else " (not seen yet)"))
+            return {"answer": f"You have {len(loose)} of those: " + "; ".join(opts) + ". Which one? (simulated answer)", "thing_id": ""}
+        found = exact or loose or [t for t in memory["things"] if t["thing_id"] in q]
+        if found:
+            t, last = found[0], found[0]["last_seen"]
+            if not last:
+                return {"answer": f"I haven't seen your {t['name'].lower()} yet. (simulated answer)", "thing_id": t["thing_id"]}
+            where = f", {last['where']}" if last.get("where") else ""
+            return {"answer": f"Your {t['name'].lower()}: last seen at {last['when'].split(' ')[-1]}, on the {last['zone'].lower()}{where}. (simulated answer)",
+                    "thing_id": t["thing_id"]}
         return {"answer": "I couldn't find that in my memory. (simulated answer)", "thing_id": ""}
 
     def _sim_compile(self, sentence, zones, things):

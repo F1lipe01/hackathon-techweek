@@ -258,3 +258,35 @@
 /* edge service status: idle (blue) or analysing (green) */
 .edge-pill { font-size: var(--step-small); padding: 3px 10px; border-radius: 999px; background: #EEF3FB; color: #0A3FA3; white-space: nowrap; }
 .edge-pill[data-state="active"] { background: #E7F6EC; color: #146C35; }
+.edge-pill[data-state="registering"] { background: #FDF0E4; color: #8A3D00; }
+
+/* live boxes from the edge service, over the kit camera */
+.boxes { position: absolute; pointer-events: none; transition: opacity 300ms var(--ease-out); }
+.boxes[data-stale="1"] { opacity: 0.45; }
+.box { position: absolute; border: 2px solid var(--labs); border-radius: 6px; box-shadow: 0 0 0 1px rgb(0 0 0 / 0.35); }
+.box b { position: absolute; left: -2px; bottom: calc(100% + 4px); max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font: 600 12px/1 var(--font); color: #fff; background: var(--labs); padding: 5px 7px; border-radius: 5px; }
+.box.enrol { border-color: #E8710A; border-style: dashed; }
+.box.enrol b { background: #E8710A; }
+.box.other { border-color: rgb(255 255 255 / 0.75); border-style: dashed; }
+.box.other b { background: rgb(0 0 0 / 0.65); }
+.box.person { border-width: 1.5px; border-color: rgb(255 255 255 / 0.6); box-shadow: none; }
+.box.person b { background: rgb(0 0 0 / 0.5); font-weight: 500; }
+.box.profile { border-color: #1E8E4E; }
+.box.profile b { background: #1E8E4E; }
+/* a box near the top edge keeps its label inside */
+.box[style*="top:0"] b, .box[style*="top:1."] b, .box[style*="top:2."] b { bottom: auto; top: 4px; left: 4px; }
+
+/* registration: button, progress ring and the views it kept */
+.mini { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: 999px; padding: 8px 12px; cursor: pointer;
+  font: 600 0.8rem/1 var(--app-font); color: #fff; background: var(--app-blue); }
+.mini .ti { width: 15px; height: 15px; background: currentColor; }
+@media (hover: hover) and (pointer: fine) { .mini:hover { background: #0F4AAE; } }
+.mini:active { transform: scale(0.97); }
+.enrol-prog { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(#E8710A calc(var(--p) * 360deg), var(--app-line) 0); }
+.enrol-prog span { width: 36px; height: 36px; border-radius: 50%; background: var(--app-card); display: grid; place-items: center;
+  font: 600 0.72rem/1 var(--app-font); color: var(--app-ink); }
+.card .views { display: flex; align-items: center; gap: 4px; margin-top: 8px; }
+.card .views img { width: 30px; height: 30px; object-fit: cover; border-radius: 7px; }
+.card .views small { margin-left: 4px; color: var(--app-muted); font-size: 0.75rem; font-weight: 500; }

@@ -212,11 +212,12 @@ def exemplo_real():
         place, hour, score = PLACES_EN[place], hour.replace("h", ":"), score.replace(",", ".")
     f = Fig(312)
     gap, top, h = 30, 6, 300
-    cw = (W - 3 * gap) / 4
+    X0 = 1.5                                   # inset: the outer strokes stay inside the image
+    cw = (W - 3 * gap - 2 * X0) / 4
     titles = L(["Registo visual", "Deteção", "Pergunta", "Regra e ação"],
                ["Visual enrolment", "Detection", "Question", "Rule and action"])
     for i, title in enumerate(titles):
-        x = i * (cw + gap)
+        x = X0 + i * (cw + gap)
         f.rect(x, top, cw, h)
         f.o.append(f'<circle cx="{x + 24}" cy="{top + 26}" r="12" fill="{BLUE}"/>')
         f.text(x + 24, top + 31, str(i + 1), 14, True, "#FFF", "middle")
@@ -226,7 +227,7 @@ def exemplo_real():
     ix, iw = 14, cw - 28
 
     # 1. registration: six of the real views, then what they become
-    x, vy = ix, top + 50
+    x, vy = X0 + ix, top + 50
     cols = 2 if len(spec["views"]) <= 4 else 3
     tw = (iw - (cols - 1) * 6) / cols
     th = tw * 2 / 3
@@ -238,7 +239,7 @@ def exemplo_real():
                                       "the thing, stored at home and in Altice’s database."), iw, 13.5, 17.5)
 
     # 2. detection: the scene, with the box the edge drew
-    x = cw + gap + ix
+    x = X0 + cw + gap + ix
     sc = Image.open(FOTOS / spec["scene"])
     sh = 128
     photo(f, FOTOS / spec["scene"], x, vy, iw, sh, rx=6)
@@ -261,7 +262,7 @@ def exemplo_real():
            iw, 13.5, 17.5)
 
     # 3. the question, the answer with the photo, and the disambiguation
-    x = 2 * (cw + gap) + ix
+    x = X0 + 2 * (cw + gap) + ix
     q = L(f"Onde está {art} {pt}?", f"Where is my {en}?")
     qw = width(q, 14.5) + 24
     f.rect(x + iw - qw, vy, qw, 32, fill=BLUE, stroke=None, rx=16)
@@ -277,23 +278,35 @@ def exemplo_real():
     f.para(x, vy + 184, L("A memória da casa responde com o último local e a hora.",
                           "The home memory answers with the last place and time."), iw, 13.5, 17.5)
 
-    # 4. sentence → service → language model with MCP tools → scenario via MCP → evaluated at home → action via MCP
-    x = 3 * (cw + gap) + ix
-    chain = [(L(f"“Avisa-me se sair sem {art} {pt}”", f"“Tell me if I leave without my {en}”"), "#EEF3FB", INK),
-             (L("Serviço _ThingTracker_", "ThingTracker service"), "#FFF", INK),
-             (L("Modelo de linguagem, com as ferramentas MCP", "Language model, with the MCP tools"), "#FFF", INK),
-             (L("Regra gravada como cenário (MCP)", "Rule saved as a scenario (MCP)"), "#FFF", INK),
-             (L("Avaliada em casa; ação pelo MCP", "Evaluated at home; action through MCP"), "#FFF", INK)]
+    # 4. a safety rule written as a sentence, evaluated at home, and the notification it sends: the alarm sounds only
+    #    if the user says so (architecture: the siren needs a "yes")
+    x = X0 + 3 * (cw + gap) + ix
     y = vy
-    for k, (t, fill, col) in enumerate(chain):
+    for k, (t, fill) in enumerate([(L("“Avisa-me se uma criança estiver perto de uma faca”", "“Tell me if a child is near a knife”"), "#EEF3FB"),
+                                    (L("Regra avaliada em casa", "Rule evaluated at home"), "#FFF")]):
         lines = balanced(t, iw - 16, 13.5) if EN else wrap(t, iw - 16, 13.5)
         ph = 12 + 16 * len(lines)
         f.rect(x, y, iw, ph, fill=fill, stroke=None if fill != "#FFF" else LINE, rx=8)
         for j, ln in enumerate(lines):
-            f.text(x + iw / 2, y + ph / 2 + 5 - (len(lines) - 1) * 8 + j * 16, ln, 13.5, False, col, "middle")
-        if k < len(chain) - 1:
-            f.arrow(x + iw / 2, y + ph + 1, x + iw / 2, y + ph + 9)
+            f.text(x + iw / 2, y + ph / 2 + 5 - (len(lines) - 1) * 8 + j * 16, ln, 13.5, False, INK, "middle")
+        f.arrow(x + iw / 2, y + ph + 1, x + iw / 2, y + ph + 9)
         y += ph + 10
+    # the notification, as it arrives on the phone
+    nh = 116
+    f.rect(x, y, iw, nh, fill="#FFF", stroke=LINE, rx=14)
+    f.rect(x + 10, y + 10, 16, 16, fill="#2ABE9E", stroke=None, rx=4)
+    f.text(x + 32, y + 22, L("THINGTRACKER · COZINHA", "THINGTRACKER · KITCHEN"), 10.5, True, MUTED)
+    body = wrap(L("Uma criança está junto a uma faca na bancada.", "A child is next to a knife on the counter."), iw - 20, 13.5, True)
+    for j, ln in enumerate(body[:2]):
+        f.text(x + 10, y + 46 + j * 17, ln, 13.5, True, INK)
+    bw = (iw - 28) / 2
+    f.rect(x + 10, y + nh - 36, bw, 26, fill="#D2403A", stroke=None, rx=13)
+    f.text(x + 10 + bw / 2, y + nh - 18.5, L("Ligar alarme", "Sound alarm"), 12, True, "#FFF", "middle")
+    f.rect(x + 18 + bw, y + nh - 36, bw, 26, fill="#EEF1F5", stroke=None, rx=13)
+    f.text(x + 18 + bw + bw / 2, y + nh - 18.5, L("Tudo bem", "It's fine"), 12, True, INK, "middle")
+    assert len(body) <= 2, body
+    assert width(L("Ligar alarme", "Sound alarm"), 12, True) + 12 <= bw, "button label too wide"
+    y += nh + 10
     assert y - 10 <= top + h - 6, f"panel 4 overflows by {y - 10 - (top + h - 6):.0f}"
     if EN:                                   # labels drawn without wrapping must still fit their panel
         for s_ in (q, L("", "If there are two, it asks:")):

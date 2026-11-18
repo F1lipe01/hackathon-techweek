@@ -55,8 +55,8 @@ Runs as one service per home. In production it would run on the operator's home 
 | **Perception: depth** | Relative distance in the picture, from a single camera | Depth Anything V2 Small | Separates "on the table" from "behind it". Approximate, not lidar |
 | **Perception: people** | Presence and count; posture for falls or climbing (later). Recognises a household member only if the household enrolled that person, with their consent | Person detection; on-device face recognition (opt-in); a pose model in a later phase | **Off by default.** Face templates never leave the home |
 | **Scene memory** | Sightings: thing, place, time, position, thumbnail. Last-seen index and timelines. Who is home, from known phones on the Wi-Fi | Local database | Kept 30 days; no video |
-| **Sensor engine** | Evaluates the compiled rules against the memory every second; chooses a response on the ladder: nothing, remember, tell, act, escalate | Deterministic rule engine | Calls the language model only for unclear cases |
-| **Enrolment** | Turns about 3 seconds of a thing held in front of a camera into ~8 crops, its fingerprint and its photo | Detection + DINOv2 | Also accepts 3 phone photos |
+| **Reasoning Engine** | Evaluates the compiled rules against the memory every second; chooses a response on the ladder: nothing, remember, tell, act, escalate | Deterministic rule engine | Calls the language model only for unclear cases |
+| **Context Builder** (enrolment) | Builds each thing's context (name, visual fingerprint, usual place). Turns about 3 seconds of a thing held in front of a camera into ~8 crops, its fingerprint and its photo | Detection + DINOv2 | Also accepts 3 phone photos |
 | **Secure channel** | One outbound, authenticated connection to the Altice platform | mTLS / OAuth, as the platform requires | The only way in or out of the edge |
 
 **Footprint of the local models.** Size on disk is the Hugging Face weights file (fp32). Time is measured on our laptop's GPU (Apple, MPS). Electricity assumes 1 frame per second on a 15 W edge box (business case B15) at €0.2367/kWh (Portugal, Eurostat `nrg_pc_204`, first half of 2026).
@@ -148,7 +148,7 @@ Example: "Turn the light red if the mug is left on the desk when everyone is out
 1. *App → platform → language model:* **the sentence, plus the names of things, places and devices.**
 2. *Language model:* returns a rule in the sensor language (§5), and the app shows it in plain words for confirmation.
 3. *Platform → edge:* **the rule.**
-4. *Edge:* the sensor engine evaluates it every second on the memory, at no cost per check.
+4. *Edge:* the Reasoning Engine evaluates it every second on the memory, at no cost per check.
 5. When it fires: *edge → platform:* **an event.** The platform sends the action through MCP (`update_device_capabilities`, light red) and a notification to the app, with the thumbnail.
 6. **Disruptive actions** (siren, arming the alarm) always ask for a "yes" in the app first.
 
@@ -265,7 +265,7 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
 | Cameras | Laptop webcam or a recorded clip; the kit camera once its stream answers | Kit cameras over RTSP on the LAN |
 | Perception | Local models installed and benchmarked; the demo analyses zone crops | Full local pipeline on a gateway NPU or edge box |
 | Language model | Claude Haiku 5.5 / Sonnet 5.5; off by default, with simulated answers | Any model under contract (§3) |
-| Rules | The model answers each zone's question | Compiled rules run by the sensor engine (§5) |
+| Rules | The model answers each zone's question | Compiled rules run by the Reasoning Engine (§5) |
 | App | A web copy of the Altice app with the Things tab | Inside the real Altice app |
 | Device actions | MCP calls built; dry run unless switched on | Same tools, plus the Things tools |
 

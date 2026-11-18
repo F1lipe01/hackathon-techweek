@@ -248,7 +248,8 @@ def exemplo_real():
     b = spec["box"]
     bx, by, bw, bh = ox + b[0] * s, oy + b[1] * s, (b[2] - b[0]) * s, (b[3] - b[1]) * s
     f.rect(bx, by, bw, bh, fill="none", stroke=BLUE, rx=3, sw=2.2)
-    lab = L(f"{pt.capitalize()} · sua {score}", f"Your {en} · {score}")
+    poss = "seu" if art == "o" else "sua"                  # o livro → seu; a carteira → sua
+    lab = L(f"{pt.capitalize()} · {poss} {score}", f"Your {en} · {score}")
     lw = width(lab, 12.5, True) + 12
     ly = by - 20 if by - 20 > vy + 2 else by + bh + 2
     lx = min(bx, x + iw - lw - 2)

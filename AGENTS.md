@@ -87,4 +87,4 @@ prototype/.venv/bin/python prototype/record.py --seconds 120 --name take   # vid
 - **Visual fingerprints.** Stored on the home device and in the Altice database, associated with the customer.
 - **Places.** Each camera stands for one place ("Kitchen 1", "Kitchen 2"). Zones inside a camera are left to Altice as a later feature.
 - **In the app.** A fifth tab, *Things*, styled exactly like the other four, and an assistant button on every tab for questions and for sensors written as sentences.
-- **The example.** The use-case example is a yellow book in the lab, José Saramago's *O ano da morte de Ricardo Reis*. The report's Figure 1 uses free stock photos of a wallet.
+- **The example.** The use-case example is a yellow book in the lab, José Saramago's *O ano da morte de Ricardo Reis*. The report's Figure 1 uses the same book: views from a phone video in the lab and the kit camera's detection (score 0,70, measured with the prototype's models).

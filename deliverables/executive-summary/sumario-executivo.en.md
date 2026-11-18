@@ -17,11 +17,11 @@ The proposed solution, ThingTracker, turns the home’s camera into a universal 
 
 [[figura: figura-exemplo.en | From the visual enrolment of an object to the action]]
 
-To enrol an object, the user enters its name in the app and shows the object to the camera for a few seconds. The English name (“wallet”) is the search term for the local detector, and the images make a digital and visual fingerprint of the thing, stored with the local models and in Altice’s database, linked to the customer. The user can then ask “where is my wallet?”; if there is more than one, the system asks which one.
+To enrol an object, the user enters its name in the app and shows the object to the camera for a few seconds. The English name (“book”) is the search term for the local detector, and the images make a digital and visual fingerprint of the thing, stored with the local models and in Altice’s database, linked to the customer. The user can then ask “where is my book?”; if there is more than one, the system asks which one.
 
-A sentence such as “tell me if I leave home without my wallet” goes to the ThingTracker service, which sends it to the language model together with the enrolled objects and the available MCP tools. The model returns a structured rule, saved as a platform scenario through the MCP; the rule is evaluated at home and the actions go through the MCP. The same principle applies to other cases:
+A sentence such as “tell me if I leave home without my book” goes to the ThingTracker service, which sends it to the language model together with the enrolled objects and the available MCP tools. The model returns a structured rule, saved as a platform scenario through the MCP; the rule is evaluated at home and the actions go through the MCP. The same principle applies to other cases:
 
-- Children: if a child climbs a bookcase, the siren sounds and the parents receive an alert.
+- Children: if a child climbs a bookcase, the parents receive an alert and, if they confirm, the siren sounds.
 - Pets and plants: “tell me if the cat hasn’t drunk any water by 18:00”.
 - Older people: if no one goes into the kitchen by noon, a relative is alerted.
 - Authorised people and security: if a stranger comes in while none of the family’s phones is at home, the user receives a photo and can arm the alarm; recognising family members is optional and requires consent.
@@ -35,7 +35,7 @@ So far, the team has connected to the MCP, accessed the kit camera’s live vide
 
 ## AI tools
 
-- Open-source vision models: OWLv2, DINOv2, Depth Anything V2 Small and ByteTrack (Apache-2.0 and MIT) take up 0.8 GB and analyse an image in 0.6 s on a laptop. They can run on an Altice server or, when real time is needed, on the home’s own router, if it has AI capacity, or on a small box connected to it.
+- Open-source vision models: the prototype uses OWLv2 and DINOv2 (Apache-2.0, 0.7 GB, about 0.6 s per image on a laptop); the final solution adds Depth Anything V2 Small and ByteTrack. They can run on an Altice server or, when real time is needed, on the home’s own router, if it has AI capacity, or on a small box connected to it.
 - Language model, under contract: Anthropic’s Claude, or an equivalent, provided that the contract excludes training on the data and includes a data processing agreement.
 - Monthly cost per home, excluding hardware: about €0.43 for the language model and under €0.15 of electricity for local vision, with 2 h of motion a day.
 - Development: Claude Code (Claude Opus 5.5) for research, programming and writing.

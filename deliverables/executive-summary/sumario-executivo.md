@@ -17,15 +17,15 @@ A solução proposta, o _ThingTracker_, transforma a câmara da casa num sensor 
 
 [[figura: figura-exemplo | Do registo visual de um objeto à ação]]
 
-Para registar um objeto, o utilizador indica o nome na aplicação e mostra-o à câmara durante alguns segundos. O nome em inglês (“_wallet_”) serve de pesquisa ao detetor local e as imagens geram uma assinatura digital e visual da _thing_, guardada nos modelos locais e na base de dados da Altice do cliente. O utilizador pode então perguntar “onde está a carteira?”; havendo mais do que uma, o sistema pergunta qual.
+Para registar um objeto, o utilizador indica o nome na aplicação e mostra-o à câmara durante alguns segundos. O nome em inglês (“_book_”) serve de pesquisa ao detetor local e as imagens geram uma assinatura digital e visual da _thing_, guardada nos modelos locais e na base de dados da Altice do cliente. O utilizador pode então perguntar “onde está o livro?”; havendo mais do que uma, o sistema pergunta qual.
 
-Uma frase como “avisa-me se sair de casa sem a carteira” segue para o Serviço _ThingTracker_, que a envia ao modelo de linguagem com os objetos registados e as ferramentas MCP disponíveis. O modelo devolve uma regra estruturada, gravada como cenário da plataforma através do MCP; a regra é avaliada em casa e as ações seguem pelo MCP. O mesmo princípio aplica-se a outros casos:
+Uma frase como “avisa-me se sair de casa sem o livro” segue para o Serviço _ThingTracker_, que a envia ao modelo de linguagem com os objetos registados e as ferramentas MCP disponíveis. O modelo devolve uma regra estruturada, gravada como cenário da plataforma através do MCP; a regra é avaliada em casa e as ações seguem pelo MCP. O mesmo princípio aplica-se a outros casos:
 
-- Crianças: se uma criança trepar uma estante, a sirene toca e os pais recebem um aviso.
+- Crianças: se uma criança trepar uma estante, os pais são avisados e decidem se a sirene toca.
 - Animais e plantas: “avisa-me se o gato não beber água até às 18h”.
 - Pessoas idosas: se ninguém passar na cozinha até ao meio-dia, um familiar é avisado.
 - Pessoas autorizadas e segurança: se entrar um desconhecido sem telemóveis da família em casa, o utilizador recebe uma fotografia e pode ativar o alarme; o reconhecimento dos familiares é opcional e exige consentimento.
-- Energia: se a câmara não vir ninguém em 30 minutos, a tomada inteligente desliga o aquecedor.
+- Energia: se a câmara não vir ninguém em 30 minutos, a tomada desliga o aquecedor.
 
 O sistema também propõe cenários a partir do perfil da casa: se a câmara detetar crianças, sugere, por exemplo, “avisa-me se as crianças estiverem a fazer algo errado, algo que as possa magoar ou a agir de forma estranha”; se detetar um cão, sugere cenários para o animal. O utilizador aceita as propostas ou cria as suas. A Figura 2 mostra a arquitetura completa.
 
@@ -35,7 +35,7 @@ Até ao momento, a equipa ligou-se ao MCP, acedeu ao vídeo em direto da câmara
 
 ## Ferramentas de IA
 
-- Modelos de visão _open-source_: _OWLv2_, _DINOv2_, _Depth Anything V2 Small_ e _ByteTrack_ (Apache-2.0 e MIT) ocupam 0,8 GB e analisam uma imagem em 0,6 s num portátil. Podem correr num servidor da Altice ou, quando é preciso tempo real, no próprio _router_ da casa, se tiver capacidade de IA, ou numa pequena caixa ligada a ele.
+- Modelos de visão _open-source_: o protótipo usa o _OWLv2_ e o _DINOv2_ (Apache-2.0, 0,7 GB, cerca de 0,6 s por imagem num portátil); a solução final junta o _Depth Anything V2 Small_ e o _ByteTrack_. Podem correr num servidor da Altice ou, quando é preciso tempo real, no próprio _router_ da casa, se tiver capacidade de IA, ou numa pequena caixa ligada a ele.
 - Modelo de linguagem, sob contrato: o _Claude_, da Anthropic, ou equivalente, desde que o contrato exclua o treino com os dados e inclua um acordo de tratamento de dados.
 - Custo mensal por casa, sem o equipamento: cerca de 0,43 € no modelo de linguagem e menos de 0,15 € de eletricidade na visão local, com 2 h de movimento por dia.
 - Desenvolvimento: _Claude Code_ (_Claude Opus 5.5_) na pesquisa, programação e redação.

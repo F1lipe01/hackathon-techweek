@@ -1,22 +1,23 @@
 {
- "obj_en": "wallet",
- "obj_pt": "carteira",
- "art": "a",
- "place": "mesa da entrada",
- "time": "15h02",
- "score": "0,84",
+ "obj_en": "book",
+ "obj_pt": "livro",
+ "art": "o",
+ "place": "secretária",
+ "time": "16h30",
+ "score": "0,70",
  "views": [
-  "registo-1.jpg",
-  "registo-2.jpg",
-  "registo-3.jpg",
-  "registo-4.jpg"
+  "livro-registo-1.jpg",
+  "livro-registo-2.jpg",
+  "livro-registo-3.jpg",
+  "livro-registo-4.jpg"
  ],
- "scene": "detecao.jpg",
+ "scene": "livro-detecao.jpg",
  "box": [
-  551,
-  303,
-  659,
-  359
+  664,
+  325,
+  855,
+  464
  ],
- "answer": "resposta.jpg"
+ "answer": "livro-resposta.jpg",
+ "source": "Views: frames of a phone video of the book (lab, 18 Nov 2026), background removed. Scene and answer: kit camera, 16:30:31. Score: video/tools/recognise.py (OWLv2 + DINOv2, as in prototype/edge.py)."
 }

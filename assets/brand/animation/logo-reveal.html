@@ -33,12 +33,16 @@
      so it can never overflow, at any window size. */
   .stage { position: relative; display: grid; place-items: center; min-width: 0; min-height: 0; overflow: hidden; }
   .lockup { display: flex; align-items: center; gap: 0.3em; font-size: 100px; white-space: nowrap; }
-  .mark { width: 1.15em; height: 1.15em; overflow: visible; flex: none; }
+  .mark-wrap { position: relative; width: 1.15em; height: 1.15em; flex: none; }
+  .mark { position: relative; display: block; width: 100%; height: 100%; overflow: visible; }
+  /* The 'found' ripple: an HTML layer animated with transform and opacity only, so the compositor runs it.
+     Centred on the dot (35, 29 in the 64-unit mark; r = 8 -> 25 % of the mark). */
+  .pulse { position: absolute; left: 42.1875%; top: 32.8125%; width: 25%; aspect-ratio: 1; border-radius: 50%;
+           background: var(--halo); opacity: 0; will-change: transform, opacity; }
   .mark .frame { fill: none; stroke: var(--frame); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
   .mark .trail { fill: var(--frame); }
   .mark .dot { fill: var(--thing); }
-  .mark .halo { fill: var(--halo); opacity: 0; }
-  .mark .frame, .mark .trail, .mark .dot, .mark .halo { transform-box: fill-box; transform-origin: center; }
+  .mark .frame, .mark .trail, .mark .dot { transform-box: fill-box; transform-origin: center; }
 
   .word { display: flex; font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: var(--word); }
   .ch { display: inline-block; white-space: pre; }
@@ -70,8 +74,9 @@
 <body>
 <main class="stage" id="stage">
   <div class="lockup" id="lockup" role="img" aria-label="Track Things">
+    <div class="mark-wrap" id="markwrap">
+    <span class="pulse" id="pulse"></span>
     <svg class="mark" id="mark" viewBox="0 0 64 64" aria-hidden="true">
-      <circle class="halo" id="halo" cx="35" cy="29" r="8"/>
       <path class="frame" id="c1" d="M7 21 V12 Q7 7 12 7 H21"/>
       <path class="frame" id="c2" d="M43 7 H52 Q57 7 57 12 V21"/>
       <path class="frame" id="c3" d="M57 43 V52 Q57 57 52 57 H43"/>
@@ -80,6 +85,7 @@
       <circle class="trail" id="t2" cx="25.5" cy="38.5" r="3" opacity="0.6"/>
       <circle class="dot" id="dot" cx="35" cy="29" r="8"/>
     </svg>
+    </div>
     <span class="word" id="word" aria-hidden="true"></span>
   </div>
 </main>
@@ -107,12 +113,13 @@
   const params = new URLSearchParams(location.search);
   const EXPORT = params.has('export');
   const $ = (id) => document.getElementById(id);
-  const stage = $('stage'), lockup = $('lockup'), mark = $('mark'), word = $('word');
+  const stage = $('stage'), lockup = $('lockup'), mark = $('markwrap'), word = $('word');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches && !EXPORT;
 
   // Strong curves from the animation guide: ease-out to enter or leave, ease-in-out to move on screen.
   const OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
   const IN_OUT = 'cubic-bezier(0.77, 0, 0.175, 1)';
+  const SETTLE = 'cubic-bezier(0.33, 0, 0.2, 1)';   // soft return after the pop
 
   const TEXT = 'Track Things';
   word.replaceChildren(...[...TEXT].map((c) => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; return s; }));
@@ -175,8 +182,8 @@
       });
 
       // 3. Found: one pulse.
-      a($('halo'), [{ transform: 'scale(1)', opacity: 0.85 }, { transform: 'scale(2.6)', opacity: 0 }], { delay: 880, duration: 640, easing: OUT, fill: 'forwards' });
-      a($('dot'), [{ transform: 'scale(1)' }, { transform: 'scale(1.14)' }, { transform: 'scale(1)' }], { delay: 880, duration: 300, easing: IN_OUT, fill: 'none' });
+      a($('pulse'), [{ transform: 'scale(1)', opacity: 0.5 }, { transform: 'scale(3.2)', opacity: 0 }], { delay: 900, duration: 820, easing: OUT, fill: 'forwards' });
+      a($('dot'), [{ transform: 'scale(1)', easing: OUT }, { transform: 'scale(1.18)', offset: 0.28, easing: SETTLE }, { transform: 'scale(1)' }], { delay: 900, duration: 520, fill: 'none' });
 
       // 4. The mark moves to its place; the word travels with it and its letters come out of the mark one by one.
       a(mark, [{ transform: centred }, { transform: home }], { delay: 1250, duration: 820, easing: IN_OUT });
@@ -194,9 +201,9 @@
       ], { delay: 300 + (n - 1 - i) * 26, duration: 300, easing: OUT }));
       a(mark, [{ transform: home }, { transform: centred }], { delay: 520, duration: 820, easing: IN_OUT });
       a(word, [{ transform: home }, { transform: centred }], { delay: 520, duration: 820, easing: IN_OUT });
-      a($('halo'), [{ transform: 'scale(1)', opacity: 0.85 }, { transform: 'scale(2.6)', opacity: 0 }], { delay: 1360, duration: 640, easing: OUT, fill: 'forwards' });
-      a($('dot'), [{ transform: 'scale(1)' }, { transform: 'scale(1.14)' }, { transform: 'scale(1)' }], { delay: 1360, duration: 300, easing: IN_OUT, fill: 'none' });
-      window.DURATION = 2400;
+      a($('pulse'), [{ transform: 'scale(1)', opacity: 0.5 }, { transform: 'scale(3.2)', opacity: 0 }], { delay: 1360, duration: 820, easing: OUT, fill: 'forwards' });
+      a($('dot'), [{ transform: 'scale(1)', easing: OUT }, { transform: 'scale(1.18)', offset: 0.28, easing: SETTLE }, { transform: 'scale(1)' }], { delay: 1360, duration: 520, fill: 'none' });
+      window.DURATION = 2500;
     }
     $('scrub').max = String(window.DURATION);
   }

@@ -10,7 +10,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const W = 1920, H = 1080, FPS = Number(process.env.FPS || 60), PORT = 9339;
+const W = 1920, H = 1080, FPS = Number(process.env.FPS || 60), SCALE = Number(process.env.SCALE || 2), PORT = 9339;
+// SCALE=2 renders 3840 x 2160 (4K) with the vectors drawn at full resolution, not upscaled.
 const variants = process.argv.slice(2).length ? process.argv.slice(2)
   : ['expand:labs', 'expand:labs-deep', 'collapse:labs'];
 
@@ -51,7 +52,7 @@ const evaluate = async (expression) =>
   (await send('Runtime.evaluate', { expression, awaitPromise: true, returnByValue: true })).result.value;
 
 await send('Page.enable');
-await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
+await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: SCALE, mobile: false });
 
 const outDir = join(HERE, 'out');
 mkdirSync(outDir, { recursive: true });
@@ -72,9 +73,9 @@ try {
       const { data } = await send('Page.captureScreenshot', { format: 'png' });
       writeFileSync(join(dir, `f${String(f).padStart(4, '0')}.png`), Buffer.from(data, 'base64'));
     }
-    const out = join(outDir, `track-things-${mode}-${theme}.mp4`);
+    const out = join(outDir, `track-things-${mode}-${theme}-${H * SCALE}p${FPS}.mp4`);
     execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', join(dir, 'f%04d.png'),
-      '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '16', '-preset', 'slow', '-movflags', '+faststart', out]);
+      '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '14', '-preset', 'slow', '-tune', 'animation', '-r', String(FPS), '-movflags', '+faststart', out]);
     // a still of the last frame, for slides that cannot play video
     execFileSync('cp', [join(dir, `f${String(frames).padStart(4, '0')}.png`), out.replace(/\.mp4$/, '-end.png')]);
     rmSync(dir, { recursive: true, force: true });

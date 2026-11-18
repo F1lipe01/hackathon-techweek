@@ -1,6 +1,7 @@
 """Track Things prototype server.
 
-    prototype/.venv/bin/python prototype/server.py            # http://127.0.0.1:8765
+    prototype/.venv/bin/python prototype/server.py            # http://127.0.0.1:8765, AI OFF: simulated answers, 0 USD
+    TT_AI=1 ... server.py                                      # real Claude calls (costs money; capped by TT_BUDGET_USD)
     TT_LIVE_ACTIONS=1 ... server.py                            # really switch the Light and Plug through the MCP
     TT_BUDGET_USD=5 ...                                        # raise the spending cap (default 3.00 USD)
 
@@ -101,7 +102,7 @@ threading.Thread(target=deadline_ticker, daemon=True).start()
 @app.get("/api/state")
 def state():
     s = store.snapshot()
-    s["settings"] = {"live_actions": actions.LIVE, "budget_usd": brain.cap, "kit_camera": bool(os.environ.get("CAMERA_RTSP_URL"))}
+    s["settings"] = {"live_actions": actions.LIVE, "ai": brain.enabled, "budget_usd": brain.cap, "kit_camera": bool(os.environ.get("CAMERA_RTSP_URL"))}
     return s
 
 

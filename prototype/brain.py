@@ -6,9 +6,14 @@ compile()  Sonnet 5.5  a sentence in Portuguese -> a virtual sensor (zone, yes/n
 
 Every call goes through _call(), which refuses to run once the cap is reached
 (TT_BUDGET_USD, default 3.00) and records the real token usage and cost.
+
+AI IS OFF BY DEFAULT. Without TT_AI=1 nothing is sent to Claude: each call returns a simulated
+answer built from local data, marked "(simulado)", at zero cost. Use it to test the layout and the flow.
 """
+import itertools
 import json
 import os
+import re
 import threading
 
 import anthropic
@@ -29,8 +34,10 @@ class Brain:
     def __init__(self, store):
         self.store = store
         self.cap = float(os.environ.get("TT_BUDGET_USD", "3.00"))
-        self.client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from the environment
+        self.enabled = os.environ.get("TT_AI") == "1"
+        self.client = anthropic.Anthropic() if self.enabled else None  # reads ANTHROPIC_API_KEY from the environment
         self.lock = threading.Lock()
+        self._flip = itertools.cycle([False, True])
 
     # ------------------------------------------------------------------ plumbing
     def _call(self, kind, model, system, content, schema, max_tokens, thinking_off):
@@ -60,6 +67,8 @@ class Brain:
     def observe(self, crops, things, sensors):
         """crops: [{zone_id, zone_name, jpeg_b64}]; things: [{id, name, description}];
         sensors: [{id, zone_id, question}] -> {zones: [...]}"""
+        if not self.enabled:
+            return self._sim_observe(crops, things, sensors)
         content = []
         for c in crops:
             content.append({"type": "text", "text": f"Zona {c['zone_id']} «{c['zone_name']}»:"})
@@ -98,6 +107,8 @@ class Brain:
 
     # ------------------------------------------------------------------ ask
     def ask(self, question, memory):
+        if not self.enabled:
+            return self._sim_ask(question, memory)
         system = (
             "You are the Track Things assistant inside the Altice home app. Answer in European Portuguese (PT-PT), "
             "in one or two natural sentences, using only the memory provided: where and when each thing was last seen, "
@@ -111,6 +122,8 @@ class Brain:
 
     # ------------------------------------------------------------------ compile a sentence into a sensor
     def compile(self, sentence, zones, things):
+        if not self.enabled:
+            return self._sim_compile(sentence, zones, things)
         system = (
             "You turn one sentence written by a user in Portuguese into a virtual sensor for a home camera. "
             "A sensor watches one zone and asks one yes/no question that can be answered from a single still image of that zone "
@@ -149,3 +162,54 @@ class Brain:
             "acoes_possiveis": ACTIONS,
         }, ensure_ascii=False)}]
         return self._call("compile", REASON_MODEL, system, content, schema, max_tokens=800, thinking_off=False)
+
+
+    # ------------------------------------------------------------------ simulation (TT_AI unset): no API calls, no cost
+    def _sim_observe(self, crops, things, sensors):
+        """Each zone 'sees' one thing in turn; every sensor answers yes on alternate calls, so alerts can be tested."""
+        zones = []
+        for i, c in enumerate(crops):
+            shown = things[(int(time_slot()) + i) % len(things)]["id"] if things else None
+            hit = next(self._flip)
+            zones.append({
+                "zone_id": c["zone_id"], "scene": "(simulado) análise de IA desligada",
+                "things": [{"thing_id": t["id"], "visible": t["id"] == shown, "where": "(simulado)" if t["id"] == shown else ""} for t in things],
+                "sensors": [{"sensor_id": s["id"], "answer": "yes" if hit else "no", "evidence": "(simulado)"}
+                            for s in sensors if s["zone_id"] == c["zone_id"]],
+            })
+        return {"zones": zones}
+
+    def _sim_ask(self, question, memory):
+        q = question.lower()
+        for t in memory["coisas"]:
+            if t["nome"].lower() in q:
+                last = t["visto_pela_ultima_vez"]
+                if not last:
+                    return {"answer": f"Ainda não vi {t['nome'].lower()}. (resposta simulada)", "thing_id": t["thing_id"]}
+                hora = last["quando"].split(" ")[1].replace(":", "h")
+                onde = f", {last['onde']}" if last.get("onde") else ""
+                return {"answer": f"{t['nome']}: vistas pela última vez às {hora}, em «{last['zona']}»{onde}. (resposta simulada)", "thing_id": t["thing_id"]}
+        return {"answer": "Não encontrei essa coisa na memória. (resposta simulada)", "thing_id": ""}
+
+    def _sim_compile(self, sentence, zones, things):
+        low = sentence.lower()
+        zone = next((z for z in zones if z["name"].lower() in low), zones[0])
+        action = "notify"
+        if "luz" in low or "lâmpada" in low:
+            action = "light_red" if "vermelh" in low else "light_green" if "verde" in low else "light_blue"
+        if "tomada" in low and "deslig" in low:
+            action = "plug_off"
+        m = re.search(r"até às (\d{1,2})h(\d{2})?", low)
+        title = sentence.strip().rstrip(".")
+        return {
+            "title": (title[:38] + "…") if len(title) > 40 else title,
+            "zone_id": zone["id"], "question": f"(simulado) {sentence.strip()}",
+            "trigger_when": "yes", "mode": "not_by_deadline" if m else "when_true",
+            "deadline": f"{int(m.group(1)):02d}:{m.group(2) or '00'}" if m else "",
+            "action": action, "message": f"(simulado) {sentence.strip()}", "new_thing": "", "cooldown_s": 60,
+        }
+
+
+def time_slot():
+    import time
+    return time.time() // 6

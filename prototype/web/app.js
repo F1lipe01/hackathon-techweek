@@ -284,7 +284,7 @@ function render() {
 
   const st = s.settings || {};
   $('spend').textContent = `${usd(s.spend.usd)} de ${usd(st.budget_usd || 0)} · ${s.spend.calls} pedidos`;
-  $('meta').textContent = `Protótipo · ações ${st.live_actions ? 'reais no kit' : 'em simulação'}`;
+  $('meta').textContent = `Protótipo · IA ${st.ai ? 'ligada (gasta dinheiro)' : 'desligada: respostas simuladas, 0 USD'} · ações no kit ${st.live_actions ? 'reais' : 'simuladas'}`;
   renderZones();
 
   for (const e of s.events) {

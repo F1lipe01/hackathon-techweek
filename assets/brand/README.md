@@ -6,7 +6,7 @@ Decided 18 Nov 2026: **logo Trail**, **typeface Switzer**, **colour Altice Labs*
 |---|---|
 | Options sheet (logo, typeface, colour, live preview) | [`options/brand-options.html`](options/brand-options.html) |
 | Animated logo, mark ⇄ wordmark (source, plays in a browser, has controls) | [`animation/logo-reveal.html`](animation/logo-reveal.html) |
-| Animated logo as video for slides (1920 × 1080, 30 fps) and a still of the last frame | [`animation/out/`](animation/out/) |
+| Animated logo as 4K video (3840 × 2160): 60 fps for slides, plus a 120 fps version of the main one for 120 Hz screens; a still of the last frame for each | [`animation/out/`](animation/out/) |
 | Earlier logo exports (Trail, teal) | [`../logo/`](../logo/) |
 
 Re-render the videos after changing the animation: `node animation/render.mjs` (Node 22+, Chrome, ffmpeg). Pick variants with `mode:theme`, for example `node animation/render.mjs expand:labs-deep collapse:labs`. Themes: `labs` (default), `labs-deep`, `meo-blue`, `meo-light`, `meo-navy`, `app`.

@@ -58,7 +58,7 @@ France fits better. SFR Maison Sécurisée already includes a camera, and connec
 | Operator (MEO, SFR) | Altice Labs, under a licence model that is **unknown** | Revenue on its existing base; an answer to the NOS and Vodafone camera plans (D3) |
 | Altice Labs | — | A feature for every operator on Cognitive Home, a white-label, multi-tenant B2B2C platform sold to telcos (docs/12 §2) |
 
-The operator already holds the bill, the app and the devices that the Model Context Protocol (MCP) server acts on. Portugal has room to grow: 23.99 % of people used a connected-home system in 2024, against 33.04 % in the EU (Eurostat, docs/12 §3.7). MEO sells an Ajax alarm kit with no camera and no monthly fee (docs/12 §2).
+The operator already holds the bill, the app and the devices that the Model Context Protocol (MCP) server acts on. Portugal has room to grow: 23.99 % of people used a connected-home system in 2024, against 33.04 % in the EU (Eurostat, docs/12 §3.7). MEO sells an Ajax alarm kit with no monthly fee whose only camera is a motion detector that takes photos when it detects motion; its shop also sells third-party video cameras (meo.pt, loja.meo.pt/seguranca, checked 18 Nov 2026).
 
 ### D2. Market size
 
@@ -73,7 +73,7 @@ The operator already holds the bill, the app and the devices that the Model Cont
 | × take rate [B22] | 2 % | 5 % | 10 % | **ASSUMPTION** |
 | = **subscribing homes** [D05] | **2.7 k** | **19.0 k** | **52.2 k** | 0.17 % / 1.20 % / 3.30 % of the MEO base |
 
-Caveats: ANACOM counts accesses, not homes, and Eurostat counts individuals. MEO sells no camera, so in Portugal the realistic route is the bundle (D3).
+Caveats: ANACOM counts accesses, not homes, and Eurostat counts individuals. MEO's alarm camera only takes photos on motion, so in Portugal the realistic route is still the bundle (D3).
 
 #### France (SFR)
 

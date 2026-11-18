@@ -32,7 +32,7 @@ Plan B: the same four moments on a recorded clip of the kit camera, replayed as 
 3. **Where does the video go today?** The camera box says "Powered by Tuya", with Tuya cloud storage. Could a privacy filter run on the camera or the hub?
 4. **What else does the platform offer?** Can the MCP sound the siren or the hub alarm directly? Is there an event or push API, so we don't have to poll? Can we delete the scenarios we create?
 5. **Would Altice consider "things" tools in the MCP?** We propose `list_things`, `create_thing`, `get_thing_last_seen` and `get_thing_timeline`.
-6. **Who would buy this?** Which customers and price points do MEO and SFR aim add-ons at? In Portugal, NOS and Vodafone sell monthly alarm plans with indoor cameras, and MEO sells an alarm kit with no camera.
+6. **Who would buy this?** Which customers and price points do MEO and SFR aim add-ons at? In Portugal, NOS and Vodafone sell monthly alarm plans with indoor cameras, and MEO sells an alarm kit whose camera only takes photos on motion.
 7. **May we test arming the alarm in the lab?** The tool is labelled read-only but changes state, and Home mode has a 0 s delay.
 8. **Logistics.** How many teams reach the final, and how long is the intermediate Q&A? (Rules: up to 6 teams, 3 + 1 min; kick-off: 3 teams, 3 + 2 min.) Is today's report the same document as Friday's executive summary?
 

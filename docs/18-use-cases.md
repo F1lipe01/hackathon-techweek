@@ -581,7 +581,7 @@ The team's self-assessment, for discussion. Scale per criterion:
 | T1 Too late | strong | strong | medium | strong | strong | medium |
 | T2 What happened at 4 a.m. | strong | strong | medium | medium | strong | medium |
 
-"Strong" for Documentation follows the report, which mentions S1, S3, C1, C2, C6, C7, V1, V2 and E5, and the architecture.
+"Strong" for Documentation follows the report submitted on 18 Nov, whose main example is the child in danger (S2 + S5) and which also mentions S3, C1, C2, V1 and E5, and the architecture.
 
 ## 4. The 8 cases for the pitch
 

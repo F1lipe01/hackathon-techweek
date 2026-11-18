@@ -581,7 +581,7 @@ Autoavaliação da equipa, para discussão. Escala de cada critério:
 | T1 Chegar tarde demais | forte | forte | médio | forte | forte | médio |
 | T2 O que aconteceu às 4h | forte | forte | médio | médio | forte | médio |
 
-Na Documentação, “forte” segue o relatório, que refere S1, S3, C1, C2, C6, C7, V1, V2 e E5, e a arquitetura.
+Na Documentação, “forte” segue o relatório submetido a 18 de novembro, cujo exemplo principal é a criança em perigo (S2 + S5) e que refere também S3, C1, C2, V1 e E5, e a arquitetura.
 
 ## 4. Os 8 casos para a apresentação
 

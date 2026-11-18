@@ -45,30 +45,18 @@
     <div class="stage" id="stage">
       <video id="video" playsinline muted autoplay loop></video>
       <img id="kitimg" alt="Frame from the kit camera" hidden>
-      <div class="zones" id="zones" aria-label="Zones being watched"></div>
       <div class="boxes" id="boxes" aria-hidden="true"></div>
-      <div class="draw" id="draw" hidden></div>
-      <!-- naming a new zone happens right next to the rectangle you drew -->
-      <form class="zone-pop" id="zoneform" hidden>
-        <label for="zonename" class="sr">Name this zone</label>
-        <input id="zonename" maxlength="40" placeholder="Name this zone, e.g. Hall table" autocomplete="off" required>
-        <button class="btn primary" type="submit"><span class="ti" style="--i:url(/web/icons/tabler/check.svg)"></span>Save</button>
-        <button class="pop-x" type="button" id="zonecancel" aria-label="Cancel"><span class="ti" style="--i:url(/web/icons/tabler/x.svg)"></span></button>
-      </form>
       <p class="stage-msg" id="stagemsg">Connecting to the kit camera…</p>
     </div>
     <input type="file" id="file" accept="video/*" hidden>
 
     <div class="cam-bar">
-      <button type="button" class="btn primary" id="watch" aria-pressed="false"><span class="ti" style="--i:url(/web/icons/tabler/player-play.svg)"></span><span>Start watching</span></button>
-      <button type="button" class="btn" id="once"><span class="ti" style="--i:url(/web/icons/tabler/refresh.svg)"></span>Analyse now</button>
-      <button type="button" class="btn" id="editzones" aria-pressed="false"><span class="ti" style="--i:url(/web/icons/tabler/focus-2.svg)"></span><span>Edit zones</span></button>
       <span class="edge-pill" id="edge" aria-live="polite" hidden></span>
-      <span class="status" id="status" aria-live="polite">Stopped</span>
+      <span class="status" id="status" aria-live="polite"></span>
     </div>
 
 
-    <p class="privacy"><b>Zones</b> are the only parts of the picture ThingTracker looks at: draw one over each place where things get left, like your desk or the table by the door. The rest of the picture never leaves this browser, and a zone is only analysed when it changes. <b>Desk</b> and <b>Hall table</b> are examples: press <i>Edit zones</i>, delete them with ×, and draw your own.</p>
+    <p class="privacy">ThingTracker works on its own: the camera stays idle until something moves, then the models on this computer look for the things you registered and draw a box around each one. Only a small crop of each thing goes into the home's memory. Each camera stands for one place, so a second room means a second camera, named after it.</p>
 
     <div class="log-head">
       <h2>Activity</h2>

@@ -1,14 +1,11 @@
-// ThingTracker prototype: camera, zones, observation loop, and the Things tab of the Altice app.
-// Only zone crops leave the browser, and only when a zone changed (or every 45 s as a heartbeat).
+// ThingTracker prototype: the kit camera with the edge service's live boxes, and the Things tab of the Altice app.
+// Everything is automatic: the edge service (edge.py) analyses the camera by itself whenever something moves.
 
 const $ = (id) => document.getElementById(id);
-const video = $('video'), kitimg = $('kitimg'), stage = $('stage'), zonesEl = $('zones'), drawEl = $('draw');
-const OBSERVE_EVERY = 3000, HEARTBEAT = 45000, CHANGE_THRESHOLD = 10;
+const video = $('video'), kitimg = $('kitimg'), stage = $('stage');
 
 let state = { zones: [], things: [], rules: [], events: [], spend: { usd: 0, calls: 0 }, settings: {} };
-let source = 'kit', stream = null, kitTimer = null, watchTimer = null, busy = false;
-let editing = false, pendingZone = null;
-const lastSent = {};           // zone_id -> {sig, t}
+let source = 'kit', stream = null, kitTimer = null;
 const seenEvents = new Set();  // for alerts that slide in
 let firstLoad = true;
 
@@ -65,11 +62,10 @@ async function useSource(next) {
   } else {
     // Live view: the server keeps one RTSP connection open and streams each new frame (MJPEG), no plug-in needed.
     stageMsg('Connecting to the kit camera… (about 5 s, waiting for a keyframe)');
-    kitimg.onload = () => { stageMsg(''); renderZones(); };
+    kitimg.onload = () => stageMsg('');
     kitimg.onerror = () => stageMsg('The kit camera is not answering. Is it powered and on the Wi-Fi?');
     kitimg.src = '/api/kit/stream.mjpg?t=' + Date.now();
   }
-  renderZones();
 }
 $('file').addEventListener('change', (e) => {
   const f = e.target.files[0];
@@ -77,142 +73,6 @@ $('file').addEventListener('change', (e) => {
   video.src = URL.createObjectURL(f); video.play(); stageMsg('');
 });
 document.querySelectorAll('input[name="src"]').forEach((r) => r.addEventListener('change', () => useSource(r.value)));
-video.addEventListener('loadedmetadata', () => renderZones());
-new ResizeObserver(() => renderZones()).observe(stage);
-
-// ------------------------------------------------------------------ zones
-function renderZones(flash = []) {
-  zonesEl.hidden = source === 'kit' && !editing;   // on the kit camera the edge service finds the places itself
-  const c = contentRect();
-  zonesEl.replaceChildren(...state.zones.map((z) => {
-    const el = document.createElement('div');
-    el.className = 'zone' + (flash.includes(z.id) ? ' pulse' : '');
-    Object.assign(el.style, { left: c.x + z.x * c.w + 'px', top: c.y + z.y * c.h + 'px', width: z.w * c.w + 'px', height: z.h * c.h + 'px' });
-    el.innerHTML = `<span>${esc(z.name)}</span>` + (editing ? `<button type="button" aria-label="Delete zone ${esc(z.name)}" data-del="${esc(z.id)}">${ti('x')}</button>` : '');
-    return el;
-  }));
-}
-zonesEl.addEventListener('click', async (e) => {
-  const id = e.target.closest('[data-del]')?.dataset.del;
-  if (id) await saveZones(state.zones.filter((z) => z.id !== id));
-});
-async function saveZones(zones) {
-  const r = await api('/api/zones', { method: 'PUT', body: JSON.stringify(zones) });
-  state.zones = r.zones; renderZones();
-}
-$('editzones').addEventListener('click', () => {
-  editing = !editing;
-  $('editzones').setAttribute('aria-pressed', String(editing));
-  $('editzones').lastElementChild.textContent = editing ? 'Done' : 'Edit zones';
-  drawEl.hidden = !editing; if (!editing) cancelZone(); renderZones();
-  stageMsg(editing ? 'Drag over the picture to draw a new zone (a table, the door, a shelf). Press × on a zone to delete it.' : '');
-});
-let drag = null;
-drawEl.addEventListener('pointerdown', (e) => {
-  if (pendingZone) cancelZone();
-  const r = stage.getBoundingClientRect();
-  drag = { x0: e.clientX - r.left, y0: e.clientY - r.top, box: document.createElement('div') };
-  drag.box.className = 'zone'; drawEl.replaceChildren(drag.box); drawEl.setPointerCapture(e.pointerId);
-});
-drawEl.addEventListener('pointermove', (e) => {
-  if (!drag) return;
-  const r = stage.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-  Object.assign(drag.box.style, { left: Math.min(x, drag.x0) + 'px', top: Math.min(y, drag.y0) + 'px', width: Math.abs(x - drag.x0) + 'px', height: Math.abs(y - drag.y0) + 'px' });
-});
-drawEl.addEventListener('pointerup', (e) => {
-  if (!drag) return;
-  const r = stage.getBoundingClientRect(), c = contentRect();
-  const x1 = Math.min(e.clientX - r.left, drag.x0), y1 = Math.min(e.clientY - r.top, drag.y0);
-  const x2 = Math.max(e.clientX - r.left, drag.x0), y2 = Math.max(e.clientY - r.top, drag.y0);
-  drag = null;
-  if (x2 - x1 < 20 || y2 - y1 < 20) { drawEl.replaceChildren(); return; }
-  const clamp = (v) => Math.max(0, Math.min(1, v));
-  pendingZone = { x: clamp((x1 - c.x) / c.w), y: clamp((y1 - c.y) / c.h), w: clamp((x2 - x1) / c.w), h: clamp((y2 - y1) / c.h) };
-  placeNameBox(x1, y1, x2, y2);
-});
-// Put the name box right under the new rectangle, or above it, or inside it, whichever fits.
-function placeNameBox(x1, y1, x2, y2) {
-  const f = $('zoneform');
-  f.hidden = false;
-  const sw = stage.clientWidth, sh = stage.clientHeight, w = f.offsetWidth, h = f.offsetHeight;
-  const left = Math.max(8, Math.min(x1, sw - w - 8));
-  let top = y2 + 8;
-  if (top + h > sh - 8) top = y1 - h - 8;
-  if (top < 8) top = Math.min(Math.max(8, y1 + 8), sh - h - 8);
-  Object.assign(f.style, { left: left + 'px', top: top + 'px' });
-  $('zonename').focus();
-}
-function cancelZone() { pendingZone = null; $('zonename').value = ''; $('zoneform').hidden = true; drawEl.replaceChildren(); }
-$('zonename').addEventListener('keydown', (e) => { if (e.key === 'Escape') cancelZone(); });
-$('zoneform').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const name = $('zonename').value.trim();
-  if (!name || !pendingZone) return;
-  const id = 'z' + (Math.max(0, ...state.zones.map((z) => Number(z.id.slice(1)) || 0)) + 1);
-  await saveZones([...state.zones, { id, name, ...pendingZone }]);
-  pendingZone = null; $('zonename').value = ''; $('zoneform').hidden = true; drawEl.replaceChildren();
-});
-$('zonecancel').addEventListener('click', cancelZone);
-
-// ------------------------------------------------------------------ observation loop
-const full = document.createElement('canvas'), crop = document.createElement('canvas'), tiny = document.createElement('canvas');
-tiny.width = 16; tiny.height = 12;
-function grabCrops(force) {
-  const [mw, mh] = mediaSize();
-  if (!mw || !mh) return [];
-  full.width = mw; full.height = mh;
-  full.getContext('2d').drawImage(media(), 0, 0, mw, mh);
-  const out = [];
-  for (const z of state.zones) {
-    const sx = z.x * mw, sy = z.y * mh, sw = Math.max(8, z.w * mw), sh = Math.max(8, z.h * mh);
-    const t = tiny.getContext('2d', { willReadFrequently: true });
-    t.drawImage(full, sx, sy, sw, sh, 0, 0, 16, 12);
-    const px = t.getImageData(0, 0, 16, 12).data, sig = [];
-    for (let i = 0; i < px.length; i += 4) sig.push((px[i] + px[i + 1] + px[i + 2]) / 3);
-    const prev = lastSent[z.id];
-    const diff = prev ? sig.reduce((s, v, i) => s + Math.abs(v - prev.sig[i]), 0) / sig.length : 999;
-    if (!force && prev && diff < CHANGE_THRESHOLD && Date.now() - prev.t < HEARTBEAT) continue;
-    const scale = Math.min(1, 640 / Math.max(sw, sh));
-    crop.width = Math.round(sw * scale); crop.height = Math.round(sh * scale);
-    crop.getContext('2d').drawImage(full, sx, sy, sw, sh, 0, 0, crop.width, crop.height);
-    out.push({ zone_id: z.id, jpeg_b64: crop.toDataURL('image/jpeg', 0.82).split(',')[1], sig });
-  }
-  return out;
-}
-async function observe(force = false) {
-  if (busy) return;
-  if (!state.zones.length) { setStatus('Draw at least one zone'); return; }
-  const crops = grabCrops(force);
-  if (!crops.length) { setStatus('No change in the zones'); return; }
-  busy = true; setStatus(`Analysing ${crops.length} zone${crops.length > 1 ? 's' : ''}…`);
-  const t0 = performance.now();
-  try {
-    const r = await api('/api/observe', { method: 'POST', body: JSON.stringify({ crops: crops.map(({ zone_id, jpeg_b64 }) => ({ zone_id, jpeg_b64 })) }) });
-    crops.forEach((c) => { lastSent[c.zone_id] = { sig: c.sig, t: Date.now() }; });
-    if (r.ai === false) {
-      setStatus('AI is off: the picture was not analysed ($0). Start the server with TT_AI=1 to analyse it.');
-      return;
-    }
-    renderZones(crops.map((c) => c.zone_id));
-    setStatus(`Analysed at ${new Date().toLocaleTimeString('en-GB')} · ${((performance.now() - t0) / 1000).toFixed(1)} s`);
-    await refresh();
-  } catch (e) {
-    setStatus(/Too soon/.test(e.message) ? 'Waiting a moment between analyses…' : e.message);
-    if (/Budget/.test(e.message)) stopWatching();
-  } finally { busy = false; }
-}
-function stopWatching() {
-  clearInterval(watchTimer); watchTimer = null;
-  $('watch').setAttribute('aria-pressed', 'false');
-  $('watch').innerHTML = `${ti('player-play')}<span>Start watching</span>`;
-}
-$('watch').addEventListener('click', () => {
-  if (watchTimer) { stopWatching(); setStatus('Stopped'); return; }
-  $('watch').setAttribute('aria-pressed', 'true');
-  $('watch').innerHTML = `${ti('player-stop')}<span>Stop</span>`;
-  observe(); watchTimer = setInterval(() => observe(), OBSERVE_EVERY);
-});
-$('once').addEventListener('click', () => observe(true));
 
 // ------------------------------------------------------------------ Things tab
 async function submitWith(form, fn) {
@@ -376,7 +236,6 @@ function render() {
   $('spend').textContent = `AI spend ${usd(s.spend.usd)} of ${usd(st.budget_usd || 0)} · ${s.spend.calls} calls`;
   $('mode').textContent = st.ai ? 'AI on: real calls cost money' : 'AI off: nothing analysed, $0';
   $('mode').classList.toggle('live', !!st.ai);
-  renderZones();
 
   for (const e of s.events) {
     if (seenEvents.has(e.id)) continue;

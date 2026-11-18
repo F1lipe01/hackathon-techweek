@@ -10,9 +10,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const W = 1920, H = 1080, FPS = 30, PORT = 9339;
+const W = 1920, H = 1080, FPS = Number(process.env.FPS || 60), PORT = 9339;
 const variants = process.argv.slice(2).length ? process.argv.slice(2)
-  : ['expand:meo-blue', 'expand:meo-light', 'collapse:meo-blue'];
+  : ['expand:labs', 'expand:labs-deep', 'collapse:labs'];
 
 const profile = mkdtempSync(join(tmpdir(), 'tt-chrome-'));
 const chrome = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`,

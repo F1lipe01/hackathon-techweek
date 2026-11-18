@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Track Things · protótipo</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/web/app.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="trail" viewBox="0 0 64 64">
+    <g fill="none" stroke="var(--a, #0084D6)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 21 V12 Q7 7 12 7 H21"/><path d="M43 7 H52 Q57 7 57 12 V21"/>
+      <path d="M7 43 V52 Q7 57 12 57 H21"/><path d="M57 43 V52 Q57 57 52 57 H43"/>
+    </g>
+    <circle cx="19" cy="45" r="2.4" fill="var(--a, #0084D6)" opacity="0.35"/>
+    <circle cx="25.5" cy="38.5" r="3" fill="var(--a, #0084D6)" opacity="0.6"/>
+    <circle cx="35" cy="29" r="8" fill="var(--i, #000)"/>
+  </symbol>
+</svg>
+
+<header class="top">
+  <span class="brand"><svg aria-hidden="true"><use href="#trail"/></svg>Track Things</span>
+  <span class="top-meta" id="meta">Protótipo · IT-Porto</span>
+</header>
+
+<main class="split">
+  <!-- ============ CAMERA: what the system sees ============ -->
+  <section class="cam" aria-labelledby="cam-title">
+    <div class="cam-head">
+      <h1 id="cam-title">Câmara</h1>
+      <div class="seg" role="radiogroup" aria-label="Origem do vídeo">
+        <label><input type="radio" name="src" value="webcam" checked> Webcam</label>
+        <label><input type="radio" name="src" value="file"> Vídeo gravado</label>
+        <label><input type="radio" name="src" value="kit"> Câmara do kit</label>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <video id="video" playsinline muted autoplay loop></video>
+      <img id="kitimg" alt="Imagem da câmara do kit" hidden>
+      <div class="zones" id="zones" aria-label="Zonas analisadas"></div>
+      <div class="draw" id="draw" hidden></div>
+      <p class="stage-msg" id="stagemsg">A ligar a webcam…</p>
+    </div>
+    <input type="file" id="file" accept="video/*" hidden>
+
+    <div class="cam-bar">
+      <button type="button" class="btn primary" id="watch" aria-pressed="false">Começar a observar</button>
+      <button type="button" class="btn" id="once">Analisar agora</button>
+      <button type="button" class="btn" id="editzones" aria-pressed="false">Desenhar zonas</button>
+      <span class="status" id="status" aria-live="polite">Parado</span>
+    </div>
+
+    <form class="zone-form" id="zoneform" hidden>
+      <label for="zonename">Nome da nova zona</label>
+      <input id="zonename" maxlength="40" placeholder="Ex.: Mesa da entrada" required>
+      <button class="btn primary" type="submit">Guardar zona</button>
+      <button class="btn" type="button" id="zonecancel">Cancelar</button>
+    </form>
+
+    <p class="privacy">Só as zonas desenhadas são enviadas para análise, e só quando mudam. O resto da imagem nunca sai deste navegador.</p>
+
+    <div class="log-head">
+      <h2>Atividade</h2>
+      <span class="spend" id="spend">0,0000 USD</span>
+    </div>
+    <ol class="log" id="log"></ol>
+  </section>
+
+  <!-- ============ APP: the Altice app with a new tab ============ -->
+  <section class="phone-wrap" aria-label="Aplicação da Altice com o separador Coisas">
+    <div class="phone">
+      <div class="toast" id="toast" role="status" aria-live="assertive" hidden></div>
+      <div class="app-head">
+        <h2 id="apptitle">Hack 3</h2>
+      </div>
+
+      <div class="app-body" id="tab-coisas">
+        <form class="ask" id="askform">
+          <label for="ask" class="sr">Pergunta à casa</label>
+          <input id="ask" placeholder="Onde estão as chaves?" autocomplete="off" maxlength="300">
+          <button class="btn primary" type="submit">Perguntar</button>
+        </form>
+        <div class="answer" id="answer" hidden></div>
+
+        <h3 class="sec">As tuas coisas</h3>
+        <ul class="cards" id="things"></ul>
+        <form class="add-thing" id="thingform">
+          <label for="thingname" class="sr">Nova coisa</label>
+          <input id="thingname" placeholder="Acompanhar outra coisa…" maxlength="40" autocomplete="off">
+          <button class="btn" type="submit">Adicionar</button>
+        </form>
+
+        <h3 class="sec">Sensores</h3>
+        <form class="ask" id="ruleform">
+          <label for="rule" class="sr">Criar sensor com uma frase</label>
+          <input id="rule" placeholder="Avisa-me se a caneca ficar na secretária" autocomplete="off" maxlength="300">
+          <button class="btn primary" type="submit">Criar</button>
+        </form>
+        <ul class="cards" id="rules"></ul>
+
+        <h3 class="sec">Avisos</h3>
+        <ul class="cards" id="alerts"></ul>
+      </div>
+
+      <div class="app-body" id="tab-dispositivos" hidden>
+        <p class="src-note" id="devsrc"></p>
+        <ul class="cards" id="devices"></ul>
+      </div>
+
+      <div class="app-body placeholder" id="tab-outros" hidden>
+        <p>Ecrã da aplicação da Altice, não reproduzido neste protótipo.</p>
+      </div>
+
+      <nav class="tabs" aria-label="Separadores">
+        <button type="button" data-tab="outros">Favoritos</button>
+        <button type="button" data-tab="outros">Áreas</button>
+        <button type="button" data-tab="dispositivos">Dispositivos</button>
+        <button type="button" data-tab="coisas" class="on"><svg aria-hidden="true"><use href="#trail"/></svg>Coisas</button>
+        <button type="button" data-tab="outros">Menu</button>
+      </nav>
+    </div>
+  </section>
+</main>
+
+<script src="/web/app.js" type="module"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Track Things · brand
 
-Decided 18 Nov 2026: **logo Trail**, **typeface Switzer**, **colour MEO** (logo blue `#2E26FF`, navy `#000032`, mint `#00FF9D` for the thing that was found).
+Decided 18 Nov 2026: **logo Trail**, **typeface Switzer**, **colour Altice Labs**: ink `#000000` (the Altice Labs logo), blue `#0084D6`, deep blue `#003399`, light blue `#02A1EA` on deep blue. MEO and the Altice app colours below were the alternatives.
 
 | What | File |
 |---|---|
@@ -9,7 +9,7 @@ Decided 18 Nov 2026: **logo Trail**, **typeface Switzer**, **colour MEO** (logo 
 | Animated logo as video for slides (1920 × 1080, 30 fps) and a still of the last frame | [`animation/out/`](animation/out/) |
 | Earlier logo exports (Trail, teal) | [`../logo/`](../logo/) |
 
-Re-render the videos after changing the animation: `node animation/render.mjs` (Node 22+, Chrome, ffmpeg). Pick variants with `mode:theme`, for example `node animation/render.mjs expand:meo-light collapse:app`. Themes: `meo-blue`, `meo-light`, `meo-navy`, `app`, `labs`.
+Re-render the videos after changing the animation: `node animation/render.mjs` (Node 22+, Chrome, ffmpeg). Pick variants with `mode:theme`, for example `node animation/render.mjs expand:labs-deep collapse:labs`. Themes: `labs` (default), `labs-deep`, `meo-blue`, `meo-light`, `meo-navy`, `app`.
 
 ## Colours and where each one comes from
 

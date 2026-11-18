@@ -203,7 +203,7 @@ def exemplo_real():
     th = tw * 2 / 3
     for k, v in enumerate(spec["views"][:2 * cols]):
         photo(f, FOTOS / v, x + (k % cols) * (tw + 6), vy + (k // cols) * (th + 6), tw, th, rx=6)
-    f.para(x, vy + 2 * th + 6 + 26, f"O nome “_{en}_” pesquisa o objeto; as vistas geram a assinatura visual, "
+    f.para(x, vy + 2 * th + 6 + 26, f"O nome “_{en}_” pesquisa o objeto; as imagens geram uma assinatura digital e visual da _thing_, "
            "guardada em casa e na base de dados da Altice.", iw, 13.5, 17.5)
 
     # 2. detection: the scene, with the box the edge drew

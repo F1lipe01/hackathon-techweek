@@ -21,13 +21,13 @@ Para registar um objeto, o utilizador indica o nome na aplicação e mostra-o à
 
 Uma frase como “avisa-me se sair de casa sem o livro” segue para o Serviço _ThingTracker_, que a envia ao modelo de linguagem com os objetos registados. O modelo devolve uma regra estruturada, gravada como cenário através do MCP e avaliada em casa; as ações seguem pelo MCP. O mesmo princípio aplica-se a outros casos:
 
-- Crianças: se uma criança trepar uma estante, os pais são avisados e decidem se a sirene toca.
-- Animais e plantas: “avisa-me se o gato não beber água até às 18h”.
+- Segurança na cozinha: se a câmara vir uma faca na bancada com o gato ou uma criança por perto, o utilizador é avisado e decide se a sirene toca.
+- Animais: se a porta abrir e o cão deixar de ser visto, o utilizador é avisado.
 - Pessoas idosas: se ninguém passar na cozinha até ao meio-dia, um familiar é avisado.
-- Pessoas autorizadas e segurança: se entrar um desconhecido sem telemóveis da família em casa, o utilizador recebe uma fotografia e pode ativar o alarme; o reconhecimento dos familiares é opcional e exige consentimento.
-- Energia: se a câmara não vir ninguém em 30 minutos, a tomada desliga o aquecedor.
+- Encomendas: se a câmara exterior vir uma encomenda à porta, o utilizador é avisado.
+- Placa conectada: se ficar ligada sem ninguém na cozinha, o utilizador é avisado.
 
-O sistema também propõe cenários a partir do que a câmara aprende sobre a casa, sem que o utilizador os tenha de configurar: se vir um gato, sugere “avisa-me se o gato não for à taça da comida até às 20h”; se vir uma criança, “avisa-me quando chegar a casa”. O utilizador ativa-os com um toque ou cria os seus. A Figura 2 mostra a arquitetura completa.
+Cada câmara é um lugar: preveem-se duas ou três por casa (cozinha, sala, entrada) e uma exterior opcional; o cliente escolhe onde ficam, fora de quartos e casas de banho. O sistema também propõe cenários a partir do que a câmara aprende sobre a casa, sem que o utilizador os tenha de configurar: se vir um gato, sugere “avisa-me se o gato não for à taça da comida até às 20h”; se vir uma criança, “avisa-me quando chegar a casa”. O utilizador ativa-os com um toque ou cria os seus. A Figura 2 mostra a arquitetura completa.
 
 [[figura: arquitetura | Arquitetura do _ThingTracker_: em casa, na plataforma Altice e no modelo de linguagem]]
 

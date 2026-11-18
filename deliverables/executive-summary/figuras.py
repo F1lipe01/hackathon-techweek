@@ -199,7 +199,7 @@ def photo(f, path, x, y, w, h, rx=8):
 
 
 # English for the values in fotos.json that are written in Portuguese
-PLACES_EN = {"mesa da entrada": "hall table", "secretária": "desk"}
+PLACES_EN = {"mesa da entrada": "hall table", "secretária": "desk", "cozinha": "kitchen"}
 
 
 def exemplo_real():
@@ -231,9 +231,11 @@ def exemplo_real():
     cols = 2 if len(spec["views"]) <= 4 else 3
     tw = (iw - (cols - 1) * 6) / cols
     th = tw * 2 / 3
-    for k, v in enumerate(spec["views"][:2 * cols]):
+    if len(spec["views"]) == 1:
+        photo(f, FOTOS / spec["views"][0], x, vy, iw, 2 * th + 6, rx=6)
+    for k, v in enumerate(spec["views"][:2 * cols] if len(spec["views"]) > 1 else []):
         photo(f, FOTOS / v, x + (k % cols) * (tw + 6), vy + (k // cols) * (th + 6), tw, th, rx=6)
-    f.para(x, vy + 2 * th + 6 + 26, L(f"O nome “_{en}_” pesquisa o objeto; as imagens geram uma assinatura digital e visual da _thing_, "
+    f.para(x, vy + 2 * th + 6 + 26, L(f"O nome “_{en}_” pesquisa a _thing_; as imagens geram uma assinatura digital e visual, "
                                       "guardada em casa e na base de dados da Altice.",
                                       f"The name “{en}” is the search term; the images make a digital and visual fingerprint of "
                                       "the thing, stored at home and in Altice’s database."), iw, 13.5, 17.5)
@@ -246,16 +248,21 @@ def exemplo_real():
     # the photo fills the box with 'slice': map the scene's pixels onto it
     s = max(iw / sc.width, sh / sc.height)
     ox, oy = x + (iw - sc.width * s) / 2, vy + (sh - sc.height * s) / 2
-    b = spec["box"]
-    bx, by, bw, bh = ox + b[0] * s, oy + b[1] * s, (b[2] - b[0]) * s, (b[3] - b[1]) * s
-    f.rect(bx, by, bw, bh, fill="none", stroke=BLUE, rx=3, sw=2.2)
-    poss = "seu" if art == "o" else "sua"                  # o livro → seu; a carteira → sua
-    lab = L(f"{pt.capitalize()} · {poss} {score}", f"Your {en} · {score}")
-    lw = width(lab, 12.5, True) + 12
-    ly = by - 20 if by - 20 > vy + 2 else by + bh + 2
-    lx = min(bx, x + iw - lw - 2)
-    f.rect(lx, ly, lw, 18, fill=BLUE, stroke=None, rx=4)
-    f.text(lx + 6, ly + 13, lab, 12.5, True, "#FFF")
+    boxes = spec.get("boxes") or [{"box": spec["box"], "pt": f"{pt.capitalize()} · {'seu' if art == 'o' else 'sua'} {score}",
+                                     "en": f"Your {en} · {score}", "danger": False}]
+    for bx_ in boxes:
+        b = bx_["box"]
+        col = "#D2403A" if bx_.get("danger") else BLUE
+        bx, by, bw, bh = ox + b[0] * s, oy + b[1] * s, (b[2] - b[0]) * s, (b[3] - b[1]) * s
+        bx, by = max(bx, x + 1), max(by, vy + 1)
+        bw, bh = min(bw, x + iw - 1 - bx), min(bh, vy + sh - 1 - by)
+        f.rect(bx, by, bw, bh, fill="none", stroke=col, rx=3, sw=2.2)
+        lab = L(bx_["pt"], bx_["en"])
+        lw = width(lab, 12.5, True) + 12
+        ly = by - 20 if by - 20 > vy + 2 else by + 4
+        lx = min(bx + (0 if by - 20 > vy + 2 else 4), x + iw - lw - 2)
+        f.rect(lx, ly, lw, 18, fill=col, stroke=None, rx=4)
+        f.text(lx + 6, ly + 13, lab, 12.5, True, "#FFF")
     f.para(x, vy + sh + 26, L("Só quando há movimento: o _OWLv2_ encontra candidatos e o _DINOv2_ confirma que é "
                               f"{art} {pt} registad{art}.",
                               f"Only when there is motion: OWLv2 finds candidates and DINOv2 confirms it is the enrolled {en}."),
@@ -263,13 +270,13 @@ def exemplo_real():
 
     # 3. the question, the answer with the photo, and the disambiguation
     x = X0 + 2 * (cw + gap) + ix
-    q = L(f"Onde está {art} {pt}?", f"Where is my {en}?")
+    q = L(spec.get("q_pt", f"Onde está {art} {pt}?"), spec.get("q_en", f"Where is my {en}?"))
     qw = width(q, 14.5) + 24
     f.rect(x + iw - qw, vy, qw, 32, fill=BLUE, stroke=None, rx=16)
     f.text(x + iw - qw / 2, vy + 21, q, 14.5, False, "#FFF", "middle")
     f.rect(x, vy + 42, iw, 62, fill="#EEF3FB", stroke=None, rx=14)
     photo(f, FOTOS / spec["answer"], x + 8, vy + 50, 46, 46, rx=8)
-    ans = wrap(L(f"Na {place}, às {hour}.", f"On the {place}, at {hour}."), iw - 72, 14)
+    ans = wrap(L(spec.get("answer_pt", f"Na {place}, às {hour}."), spec.get("answer_en", f"On the {place}, at {hour}.")), iw - 72, 14)
     for j, ln in enumerate(ans[:3]):
         f.text(x + 64, vy + 73 - (len(ans) - 1) * 8.5 + j * 17, ln, 14, False, INK)
     f.rect(x, vy + 112, iw, 46, fill="#F4F5F7", stroke=None, rx=12)
@@ -282,8 +289,9 @@ def exemplo_real():
     #    if the user says so (architecture: the siren needs a "yes")
     x = X0 + 3 * (cw + gap) + ix
     y = vy
-    for k, (t, fill) in enumerate([(L("“Avisa-me se uma criança estiver perto de uma faca”", "“Tell me if a child is near a knife”"), "#EEF3FB"),
-                                    (L("Regra avaliada em casa", "Rule evaluated at home"), "#FFF")]):
+    for k, (t, fill) in enumerate([(L(spec.get("rule_pt", "“Avisa-me se uma criança estiver perto de uma faca”"),
+                                        spec.get("rule_en", "“Tell me if a child is near a knife”")), "#EEF3FB"),
+                                    (L(spec.get("model_pt", "Regra avaliada em casa"), spec.get("model_en", "Rule evaluated at home")), "#FFF")]):
         lines = balanced(t, iw - 16, 13.5) if EN else wrap(t, iw - 16, 13.5)
         ph = 12 + 16 * len(lines)
         f.rect(x, y, iw, ph, fill=fill, stroke=None if fill != "#FFF" else LINE, rx=8)
@@ -296,7 +304,8 @@ def exemplo_real():
     f.rect(x, y, iw, nh, fill="#FFF", stroke=LINE, rx=14)
     f.rect(x + 10, y + 10, 16, 16, fill="#2ABE9E", stroke=None, rx=4)
     f.text(x + 32, y + 22, L("THINGTRACKER · COZINHA", "THINGTRACKER · KITCHEN"), 10.5, True, MUTED)
-    body = wrap(L("Uma criança está junto a uma faca na bancada.", "A child is next to a knife on the counter."), iw - 20, 13.5, True)
+    body = wrap(L(spec.get("alert_pt", "Uma criança está junto a uma faca na bancada."),
+                  spec.get("alert_en", "A child is next to a knife on the counter.")), iw - 20, 13.5, True)
     for j, ln in enumerate(body[:2]):
         f.text(x + 10, y + 46 + j * 17, ln, 13.5, True, INK)
     bw = (iw - 28) / 2

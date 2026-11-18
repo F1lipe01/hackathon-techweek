@@ -1,23 +1,48 @@
 {
- "obj_en": "book",
- "obj_pt": "livro",
- "art": "o",
- "place": "secretária",
+ "obj_en": "child",
+ "obj_pt": "criança",
+ "art": "a",
+ "place": "cozinha",
  "time": "16h30",
- "score": "0,70",
+ "score": "",
  "views": [
-  "livro-registo-1.jpg",
-  "livro-registo-2.jpg",
-  "livro-registo-3.jpg",
-  "livro-registo-4.jpg"
+  "crianca-registo.jpg"
  ],
- "scene": "livro-detecao.jpg",
- "box": [
-  664,
-  325,
-  855,
-  464
+ "scene": "crianca-cena.jpg",
+ "answer": "crianca-resposta.jpg",
+ "boxes": [
+  {
+   "box": [
+    255,
+    28,
+    506,
+    336
+   ],
+   "pt": "Criança",
+   "en": "Child",
+   "danger": false
+  },
+  {
+   "box": [
+    85,
+    163,
+    192,
+    252
+   ],
+   "pt": "Faca",
+   "en": "Knife",
+   "danger": true
+  }
  ],
- "answer": "livro-resposta.jpg",
- "source": "Views: frames of a phone video of the book (lab, 18 Nov 2026), background removed. Scene and answer: kit camera, 16:30:31. Score: video/tools/recognise.py (OWLv2 + DINOv2, as in prototype/edge.py)."
+ "q_pt": "Onde está a criança?",
+ "q_en": "Where is the child?",
+ "answer_pt": "Na cozinha, junto à bancada, às 16h30.",
+ "answer_en": "In the kitchen, by the counter, at 16:30.",
+ "rule_pt": "“Avisa-me se a criança estiver em perigo”",
+ "rule_en": "“Tell me if the child is in danger”",
+ "model_pt": "O modelo de linguagem define o perigo: facas, fogão, janelas",
+ "model_en": "The language model defines danger: knives, stove, windows",
+ "alert_pt": "A criança está junto a uma faca na bancada.",
+ "alert_en": "The child is next to a knife on the counter.",
+ "source": "Photo: stock preview supplied by the team, child's face blurred. Boxes drawn on the photo for the figure."
 }

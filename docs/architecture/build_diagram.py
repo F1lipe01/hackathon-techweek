@@ -34,6 +34,8 @@ PAD = 18                                               # inner padding of every 
 APP, MCP = (R1[0], R1[1]), (R2[0], R3[1])              # platform boxes sit on the same grid
 PX0, PX1 = 988, 1250                                   # platform box x-range
 LX0, LX1 = 1414, 1654                                  # language model panel x-range
+LLM_OUT_1, LLM_BACK_1 = "sentence, question", "rule, answer"
+LLM_OUT_2, LLM_BACK_2 = "unclear case", "verdict"
 INK, MUTED, BLUE, DEEP, LINE, FAINT = "#111", "#555", "#0084D6", "#003399", "#D0D0D0", "#777"
 
 # energy per model: time measured on our laptop GPU x the edge box's power x the Portuguese price
@@ -162,14 +164,15 @@ out.append(f'<line x1="{BOUNDARY_X}" y1="{BAND_TOP + 6}" x2="{BOUNDARY_X}" y2="{
 out.append(f'<text font-size="12" font-weight="700" fill="{BLUE}" letter-spacing="1" transform="translate({BOUNDARY_X - 6} {R1[1] - 60}) rotate(-90)">HOUSE BOUNDARY</text>')
 
 # ---------------------------------------------------------------- home, row 1
-CAM, GUARD, PERC = (48, 198), (222, 382), (406, 866)
-box(*CAM, R1, "Cameras", ["Any RTSP camera at home, like the kit’s.", "Read at 1–2 frames/s through one open connection."])
-# the measured kit stream, anchored to the bottom padding of the box
-for i, s in enumerate(["Kit camera stream", "H.265 · 2304 × 1296", "20 fps, via a relay"]):
-    text(CAM[0] + PAD, R1[1] - PAD - 28 + i * 14, s, 10.5, 700 if i == 0 else 400, FAINT)
-box(*GUARD, R1, "Privacy guard", ["Masked areas: never analysed.", "Frames dropped after use; no video stored.",
-                                  "People counted, not recognised, unless the household enrols them, with consent."])
-
+# Cameras above the privacy guard, in one column as wide as Enrolment below, so lines stay long and even
+COL = (48, 362)
+CAM_ROW = (R1[0], R1[0] + 110)
+GUARD_ROW = (R1[1] - 110, R1[1])
+PERC = (386, 866)
+box(*COL, CAM_ROW, "Cameras", ["Any RTSP camera at home, like the kit’s, read at 1–2 frames/s over one open connection."])
+text(COL[0] + PAD, CAM_ROW[1] - PAD, "Kit stream: H.265 · 2304 × 1296 · 20 fps, via a relay", 11, 400, FAINT)
+box(*COL, GUARD_ROW, "Privacy guard", ["Masks never analysed; frames dropped after use; no video stored. "
+                                       "People counted, not recognised, unless enrolled with consent."])
 rect(PERC[0], R1[0], PERC[1] - PERC[0], R1[1] - R1[0], stroke=BLUE, sw=2)
 text(PERC[0] + PAD, R1[0] + 30, "Perception · local open-source models", 16, 700, INK)
 chips = [
@@ -180,7 +183,7 @@ chips = [
     ("Depth", "Depth Anything V2", f"0.10 GB · ≈ €{E_DEPTH:.2f}/mo", "DA-2K: 95.3 %"),
     ("People", "OWLv2, same pass", "+0 GB · +€0", "known people: opt-in"),
 ]
-CW, CH, CG = 136, 70, 8
+CW, CH, CG = (PERC[1] - PERC[0] - 2 * PAD - 16) // 3, 70, 8
 for i, (t, model, stats, bench) in enumerate(chips):
     cx = PERC[0] + PAD + (i % 3) * (CW + CG)
     cy = R1[0] + 46 + (i // 3) * (CH + 6)
@@ -198,7 +201,7 @@ text(PERC[0] + PAD, foot_y + 14, f"Electricity: measured s/frame × {WATTS} W ×
 ENROL, MEM, ENG = (48, 362), (418, 626), (650, 866)
 box(*ENROL, R2, "Enrolment", ["Show a thing to a camera for about 3 s, or take 3 photos with the phone. About 8 crops "
                               "become its fingerprint, so it finds your keys, not any keys."])
-box(*MEM, R2, "Scene memory", ["What, where and when", "Last seen, timelines", "Who is home (known phones)", "Kept 30 days, no video"])
+box(*MEM, R2, "Scene memory", ["What, where and when", "Last seen, timelines", "Who is home (phones)", "Kept 30 days, no video"])
 box(*ENG, R2, "Sensor engine", ["Runs the compiled rules on the memory, every second.", "Answer: nothing, remember, tell, act or escalate."])
 
 # ---------------------------------------------------------------- home, row 3: the Altice kit
@@ -318,13 +321,25 @@ JOBS_Y = ys[4]
 
 # ---------------------------------------------------------------- lines (all straight)
 mid1, mid2, mid3 = (R1[0] + R1[1]) // 2, (R2[0] + R2[1]) // 2, (R3[0] + R3[1]) // 2
-arrow(f"M{CAM[1]} {mid1} H{GUARD[0] - 4}")
-arrow(f"M{GUARD[1]} {mid1} H{PERC[0] - 4}")
+arrow(f"M{(COL[0] + COL[1]) // 2} {CAM_ROW[1]} V{GUARD_ROW[0] - 4}")
+arrow(f"M{COL[1]} {(GUARD_ROW[0] + GUARD_ROW[1]) // 2} H{PERC[0] - 4}")
+# one arrow per direction, each with its own label, so the direction of every flow is unambiguous
+def pair_h(x_left, x_right, y, right_label, left_label):
+    arrow(f"M{x_left} {y - 7} H{x_right - 4}")
+    label(x_left + 12, y - 17, [right_label], bold_first=False)
+    arrow(f"M{x_right} {y + 7} H{x_left + 4}")
+    label(x_left + 12, y + 26, [left_label], bold_first=False)
+
+
+def pair_v(x, y_top, y_bottom, up_label, down_label):
+    arrow(f"M{x - 7} {y_bottom} V{y_top + 4}")
+    label(x - 17, (y_top + y_bottom) // 2 + 4, [up_label], "end", bold_first=False)
+    arrow(f"M{x + 7} {y_top} V{y_bottom - 4}")
+    label(x + 17, (y_top + y_bottom) // 2 + 4, [down_label], bold_first=False)
+
+
 # perception reads the fingerprints from the memory and writes sightings to it
-vx = MEM[0] + 104
-arrow(f"M{vx} {R1[1]} V{R2[0] - 4}", both=True)
-label(vx - 10, R1[1] + 24, ["fingerprints"], "end")
-label(vx + 10, R1[1] + 24, ["sightings"])
+pair_v(MEM[0] + 104, R1[1], R2[0], "fingerprints", "sightings")
 arrow(f"M{ENROL[1]} {mid2} H{MEM[0] - 4}")
 label((ENROL[1] + MEM[0]) // 2, mid2 - 10, ["things"], "middle")
 arrow(f"M{MEM[1]} {mid2} H{ENG[0] - 4}")
@@ -335,13 +350,8 @@ arrow(f"M{PX0} {mid3} H{DEV[1] + 4}")
 label(878, mid3 - 26, ["device", "commands"])
 arrow(f"M{(PX0 + PX1) // 2} {APP[1]} V{MCP[0] - 4}", both=True)
 # platform <-> language model, labelled inside the platform band's corridor
-arrow(f"M{PX1} {mid1} H{LX0 - 4}", both=True)
-label(PX1 + 12, mid1 - 26, ["text only", "sentence, question"])
-label(PX1 + 12, mid1 + 22, ["rule, answer"], bold_first=False)
-y_judge = JOBS_Y + 2 * 46 + 5
-arrow(f"M{PX1} {y_judge} H{LX0 - 4}", both=True)
-label(PX1 + 12, y_judge - 26, ["one crop", "when unclear"])
-label(PX1 + 12, y_judge + 22, ["a verdict"], bold_first=False)
+pair_h(PX1, LX0, mid1, LLM_OUT_1, LLM_BACK_1)
+pair_h(PX1, LX0, JOBS_Y + 2 * 46 + 5, LLM_OUT_2, LLM_BACK_2)
 
 # ---------------------------------------------------------------- legend
 rect(24, LEGEND_Y, W - 48, 50, fill="#F6F6F6", stroke=None, rx=12)

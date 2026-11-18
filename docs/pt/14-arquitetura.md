@@ -4,7 +4,7 @@ Versão 1, quarta-feira, 18 de novembro de 2026. Documento destinado ao júri e 
 
 ![Arquitetura do ThingTracker](../architecture/thingtracker-architecture.png)
 
-Figura 1. Arquitetura do _ThingTracker_, gerada por `../architecture/build_diagram.py`.
+**Figura 1** – Arquitetura do _ThingTracker_ (gerada por `docs/architecture/build_diagram.py`).
 
 ## 1. A ideia num parágrafo
 

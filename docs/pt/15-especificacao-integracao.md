@@ -150,5 +150,5 @@ O acionador proposto segue o formato dos atuais acionadores de dispositivo:
 |---|---|
 | Ferramentas _Things_ | _Endpoints_ HTTP do servidor da equipa (`/api/state`, `/api/things`, `/api/ask`), com os mesmos dados e o mesmo comportamento |
 | Sensores | Criados a partir de uma frase e guardados como regras; as ações sobre dispositivos passam pelo cliente MCP da equipa e funcionam em modo de simulação até serem ativadas |
-| Registo de objetos | Previsto; por agora, usam-se recortes de zonas |
+| Registo de objetos | Implementado: 8 vistas do objeto na câmara do kit geram uma assinatura _DINOv2_, guardada no serviço local e na cópia da plataforma |
 | Canal _edge_ ↔ plataforma | Um único servidor local desempenha os dois papéis |

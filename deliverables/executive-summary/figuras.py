@@ -157,6 +157,103 @@ def exemplo():
     f.save("figura-exemplo.svg")
 
 
+# ---------------------------------------------------------------- figure 1, with real photos from the kit camera
+FOTOS = HERE / "fotos"   # fotos.json: {"obj_en", "obj_pt", "art", "place", "time", "score", "views": [...], "scene": file,
+                         #              "box": [x1, y1, x2, y2] in the scene's pixels}
+
+
+def photo(f, path, x, y, w, h, rx=8):
+    """A JPEG, cropped to fill the box (like object-fit: cover), with rounded corners."""
+    cid = f"c{len(f.o)}"
+    data = base64.b64encode(path.read_bytes()).decode()
+    f.o.append(f'<clipPath id="{cid}"><rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="{rx}"/></clipPath>'
+               f'<image x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" preserveAspectRatio="xMidYMid slice" '
+               f'clip-path="url(#{cid})" href="data:image/jpeg;base64,{data}"/>')
+
+
+def exemplo_real():
+    import json
+    from PIL import Image
+    spec = json.loads((FOTOS / "fotos.json").read_text())
+    en, pt, art = spec["obj_en"], spec["obj_pt"], spec["art"]
+    f = Fig(312)
+    gap, top, h = 30, 6, 300
+    cw = (W - 3 * gap) / 4
+    titles = ["Registo visual", "Deteção", "Pergunta", "Regra e ação"]
+    for i, title in enumerate(titles):
+        x = i * (cw + gap)
+        f.rect(x, top, cw, h)
+        f.o.append(f'<circle cx="{x + 24}" cy="{top + 26}" r="12" fill="{BLUE}"/>')
+        f.text(x + 24, top + 31, str(i + 1), 14, True, "#FFF", "middle")
+        f.text(x + 44, top + 31, title, 17, True)
+        if i < 3:
+            f.arrow(x + cw + 5, top + h / 2, x + cw + gap - 5, top + h / 2)
+    ix, iw = 14, cw - 28
+
+    # 1. registration: six of the real views, then what they become
+    x, vy = ix, top + 50
+    tw, th = (iw - 2 * 6) / 3, 58
+    for k, v in enumerate(spec["views"][:6]):
+        photo(f, FOTOS / v, x + (k % 3) * (tw + 6), vy + (k // 3) * (th + 6), tw, th, rx=6)
+    f.para(x, vy + 2 * th + 6 + 26, f"O nome “_{en}_” pesquisa o objeto; {len(spec['views'])} vistas geram a assinatura visual, "
+           "guardada em casa e na base de dados da Altice.", iw, 13.5, 17.5)
+
+    # 2. detection: the scene, with the box the edge drew
+    x = cw + gap + ix
+    sc = Image.open(FOTOS / spec["scene"])
+    sh = 128
+    photo(f, FOTOS / spec["scene"], x, vy, iw, sh, rx=6)
+    # the photo fills the box with 'slice': map the scene's pixels onto it
+    s = max(iw / sc.width, sh / sc.height)
+    ox, oy = x + (iw - sc.width * s) / 2, vy + (sh - sc.height * s) / 2
+    b = spec["box"]
+    bx, by, bw, bh = ox + b[0] * s, oy + b[1] * s, (b[2] - b[0]) * s, (b[3] - b[1]) * s
+    f.rect(bx, by, bw, bh, fill="none", stroke=BLUE, rx=3, sw=2.2)
+    lab = f"{pt.capitalize()} · sua {spec['score']}"
+    lw = width(lab, 12.5, True) + 12
+    ly = by - 20 if by - 20 > vy + 2 else by + bh + 2
+    lx = min(bx, x + iw - lw - 2)
+    f.rect(lx, ly, lw, 18, fill=BLUE, stroke=None, rx=4)
+    f.text(lx + 6, ly + 13, lab, 12.5, True, "#FFF")
+    f.para(x, vy + sh + 26, "Só quando há movimento: o _OWLv2_ encontra candidatos e o _DINOv2_ confirma que é "
+           f"{art} {pt} registad{art}.", iw, 13.5, 17.5)
+
+    # 3. the question, the answer with the photo, and the disambiguation
+    x = 2 * (cw + gap) + ix
+    q = f"Onde está {art} {pt}?"
+    qw = width(q, 14.5) + 24
+    f.rect(x + iw - qw, vy, qw, 32, fill=BLUE, stroke=None, rx=16)
+    f.text(x + iw - qw / 2, vy + 21, q, 14.5, False, "#FFF", "middle")
+    f.rect(x, vy + 42, iw, 62, fill="#EEF3FB", stroke=None, rx=14)
+    photo(f, FOTOS / spec["answer"], x + 8, vy + 50, 46, 46, rx=8)
+    f.text(x + 64, vy + 69, f"Na {spec['place']},", 14.5, True)
+    f.text(x + 64, vy + 89, f"às {spec['time']}.", 14.5, False, INK)
+    f.rect(x, vy + 112, iw, 46, fill="#F4F5F7", stroke=None, rx=12)
+    f.text(x + iw / 2, vy + 131, f"Se houver duas, pergunta:", 13.5, False, INK, "middle")
+    f.text(x + iw / 2, vy + 149, "“Qual delas?”", 13.5, False, INK, "middle")
+    f.para(x, vy + 184, "A memória da casa responde com o último local e a hora.", iw, 13.5, 17.5)
+
+    # 4. sentence → service → language model with MCP tools → scenario via MCP → evaluated at home → action via MCP
+    x = 3 * (cw + gap) + ix
+    chain = [(f"“Avisa-me se sair sem {art} {pt}”", "#EEF3FB", INK),
+             ("Serviço _ThingTracker_", "#FFF", INK),
+             ("Modelo de linguagem, com as ferramentas MCP", "#FFF", INK),
+             ("Regra gravada como cenário (MCP)", "#FFF", INK),
+             ("Avaliada em casa; ação pelo MCP", "#FFF", INK)]
+    y = vy
+    for k, (t, fill, col) in enumerate(chain):
+        lines = wrap(t, iw - 16, 13.5)
+        ph = 12 + 16 * len(lines)
+        f.rect(x, y, iw, ph, fill=fill, stroke=None if fill != "#FFF" else LINE, rx=8)
+        for j, ln in enumerate(lines):
+            f.text(x + iw / 2, y + ph / 2 + 5 - (len(lines) - 1) * 8 + j * 16, ln, 13.5, False, col, "middle")
+        if k < len(chain) - 1:
+            f.arrow(x + iw / 2, y + ph + 1, x + iw / 2, y + ph + 9)
+        y += ph + 10
+    assert y - 10 <= top + h - 6, f"panel 4 overflows by {y - 10 - (top + h - 6):.0f}"
+    f.save("figura-exemplo.svg")
+
+
 # ---------------------------------------------------------------- figure 2: how it works
 def arquitetura():
     H = 352
@@ -242,7 +339,7 @@ def arquitetura():
 
 
 if __name__ == "__main__":
-    exemplo()
+    exemplo_real() if (FOTOS / "fotos.json").exists() else exemplo()
     arquitetura()
     import shutil
     shutil.copy(ROOT / "docs" / "architecture" / "thingtracker-architecture.svg", HERE / "arquitetura.svg")

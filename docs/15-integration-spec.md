@@ -150,5 +150,5 @@ Proposed trigger, in the same shape as today's device triggers:
 |---|---|
 | Things tools | As HTTP endpoints of our server (`/api/state`, `/api/things`, `/api/ask`), same data and behaviour |
 | Sensors | Created from a sentence; stored as rules; device actions through our MCP client, dry run unless switched on |
-| Enrolment | Planned; zone crops are used today |
+| Enrolment | Implemented: 8 views of the thing on the kit camera make a DINOv2 fingerprint, kept by the edge service and in the platform copy |
 | Edge ↔ platform channel | One local server plays both roles |

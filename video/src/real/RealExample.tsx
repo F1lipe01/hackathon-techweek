@@ -5,17 +5,18 @@ import React from "react";
 import { AbsoluteFill, Audio, interpolate, Sequence, staticFile } from "remotion";
 import "./fonts";
 import { App, APP_CUES, APP_FRAMES } from "./AppScenes";
-import { BED, SFX } from "./audio";
+import { BED, LEAD_FRAMES, ROOM, SFX } from "./audio";
 import { EndCard, END_FRAMES } from "./EndCard";
 import { IDENT_CUES, IDENT_FRAMES, Identificacao } from "./Identificacao";
-import { BgMesh, Grade, Grain, SceneShell, Vignette } from "./layers";
+import { SceneShell } from "./layers";
+import { Finish } from "./stage";
 import { Cue } from "./look";
-import { Opening, OPENING_FRAMES } from "./Opening";
+import { Opening, OPENING_CUES, OPENING_FRAMES } from "./Opening";
 import { Registo, REGISTO_CUES, REGISTO_FRAMES } from "./Registo";
 
 const OVERLAP = 8;
 const SCENES: [React.FC, number, Cue[]][] = [
-  [Opening, OPENING_FRAMES, []],
+  [Opening, OPENING_FRAMES, OPENING_CUES],
   [Registo, REGISTO_FRAMES, REGISTO_CUES],
   [Identificacao, IDENT_FRAMES, IDENT_CUES],
   [App, APP_FRAMES, APP_CUES],
@@ -27,13 +28,13 @@ export const DURATION = STARTS[STARTS.length - 1] + SCENES[SCENES.length - 1][1]
 
 const clampBoth = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const CUES: Cue[] = [
-  ...SCENES.flatMap(([, , cues], i) => cues.map((q) => ({ ...q, at: STARTS[i] + q.at }))),
+  ...SCENES.flatMap(([, , cues], i) => cues.map((q) => ({ ...q, at: STARTS[i] + q.at - LEAD_FRAMES }))),
   { at: STARTS[SCENES.length - 1] + 2, file: "logo" },
+  { at: STARTS[SCENES.length - 1], file: "whooshBig" },
 ];
 
 export const RealExample: React.FC = () => (
   <AbsoluteFill>
-    <BgMesh />
     {SCENES.map(([Scene, dur], i) => (
       <Sequence key={i} from={STARTS[i]} durationInFrames={dur} premountFor={30}>
         <SceneShell dur={dur} enter={i === 0 ? 1 : 10} exit={i === SCENES.length - 1 ? 1 : 8}>
@@ -41,9 +42,9 @@ export const RealExample: React.FC = () => (
         </SceneShell>
       </Sequence>
     ))}
-    <Grade />
-    <Grain />
-    <Vignette />
+    <Finish />
+    <Audio src={staticFile(ROOM.file)} loop
+      volume={(f) => ROOM.volume * interpolate(f, [0, 30, DURATION - 30, DURATION], [0, 1, 1, 0], clampBoth)} />
     <Audio src={staticFile(BED.file)} trimBefore={BED.from}
       volume={(f) => BED.volume * interpolate(f, [0, 24, DURATION - 24, DURATION], [0, 1, 1, 0], clampBoth)} />
     {CUES.filter((q) => SFX[q.file]).map((q, i) => (

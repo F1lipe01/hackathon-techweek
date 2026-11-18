@@ -70,7 +70,7 @@ export const SceneShell: React.FC<{ dur: number; children: React.ReactNode; ente
   );
 };
 
-export const Overline: React.FC<{ children: React.ReactNode; color?: string }> = ({ children, color = c.labs }) => (
+export const Overline: React.FC<{ children: React.ReactNode; color?: string }> = ({ children, color = c.labsDeep }) => (
   <div style={{ fontFamily: theme.fonts.mono, fontSize: 22, fontWeight: 500, letterSpacing: "0.08em",
     textTransform: "uppercase", color }}>{children}</div>
 );

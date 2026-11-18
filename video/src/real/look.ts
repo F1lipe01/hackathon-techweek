@@ -13,6 +13,12 @@ export const look = {
   dimLine: a(c.inkDim, 0.35),
 } as const;
 
+/** The warm grade of video 2 (the only hues not in theme.ts): the sunlit home's light and its soft shadows. */
+export const warm = {
+  light: "#FFE6C4",
+  shadow: "#5B4532",
+} as const;
+
 // Portuguese number formatting: decimal comma.
 export const pt = (v: number, d = 2) => v.toFixed(d).replace(".", ",");
 export const mmss = (t: number) => `0:${String(Math.floor(t)).padStart(2, "0")}`;

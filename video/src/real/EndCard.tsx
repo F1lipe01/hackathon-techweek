@@ -1,17 +1,26 @@
-// 4 · End card.
+// 4 · End card: the name, and who it is by. Text only.
 import React from "react";
 import { AbsoluteFill } from "remotion";
-import { Body, Heading, Overline, Rise } from "./layers";
+import { theme } from "../theme";
 import { look } from "./look";
+import { BlurIn, Plate } from "./stage";
 
 const { c } = look;
 
-export const END_FRAMES = 84;
+export const END_FRAMES = 96;
 
 export const EndCard: React.FC = () => (
-  <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 24 }}>
-    <Rise delay={0} y={14}><Overline>Exemplo real · Laboratório · 18 nov 2026</Overline></Rise>
-    <Rise delay={3} y={14}><Heading size={150} style={{ letterSpacing: "-0.045em" }}>ThingTracker</Heading></Rise>
-    <Rise delay={7} y={14}><Body size={36} style={{ color: c.ink }}>Equipa IT-Porto · Desafio Altice Labs #3</Body></Rise>
+  <AbsoluteFill>
+    <Plate dur={END_FRAMES} offset={11} blur={22} zoom={[1.14, 1.2]} pan={[-10, 10]} wash={0.52} />
+    <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 18 }}>
+      <BlurIn at={4} len={24}>
+        <div style={{ fontFamily: theme.fonts.display, fontWeight: 600, fontSize: 172, lineHeight: 1, letterSpacing: "-0.05em", color: c.ink }}>
+          ThingTracker
+        </div>
+      </BlurIn>
+      <BlurIn at={16}>
+        <div style={{ fontFamily: theme.fonts.display, fontWeight: 500, fontSize: 42, letterSpacing: "-0.01em", color: c.ink }}>by Altice Labs</div>
+      </BlurIn>
+    </AbsoluteFill>
   </AbsoluteFill>
 );

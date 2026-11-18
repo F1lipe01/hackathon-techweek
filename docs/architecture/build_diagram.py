@@ -163,11 +163,10 @@ out.append(f'<text font-size="12" font-weight="700" fill="{BLUE}" letter-spacing
 
 # ---------------------------------------------------------------- home, row 1
 CAM, GUARD, PERC = (48, 198), (222, 382), (406, 866)
-box(*CAM, R1, "Cameras", ["RTSP on the home network.", "Read at 1–2 frames/s through one open connection."])
-y = R1[1] - PAD - 50                                   # the kit camera, anchored to the bottom of the box
-icon("camera", CAM[0] + PAD, y - 4, 22)
-for i, s in enumerate(["Tuya SC034-WNV3", "H.265 · 2304 × 1296", "20 fps, via a relay"]):
-    text(CAM[0] + PAD, y + 32 + i * 14, s, 10.5, 700 if i == 0 else 400, FAINT)
+box(*CAM, R1, "Cameras", ["Any RTSP camera at home, like the kit’s.", "Read at 1–2 frames/s through one open connection."])
+# the measured kit stream, anchored to the bottom padding of the box
+for i, s in enumerate(["Kit camera stream", "H.265 · 2304 × 1296", "20 fps, via a relay"]):
+    text(CAM[0] + PAD, R1[1] - PAD - 28 + i * 14, s, 10.5, 700 if i == 0 else 400, FAINT)
 box(*GUARD, R1, "Privacy guard", ["Masked areas: never analysed.", "Frames dropped after use; no video stored.",
                                   "People counted, not recognised, unless the household enrols them, with consent."])
 
@@ -209,25 +208,27 @@ title = "Home devices (the Altice kit)"
 text(DEV[0] + PAD, R3[0] + 30, title, 16, 700, INK)
 text(DEV[0] + PAD + width(title, 16, 700) + 12, R3[0] + 30,
      "Commands go through the platform, as today: ThingTracker adds no new path.", 13.5, 400, MUTED)
-devices = [("light", "Smart light", "colour, white, scenes", "E27 bulb · Wi-Fi"),
-           ("plug", "Smart plug", "any appliance on/off by event", "Wi-Fi · energy meter"),
+devices = [("camera", "Camera", "live view, siren, night vision", "Tuya SC034-WNV3"),
+           ("light", "Smart light", "colour, white, scenes", "E27 bulb · Wi-Fi"),
+           ("plug", "Smart plug", "any appliance on/off by event", "Wi-Fi · kWh meter"),
            ("security-hub", "Security hub", "siren, arming, LTE gateway", "MS-WES1AS"),
            ("contact-sensor", "Contact sensor", "door or window, open / closed", "MS-D3D"),
            ("smoke-sensor", "Smoke sensor", "smoke alarm, 85 dB siren", "EN 14604, optical"),
            ("temperature-sensor", "Climate sensor", "temperature and humidity", "Nedis ZBSC10WT")]
-TW = (DEV[1] - DEV[0] - 2 * PAD - 5 * 10) / 6
+TG, TP = 8, 8                                           # gap between tiles, padding inside a tile
+TW = (DEV[1] - DEV[0] - 2 * PAD - (len(devices) - 1) * TG) / len(devices)
 TH = R3[1] - R3[0] - 46 - 14
 for i, (ic, name, role, model) in enumerate(devices):
-    x, y = DEV[0] + PAD + i * (TW + 10), R3[0] + 46
+    x, y = DEV[0] + PAD + i * (TW + TG), R3[0] + 46
     rect(round(x, 1), y, round(TW, 1), TH, fill="#F6F6F6", stroke=None, rx=10)
-    tx = round(x + 10, 1)
-    icon(ic, tx, y + 12, 26)
-    text(tx, y + 56, name, 13, 700, INK)
-    role_lines = wrap(role, TW - 20, 12)
-    assert len(role_lines) <= 2 and width(name, 13, 700) <= TW - 20 and width(model, 10.5, 700) <= TW - 20, name
+    tx, inner = round(x + TP, 1), TW - 2 * TP
+    icon(ic, tx, y + 12, 24)
+    text(tx, y + 54, name, 12, 700, INK)
+    role_lines = wrap(role, inner, 11.5)
+    assert len(role_lines) <= 2 and width(name, 12, 700) <= inner and width(model, 10, 700) <= inner, name
     for j, ln in enumerate(role_lines):
-        text(tx, y + 73 + j * 15, ln, 12, 400, MUTED)
-    text(tx, y + TH - 9, model, 10.5, 700, FAINT)
+        text(tx, y + 71 + j * 15, ln, 11.5, 400, MUTED)
+    text(tx, y + TH - 9, model, 10, 700, FAINT)
 
 # ---------------------------------------------------------------- platform and language model
 def stack(top, bottom, blocks):

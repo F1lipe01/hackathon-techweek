@@ -72,6 +72,79 @@ def _words(text):
     return out
 
 
+# ---------------------------------------------------------------------- European Portuguese (PT-PT)
+# The local model learnt more Brazilian than European Portuguese and slips into "você", "câmera", "celular" and the
+# gerund. Every Portuguese answer goes through pt_pt(): the words become those of Portugal, "você" + verb becomes the
+# verb in the "tu" form ("Você deixou" -> "Deixaste"), and "está procurando" becomes "está a procurar".
+_PT_WORDS = {"câmera": "câmara", "câmeras": "câmaras", "caméra": "câmara", "caméras": "câmaras", "camêra": "câmara",
+             "camera": "câmara", "cameras": "câmaras", "camara": "câmara", "camaras": "câmaras", "celular": "telemóvel", "celulares": "telemóveis", "tela": "ecrã",
+             "usuário": "utilizador", "usuários": "utilizadores", "cachorro": "cão", "cachorros": "cães",
+             "registrado": "registado", "registrada": "registada", "registrados": "registados",
+             "registradas": "registadas", "registrar": "registar", "registrou": "registou", "cadastrado": "registado",
+             "cadastrada": "registada", "cadastrar": "registar", "equipe": "equipa", "banheiro": "casa de banho",
+             "geladeira": "frigorífico", "xícara": "chávena", "contato": "contacto", "arquivo": "ficheiro", "oi": "olá",
+             "detectado": "detetado", "detectada": "detetada", "detectar": "detetar", "ônibus": "autocarro"}
+_TU = {"está": "estás", "tem": "tens", "é": "és", "vai": "vais", "foi": "foste", "viu": "viste", "fez": "fizeste",
+       "pôs": "puseste", "quer": "queres", "sabe": "sabes", "pode": "podes", "deve": "deves", "vê": "vês",
+       "tinha": "tinhas", "estava": "estavas", "saiu": "saíste", "esteve": "estiveste", "teve": "tiveste",
+       "disse": "disseste", "precisa": "precisas"}
+_NOT_GERUND = {"quando", "mundo", "segundo", "fundo", "lindo", "redondo", "profundo"}
+
+
+def _tu_verb(verb):
+    """The 'tu' form of a verb a model wrote after 'você' (3rd person), or None when it does not look like a verb."""
+    v = verb.lower()
+    if v in _TU:
+        return _TU[v]
+    if len(v) < 3:
+        return None
+    for end, tu in (("ou", "aste"), ("eu", "este"), ("iu", "iste")):   # deixou, esqueceu, partiu
+        if v.endswith(end):
+            return v[:-2] + tu
+    return v + "s" if v.endswith(("a", "e")) else None                    # procura, esquece
+
+
+def _same_case(new, old):
+    return new[:1].upper() + new[1:] if old[:1].isupper() else new
+
+
+def pt_pt(text):
+    """A Portuguese answer, as written in Portugal."""
+    if not text:
+        return text
+    out = re.sub(r"\b(para|a|de|por|sem)\s+voc[êe]\b", lambda m: m.group(1) + " ti", text, flags=re.I)
+    out = re.sub(r"\bcom\s+voc[êe]\b", lambda m: _same_case("contigo", m.group(0)), out, flags=re.I)
+    out = re.sub(r"\b(\w+[aei]r)\s+voc[êe]\b", r"\1-te", out, flags=re.I)        # "ajudar você" -> "ajudar-te"
+    used_voce = out != text
+
+    def voce(m):
+        adverbs, verb = m.group(2) or "", m.group(3)
+        tu = _tu_verb(verb)
+        new = (adverbs + tu) if tu else ("tu " + adverbs + verb)
+        return _same_case(new, m.group(1))
+
+    out2 = re.sub(r"\b(voc[êe])\s+((?:(?:não|nunca|já|ainda|também)\s+)*)(\w+)", voce, out, flags=re.I)
+    out2 = re.sub(r"\bvoc[êe]\b", lambda m: _same_case("tu", m.group(0)), out2, flags=re.I)
+    if out2 != out or used_voce:   # "tu" from here on: "o seu livro" becomes "o teu livro"
+        for a, b in (("seus", "teus"), ("suas", "tuas"), ("seu", "teu"), ("sua", "tua")):
+            out2 = re.sub(rf"\b{a}\b", lambda m, b=b: _same_case(b, m.group(0)), out2, flags=re.I)
+    out = re.sub(r"\b(estou|estás|está|estamos|estão|estava|estavas|estavam|esteve|continua|continuas|continuam|fica|"
+                 r"ficou|anda|andas)\s+(\w+?)ndo\b",
+                 lambda m: m.group(0) if (m.group(2) + "ndo").lower() in _NOT_GERUND
+                 else f"{m.group(1)} a {m.group(2)}r", out2, flags=re.I)
+    out = re.sub(r"\b(\w+)\b", lambda m: _same_case(_PT_WORDS[m.group(1).lower()], m.group(1))
+                 if m.group(1).lower() in _PT_WORDS else m.group(1), out)
+    # the gender of the places ("no mesa" -> "na mesa"), "à 17:12" -> "às 17:12", "chegou em casa" -> "chegou a casa"
+    out = re.sub(r"\b(?:no|em o)\s+(mesa|secretária|prateleira|estante|sala|cozinha|entrada|porta|varanda|divisão)\b",
+                 r"na \1", out, flags=re.I)
+    out = re.sub(r"\b(?:na|em a)\s+(sofá|banco|quarto|corredor|hall|átrio)\b", r"no \1", out, flags=re.I)
+    out = re.sub(r"\bà\s+(?!0?1:)(\d{1,2}[:h]\d{2})", r"às \1", out)
+    return re.sub(r"\b(cheg\w*)\s+em\s+casa\b", r"\1 a casa", out, flags=re.I)
+
+
+_FOREIGN = re.compile(r"[\u0400-\u04ff\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]")   # Cyrillic, CJK, Hangul
+
+
 class BudgetExceeded(Exception):
     pass
 
@@ -194,7 +267,8 @@ class Brain:
             return self._sim_ask(question, memory)
         system = (
             "You are the ThingTracker assistant inside the Altice home app. Answer in the language of the question "
-            "(English, or European Portuguese if the question is in Portuguese), in one or two natural sentences, using only "
+            "(English, or European Portuguese as written in Portugal if the question is in Portuguese: impersonal or "
+            "'tu', never 'você'; 'câmara', 'telemóvel'), in one or two natural sentences, using only "
             "the memory provided: where and when each thing was last seen, and recent events. Give times as '08:42'. "
             "If the thing was never seen, say so plainly. Never invent. "
             "Set thing_id to the id of the thing the answer is about, or an empty string."
@@ -202,7 +276,10 @@ class Brain:
         schema = {"type": "object", "properties": {"answer": {"type": "string"}, "thing_id": {"type": "string"}},
                   "required": ["answer", "thing_id"], "additionalProperties": False}
         content = [{"type": "text", "text": json.dumps({"question": question, "memory": memory}, ensure_ascii=False)}]
-        return self._call("ask", REASON_MODEL, system, content, schema, max_tokens=600, thinking_off=False)
+        out = self._call("ask", REASON_MODEL, system, content, schema, max_tokens=600, thinking_off=False)
+        if _lang(question) == "pt":
+            out["answer"] = pt_pt(out["answer"])
+        return out
 
     # ------------------------------------------------------------------ compile a sentence into a sensor
     def compile(self, sentence, zones, things):
@@ -346,11 +423,13 @@ class Brain:
             "You are the ThingTracker assistant in the Altice home app. A home camera recognises the things the family "
             "registered and records where and when it saw them. Use only the facts given; never invent a place, a time "
             "or a sighting. Reply in " +
-            ("European Portuguese, as spoken in Portugal (say 'a sua', 'câmara', 'telemóvel')" if lang == "pt" else "English") +
+            ("European Portuguese, as written in Portugal: write impersonally or address the user as 'tu', never "
+             "'você'; say 'câmara', 'telemóvel', 'ecrã', 'está a procurar' (never 'câmera', 'celular', 'tela', "
+             "'procurando')" if lang == "pt" else "English") +
             ", in one or two short, natural sentences, without lists. Write times as 08:42. "
             "Write the name of each thing exactly as it is given."
         )
-        tail = "\n\nResponde em português de Portugal." if lang == "pt" else ""
+        tail = "\n\nResponde em português de Portugal (nunca 'você', nunca 'câmera')." if lang == "pt" else ""
         if len(ids) > 1:
             facts = "\n".join("- " + self._seen(by_id[i]) for i in ids)
             prompt = (f"{now_}\n\nSeveral registered things fit the question:\n{facts}\n\nQuestion: {question}\n\n"
@@ -382,7 +461,7 @@ class Brain:
                           f"{cam}\n\nRecently done by the user in the app (the camera did not see these):\n{app}\n\n"
                           f"Question: {question}\n\n"
                           "If the question asks about a thing that is not among the registered things, say so, for "
-                          "example: " + ("\"Ainda não conheço as suas chaves. Pode adicioná-las no separador Things.\" "
+                          "example: " + ("\"Ainda não conheço as tuas chaves. Podes adicioná-las no separador Things.\" "
                                          if lang == "pt" else "\"I don't know your keys yet. You can add them in the Things tab.\" ") +
                           "If it is a general question about the home, answer from the events; if there are none, say so.")
         answer = (self._local(system, prompt + tail, 120, False) or "").strip().strip('"').strip()
@@ -390,6 +469,18 @@ class Brain:
         answer = " ".join(sentences[:3])
         if not answer:
             return None  # the service failed: the template answers instead
+        q = question.strip().rstrip("?").lower()
+        if len(q) > 8 and answer.lower().startswith(q):        # the model repeated the question first
+            answer = answer[len(q):].lstrip(" ?:.,-").strip() or answer
+        if lang == "pt":
+            answer = pt_pt(answer)
+        if _FOREIGN.search(answer):    # a small model sometimes slips into another script ("na 厨房"): use the facts
+            print("local answer replaced (another script):", answer)
+            if len(ids) == 1:
+                return {"answer": self._fact_answer(by_id[ids[0]], lang), "thing_id": ids[0]}
+            if len(ids) > 1:
+                return {"answer": self._which_one([by_id[i]["name"] for i in ids], lang), "thing_id": "", "candidates": ids}
+            return {"answer": self._camera_summary(self._camera_events(memory, day), day, lang), "thing_id": ""}
         if len(ids) > 1:
             names = [_words(by_id[i]["name"]) for i in ids]
             own = [n - set().union(*(m for m in names if m is not n)) for n in names]  # what tells each one apart
@@ -466,7 +557,9 @@ class Brain:
             return f"A câmara ainda não viu: {t['name']}."
         day, _, hhmm = self._day(last["when"]).partition(" at ")
         day = {"today": "hoje", "yesterday": "ontem"}.get(day, f"a {day}")
-        place = self.PLACE_PT.get(last["zone"].lower(), f"em {last['zone']}")
+        zone, room = last["zone"].lower(), last.get("room") or ""
+        place = (f"em {room}" if zone == "room" and room else
+                 self.PLACE_PT.get(zone, f"em {last['zone']}") + (f" ({room})" if room else ""))
         return f"A câmara viu {t['name']} pela última vez {place}, {day} às {hhmm}."
 
     def _local_compile_local(self, sentence, things):
@@ -616,6 +709,12 @@ class Brain:
             return {"answer": f"You have {len(loose)} of those. Which one?", "thing_id": "",
                     "candidates": [t["thing_id"] for t in loose[:4]]}
         found = exact or loose or [t for t in memory["things"] if t["thing_id"] in q]
+        if _lang(question) == "pt":
+            ids = [t["thing_id"] for t in found] or self._match(question, memory["things"])
+            if ids:
+                t = next(x for x in memory["things"] if x["thing_id"] == ids[0])
+                return {"answer": self._fact_answer(t, "pt"), "thing_id": t["thing_id"]}
+            return {"answer": "Não encontrei isso na memória da casa.", "thing_id": ""}
         if found:
             t, last = found[0], found[0]["last_seen"]
             if not last:

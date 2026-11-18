@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Track Things logo files with the text converted to outlines.
+"""Build the ThingTracker logo files with the text converted to outlines.
 
     python build_logos.py SWITZER_SEMIBOLD.ttf SWITZER_MEDIUM.ttf
 
@@ -67,13 +67,13 @@ class Face:
 
 
 def lockup(bold, medium, theme, endorsed):
-    F = 100.0                      # font size of "Track Things"
+    F = 100.0                      # font size of "ThingTracker"
     mark = 1.15 * F
     gap = 0.30 * F
     cap = bold.cap / bold.upm * F
     baseline = mark / 2 + cap / 2  # the mark is centred on the capitals
     tx = mark + gap
-    d, w = bold.path("Track Things", F, tx, baseline, tracking_em=-0.04)
+    d, w = bold.path("ThingTracker", F, tx, baseline, tracking_em=-0.04)
     c = THEMES[theme]
     parts = [mark_svg(theme, 0, 0, mark), f'<path fill="{c["text"]}" d="{d}"/>']
     width, height = tx + w, mark
@@ -86,18 +86,38 @@ def lockup(bold, medium, theme, endorsed):
         width = max(width, tx + w2)
     pad = 0.06 * F
     vb = f"{-pad:.1f} {-pad:.1f} {width + 2 * pad:.1f} {height + 2 * pad:.1f}"
-    label = "Track Things by Altice Labs" if endorsed else "Track Things"
+    label = "ThingTracker by Altice Labs" if endorsed else "ThingTracker"
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{vb}" role="img" aria-label="{label}">'
             f'<title>{label}</title>{"".join(parts)}</svg>\n')
+
+
+def endorsement(medium, theme):
+    """Splash-style endorsement, like Meta's 'from Meta': a small 'by' centred above the official Altice Labs logo."""
+    import base64
+    from PIL import Image
+    logo = HERE.parent / "partner" / f"altice-labs-logo-{'black' if theme == 'light' else 'white'}.png"
+    lw, lh = Image.open(logo).size
+    W = 1000.0
+    H = W * lh / lw
+    E = 0.12 * W                                 # size of "by"
+    d, w = medium.path("by", E, 0, 0)
+    gap = 0.07 * W
+    top = E * 0.75                               # cap height of "by" above its baseline, roughly
+    by = f'<path fill="{THEMES[theme]["endorse"]}" fill-opacity="{0.85 if theme == "dark" else 1}" transform="translate({(W - w) / 2:.1f} {top:.1f})" d="{d}"/>'
+    data = base64.b64encode(logo.read_bytes()).decode()
+    img = f'<image x="0" y="{top + E * 0.25 + gap:.1f}" width="{W:.1f}" height="{H:.1f}" href="data:image/png;base64,{data}"/>'
+    total = top + E * 0.25 + gap + H
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W:.0f} {total:.1f}" role="img" aria-label="by Altice Labs">'
+            f'<title>by Altice Labs</title>{by}{img}</svg>\n')
 
 
 def main():
     bold, medium = Face(Path(sys.argv[1])), Face(Path(sys.argv[2]))
     for theme in THEMES:
-        (HERE / f"track-things-{theme}.svg").write_text(lockup(bold, medium, theme, False))
-        (HERE / f"track-things-by-altice-labs-{theme}.svg").write_text(lockup(bold, medium, theme, True))
-        (HERE / f"track-things-mark-{theme}.svg").write_text(
-            f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Track Things"><title>Track Things</title>'
+        (HERE / f"thingtracker-{theme}.svg").write_text(lockup(bold, medium, theme, False))
+        (HERE / f"by-altice-labs-{theme}.svg").write_text(endorsement(medium, theme))
+        (HERE / f"thingtracker-mark-{theme}.svg").write_text(
+            f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="ThingTracker"><title>ThingTracker</title>'
             f'{mark_svg(theme, 0, 0, 64)}</svg>\n')
     print("written:", *sorted(p.name for p in HERE.glob("*.svg")))
 

@@ -1,10 +1,10 @@
 # Mentor checkpoint · IT-Porto · Wed 18 Nov 2026
 
-<p class="lead">Challenge #3, Altice Labs. Our product: <b>Track Things</b>. The camera becomes the home's main source of information, and a sentence is enough to create a new sensor. Bring this page to the call; the questions are ranked, so start at the top.</p>
+<p class="lead">Challenge #3, Altice Labs. Our product: <b>ThingTracker</b>. The camera becomes the home's main source of information, and a sentence is enough to create a new sensor. Bring this page to the call; the questions are ranked, so start at the top.</p>
 
 ## Say this first (30 seconds)
 
-> Today the kit's camera tells the platform one thing: "motion detected". We make it the home's main source of information. With a multimodal AI behind it, one camera becomes as many sensors as you can describe in a sentence: "where did I leave my keys?", "warn me if the baby climbs the bookshelf", "tell me if the cat hasn't drunk water by 6 pm", "was the plant watered this week?". Track Things sees, understands, remembers and acts, through the MCP, on the light, the plug and the alarm. It looks only at the zones you choose. It lives as a tab in Altice's app, with four new MCP tools.
+> Today the kit's camera tells the platform one thing: "motion detected". We make it the home's main source of information. With a multimodal AI behind it, one camera becomes as many sensors as you can describe in a sentence: "where did I leave my keys?", "warn me if the baby climbs the bookshelf", "tell me if the cat hasn't drunk water by 6 pm", "was the plant watered this week?". ThingTracker sees, understands, remembers and acts, through the MCP, on the light, the plug and the alarm. It looks only at the zones you choose. It lives as a tab in Altice's app, with four new MCP tools.
 
 ## Where we are
 

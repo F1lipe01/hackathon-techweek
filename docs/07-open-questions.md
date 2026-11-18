@@ -70,7 +70,7 @@ From [the v4 summary](../deliverables/use-case-report/top5-summary.md). The came
 | 32 | **May we run a vision model on the camera feed** for object memory, and is an indoor camera acceptable to Altice if it stores objects, not people? | Mentors, at the checkpoint |
 | 33 | **Microphone and the law.** Lei 58/2019 art. 19.º n.º 4 bans sound capture by video surveillance, and Código Penal art. 199.º covers recording words without consent. Design: push-to-talk only, no audio stored. Not legal advice | Accept as a design rule |
 | 34 | **Phone presence on our hotspot.** Untested whether the Mac can see a team phone (not the Redmi, which is the hotspot) by ping and ARP, and how a locked iPhone answers | Us, 5-minute test |
-| ~~35~~ | **Done for Track Things** (18 Nov): `deliverables/executive-summary/sumario-executivo-IT-Porto.pdf`, 2 pages. The team still has to read it, add any other AI tool it used to the last section, and submit it on the Google Form | Team, before Wed 19:00 |
+| ~~35~~ | **Done for ThingTracker** (18 Nov): `deliverables/executive-summary/sumario-executivo-IT-Porto.pdf`, 2 pages. The team still has to read it, add any other AI tool it used to the last section, and submit it on the Google Form | Team, before Wed 19:00 |
 
 ## Decisions the team has to make
 
@@ -83,7 +83,7 @@ From [the v4 summary](../deliverables/use-case-report/top5-summary.md). The came
 | 19 | Whether anyone needs an absence declaration for Friday | Ask Rui or Marta |
 | 20 | Whether the repository we submit on Friday is this one, cleaned of `sources/`, or a separate code-only one | Before Fri 17:30 |
 
-## Gaps from the Track Things decision (18 Nov)
+## Gaps from the ThingTracker decision (18 Nov)
 
 | # | What | Who can resolve it |
 |---|---|---|

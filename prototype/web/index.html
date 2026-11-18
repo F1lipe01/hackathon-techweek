@@ -1,9 +1,13 @@
 <!doctype html>
-<html lang="pt-PT">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Track Things · protótipo</title>
+<title>ThingTracker · prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Montserrat only for the copy of the Altice app, to match the real app's typeface -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" rel="stylesheet">
@@ -11,7 +15,7 @@
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <symbol id="trail" viewBox="0 0 64 64">
+  <symbol id="mark" viewBox="0 0 64 64">
     <g fill="none" stroke="var(--a, #0084D6)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M7 21 V12 Q7 7 12 7 H21"/><path d="M43 7 H52 Q57 7 57 12 V21"/>
       <path d="M7 43 V52 Q7 57 12 57 H21"/><path d="M57 43 V52 Q57 57 52 57 H43"/>
@@ -23,107 +27,149 @@
 </svg>
 
 <header class="top">
-  <span class="brand"><svg aria-hidden="true"><use href="#trail"/></svg>Track Things</span>
-  <span class="top-meta" id="meta">Protótipo · IT-Porto</span>
+  <span class="brand"><svg aria-hidden="true"><use href="#mark"/></svg>ThingTracker</span>
+  <span class="mode" id="mode">Prototype</span>
 </header>
 
 <main class="split">
-  <!-- ============ CAMERA: what the system sees ============ -->
+  <!-- ======================= CAMERA: what the system sees ======================= -->
   <section class="cam" aria-labelledby="cam-title">
     <div class="cam-head">
-      <h1 id="cam-title">Câmara</h1>
-      <div class="seg" role="radiogroup" aria-label="Origem do vídeo">
-        <label><input type="radio" name="src" value="webcam" checked> Webcam</label>
-        <label><input type="radio" name="src" value="file"> Vídeo gravado</label>
-        <label><input type="radio" name="src" value="kit"> Câmara do kit</label>
+      <h1 id="cam-title">Camera</h1>
+      <div class="seg" role="radiogroup" aria-label="Video source">
+        <label><input type="radio" name="src" value="webcam" checked><span class="ti" style="--i:url(/web/icons/tabler/camera.svg)"></span>Webcam</label>
+        <label><input type="radio" name="src" value="file"><span class="ti" style="--i:url(/web/icons/tabler/movie.svg)"></span>Recorded video</label>
+        <label><input type="radio" name="src" value="kit"><span class="ti" style="--i:url(/web/icons/tabler/video.svg)"></span>Kit camera</label>
       </div>
     </div>
 
     <div class="stage" id="stage">
       <video id="video" playsinline muted autoplay loop></video>
-      <img id="kitimg" alt="Imagem da câmara do kit" hidden>
-      <div class="zones" id="zones" aria-label="Zonas analisadas"></div>
+      <img id="kitimg" alt="Frame from the kit camera" hidden>
+      <div class="zones" id="zones" aria-label="Zones being watched"></div>
       <div class="draw" id="draw" hidden></div>
-      <p class="stage-msg" id="stagemsg">A ligar a webcam…</p>
+      <p class="stage-msg" id="stagemsg">Starting the webcam…</p>
     </div>
     <input type="file" id="file" accept="video/*" hidden>
 
     <div class="cam-bar">
-      <button type="button" class="btn primary" id="watch" aria-pressed="false">Começar a observar</button>
-      <button type="button" class="btn" id="once">Analisar agora</button>
-      <button type="button" class="btn" id="editzones" aria-pressed="false">Desenhar zonas</button>
-      <span class="status" id="status" aria-live="polite">Parado</span>
+      <button type="button" class="btn primary" id="watch" aria-pressed="false"><span class="ti" style="--i:url(/web/icons/tabler/player-play.svg)"></span><span>Start watching</span></button>
+      <button type="button" class="btn" id="once"><span class="ti" style="--i:url(/web/icons/tabler/refresh.svg)"></span>Analyse now</button>
+      <button type="button" class="btn" id="editzones" aria-pressed="false"><span class="ti" style="--i:url(/web/icons/tabler/focus-2.svg)"></span><span>Draw zones</span></button>
+      <span class="status" id="status" aria-live="polite">Stopped</span>
     </div>
 
     <form class="zone-form" id="zoneform" hidden>
-      <label for="zonename">Nome da nova zona</label>
-      <input id="zonename" maxlength="40" placeholder="Ex.: Mesa da entrada" required>
-      <button class="btn primary" type="submit">Guardar zona</button>
-      <button class="btn" type="button" id="zonecancel">Cancelar</button>
+      <label for="zonename">Name this zone</label>
+      <input id="zonename" maxlength="40" placeholder="e.g. Hall table" required>
+      <button class="btn primary" type="submit">Save zone</button>
+      <button class="btn" type="button" id="zonecancel">Cancel</button>
     </form>
 
-    <p class="privacy">Só as zonas desenhadas são enviadas para análise, e só quando mudam. O resto da imagem nunca sai deste navegador.</p>
+    <p class="privacy">Only the zones you draw are analysed, and only when they change. The rest of the picture never leaves this browser.</p>
 
     <div class="log-head">
-      <h2>Atividade</h2>
-      <span class="spend" id="spend">0,0000 USD</span>
+      <h2>Activity</h2>
+      <span class="spend" id="spend"></span>
     </div>
     <ol class="log" id="log"></ol>
   </section>
 
-  <!-- ============ APP: the Altice app with a new tab ============ -->
-  <section class="phone-wrap" aria-label="Aplicação da Altice com o separador Coisas">
+  <!-- ======================= APP: a copy of the Altice app, plus the Things tab ======================= -->
+  <section class="phone-wrap" aria-label="Altice app with the new Things tab">
     <div class="phone">
       <div class="toast" id="toast" role="status" aria-live="assertive" hidden></div>
-      <div class="app-head">
-        <h2 id="apptitle">Hack 3</h2>
+
+      <!-- Things (new) -->
+      <div class="screen" id="tab-things">
+        <div class="app-head">
+          <h2>Things</h2>
+          <button type="button" class="icon-btn" id="addthing" aria-label="Track another thing"><span class="ti" style="--i:url(/web/icons/tabler/circle-plus.svg)"></span></button>
+        </div>
+        <div class="app-body">
+          <form class="field" id="askform">
+            <span class="ti lead" style="--i:url(/web/icons/tabler/sparkles.svg)"></span>
+            <label for="ask" class="sr">Ask about your things</label>
+            <input id="ask" placeholder="Where are my keys?" autocomplete="off" maxlength="300">
+            <button class="send" type="submit" aria-label="Ask"><span class="ti" style="--i:url(/web/icons/tabler/chevron-right.svg)"></span></button>
+          </form>
+          <div class="answer" id="answer" hidden></div>
+
+          <form class="field" id="thingform" hidden>
+            <span class="ti lead" style="--i:url(/web/icons/tabler/circle-plus.svg)"></span>
+            <label for="thingname" class="sr">New thing to track</label>
+            <input id="thingname" placeholder="Name a thing to track" maxlength="40" autocomplete="off">
+            <button class="send" type="submit" aria-label="Add"><span class="ti" style="--i:url(/web/icons/tabler/chevron-right.svg)"></span></button>
+          </form>
+
+          <h3 class="sec" id="things-title">Your things</h3>
+          <ul class="cards" id="things"></ul>
+
+          <h3 class="sec" id="sensors-title">Sensors</h3>
+          <form class="field" id="ruleform">
+            <span class="ti lead" style="--i:url(/web/icons/tabler/wand.svg)"></span>
+            <label for="rule" class="sr">Create a sensor with one sentence</label>
+            <input id="rule" placeholder="Tell me if the mug is left on the desk" autocomplete="off" maxlength="300">
+            <button class="send" type="submit" aria-label="Create sensor"><span class="ti" style="--i:url(/web/icons/tabler/chevron-right.svg)"></span></button>
+          </form>
+          <ul class="cards" id="rules"></ul>
+
+          <h3 class="sec">Alerts</h3>
+          <ul class="cards" id="alerts"></ul>
+        </div>
       </div>
 
-      <div class="app-body" id="tab-coisas">
-        <form class="ask" id="askform">
-          <label for="ask" class="sr">Pergunta à casa</label>
-          <input id="ask" placeholder="Onde estão as chaves?" autocomplete="off" maxlength="300">
-          <button class="btn primary" type="submit">Perguntar</button>
-        </form>
-        <div class="answer" id="answer" hidden></div>
-
-        <h3 class="sec">As tuas coisas</h3>
-        <ul class="cards" id="things"></ul>
-        <form class="add-thing" id="thingform">
-          <label for="thingname" class="sr">Nova coisa</label>
-          <input id="thingname" placeholder="Acompanhar outra coisa…" maxlength="40" autocomplete="off">
-          <button class="btn" type="submit">Adicionar</button>
-        </form>
-
-        <h3 class="sec">Sensores</h3>
-        <form class="ask" id="ruleform">
-          <label for="rule" class="sr">Criar sensor com uma frase</label>
-          <input id="rule" placeholder="Avisa-me se a caneca ficar na secretária" autocomplete="off" maxlength="300">
-          <button class="btn primary" type="submit">Criar</button>
-        </form>
-        <ul class="cards" id="rules"></ul>
-
-        <h3 class="sec">Avisos</h3>
-        <ul class="cards" id="alerts"></ul>
+      <!-- Devices (copy of the real screen) -->
+      <div class="screen" id="tab-devices" hidden>
+        <div class="app-head">
+          <h2>Hack 3</h2>
+          <span class="head-icons">
+            <span class="ti" style="--i:url(/web/icons/tabler/circle-plus.svg)"></span>
+            <span class="ti" style="--i:url(/web/icons/tabler/adjustments-horizontal.svg)"></span>
+            <span class="ti" style="--i:url(/web/icons/tabler/search.svg)"></span>
+          </span>
+        </div>
+        <div class="app-body">
+          <h3 class="sec row">Without room (<span id="devcount">0</span>)<span class="ti" style="--i:url(/web/icons/tabler/chevron-up.svg)"></span></h3>
+          <ul class="cards" id="devices"></ul>
+          <p class="src-note" id="devsrc"></p>
+        </div>
       </div>
 
-      <div class="app-body" id="tab-dispositivos" hidden>
-        <p class="src-note" id="devsrc"></p>
-        <ul class="cards" id="devices"></ul>
+      <!-- Menu (copy of the real screen) -->
+      <div class="screen" id="tab-menu" hidden>
+        <div class="app-head"><h2>Hack 3</h2><span class="ti" style="--i:url(/web/icons/tabler/circle-plus.svg)"></span></div>
+        <div class="app-body">
+          <h3 class="sec">Home</h3>
+          <ul class="list">
+            <li><span class="ti" style="--i:url(/web/icons/tabler/wand.svg)"></span>Scenarios</li>
+            <li><span class="ti" style="--i:url(/web/icons/tabler/door.svg)"></span>Rooms</li>
+            <li><span class="ti" style="--i:url(/web/icons/tabler/home.svg)"></span>Houses management</li>
+          </ul>
+          <h3 class="sec">Account</h3>
+          <ul class="list">
+            <li><span class="ti" style="--i:url(/web/icons/tabler/user-circle.svg)"></span>Profile</li>
+            <li><span class="ti" style="--i:url(/web/icons/tabler/bell.svg)"></span>Notifications<span class="badge">8</span></li>
+            <li><span class="ti" style="--i:url(/web/icons/tabler/settings.svg)"></span>App settings</li>
+          </ul>
+        </div>
       </div>
 
-      <div class="app-body placeholder" id="tab-outros" hidden>
-        <p>Ecrã da aplicação da Altice, não reproduzido neste protótipo.</p>
+      <!-- Favorites and Areas: not part of this prototype -->
+      <div class="screen" id="tab-other" hidden>
+        <div class="app-head"><h2>Hack 3</h2></div>
+        <div class="app-body empty"><p>This screen of the Altice app is not reproduced in the prototype.</p></div>
       </div>
 
-      <nav class="tabs" aria-label="Separadores">
-        <button type="button" data-tab="outros">Favoritos</button>
-        <button type="button" data-tab="outros">Áreas</button>
-        <button type="button" data-tab="dispositivos">Dispositivos</button>
-        <button type="button" data-tab="coisas" class="on"><svg aria-hidden="true"><use href="#trail"/></svg>Coisas</button>
-        <button type="button" data-tab="outros">Menu</button>
+      <nav class="tabs" aria-label="App tabs">
+        <button type="button" data-tab="other"><span class="ti" style="--i:url(/web/icons/tabler/star.svg)"></span>Favorites</button>
+        <button type="button" data-tab="other"><span class="ti" style="--i:url(/web/icons/tabler/stack-2.svg)"></span>Areas</button>
+        <button type="button" data-tab="devices"><span class="ti" style="--i:url(/web/icons/tabler/layout-grid.svg)"></span>Devices</button>
+        <button type="button" data-tab="things" class="on new"><svg aria-hidden="true"><use href="#mark"/></svg>Things</button>
+        <button type="button" data-tab="menu" class="dot"><span class="ti" style="--i:url(/web/icons/tabler/menu-2.svg)"></span>Menu</button>
       </nav>
     </div>
+    <p class="phone-note">Copy of the Altice app (light theme, as on our test phone), with the new <b>Things</b> tab.</p>
   </section>
 </main>
 

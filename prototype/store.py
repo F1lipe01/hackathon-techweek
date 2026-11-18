@@ -1,4 +1,4 @@
-"""Track Things memory: one JSON file in prototype/data/ (gitignored).
+"""ThingTracker memory: one JSON file in prototype/data/ (gitignored).
 
 Seeded with demo data so the app looks lived-in; every seeded item carries "demo": true.
 """
@@ -25,33 +25,36 @@ def _today_at(hh, mm):
 
 def seed():
     zones = [
-        {"id": "z1", "name": "Secretária", "x": 0.05, "y": 0.45, "w": 0.55, "h": 0.5},
-        {"id": "z2", "name": "Mesa da entrada", "x": 0.62, "y": 0.5, "w": 0.33, "h": 0.45},
+        {"id": "z1", "name": "Desk", "x": 0.05, "y": 0.45, "w": 0.5, "h": 0.5},
+        {"id": "z2", "name": "Hall table", "x": 0.6, "y": 0.5, "w": 0.35, "h": 0.45},
     ]
     things = [
-        {"id": "chaves", "name": "Chaves", "description": "porta-chaves com duas ou três chaves", "icon": "key"},
-        {"id": "carteira", "name": "Carteira", "description": "carteira de pele", "icon": "wallet"},
-        {"id": "oculos", "name": "Óculos", "description": "óculos de ver", "icon": "glasses"},
-        {"id": "caneca", "name": "Caneca", "description": "caneca de café", "icon": "mug"},
-        {"id": "telemovel", "name": "Telemóvel", "description": "smartphone", "icon": "phone"},
+        {"id": "keys", "name": "Keys", "description": "a key ring with two or three keys", "icon": "key"},
+        {"id": "wallet", "name": "Wallet", "description": "a leather wallet", "icon": "purse"},
+        {"id": "glasses", "name": "Glasses", "description": "reading glasses", "icon": "glasses"},
+        {"id": "phone", "name": "Phone", "description": "a smartphone", "icon": "mobile_phone"},
+        {"id": "mug", "name": "Mug", "description": "a coffee mug", "icon": "hot_beverage"},
+        {"id": "laptop", "name": "Laptop", "description": "a laptop computer", "icon": "laptop"},
+        {"id": "remote", "name": "TV remote", "description": "a black TV remote control", "icon": "remote"},
     ]
     seen = [
-        ("chaves", "z2", "Mesa da entrada", "ao lado da taça", 8, 42),
-        ("carteira", "z2", "Mesa da entrada", "à direita, junto às chaves", 8, 40),
-        ("oculos", "z1", "Secretária", "em cima do caderno", 9, 15),
-        ("caneca", "z1", "Secretária", "à esquerda do portátil", 9, 58),
+        ("keys", "z2", "Hall table", "next to the bowl", 8, 42),
+        ("wallet", "z2", "Hall table", "on the right, by the keys", 8, 40),
+        ("glasses", "z1", "Desk", "on the notebook", 9, 15),
+        ("laptop", "z1", "Desk", "in the middle", 9, 50),
+        ("mug", "z1", "Desk", "left of the laptop", 9, 58),
     ]
     obs = [{"id": uuid.uuid4().hex[:10], "ts": _today_at(h, m), "thing_id": t, "zone_id": z, "zone_name": zn,
             "where": w, "crop": None, "demo": True} for t, z, zn, w, h, m in seen]
     rules = [{
-        "id": "r-demo", "sentence": "Avisa-me se a caneca ficar na secretária quando eu sair.",
-        "title": "Caneca esquecida", "zone_id": "z1", "question": "Há uma caneca em cima da secretária?",
+        "id": "r-demo", "sentence": "Tell me if the mug is left on the desk.",
+        "title": "Mug left on the desk", "zone_id": "z1", "question": "Is there a mug on the desk?",
         "trigger_when": "yes", "mode": "when_true", "deadline": "", "action": "notify",
-        "message": "A caneca ficou na secretária.", "new_thing": "", "cooldown_s": 600,
+        "message": "The mug was left on the desk.", "new_thing": "", "cooldown_s": 600,
         "active": False, "last_fired": 0, "demo": True,
     }]
     events = [{"id": uuid.uuid4().hex[:10], "ts": _today_at(8, 43), "kind": "seen",
-               "text": "Chaves vistas na mesa da entrada.", "demo": True}]
+               "text": "Keys seen on the hall table.", "demo": True}]
     return {"zones": zones, "things": things, "observations": obs, "rules": rules, "events": events,
             "spend": {"usd": 0.0, "calls": []}}
 
@@ -98,15 +101,15 @@ class Store:
 
     def memory_for_llm(self):
         """Compact memory for ask(): last sighting per thing and the latest events, local time."""
-        fmt = lambda ts: time.strftime("%d/%m %H:%M", time.localtime(ts))
+        fmt = lambda ts: time.strftime("%d %b %H:%M", time.localtime(ts))
         things = []
         for t in self.state["things"]:
             last = self._with_last_seen(t)["last_seen"]
-            things.append({"thing_id": t["id"], "nome": t["name"],
-                           "visto_pela_ultima_vez": None if not last else
-                           {"quando": fmt(last["ts"]), "zona": last["zone_name"], "onde": last["where"]}})
-        events = [{"quando": fmt(e["ts"]), "texto": e["text"]} for e in self.state["events"][-15:]]
-        return {"agora": fmt(now()), "coisas": things, "eventos_recentes": events}
+            things.append({"thing_id": t["id"], "name": t["name"],
+                           "last_seen": None if not last else
+                           {"when": fmt(last["ts"]), "zone": last["zone_name"], "where": last["where"]}})
+        events = [{"when": fmt(e["ts"]), "text": e["text"]} for e in self.state["events"][-15:]]
+        return {"now": fmt(now()), "things": things, "recent_events": events}
 
     def spend(self):
         return self.state["spend"]

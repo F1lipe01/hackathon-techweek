@@ -17,7 +17,7 @@ O mercado nacional tem margem para crescer. Em 2024, apenas 23,99 % das pessoas 
 
 ## Ideias para a proposta de solução
 
-A solução proposta, o **Track Things**, transforma a câmara da casa num sensor universal, configurado em linguagem natural. O conceito resume-se a quatro verbos, **ver, perceber, lembrar e agir**, e aplica-se a tudo o que o utilizador considere importante, seja um objeto, uma criança, um animal, uma planta, uma pessoa autorizada ou um familiar idoso. Entre os cenários possíveis, destacam-se os seguintes:
+A solução proposta, o **ThingTracker**, transforma a câmara da casa num sensor universal, configurado em linguagem natural. O conceito resume-se a quatro verbos, **ver, perceber, lembrar e agir**, e aplica-se a tudo o que o utilizador considere importante, seja um objeto, uma criança, um animal, uma planta, uma pessoa autorizada ou um familiar idoso. Entre os cenários possíveis, destacam-se os seguintes:
 
 - **Objetos.** Perante a pergunta «onde deixei as chaves?», o sistema indica onde e a que horas foram vistas pela última vez, mostra a imagem correspondente e faz piscar a lâmpada se alguém sair sem elas.
 - **Crianças.** Se uma criança começar a trepar uma estante, a sirene toca, a luz fica vermelha e os pais recebem um aviso.

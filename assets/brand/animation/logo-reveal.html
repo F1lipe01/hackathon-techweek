@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Track Things · logo reveal</title>
+<title>ThingTracker · logo reveal</title>
 <link rel="preconnect" href="https://api.fontshare.com">
 <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=switzer@600&display=block" rel="stylesheet">
@@ -16,9 +16,10 @@
     --word: #000000;
     --halo: #0084D6;
     --ui: #000000; --ui-ground: #F6F6F6; --ui-line: #DDDDDD;
+    --endorse: #555555;
   }
-  [data-theme="labs-deep"] { --ground: #003399; --frame: #FFFFFF; --thing: #02A1EA; --word: #FFFFFF; --halo: #02A1EA; --ui: #FFFFFF; --ui-ground: #0A3FA3; --ui-line: #2A5BB8; }
-  [data-theme="meo-blue"]  { --ground: #2E26FF; --frame: #FFFFFF; --thing: #00FF9D; --word: #FFFFFF; --halo: #00FF9D; --ui: #FFFFFF; --ui-ground: #3A33FF; --ui-line: #5A55FF; }
+  [data-theme="labs-deep"] { --ground: #003399; --frame: #FFFFFF; --thing: #02A1EA; --word: #FFFFFF; --halo: #02A1EA; --ui: #FFFFFF; --ui-ground: #0A3FA3; --ui-line: #2A5BB8; --endorse: rgb(255 255 255 / 0.85); }
+  [data-theme="meo-blue"]  { --ground: #2E26FF; --frame: #FFFFFF; --thing: #00FF9D; --word: #FFFFFF; --halo: #00FF9D; --ui: #FFFFFF; --ui-ground: #3A33FF; --ui-line: #5A55FF; --endorse: rgb(255 255 255 / 0.85); }
 
   *, *::before, *::after { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
@@ -44,6 +45,12 @@
   .mark .dot { fill: var(--thing); }
   .mark .frame, .mark .trail, .mark .dot { transform-box: fill-box; transform-origin: center; }
 
+  /* Splash endorsement, like Meta's 'from Meta': 'by' above the official Altice Labs logo, at the bottom. */
+  .endorse { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); display: grid; justify-items: center;
+             gap: 1.2vh; opacity: 0; pointer-events: none; }
+  .endorse .by { font: 500 2.3vh/1 "Switzer", "Helvetica Neue", Arial, sans-serif; color: var(--endorse); }
+  .endorse img { height: 6.2vh; width: auto; display: none; }
+  :root[data-theme="labs"] .endorse .on-light, :root:not([data-theme="labs"]) .endorse .on-dark { display: block; }
   .word { display: flex; font-weight: 600; letter-spacing: -0.04em; line-height: 1; color: var(--word); }
   .ch { display: inline-block; white-space: pre; }
 
@@ -73,7 +80,7 @@
 </head>
 <body>
 <main class="stage" id="stage">
-  <div class="lockup" id="lockup" role="img" aria-label="Track Things">
+  <div class="lockup" id="lockup" role="img" aria-label="ThingTracker">
     <div class="mark-wrap" id="markwrap">
     <span class="pulse" id="pulse"></span>
     <svg class="mark" id="mark" viewBox="0 0 64 64" aria-hidden="true">
@@ -88,12 +95,18 @@
     </div>
     <span class="word" id="word" aria-hidden="true"></span>
   </div>
+  <div class="endorse" id="endorse" aria-label="by Altice Labs">
+    <span class="by" id="by">by</span>
+    <img class="on-light" id="labs1" src="../partner/altice-labs-logo-black.png" alt="Altice Labs">
+    <img class="on-dark" id="labs2" src="../partner/altice-labs-logo-white.png" alt="Altice Labs">
+  </div>
 </main>
 
 <nav class="controls" aria-label="Animation controls">
   <button type="button" id="replay">Replay</button>
   <label><input type="radio" name="mode" value="expand" checked>Mark to wordmark</label>
   <label><input type="radio" name="mode" value="collapse">Wordmark to mark</label>
+  <label><input type="checkbox" id="endorsebox">by Altice Labs</label>
   <select id="theme" aria-label="Colours">
     <option value="labs">Altice Labs</option>
     <option value="labs-deep">Altice Labs, deep blue</option>
@@ -121,11 +134,12 @@
   const IN_OUT = 'cubic-bezier(0.77, 0, 0.175, 1)';
   const SETTLE = 'cubic-bezier(0.33, 0, 0.2, 1)';   // soft return after the pop
 
-  const TEXT = 'Track Things';
+  const TEXT = 'ThingTracker';
   word.replaceChildren(...[...TEXT].map((c) => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; return s; }));
   const letters = [...word.children];
 
   let mode = params.get('mode') === 'collapse' ? 'collapse' : 'expand';
+  let endorse = params.get('endorse') === '1';
   let theme = params.get('theme') || 'labs';
   let anims = [];
   window.DURATION = 0;
@@ -154,6 +168,7 @@
     const centred = `translateX(${S}px)`, home = 'translateX(0px)';
     const n = letters.length;
 
+    $('endorse').style.opacity = '0'; lockup.style.transform = '';
     if (reduce) {
       a(lockup, [{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease' });
       if (mode === 'collapse') letters.forEach((l) => a(l, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: 'ease' }));
@@ -193,6 +208,16 @@
         { opacity: 1, transform: 'translateX(0em)' }
       ], { delay: 1360 + i * 34, duration: 420, easing: OUT }));
       window.DURATION = 3400;
+      if (endorse) {
+        // 5. The logo makes room, then 'by' and the Altice Labs logo rise in at the bottom, one after the other.
+        const up = `translateY(${-0.07 * stage.clientHeight}px)`;
+        a(lockup, [{ transform: 'translateY(0px)' }, { transform: up }], { delay: 2350, duration: 700, easing: IN_OUT });
+        a($('endorse'), [{ opacity: 0 }, { opacity: 1 }], { delay: 2550, duration: 10, fill: 'both' });
+        [$('by'), $('labs1'), $('labs2')].forEach((el, i) => a(el, [
+          { opacity: 0, transform: 'translateY(2.2vh)' }, { opacity: 1, transform: 'translateY(0)' }
+        ], { delay: 2560 + (i ? 90 : 0), duration: 640, easing: OUT }));
+        window.DURATION = 4300;
+      }
     } else {
       // Reverse: the letters fold back into the mark, last letter first, and the mark returns to the centre.
       letters.forEach((l, i) => a(l, [
@@ -239,6 +264,8 @@
   if (EXPORT) document.documentElement.classList.add('export');
   applyTheme();
   document.querySelector(`input[value="${mode}"]`).checked = true;
+  $('endorsebox').checked = endorse;
+  $('endorsebox').addEventListener('change', (e) => { endorse = e.target.checked; play(); });
 
   $('replay').addEventListener('click', play);
   $('scrub').addEventListener('input', (e) => { scrubbing = true; setTime(Number(e.target.value)); });

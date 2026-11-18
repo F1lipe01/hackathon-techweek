@@ -1,4 +1,4 @@
-"""Track Things prototype server.
+"""ThingTracker prototype server.
 
     prototype/.venv/bin/python prototype/server.py            # http://127.0.0.1:8765, AI OFF: simulated answers, 0 USD
     TT_AI=1 ... server.py                                      # real Claude calls (costs money; capped by TT_BUDGET_USD)
@@ -44,7 +44,7 @@ from store import CROPS, Store  # noqa: E402
 
 store = Store()
 brain = Brain(store)
-app = FastAPI(title="Track Things prototype")
+app = FastAPI(title="ThingTracker prototype")
 MIN_OBSERVE_GAP = 2.5  # seconds; protects the budget even if the page misbehaves
 _last_observe = {"t": 0.0}
 _obs_lock = threading.Lock()
@@ -91,7 +91,7 @@ def deadline_ticker():
             if r.get("mode") == "not_by_deadline":
                 roll_day(r)
                 if deadline_passed(r) and not r.get("seen_trigger_today") and not r.get("fired_today"):
-                    fire(r, evidence=f"Nada visto até às {r['deadline']}.")
+                    fire(r, evidence=f"Nothing seen by {r['deadline']}.")
         time.sleep(30)
 
 
@@ -125,7 +125,7 @@ def add_thing(payload: dict = Body(...)):
     if not name:
         raise HTTPException(400, "name is required")
     tid = store.add_thing(name, str(payload.get("description", ""))[:120])
-    store.add_event("thing", f"Nova coisa a acompanhar: {name}.")
+    store.add_event("thing", f"Now tracking: {name}.")
     return {"id": tid}
 
 
@@ -166,7 +166,7 @@ def observe(payload: dict = Body(...)):
                 store.add_observation(t["thing_id"], zone, t.get("where", ""), crop_names.get(zone["id"]))
                 moved = not prev or prev.get("zone_id") != zone["id"] or time.time() - prev["ts"] > 600
                 if moved:
-                    store.add_event("seen", f"{by_name[t['thing_id']]} vista(s) em «{zone['name']}», {t.get('where', '')}.",
+                    store.add_event("seen", f"{by_name[t['thing_id']]} seen on the {zone['name'].lower()}, {t.get('where', '')}.",
                                     thing_id=t["thing_id"], crop=crop_names.get(zone["id"]))
         for s in z.get("sensors", []):
             rule = next((r for r in sensors if r["id"] == s.get("sensor_id")), None)
@@ -177,7 +177,7 @@ def observe(payload: dict = Body(...)):
             if rule.get("mode") == "not_by_deadline":
                 if hit and not rule.get("seen_trigger_today"):
                     store.update_rule(rule["id"], seen_trigger_today=True)
-                    store.add_event("ok", f"{rule['title']}: confirmado.", rule_id=rule["id"], crop=crop_names.get(zone["id"]))
+                    store.add_event("ok", f"{rule['title']}: confirmed.", rule_id=rule["id"], crop=crop_names.get(zone["id"]))
             elif hit and time.time() - rule.get("last_fired", 0) > rule.get("cooldown_s", 300):
                 fired.append(fire(rule, crop=crop_names.get(zone["id"]), evidence=s.get("evidence", "")))
     return {"result": result, "fired": fired, "spend": store.snapshot()["spend"]}
@@ -191,7 +191,7 @@ def ask(payload: dict = Body(...)):
     out = _llm(brain.ask, q, store.memory_for_llm())
     thing = next((t for t in store.snapshot()["things"] if t["id"] == out.get("thing_id")), None)
     crop = thing["last_seen"].get("crop") if thing and thing.get("last_seen") else None
-    store.add_event("ask", f"«{q}» — {out['answer']}", crop=crop)
+    store.add_event("ask", f"\"{q}\": {out['answer']}", crop=crop)
     return {**out, "crop": crop}
 
 
@@ -208,7 +208,7 @@ def add_rule(payload: dict = Body(...)):
         store.add_thing(compiled["new_thing"])
     compiled["cooldown_s"] = max(60, min(3600, int(compiled.get("cooldown_s", 300))))
     rule = store.add_rule(sentence, compiled)
-    store.add_event("sensor", f"Novo sensor: {rule['title']}.", rule_id=rule["id"])
+    store.add_event("sensor", f"New sensor: {rule['title']}.", rule_id=rule["id"])
     return rule
 
 

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- TV remote, drawn by IT-Porto in the flat style of Fluent Emoji (no remote exists in that set) -->
+  <rect x="10" y="2.5" width="12" height="27" rx="4.5" fill="#636363"/>
+  <circle cx="16" cy="7" r="1.6" fill="#F8312F"/>
+  <circle cx="16" cy="13.5" r="3.6" fill="#9B9B9B"/>
+  <circle cx="16" cy="13.5" r="1.5" fill="#D3D3D3"/>
+  <rect x="12.6" y="19.4" width="2.6" height="1.8" rx="0.9" fill="#D3D3D3"/>
+  <rect x="16.8" y="19.4" width="2.6" height="1.8" rx="0.9" fill="#D3D3D3"/>
+  <rect x="12.6" y="22.6" width="2.6" height="1.8" rx="0.9" fill="#D3D3D3"/>
+  <rect x="16.8" y="22.6" width="2.6" height="1.8" rx="0.9" fill="#D3D3D3"/>
+  <rect x="12.6" y="25.8" width="6.8" height="1.4" rx="0.7" fill="#00A6ED"/>
+</svg>

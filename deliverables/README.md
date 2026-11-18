@@ -16,7 +16,7 @@ The 18 Nov "report" and 20 Nov "executive summary" are, in practice, the same 2-
 | File | What |
 |---|---|
 | `executive-summary/sumario-executivo-template.docx` | Official template. Original name `Sumário Executivo Template ATC Hackathon 2026.docx` |
-| `executive-summary/sumario-executivo-IT-Porto.pdf` | **Today's submission (18 Nov), Track Things.** 2 pages, PT-PT, on the official template. Built from the source below |
+| `executive-summary/sumario-executivo-IT-Porto.pdf` | **Today's submission (18 Nov), ThingTracker.** 2 pages, PT-PT, on the official template. Built from the source below |
 | `executive-summary/sumario-executivo.md` | The text of the Sumário. Edit this, then run `python3 build.py` |
 | `executive-summary/build.py` | Fills the official .docx and prints a matching PDF with Chrome (no Word or LibreOffice needed). Checks nothing else; check the page count with `pdfinfo` |
 | `executive-summary/sumario-executivo-IT-Porto.docx` | The same text in the official template, for edits in Word or Google Docs. Its line breaks may differ slightly from the PDF |

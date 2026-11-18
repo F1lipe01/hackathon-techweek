@@ -7,7 +7,7 @@ TMP=$(mktemp -d)
 for svg in *.svg; do
   vb=$(sed -E 's/.*viewBox="([^"]+)".*/\1/;q' "$svg")
   read -r _ _ w h <<< "$vb"
-  case "$svg" in *mark*) W=1024 ;; *) W=2400 ;; esac
+  case "$svg" in *mark*) W=1024 ;; by-*) W=900 ;; *) W=2400 ;; esac
   H=$(python3 -c "print(round($W*$h/$w))")
   print "<!doctype html><style>html,body{margin:0;background:transparent}img{display:block;width:${W}px;height:${H}px}</style><img src=\"file://$PWD/$svg\">" > "$TMP/p.html"
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars --default-background-color=00000000 \

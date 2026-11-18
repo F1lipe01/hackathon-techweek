@@ -13,7 +13,7 @@ const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 const W = 1920, H = 1080, FPS = Number(process.env.FPS || 60), SCALE = Number(process.env.SCALE || 2), PORT = 9339;
 // SCALE=2 renders 3840 x 2160 (4K) with the vectors drawn at full resolution, not upscaled.
 const variants = process.argv.slice(2).length ? process.argv.slice(2)
-  : ['expand:labs', 'expand:labs-deep', 'collapse:labs'];
+  : ['expand:labs', 'expand:labs:endorse', 'expand:labs-deep', 'expand:labs-deep:endorse', 'collapse:labs'];
 
 const profile = mkdtempSync(join(tmpdir(), 'tt-chrome-'));
 const chrome = spawn(CHROME, ['--headless=new', `--remote-debugging-port=${PORT}`, `--user-data-dir=${profile}`,
@@ -59,8 +59,9 @@ mkdirSync(outDir, { recursive: true });
 
 try {
   for (const v of variants) {
-    const [mode, theme] = v.split(':');
-    const url = `${pathToFileURL(join(HERE, 'logo-reveal.html')).href}?export=1&mode=${mode}&theme=${theme}`;
+    const [mode, theme, extra] = v.split(':');
+    const endorsed = extra === 'endorse';
+    const url = `${pathToFileURL(join(HERE, 'logo-reveal.html')).href}?export=1&mode=${mode}&theme=${theme}${endorsed ? '&endorse=1' : ''}`;
     const loaded = once('Page.loadEventFired');
     await send('Page.navigate', { url });
     await loaded;
@@ -73,7 +74,7 @@ try {
       const { data } = await send('Page.captureScreenshot', { format: 'png' });
       writeFileSync(join(dir, `f${String(f).padStart(4, '0')}.png`), Buffer.from(data, 'base64'));
     }
-    const out = join(outDir, `track-things-${mode}-${theme}-${H * SCALE}p${FPS}.mp4`);
+    const out = join(outDir, `thingtracker-${mode}-${theme}${endorsed ? '-by-altice-labs' : ''}-${H * SCALE}p${FPS}.mp4`);
     execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-framerate', String(FPS), '-i', join(dir, 'f%04d.png'),
       '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '14', '-preset', 'slow', '-tune', 'animation', '-r', String(FPS), '-movflags', '+faststart', out]);
     // a still of the last frame, for slides that cannot play video

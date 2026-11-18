@@ -35,7 +35,7 @@ Até ao momento, a equipa ligou-se ao MCP, acedeu ao vídeo em direto da câmara
 
 ## Ferramentas de IA
 
-- Modelos de visão _open-source_, em casa: _OWLv2_, _DINOv2_, _Depth Anything V2 Small_ e _ByteTrack_ (Apache-2.0 e MIT) ocupam 0,8 GB e analisam uma imagem em 0,6 s num portátil.
+- Modelos de visão _open-source_: _OWLv2_, _DINOv2_, _Depth Anything V2 Small_ e _ByteTrack_ (Apache-2.0 e MIT) ocupam 0,8 GB e analisam uma imagem em 0,6 s num portátil. Podem correr num servidor da Altice ou, quando é preciso tempo real, no próprio _router_ da casa, se tiver capacidade de IA, ou numa pequena caixa ligada a ele.
 - Modelo de linguagem, sob contrato: o _Claude_, da Anthropic, ou equivalente, desde que o contrato exclua o treino com os dados e inclua um acordo de tratamento de dados.
 - Custo mensal por casa, sem o equipamento: cerca de 0,43 € no modelo de linguagem e menos de 0,15 € de eletricidade na visão local, com 2 h de movimento por dia.
 - Desenvolvimento: _Claude Code_ (_Claude Opus 5.5_) na pesquisa, programação e redação.

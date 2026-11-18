@@ -7,7 +7,7 @@
   transition: background-color 160ms ease-out, color 160ms ease-out; }
 .lang button[aria-pressed="true"] { background: var(--ground); color: var(--ink); }
 .dl { padding: 7px 14px; border-radius: 999px; background: var(--ink); color: #fff; text-decoration: none; font-size: 0.8125rem; font-weight: 600; white-space: nowrap; }
-@media (max-width: 699px) { .dl { display: none; } .docs a { padding: 7px 8px; } }
+@media (max-width: 699px) { .dl { display: none; } }
 
 .doc { padding: 0 var(--gutter) var(--gutter); display: grid; gap: var(--gap); }
 .doc-head { display: flex; align-items: baseline; gap: 14px; padding-top: 6px; }

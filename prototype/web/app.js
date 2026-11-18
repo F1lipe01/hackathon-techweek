@@ -139,9 +139,11 @@ function renderEdge(e) {
   pill.hidden = false; pill.dataset.state = e.state;
   $('flow').dataset.state = e.state;     // the flow strip under the camera lights the stages in use
   const n = (v) => Number(v || 0).toLocaleString('en');
-  pill.textContent = e.state === 'registering' ? 'Camera: registering a thing'
-    : e.state === 'active' ? `Camera: movement, analysing · ${n(e.analysed)} analyses`
-    : `Camera idle, waiting for movement · ${n(e.checked)} checks, ${n(e.analysed)} analyses`;
+  // the state first; the detail is dropped on phones (app.css: .edge-pill .more)
+  const [head, more] = e.state === 'registering' ? ['Camera registering', ': a thing is being shown']
+    : e.state === 'active' ? ['Camera analysing', ` · movement · ${n(e.analysed)} analyses`]
+    : ['Camera idle', ` · waiting for movement · ${n(e.checked)} checks, ${n(e.analysed)} analyses`];
+  pill.innerHTML = `${esc(head)}<span class="more">${esc(more)}</span>`;
 }
 function renderLog() {
   $('log').innerHTML = state.events.map((e) => {

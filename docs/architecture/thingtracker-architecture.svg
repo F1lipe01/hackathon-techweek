@@ -120,30 +120,32 @@
 <text x="751.1" y="737" font-size="11.5" font-weight="400" fill="#555" text-anchor="start">temperature and</text>
 <text x="751.1" y="752" font-size="11.5" font-weight="400" fill="#555" text-anchor="start">humidity</text>
 <text x="751.1" y="769" font-size="10" font-weight="700" fill="#777" text-anchor="start">Nedis ZBSC10WT</text>
-<rect x="988" y="150" width="262" height="240" rx="14" fill="#FFF" stroke="#C9D2E3" stroke-width="1"/>
+<rect x="988" y="150" width="262" height="190" rx="14" fill="#FFF" stroke="#C9D2E3" stroke-width="1"/>
 <text x="1006" y="180" font-size="16" font-weight="700" fill="#1A2233" text-anchor="start">Altice app</text>
 <text x="1006" y="204" font-size="13.5" font-weight="700" fill="#0084D6" text-anchor="start">New Things tab</text>
-<text x="1006" y="233.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Add a thing: suggested, shown to a</text>
-<text x="1006" y="252.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">camera, or 3 photos</text>
-<text x="1006" y="281.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Places and masks</text>
-<text x="1006" y="310.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Sensors from one sentence</text>
-<text x="1006" y="339.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Ask: “Where are my keys?”</text>
-<text x="1006" y="368.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Alerts; live view and clips as today</text>
-<rect x="988" y="430" width="262" height="362" rx="14" fill="#FFF" stroke="#C9D2E3" stroke-width="1"/>
-<text x="1006" y="460" font-size="16" font-weight="700" fill="#1A2233" text-anchor="start">MCP server</text>
-<text x="1006" y="484" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Devices, scenarios, security: 18 tools</text>
-<text x="1006" y="503" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">today</text>
-<text x="1006" y="540.3" font-size="13.5" font-weight="700" fill="#0084D6" text-anchor="start">+ Things tools (new)</text>
-<text x="1006" y="562.3" font-size="12" font-weight="400" fill="#003399" text-anchor="start" font-family="Menlo, monospace">list_things</text>
-<text x="1006" y="580.3" font-size="12" font-weight="400" fill="#003399" text-anchor="start" font-family="Menlo, monospace">create_thing</text>
-<text x="1006" y="598.3" font-size="12" font-weight="400" fill="#003399" text-anchor="start" font-family="Menlo, monospace">get_thing_last_seen</text>
-<text x="1006" y="616.3" font-size="12" font-weight="400" fill="#003399" text-anchor="start" font-family="Menlo, monospace">get_thing_timeline</text>
-<text x="1006" y="653.7" font-size="13.5" font-weight="700" fill="#0084D6" text-anchor="start">+ Scenario trigger (new)</text>
-<text x="1006" y="675.7" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">thingTracker: a thing or person</text>
-<text x="1006" y="694.7" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">condition starts any scenario, e.g.</text>
-<text x="1006" y="713.7" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">the smart plug switches the kettle on</text>
-<text x="1006" y="751.0" font-size="13.5" font-weight="400" fill="#555" text-anchor="start">One secure channel per home:</text>
-<text x="1006" y="770.0" font-size="13.5" font-weight="400" fill="#555" text-anchor="start">events and rules in, actions out</text>
+<text x="1006" y="227.8" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Add a thing: suggested, shown to a</text>
+<text x="1006" y="246.8" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">camera, or 3 photos</text>
+<text x="1006" y="270.5" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Sensors from one sentence</text>
+<text x="1006" y="294.2" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Ask: “Where are my keys?”</text>
+<text x="1006" y="318.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Alerts; live view and clips as today</text>
+<rect x="988" y="380" width="262" height="170" rx="14" fill="#FFF" stroke="#0084D6" stroke-width="2"/>
+<text x="1006" y="410" font-size="16" font-weight="700" fill="#1A2233" text-anchor="start">ThingTracker service</text>
+<text x="1006" y="434" font-size="13.5" font-weight="700" fill="#0084D6" text-anchor="start">The only caller of the model</text>
+<text x="1006" y="457.5" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Runs the loop: model ↔ MCP tools</text>
+<text x="1006" y="481.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Chooses the model and region</text>
+<text x="1006" y="504.5" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Caps spending per home</text>
+<text x="1006" y="528.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Receives the homes’ events</text>
+<rect x="988" y="590" width="262" height="202" rx="14" fill="#FFF" stroke="#C9D2E3" stroke-width="1"/>
+<text x="1006" y="620" font-size="16" font-weight="700" fill="#1A2233" text-anchor="start">MCP server</text>
+<text x="1006" y="644" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Altice’s tools for devices, scenarios</text>
+<text x="1006" y="663" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">and security (18 today)</text>
+<text x="1006" y="687.5" font-size="13.5" font-weight="700" fill="#0084D6" text-anchor="start">+ Things tools (new)</text>
+<text x="1006" y="707.5" font-size="11" font-weight="400" fill="#003399" text-anchor="start" font-family="Menlo, monospace">list_things</text>
+<text x="1006" y="723.5" font-size="11" font-weight="400" fill="#003399" text-anchor="start" font-family="Menlo, monospace">create_thing</text>
+<text x="1098" y="707.5" font-size="11" font-weight="400" fill="#003399" text-anchor="start" font-family="Menlo, monospace">get_thing_last_seen</text>
+<text x="1098" y="723.5" font-size="11" font-weight="400" fill="#003399" text-anchor="start" font-family="Menlo, monospace">get_thing_timeline</text>
+<text x="1006" y="748.0" font-size="13.5" font-weight="700" fill="#0084D6" text-anchor="start">+ thingTracker trigger (new)</text>
+<text x="1006" y="770.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">a thing or person starts any scenario</text>
 <rect x="1414" y="150" width="240" height="642" rx="14" fill="#0A3FA3"/>
 <text x="1432" y="180" font-size="16" font-weight="700" fill="#FFF" text-anchor="start">Any capable model,</text>
 <text x="1432" y="200" font-size="16" font-weight="700" fill="#FFF" text-anchor="start">under contract</text>
@@ -198,15 +200,20 @@
 <path d="M988 706 H870" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
 <text x="878" y="680" font-size="12" font-weight="700" fill="#0084D6" text-anchor="start">device</text>
 <text x="878" y="695" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">commands</text>
-<path d="M1119 390 V426" fill="none" stroke="#333" stroke-width="2" marker-start="url(#a)" marker-end="url(#a)"/>
-<path d="M1250 263 H1410" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<text x="1262" y="253" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">sentence, question</text>
-<path d="M1414 277 H1254" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<text x="1262" y="296" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">rule, answer</text>
-<path d="M1250 610.7 H1410" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<text x="1262" y="600.7" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">unclear case</text>
-<path d="M1414 624.7 H1254" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
-<text x="1262" y="643.7" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">verdict</text>
+<path d="M1112 380 V344" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<text x="1102" y="364" font-size="12" font-weight="400" fill="#0084D6" text-anchor="end">answers, alerts</text>
+<path d="M1126 340 V376" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<text x="1136" y="364" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">requests</text>
+<path d="M1112 590 V554" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<text x="1102" y="574" font-size="12" font-weight="400" fill="#0084D6" text-anchor="end">results</text>
+<path d="M1126 550 V586" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<text x="1136" y="574" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">tool calls</text>
+<path d="M1250 458 H1410" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<text x="1262" y="433" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">sentence, question,</text>
+<text x="1262" y="448" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">unclear case</text>
+<path d="M1414 472 H1254" fill="none" stroke="#333" stroke-width="2" marker-end="url(#a)"/>
+<text x="1262" y="491" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">rule, answer,</text>
+<text x="1262" y="506" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start">verdict</text>
 <rect x="24" y="828" width="1652" height="50" rx="12" fill="#F6F6F6"/>
 <text x="48" y="859" font-size="14" fill="#333"><tspan font-weight="700" fill="#0084D6">Crosses the house boundary</tspan><tspan>   ·   Out: events, things, one crop when a case is unclear   ·   In: rules, device commands   ·   </tspan><tspan font-weight="700">Only by the user’s choice:</tspan><tspan> live view and clips, as in the app today; recognising people the household enrolled</tspan></text>
 </svg>

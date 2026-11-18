@@ -75,13 +75,14 @@ The whole edge box, always on at 15 W, costs €2.59 a month in electricity (bus
 
 | Component | What it does | Status |
 |---|---|---|
+| **ThingTracker service** | The **MCP host**, and the only component that calls the language model. It receives requests from the app and events from the homes over the secure channel. It runs the loop: it sends the request and the list of available tools to the model, calls the tool the model chooses on the MCP server, and returns the result to the model until there is an answer. It chooses the model and region and caps spending per home | Proposed; in the prototype, `prototype/server.py` plays this role |
 | **MCP server** | Device control, scenarios, security status (18 tools today). We add four **Things tools**: `list_things`, `create_thing`, `get_thing_last_seen`, `get_thing_timeline` | The tools exist today; the Things tools are proposed |
 | **Altice app** | A new **Things** tab: suggested things, enrolment, places and masks, sensors from a sentence, "Ask", alerts | Proposed; prototype in [`prototype/`](../prototype/) |
 | **Notifications** | Alerts reach the phone through the app's existing notification service | To confirm with Altice (§11) |
 
 ### The language model
 
-Called by the platform, never by the edge directly, and only for three jobs:
+Called only by the ThingTracker service, never by the edge, the app or the MCP server, and only for three jobs. In MCP terms, the model never connects to the MCP server: it asks for a tool, and the service calls it.
 
 | Job | Input | Output | How often |
 |---|---|---|---|

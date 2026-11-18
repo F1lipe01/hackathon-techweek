@@ -31,11 +31,10 @@ PLAT = (966, 1372)
 CLOUD = (1392, 1676)
 BOUNDARY_X = 956
 PAD = 18                                               # inner padding of every box
-APP, MCP = (R1[0], R1[1]), (R2[0], R3[1])              # platform boxes sit on the same grid
+APP, SVC, MCP = (R1[0], 340), (380, 550), (590, R3[1])   # app, ThingTracker service (the MCP host), MCP server
 PX0, PX1 = 988, 1250                                   # platform box x-range
 LX0, LX1 = 1414, 1654                                  # language model panel x-range
-LLM_OUT_1, LLM_BACK_1 = "sentence, question", "rule, answer"
-LLM_OUT_2, LLM_BACK_2 = "unclear case", "verdict"
+LLM_OUT_1, LLM_BACK_1 = ["sentence, question,", "unclear case"], ["rule, answer,", "verdict"]
 INK, MUTED, BLUE, DEEP, LINE, FAINT = "#111", "#555", "#0084D6", "#003399", "#D0D0D0", "#777"
 
 # energy per model: time measured on our laptop GPU x the edge box's power x the Portuguese price
@@ -257,29 +256,35 @@ rect(PX0, APP[0], PX1 - PX0, APP[1] - APP[0], stroke="#C9D2E3")
 stack(APP[0] + 30, APP[1] - PAD - 4, [
     (24, lambda y: (text(PX0 + PAD, y, "Altice app", 16, 700, "#1A2233"),
                     text(PX0 + PAD, y + 24, "New Things tab", 13.5, 700, BLUE))),
-    *[para_block(PX0 + PAD, PW, t) for t in ["Add a thing: suggested, shown to a camera, or 3 photos", "Places and masks",
+    *[para_block(PX0 + PAD, PW, t) for t in ["Add a thing: suggested, shown to a camera, or 3 photos",
                                              "Sensors from one sentence", "Ask: “Where are my keys?”",
                                              "Alerts; live view and clips as today"]],
 ])
 
+# the host: the only component that talks to the language model, and the client of the MCP server
+rect(PX0, SVC[0], PX1 - PX0, SVC[1] - SVC[0], stroke=BLUE, sw=2)
+stack(SVC[0] + 30, SVC[1] - PAD - 4, [
+    (24, lambda y: (text(PX0 + PAD, y, "ThingTracker service", 16, 700, "#1A2233"),
+                    text(PX0 + PAD, y + 24, "The only caller of the model", 13.5, 700, BLUE))),
+    *[para_block(PX0 + PAD, PW, t) for t in ["Runs the loop: model ↔ MCP tools", "Chooses the model and region",
+                                             "Caps spending per home", "Receives the homes’ events"]],
+])
+
 rect(PX0, MCP[0], PX1 - PX0, MCP[1] - MCP[0], stroke="#C9D2E3")
-desc_span, desc_draw = para_block(PX0 + PAD, PW, "Devices, scenarios, security: 18 tools today")
-trig_span, trig_draw = para_block(PX0 + PAD, PW, "thingTracker: a thing or person condition starts any scenario, "
-                                                 "e.g. the smart plug switches the kettle on")
+desc_span, desc_draw = para_block(PX0 + PAD, PW, "Altice’s tools for devices, scenarios and security (18 today)")
+trig_span, trig_draw = para_block(PX0 + PAD, PW, "a thing or person starts any scenario")
 
 
 def tools(y):
     text(PX0 + PAD, y, "+ Things tools (new)", 13.5, 700, BLUE)
     for i, t in enumerate(["list_things", "create_thing", "get_thing_last_seen", "get_thing_timeline"]):
-        text(PX0 + PAD, y + 22 + i * 18, t, 12, 400, DEEP, family="Menlo, monospace")
+        text(PX0 + PAD + (i // 2) * 92, y + 20 + (i % 2) * 16, t, 11, 400, DEEP, family="Menlo, monospace")
 
 
-foot_span, foot_draw = para_block(PX0 + PAD, PW, "One secure channel per home: events and rules in, actions out", fill=MUTED)
 stack(MCP[0] + 30, MCP[1] - PAD - 4, [
     (24 + desc_span, lambda y: (text(PX0 + PAD, y, "MCP server", 16, 700, "#1A2233"), desc_draw(y + 24))),
-    (22 + 3 * 18, tools),
-    (22 + trig_span, lambda y: (text(PX0 + PAD, y, "+ Scenario trigger (new)", 13.5, 700, BLUE), trig_draw(y + 22))),
-    (foot_span, foot_draw),
+    (20 + 16, tools),
+    (22 + trig_span, lambda y: (text(PX0 + PAD, y, "+ thingTracker trigger (new)", 13.5, 700, BLUE), trig_draw(y + 22))),
 ])
 
 L0, L1 = R1[0], R3[1]
@@ -325,10 +330,13 @@ arrow(f"M{(COL[0] + COL[1]) // 2} {CAM_ROW[1]} V{GUARD_ROW[0] - 4}")
 arrow(f"M{COL[1]} {(GUARD_ROW[0] + GUARD_ROW[1]) // 2} H{PERC[0] - 4}")
 # one arrow per direction, each with its own label, so the direction of every flow is unambiguous
 def pair_h(x_left, x_right, y, right_label, left_label):
+    """Two arrows; each label may be several lines: above the upper arrow, below the lower one."""
+    right_label = [right_label] if isinstance(right_label, str) else right_label
+    left_label = [left_label] if isinstance(left_label, str) else left_label
     arrow(f"M{x_left} {y - 7} H{x_right - 4}")
-    label(x_left + 12, y - 17, [right_label], bold_first=False)
+    label(x_left + 12, y - 17 - 15 * (len(right_label) - 1), right_label, bold_first=False)
     arrow(f"M{x_right} {y + 7} H{x_left + 4}")
-    label(x_left + 12, y + 26, [left_label], bold_first=False)
+    label(x_left + 12, y + 26, left_label, bold_first=False)
 
 
 def pair_v(x, y_top, y_bottom, up_label, down_label):
@@ -348,10 +356,11 @@ arrow(f"M{ENG[1]} {mid2} H{PX0 - 4}", color=BLUE, both=True, width=2.5)
 label(878, mid2 - 26, ["secure", "channel"])
 arrow(f"M{PX0} {mid3} H{DEV[1] + 4}")
 label(878, mid3 - 26, ["device", "commands"])
-arrow(f"M{(PX0 + PX1) // 2} {APP[1]} V{MCP[0] - 4}", both=True)
-# platform <-> language model, labelled inside the platform band's corridor
-pair_h(PX1, LX0, mid1, LLM_OUT_1, LLM_BACK_1)
-pair_h(PX1, LX0, JOBS_Y + 2 * 46 + 5, LLM_OUT_2, LLM_BACK_2)
+PXM = (PX0 + PX1) // 2
+pair_v(PXM, APP[1], SVC[0], "answers, alerts", "requests")
+pair_v(PXM, SVC[1], MCP[0], "results", "tool calls")
+# the service is the only box that talks to the language model
+pair_h(PX1, LX0, (SVC[0] + SVC[1]) // 2, LLM_OUT_1, LLM_BACK_1)
 
 # ---------------------------------------------------------------- legend
 rect(24, LEGEND_Y, W - 48, 50, fill="#F6F6F6", stroke=None, rx=12)

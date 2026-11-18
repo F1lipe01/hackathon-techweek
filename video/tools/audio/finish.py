@@ -208,8 +208,9 @@ def measure(path, png):
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(path), "-filter_complex",
                     "showwavespic=s=1200x240:split_channels=0:colors=0x2b6cb0", "-frames:v", "1", str(png)],
                    check=True)
-    return {"duration_s": round(len(x) / RATE, 3), "lufs_i": lufs if len(x) >= 0.4 * RATE else None,  # 400 ms gate "peak_dbfs": round(peak, 2),
-            "clipped_samples": clipped}
+    # integrated loudness needs at least one 400 ms gating block
+    return {"duration_s": round(len(x) / RATE, 3), "lufs_i": lufs if len(x) >= 0.4 * RATE else None,
+            "peak_dbfs": round(peak, 2), "clipped_samples": clipped}
 
 
 def key_root(path):

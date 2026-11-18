@@ -3,3 +3,5 @@ out/
 public/footage/
 public/real/*.mp4
 public/real/fonts/
+public/audio/
+public/stock/

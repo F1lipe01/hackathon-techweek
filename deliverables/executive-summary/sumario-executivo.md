@@ -7,7 +7,7 @@ O desafio n.º 3, proposto pela Altice Labs, pede às equipas que repensem a cas
 
 ## Estratégia
 
-A câmara é o sensor mais versátil da casa, mas está hoje subaproveitada: no kit do desafio, limita-se a comunicar à plataforma que detetou movimento. A estratégia da equipa consiste em transformar a câmara numa fonte de informação. Modelos de visão de código aberto, a funcionar em casa, reconhecem objetos e lugares. Um modelo de linguagem, usado só quando necessário, converte frases em regras e responde a perguntas. Assim, uma única câmara substitui vários sensores específicos e cada utilizador cria os seus próprios sensores com uma frase. A proposta assenta em três princípios:
+A câmara é o sensor mais versátil da casa, mas está hoje subaproveitada: no kit do desafio, limita-se a comunicar à plataforma que detetou movimento. A estratégia da equipa consiste em transformar a câmara numa fonte de informação. Modelos de visão _open-source_, a funcionar em casa, reconhecem objetos e lugares. Um modelo de linguagem, usado só quando necessário, converte frases em regras e responde a perguntas. Assim, uma única câmara substitui vários sensores específicos e cada utilizador cria os seus próprios sensores com uma frase. A proposta assenta em três princípios:
 
 - **Informação, e não vigilância.** O sistema acompanha os objetos e as situações que o utilizador escolhe.
 - **Integração no que já existe.** Um separador na aplicação da Altice, novas ferramentas no MCP e regras guardadas como cenários facilitam a adoção pela MEO e por outros operadores.
@@ -37,7 +37,7 @@ Até ao momento, a equipa ligou-se ao MCP com um cliente próprio, que consulta 
 
 ## Ferramentas de IA
 
-- **Modelos de visão de código aberto, em casa.** O OWLv2, o DINOv2, o Depth Anything V2 e o ByteTrack detetam, identificam e seguem objetos e estimam a profundidade, com licenças que permitem o uso comercial (Apache-2.0 e MIT). Ocupam cerca de 0,8 GB, demoram 0,6 s por imagem num portátil e não enviam imagens para fora de casa.
+- **Modelos de visão _open-source_, em casa.** O OWLv2, o DINOv2, o Depth Anything V2 e o ByteTrack detetam, identificam e seguem objetos e estimam a profundidade, com licenças que permitem o uso comercial (Apache-2.0 e MIT). Ocupam cerca de 0,8 GB, demoram 0,6 s por imagem num portátil e não enviam imagens para fora de casa.
 - **Modelo de linguagem, sob contrato.** Pode ser o Claude, da Anthropic, ou outro modelo equivalente, desde que o contrato exclua o uso dos dados para treino e inclua um acordo de tratamento de dados, de preferência com servidores na UE. Com base no custo medido por pedido, estima-se um gasto de cerca de 0,43 € por casa e por mês.
 - **Desenvolvimento.** A equipa recorreu ao Claude Code (Claude Opus 5.5) na pesquisa, na programação e na redação; validou os resultados e confirmou os números nas fontes primárias.
 

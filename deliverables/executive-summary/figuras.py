@@ -33,7 +33,7 @@ def font(size, bold=False):
 
 
 def width(s, size, bold=False):
-    return font(size, bold).getlength(s)
+    return font(size, bold).getlength(s.replace("_", ""))
 
 
 def wrap(s, max_w, size, bold=False):
@@ -57,8 +57,9 @@ class Fig:
         self.h, self.o = h, []
 
     def text(self, x, y, s, size=15, bold=False, fill=INK, anchor="start"):
+        body = re.sub(r"(?<![\w])_([^_]+)_(?![\w])", lambda m: f'<tspan font-style="italic">{m.group(1)}</tspan>', esc(s))
         self.o.append(f'<text x="{x:.1f}" y="{y:.1f}" font-size="{size}" font-weight="{700 if bold else 400}" '
-                      f'fill="{fill}" text-anchor="{anchor}">{esc(s)}</text>')
+                      f'fill="{fill}" text-anchor="{anchor}">{body}</text>')
 
     def para(self, x, y, s, max_w, size=14, lead=18, fill=MUTED, bold=False, anchor="start"):
         lines = wrap(s, max_w, size, bold)
@@ -73,7 +74,7 @@ class Fig:
 
     def arrow(self, x1, y1, x2, y2, color=ARROW):
         self.o.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{color}" '
-                      f'stroke-width="1.8" marker-end="url(#ah)"/>')
+                      f'stroke-width="1.6" marker-end="url(#ah)"/>')
 
     def svg_icon(self, path, x, y, size):
         s = path.read_text()
@@ -92,7 +93,7 @@ class Fig:
     def save(self, name):
         svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {self.h}" width="{W}" height="{self.h}" '
                'font-family="Lato, Arial, sans-serif"><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" '
-               f'markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="{ARROW}"/>'
+               f'markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 1.6 L10 5 L0 8.4 Z" fill="{ARROW}"/>'
                f'</marker></defs><rect width="{W}" height="{self.h}" fill="#FFF"/>' + "".join(self.o) + "</svg>")
         (HERE / name).write_text(svg, encoding="utf8")
         print("wrote", name, f"{W}x{self.h}")
@@ -104,7 +105,7 @@ def exemplo():
     gap, top, h = 34, 6, 258
     cw = (W - 3 * gap) / 4
     steps = [("Uma frase", "O modelo de linguagem converte a frase numa regra, uma única vez."),
-             ("A câmara vê", "Modelos de visão abertos, a funcionar em casa, encontram as chaves."),
+             ("A câmara vê", "Modelos de visão _open-source_, a funcionar em casa, encontram as chaves."),
              ("A casa lembra", "A memória local guarda o que viu, onde e quando, sem vídeo."),
              ("A casa age", "A regra é avaliada em casa e os comandos seguem pelo MCP.")]
     for i, (title, caption) in enumerate(steps):
@@ -138,13 +139,19 @@ def exemplo():
                 f.text(vx + 48, ry + 20, what, 15, True)
                 f.text(vx + 48, ry + 38, where, 13.5, False, MUTED)
         else:
+            half = (cw - 28) / 2
             for k, (ic, lab) in enumerate([("contact-sensor", "porta abre"), ("light", "lâmpada pisca")]):
-                ix = vx + 8 + k * (cw - 28) / 2
-                wi = f.png_icon(DEVICES / f"{ic}.png", ix, vy + 10, 34)
-                f.text(ix + wi / 2, vy + 62, lab, 13.5, False, MUTED, "middle")
-            f.rect(vx, vy + 76, cw - 28, 40, fill="#EEF3FB", stroke=None, rx=20)
-            f.svg_icon(TABLER / "bell.svg", vx + 12, vy + 85, 22)
-            f.text(vx + 42, vy + 101, "Saiu sem as chaves", 15, True, INK)
+                cx = vx + half * (k + 0.5)
+                data = (DEVICES / f"{ic}.png").read_bytes()
+                w0, h0 = struct.unpack(">II", data[16:24])
+                f.png_icon(DEVICES / f"{ic}.png", cx - w0 * 34 / h0 / 2, vy + 10, 34)
+                f.text(cx, vy + 62, lab, 13.5, False, MUTED, "middle")
+            pill = "Saiu sem as chaves"
+            pw = 22 + 8 + width(pill, 15, True) + 28
+            px0 = vx + (cw - 28 - pw) / 2
+            f.rect(px0, vy + 76, pw, 40, fill="#EEF3FB", stroke=None, rx=20)
+            f.svg_icon(TABLER / "bell.svg", px0 + 14, vy + 85, 22)
+            f.text(px0 + 14 + 22 + 8, vy + 101, pill, 15, True, INK)
         if i < 3:
             f.arrow(x + cw + 5, top + h / 2, x + cw + gap - 5, top + h / 2)
     f.save("figura-exemplo.svg")
@@ -174,7 +181,7 @@ def arquitetura():
 
     CAM, VIS, MEM = (16, 140), (170, 380), (410, 536)
     box(*CAM, R1, "Câmara", "1 a 2 imagens por segundo")
-    box(*VIS, R1, "Modelos de visão", "abertos: encontram objetos e lugares pelo nome")
+    box(*VIS, R1, "Modelos de visão", "_open-source_: encontram objetos e lugares pelo nome")
     box(*MEM, R1, "Memória local", "o quê, onde e quando")
     box(16, 380, R2, "Privacidade", "máscaras definidas pelo utilizador; imagens descartadas; sem vídeo guardado", dash="5 4")
     box(*MEM, R2, "Regras", "avaliadas a cada segundo")

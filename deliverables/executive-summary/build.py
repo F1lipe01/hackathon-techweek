@@ -70,17 +70,21 @@ def parse(md):
 
 
 def runs(text):
-    """Split **bold** and `code` into (text, bold, code) runs."""
+    """Split **bold**, `code` and _italic_ (loanwords) into (text, bold, code, italic) runs.
+    Italic may sit inside bold: **Modelos _open-source_, em casa.**"""
     out = []
     for part in re.split(r"(\*\*[^*]+\*\*|`[^`]+`)", text):
         if not part:
             continue
-        if part.startswith("**"):
-            out.append((part[2:-2], True, False))
-        elif part.startswith("`"):
-            out.append((part[1:-1], False, True))
-        else:
-            out.append((part, False, False))
+        if part.startswith("`"):
+            out.append((part[1:-1], False, True, False))
+            continue
+        bold = part.startswith("**")
+        inner = part[2:-2] if bold else part
+        for piece in re.split(r"(?<![\w])(_[^_]+_)(?![\w])", inner):
+            if piece:
+                italic = piece.startswith("_") and piece.endswith("_") and len(piece) > 2
+                out.append((piece[1:-1] if italic else piece, bold, False, italic))
     return out
 
 
@@ -121,13 +125,15 @@ def x(s):
     return html.escape(s, quote=False)
 
 
-def w_run(text, bold=False, code=False, size=21, color=None, font=None):
+def w_run(text, bold=False, code=False, size=21, color=None, font=None, italic=False):
     rpr = ""
     face = "Courier New" if code else font
     if face:
         rpr += f'<w:rFonts w:ascii="{face}" w:cs="{face}" w:eastAsia="{face}" w:hAnsi="{face}"/>'
     if bold:
         rpr += '<w:b w:val="1"/><w:bCs w:val="1"/>'
+    if italic:
+        rpr += '<w:i w:val="1"/><w:iCs w:val="1"/>'
     if color:
         rpr += f'<w:color w:val="{color}"/>'
     sz = size - 2 if code else size
@@ -137,7 +143,7 @@ def w_run(text, bold=False, code=False, size=21, color=None, font=None):
 
 def w_par(text, ppr="", all_bold=False, **kw):
     return f"<w:p><w:pPr>{ppr}</w:pPr>" + "".join(
-        w_run(t, b or all_bold, c, **kw) for t, b, c in runs(text)) + "</w:p>"
+        w_run(t, b or all_bold, c, italic=i, **kw) for t, b, c, i in runs(text)) + "</w:p>"
 
 
 BODY_SPACING = '<w:spacing w:before="0" w:after="100" w:line="264" w:lineRule="auto"/>'
@@ -230,9 +236,13 @@ def build_docx(tmp, meta, blocks):
 
 def inline_html(text):
     out = []
-    for t, b, c in runs(text):
+    for t, b, c, i in runs(text):
         t = x(t)
-        out.append(f"<b>{t}</b>" if b else f"<code>{t}</code>" if c else t)
+        if c:
+            t = f"<code>{t}</code>"
+        if i:
+            t = f"<i>{t}</i>"
+        out.append(f"<b>{t}</b>" if b else t)
     return "".join(out)
 
 
@@ -322,7 +332,7 @@ def main():
             render_figure(tmp, fontdir, name)
         docx = build_docx(tmp, meta, blocks)
         pdf = build_pdf(tmp, meta, blocks, fontdir)
-    words = sum(len(re.sub(r"[*`]", "", t).split()) for k, t in blocks if k != "fig")
+    words = sum(len(re.sub(r"[*`_]", "", t).split()) for k, t in blocks if k != "fig")
     print(f"built {docx}\nbuilt {pdf}\nwords: {words}")
 
 

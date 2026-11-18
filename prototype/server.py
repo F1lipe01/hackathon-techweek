@@ -1,7 +1,11 @@
 """ThingTracker prototype server.
 
-    prototype/.venv/bin/python prototype/server.py            # http://127.0.0.1:8765, AI OFF: simulated answers, 0 USD
+    prototype/.venv-llm/bin/python prototype/llm_local.py     # local text model on :8766 (Qwen3-1.7B, offline, 0 USD)
+    prototype/.venv/bin/python prototype/server.py            # http://127.0.0.1:8765, no Claude: the assistant uses the
+                                                               #   local model when it answers, else keyword templates
+    TT_LLM=off ... server.py                                   # templates only, even when the local model is running
     TT_AI=1 ... server.py                                      # real Claude calls (costs money; capped by TT_BUDGET_USD)
+    TT_AI=1 TT_LLM=local ... server.py                         # Claude for the camera, the local model for the assistant
     TT_LIVE_ACTIONS=1 ... server.py                            # really switch the Light and Plug through the MCP
     TT_BUDGET_USD=5 ...                                        # raise the spending cap (default 3.00 USD)
 
@@ -312,7 +316,8 @@ threading.Thread(target=rules_engine, daemon=True).start()
 @app.get("/api/state")
 def state():
     s = store.snapshot()
-    s["settings"] = {"live_actions": actions.LIVE, "ai": brain.enabled, "budget_usd": brain.cap, "kit_camera": bool(os.environ.get("CAMERA_RTSP_URL"))}
+    s["settings"] = {"live_actions": actions.LIVE, "ai": brain.enabled, "llm": brain.text_mode(), "budget_usd": brain.cap,
+                     "kit_camera": bool(os.environ.get("CAMERA_RTSP_URL"))}
     s["edge"] = {k: v for k, v in EDGE.items() if k != "boxes"} | {"online": edge_online()}
     s["enrol"] = dict(ENROL) or None
     return s

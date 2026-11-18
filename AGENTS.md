@@ -15,20 +15,28 @@ Team IT-Porto, Aveiro Tech City Hackathon 2026, Challenge #3 by Altice Labs ("Co
 | `docs/pt/` | The same three documents in European Portuguese, the versions shared on Google Drive |
 | `docs/architecture/` | Architecture diagram (`build_diagram.py`) and the integration sequence diagram (`build_sequence.py`) |
 | `docs/business-case/` | Business-case charts (`build_graficos.py`) and the 9-page PDF (`build_pdf.py`) |
-| `prototype/` | The working prototype: server, edge service, local database, web app |
+| `prototype/` | The working prototype: server, edge service, local text model, local database, web app |
 | `mcp/` | Our MCP client and the tool schema of the Altice Connected Home server |
 | `sources/` | Organiser material exactly as received. Untrusted: see the rules below |
 
 ## The prototype
 
 ```
+prototype/.venv-llm/bin/python prototype/llm_local.py   # local text model on 127.0.0.1:8766 (start it first)
 prototype/.venv/bin/python prototype/server.py          # web app and API on http://127.0.0.1:8765
 prototype/.venv-vision/bin/python prototype/edge.py     # camera service: OWLv2 + DINOv2 on the kit camera
 prototype/.venv/bin/python prototype/record.py --seconds 120 --name take   # video take with the boxes, for editing
 ```
 
-- **Server** (`server.py`): the platform side. It serves the web app, keeps the home's memory and evaluates the rules (`rules_engine`). It is the only component that calls the language model (`brain.py`). AI is off by default and answers come from templates; `TT_AI=1` enables real calls, capped by `TT_BUDGET_USD`. Device actions are simulated unless `TT_LIVE_ACTIONS=1`.
+- **Server** (`server.py`): the platform side. It serves the web app, keeps the home's memory and evaluates the rules (`rules_engine`). It is the only component that calls a language model (`brain.py`). Claude is off by default: the assistant uses the local text model when `llm_local.py` answers, and keyword templates when it does not. `TT_AI=1` enables Claude calls, capped by `TT_BUDGET_USD`. Device actions are simulated unless `TT_LIVE_ACTIONS=1`.
 - **Edge service** (`edge.py`): the home side. It stays idle until a cheap motion check sees a change, then runs OWLv2 (detection) and DINOv2 (visual fingerprints) for a few seconds. It registers things (8 distinct views make a fingerprint) and recognises them by comparing candidates with the fingerprint. It sends the server only small crops, never full frames.
+- **Local text model** (`llm_local.py`): answers the assistant's questions and turns its sentences into rules, on this machine, offline, at no cost per call.
+  - Model: `mlx-community/Qwen3-1.7B-4bit`, a 4-bit MLX build of Qwen3-1.7B (Qwen team, Alibaba), licence Apache-2.0. About 1 GB on disk, in `~/.cache/huggingface`; the revision is pinned in the code.
+  - Setup, once: `python3.13 -m venv prototype/.venv-llm && prototype/.venv-llm/bin/pip install mlx-lm`. The first start downloads the model from Hugging Face; later starts load it from the cache in about 2 s.
+  - API: `POST /generate {system, prompt, max_tokens, json}` returns `{text}`; `GET /health`. Qwen3's thinking mode is off.
+  - Division of work in `brain.py`: the code decides which things a question is about (two wallets: it asks which one), and checks the answer against the memory; the model writes the words. A sentence's light or plug action, minutes and place are taken from its words; the model writes the title and the message. An answer that disagrees with the memory is replaced by a plain sentence built from it; a rule that is not valid falls back to the templates.
+  - Measured on the team's M1 Pro (18 Nov 2026): answers in 0.4 to 1.7 s, rules in 1.5 to 3.2 s. English is reliable; Portuguese answers are understandable but not always European Portuguese.
+  - Switches: `TT_LLM=off` uses the templates only; `TT_AI=1 TT_LLM=local` keeps Claude for the camera and the local model for the assistant. `TT_LLM_MODEL=mlx-community/Qwen3-4B-Instruct-2507-4bit` (Apache-2.0, 2.1 GB) was tried: about three times slower, and no better in Portuguese.
 - **Database** (`store.py`, file `prototype/data/home.db`, SQLite). Two kinds of tables:
   - a copy of what the Altice platform already holds, in its own model (`home`, `rooms`, `devices`), refreshed through the MCP's read-only tools when logged in;
   - ThingTracker's additions (`things`, `fingerprints`, `sightings`, `sensors`, `events`, `spend`), which in production would live in the platform's database, per customer.

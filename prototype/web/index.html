@@ -26,11 +26,10 @@
   </symbol>
 </svg>
 
-<header class="top">
+<header class="top"><div class="top-in">
   <span class="brand"><svg aria-hidden="true"><use href="#mark"/></svg>ThingTracker</span>
-  <span class="top-note">The home's camera, analysed on this computer · the Altice app with the new <b>Things</b> tab and assistant</span>
   <span class="mode" id="mode">Prototype</span>
-</header>
+</div></header>
 
 <main class="split">
   <!-- ======================= CAMERA: what the system sees ======================= -->
@@ -42,6 +41,7 @@
       <div class="stage-top"><span class="place">Work Room <small>Kit camera</small></span><span class="edge-pill" id="edge" aria-live="polite" hidden></span></div>
       <p class="stage-msg" id="stagemsg">Connecting to the kit camera…</p>
     </div>
+    <p class="caption">The camera stays idle until something moves. Then the models on this computer find the things you registered, recognise each one by its visual fingerprint and draw a box around it. Only a small crop of each thing goes into the home's memory.</p>
 
     <div class="log-head">
       <h2>Activity</h2>
@@ -96,6 +96,7 @@
      </div>
      <img class="frame" src="/web/iphone-frame.svg" alt="" aria-hidden="true">
     </div>
+    <p class="caption small">The Altice app with the new <b>Things</b> tab and assistant</p>
   </section>
 </main>
 

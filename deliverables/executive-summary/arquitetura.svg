@@ -124,11 +124,11 @@
 <text x="751.1" y="769" font-size="10" font-weight="700" fill="#777" text-anchor="start">Nedis ZBSC10WT</text>
 <rect x="988" y="150" width="262" height="190" rx="14" fill="#FFF" stroke="#C9D2E3" stroke-width="1"/>
 <text x="1006" y="180" font-size="16" font-weight="700" fill="#1A2233" text-anchor="start">Aplicação Altice</text>
-<text x="1006" y="204" font-size="13.5" font-weight="700" fill="#0084D6" text-anchor="start">Novo separador “Things”</text>
-<text x="1006" y="227.8" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Adicionar um objeto: sugerido,</text>
-<text x="1006" y="246.8" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">mostrado à câmara ou 3 fotografias</text>
-<text x="1006" y="270.5" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Sensores a partir de uma frase</text>
-<text x="1006" y="294.2" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Perguntar: “Onde estão as chaves?”</text>
+<text x="1006" y="204" font-size="13.5" font-weight="700" fill="#0084D6" text-anchor="start">Novo separador “Things” e assistente</text>
+<text x="1006" y="227.8" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Registar um objeto: mostrá-lo à</text>
+<text x="1006" y="246.8" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">câmara</text>
+<text x="1006" y="270.5" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Assistente em todos os separadores</text>
+<text x="1006" y="294.2" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Sensores a partir de uma frase</text>
 <text x="1006" y="318.0" font-size="13.5" font-weight="400" fill="#333" text-anchor="start">Avisos; vídeo em direto, como hoje</text>
 <rect x="988" y="380" width="262" height="170" rx="14" fill="#FFF" stroke="#0084D6" stroke-width="2"/>
 <text x="1006" y="410" font-size="16" font-weight="700" fill="#1A2233" text-anchor="start">Serviço <tspan font-style="italic">ThingTracker</tspan></text>

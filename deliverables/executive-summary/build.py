@@ -158,7 +158,7 @@ def w_blocks(blocks, fig_rid):
                 '<w:p><w:pPr><w:keepNext/><w:spacing w:before="60" w:after="120"/><w:jc w:val="center"/></w:pPr>'
                 '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">'
                 f'<wp:extent cx="{cx}" cy="{cy}"/><wp:effectExtent l="0" t="0" r="0" b="0"/>'
-                '<wp:docPr id="101" name="fluxo" descr="Fluxo do Track Things: câmara, privacidade, visão, decisão, resposta"/>'
+                '<wp:docPr id="101" name="fluxo" descr="Fluxo do ThingTracker: ver, filtrar, perceber, lembrar, agir"/>'
                 '<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>'
                 '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">'
                 '<pic:pic><pic:nvPicPr><pic:cNvPr id="101" name="fluxo.png"/><pic:cNvPicPr/></pic:nvPicPr>'
@@ -255,7 +255,7 @@ def build_pdf(tmp, meta, blocks, fontdir):
         elif kind == "sources":
             parts.append(f'<p class="sources">{inline_html(text)}</p>')
         elif kind == "fig":
-            parts.append(f'<figure><img src="{FIGURE_PNG.as_uri()}" alt="Fluxo do Track Things"></figure>')
+            parts.append(f'<figure><img src="{FIGURE_PNG.as_uri()}" alt="Fluxo do ThingTracker"></figure>')
     close_list()
 
     css = font_faces(fontdir) + """

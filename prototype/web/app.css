@@ -31,9 +31,11 @@
     --font: "Switzer", "Helvetica Neue", Arial, sans-serif;
     --app-font: "Montserrat", "Helvetica Neue", Arial, sans-serif;
     --step-small: 0.8125rem; --step-body: 0.9375rem;
-    /* the page: one grid; the phone column is sized by the window, the camera takes the rest */
-    --head-h: 64px; --gutter: clamp(16px, 2.2vw, 32px); --gap: clamp(16px, 1.6vw, 24px);
-    --phone-w: clamp(300px, 26vw, 420px);
+    /* the page. Desktop: the first screen is exactly the window under the header; the phone takes its full height
+       and the camera with the flow strip takes the same height on the left. The activity is the full row below. */
+    --head-h: 60px; --gutter: clamp(16px, 2vw, 28px); --gap: clamp(12px, 1.4vw, 20px);
+    --screen-h: calc(100svh - var(--head-h) - var(--gutter));
+    --phone-w: calc(var(--screen-h) * 1350 / 2760);
     --radius: 14px;
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --app-fade: cubic-bezier(0.2, 0, 0, 1);   /* the app's screen crossfade: fast start, ease out (280-300 ms) */
@@ -56,38 +58,51 @@
 
 /* ---------------------------------------------------------------- the page: one grid, three compositions */
 @layer layout {
-  .top { height: var(--head-h); display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 var(--gutter); }
-  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.125rem; letter-spacing: -0.03em; flex: none; }
+  /* header: stays on top while the page scrolls */
+  .top { position: sticky; top: 0; z-index: 20; height: var(--head-h); display: flex; align-items: center; gap: clamp(12px, 2vw, 28px);
+    padding: 0 var(--gutter); background: rgb(246 246 246 / 0.86); backdrop-filter: saturate(1.4) blur(12px); -webkit-backdrop-filter: saturate(1.4) blur(12px); }
+  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.125rem; letter-spacing: -0.03em; flex: none; color: inherit; text-decoration: none; }
   .brand svg { width: 26px; height: 26px; }
-  .mode { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--step-small); padding: 5px 12px; border-radius: 999px; background: var(--ground); color: var(--muted); }
+  .docs { display: flex; gap: 4px; min-width: 0; }
+  .docs a { padding: 7px 12px; border-radius: 999px; color: var(--ink); text-decoration: none; font-size: 0.875rem; font-weight: 500; white-space: nowrap;
+    transition: background-color 160ms ease-out; }
+  @media (hover: hover) and (pointer: fine) { .docs a:hover { background: var(--ground); } }
+  .mode { margin-left: auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--step-small);
+    padding: 5px 12px; border-radius: 999px; background: var(--ground); color: var(--muted); }
   .mode.live { background: #fdecec; color: var(--app-red); }
+  @media (max-width: 899px) { .mode { display: none; } }
   h2 { font-size: 0.875rem; font-weight: 600; color: var(--ink); }
 
-  /* phone: one column, the app right after the camera */
+  /* phone (small screens): one column, the app right after the camera; the wrappers step aside */
   .split { display: grid; gap: var(--gap); padding: 0 var(--gutter) var(--gutter); grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "stage" "phone" "steps" "activity"; }
-  .stage { grid-area: stage; } .steps { grid-area: steps; } .activity { grid-area: activity; }
+    grid-template-areas: "stage" "phone" "flow" "activity"; }
+  .main, .main-in { display: contents; }
+  .stage { grid-area: stage; } .flow { grid-area: flow; } .activity { grid-area: activity; }
   .phone-wrap { grid-area: phone; justify-self: center; width: min(100%, 400px); }
   .phone { width: 100%; }
 
-  /* tablet: the camera across the top; the phone beside the steps and the activity */
+  /* tablet, or a short window: the camera across the top, the phone beside the flow (stacked to its height), the activity below */
   @media (min-width: 700px) {
-    .split { grid-template-columns: var(--phone-w) minmax(0, 1fr); grid-template-areas: "stage stage" "phone steps" "activity activity";
-      align-items: start; }
-    .steps { align-self: stretch; }
-    .phone-wrap { width: var(--phone-w); justify-self: stretch; }
+    .split { grid-template-columns: clamp(260px, 36vw, 360px) minmax(0, 1fr); grid-template-areas: "stage stage" "phone flow" "activity activity"; }
+    .phone-wrap { width: 100%; justify-self: stretch; align-self: start; }
+    .flow { align-self: stretch; }
   }
-  /* desktop: the camera and everything about it on the left; the phone on the right, kept in view while the page scrolls */
-  @media (min-width: 1100px) {
-    .split { grid-template-columns: minmax(0, 1fr) var(--phone-w); grid-template-areas: "stage phone" "steps phone" "activity phone";
-      grid-template-rows: auto auto 1fr; }
-    .phone-wrap { position: sticky; top: var(--gutter); }
+
+  /* desktop: no scrolling for the first screen. The phone fills its height; the camera and the flow fill the same height */
+  @media (min-width: 1100px) and (min-height: 560px) {
+    .split { grid-template-columns: minmax(0, 1fr) var(--phone-w); grid-template-areas: "main phone" "activity activity"; }
+    .main { display: block; grid-area: main; height: var(--screen-h); min-width: 0; container-type: size; }
+    .main-in { display: grid; height: 100%; gap: var(--gap); grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+    .main-in > .stage, .main-in > .flow { grid-area: auto; }     /* inside the wrapper they follow its own rows */
+    .phone-wrap { grid-area: phone; width: var(--phone-w); height: var(--screen-h); }
+    .activity { padding-top: calc(var(--gap) * 1.5); }
   }
 }
 
 @layer camera {
-  /* the camera: 16:9, as wide as its grid area (the kit camera is 16:9, so the picture fills it exactly) */
-  .stage { position: relative; justify-self: stretch; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: var(--radius); overflow: hidden; }
+  /* the camera: 16:9 where the page flows; on desktop it fills the room the phone leaves (app.js: fitStage picks cover or contain) */
+  .stage { position: relative; justify-self: stretch; width: 100%; min-height: 0; aspect-ratio: 16 / 9; background: #000; border-radius: var(--radius); overflow: hidden; }
+  @media (min-width: 1100px) and (min-height: 560px) { .stage { aspect-ratio: auto; height: 100%; } }
   .stage video, .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
   .stage[data-fit="cover"] video, .stage[data-fit="cover"] img { object-fit: cover; }
   /* the camera burns its clock into the top-left corner: our labels go along the bottom */
@@ -96,24 +111,42 @@
   .stage-msg { position: absolute; inset: 0 0 auto 0; padding: 10px 16px; color: #fff; background: rgb(0 0 0 / 0.6); font-size: var(--step-small); }
   .stage-msg:empty { display: none; }
 
-  /* how it works: equal cards; four across under a wide camera, stacked beside the phone on a tablet */
-  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: st;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); }
-  /* tablet: the four steps share the phone's height, one above the other */
-  @media (min-width: 700px) and (max-width: 1099px) { .steps { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(4, 1fr); } }
-  .steps li { counter-increment: st; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 4px 12px; align-content: start;
-    padding: 16px; background: var(--ground); border-radius: var(--radius); }
-  .steps li::before { content: counter(st); grid-row: span 2; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
-    background: #e5f2fb; color: var(--labs); font-weight: 600; font-size: 0.8125rem; }
-  .steps b { font-weight: 600; font-size: 0.9375rem; line-height: 28px; }
-  .steps span { font-size: 0.875rem; line-height: 1.5; color: var(--muted); }
+  /* how it works: one strip of four stages, like a pipeline. A rail on top of each stage lights up with what the camera
+     service is doing: idle → stage 1; analysing → 1 to 3; registering → 1 to 3 in orange. */
+  .flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+    background: var(--ground); border-radius: var(--radius); overflow: hidden; }
+  .flow li { position: relative; display: grid; align-content: center; gap: 3px; padding: 16px 18px 14px; min-width: 0; }
+  .flow li + li { border-left: 1px solid #e8ecf2; }
+  .flow li::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #e8ecf2; transition: background-color 300ms ease-out; }
+  .flow li + li::after { content: ""; position: absolute; left: -5px; top: 50%; width: 8px; height: 8px; margin-top: -4px;
+    border-top: 1px solid #d4dbe6; border-right: 1px solid #d4dbe6; background: var(--ground); transform: rotate(45deg); }
+  .flow .k { font: 600 0.6875rem/1.2 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: 0.04em; text-transform: uppercase; color: var(--labs); }
+  .flow b { font-weight: 600; font-size: 0.9375rem; line-height: 1.3; letter-spacing: -0.01em; }
+  .flow .d { font-size: 0.8125rem; line-height: 1.4; color: var(--muted); }
+  .flow[data-state="idle"] li:first-child::before { background: var(--labs); }
+  .flow[data-state="active"] li:nth-child(-n + 3)::before { background: var(--labs); }
+  .flow[data-state="registering"] li:nth-child(-n + 3)::before { background: #e8710a; }
+  /* where the page flows (phone, tablet), the stages stack */
+  @media (max-width: 1099px), (max-height: 559px) {
+    .flow { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 1fr; }
+    .flow li + li { border-left: 0; border-top: 1px solid #e8ecf2; }
+    .flow li + li::after { left: 22px; top: -5px; margin-top: 0; transform: rotate(135deg); }
+  }
+  /* desktop with a very wide left area: the stages stand in a column beside the camera */
+  @container (min-aspect-ratio: 2 / 1) {
+    .main-in { grid-template-columns: minmax(0, 1fr) clamp(220px, 22%, 300px); grid-template-rows: minmax(0, 1fr); }
+    .flow { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(4, minmax(0, 1fr)); }
+    .flow li + li { border-left: 0; border-top: 1px solid #e8ecf2; }
+    .flow li + li::after { left: 22px; top: -5px; margin-top: 0; transform: rotate(135deg); }
+  }
+  @media (max-height: 700px) and (min-width: 1100px) { .flow .d { display: none; } .flow li { padding: 12px 16px 10px; } }
 
-  /* activity: the latest eight events as cards in the same rhythm as the steps */
+  /* activity: the latest eight events, cards in a fluid grid */
   .activity { display: grid; gap: 10px; align-content: start; min-width: 0; }
   .log-head { display: flex; align-items: baseline; gap: 12px; min-width: 0; padding-top: 6px; }
   .status { color: var(--muted); font-size: var(--step-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .spend { margin-left: auto; font-size: var(--step-small); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+  .log { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
   .log li:nth-child(n + 9) { display: none; }
   .log li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: center; min-height: 76px; padding: 12px 14px;
     background: var(--ground); border-radius: var(--radius); font-size: 0.8125rem; line-height: 1.4; }

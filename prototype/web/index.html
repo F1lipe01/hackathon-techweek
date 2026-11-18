@@ -27,13 +27,19 @@
 </svg>
 
 <header class="top">
-  <span class="brand"><svg aria-hidden="true"><use href="#mark"/></svg>ThingTracker</span>
+  <a class="brand" href="/"><svg aria-hidden="true"><use href="#mark"/></svg>ThingTracker</a>
+  <nav class="docs" aria-label="Team documents">
+    <a href="/web/docs.html?d=architecture">Architecture</a>
+    <a href="/web/docs.html?d=business-case">Business case</a>
+    <a href="/web/docs.html?d=report">Report</a>
+  </nav>
   <span class="mode" id="mode">Prototype</span>
 </header>
 
 <!-- One grid, three compositions (app.css): desktop, tablet, phone. Every block fills its grid area exactly. -->
 <main class="split">
   <!-- ======================= CAMERA: what the system sees ======================= -->
+  <div class="main"><div class="main-in">
   <div class="stage" id="stage" role="img" aria-label="Kit camera, Work Room, with the boxes the models draw">
     <video id="video" playsinline muted autoplay loop hidden></video>
     <img id="kitimg" alt="">
@@ -42,18 +48,14 @@
     <p class="stage-msg" id="stagemsg">Connecting to the kit camera…</p>
   </div>
 
-  <!-- how it works: four equal cards; the fourth is the app on the right -->
-  <ol class="steps" aria-label="How it works">
-    <li><b>Wakes on motion</b><span>The camera stays idle. A cheap check of the picture wakes the models only when something moves.</span></li>
-    <li><b>Finds candidates</b><span>OWLv2 looks for the things this home registered, by name, and boxes each candidate.</span></li>
-    <li><b>Recognises yours</b><span>DINOv2 compares each candidate with the thing's visual fingerprint: your book, not any book.</span></li>
-    <li><b>Answers in the app</b><span>A small crop and the place go to the home's memory. Ask the assistant on any tab of the app.</span></li>
+  <!-- how it works: one strip, four stages; the rail on top lights up with the camera service's state (app.js: renderEdge) -->
+  <ol class="flow" id="flow" aria-label="How it works">
+    <li><span class="k">01 · Camera</span><b>Wakes on motion</b><span class="d">Idle until something moves.</span></li>
+    <li><span class="k">02 · OWLv2</span><b>Finds candidates</b><span class="d">Boxes the things you registered.</span></li>
+    <li><span class="k">03 · DINOv2</span><b>Recognises yours</b><span class="d">Compares with its visual fingerprint.</span></li>
+    <li><span class="k">04 · App</span><b>Answers you</b><span class="d">Place, time and photo, on any tab.</span></li>
   </ol>
-
-  <section class="activity" aria-label="Recent activity">
-    <div class="log-head"><h2>Activity</h2><span class="status" id="status" aria-live="polite"></span><span class="spend" id="spend"></span></div>
-    <ol class="log" id="log"></ol>
-  </section>
+  </div></div>
 
   <!-- ======================= APP: a copy of the Altice app, plus the Things tab ======================= -->
   <section class="phone-wrap" aria-label="Altice app with the new Things tab">
@@ -101,6 +103,11 @@
      <img class="frame" src="/web/iphone-frame.svg" alt="" aria-hidden="true">
     </div>
   </section>
+  <section class="activity" aria-label="Recent activity">
+    <div class="log-head"><h2>Activity</h2><span class="status" id="status" aria-live="polite"></span><span class="spend" id="spend"></span></div>
+    <ol class="log" id="log"></ol>
+  </section>
+
 </main>
 
 <script src="/web/app.js" type="module"></script>

@@ -105,12 +105,12 @@ function contentRect(el, w, h) {
   const s = (el.dataset.fit === 'cover' ? Math.max : Math.min)(sw / w, sh / h);
   return { x: (sw - w * s) / 2, y: (sh - h * s) / 2, w: w * s, h: h * s };
 }
-// The stage takes whatever shape the grid gives it. Fill it when that crops less than about 15 % of the picture;
+// The stage takes whatever shape the grid gives it. Fill it when that crops less than about a quarter of the picture;
 // otherwise show the whole picture with bars, so nothing the camera sees is hidden.
 function fitStage() {
   const w = kitimg.naturalWidth || 16, h = kitimg.naturalHeight || 9;
   const r = (stage.clientWidth / stage.clientHeight) / (w / h);
-  stage.dataset.fit = r > 0.85 && r < 1.18 ? 'cover' : 'contain';
+  stage.dataset.fit = r > 0.8 && r < 1.35 ? 'cover' : 'contain';
 }
 new ResizeObserver(fitStage).observe(stage);
 kitimg.addEventListener('load', fitStage, { once: true });
@@ -137,6 +137,7 @@ function renderEdge(e) {
   const pill = $('edge');
   if (!e || !e.online) { pill.hidden = true; return; }
   pill.hidden = false; pill.dataset.state = e.state;
+  $('flow').dataset.state = e.state;     // the flow strip under the camera lights the stages in use
   const n = (v) => Number(v || 0).toLocaleString('en');
   pill.textContent = e.state === 'registering' ? 'Camera: registering a thing'
     : e.state === 'active' ? `Camera: movement, analysing · ${n(e.analysed)} analyses`

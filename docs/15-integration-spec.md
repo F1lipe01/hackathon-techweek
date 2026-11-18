@@ -86,6 +86,32 @@ Result: `{ "thing": "glasses", "sightings": [ { "place": "Desk", "from": "…", 
 
 ## 4. Enrolment and the app
 
+**How the app adds a device today** (recorded on the team's phone, Altice app beta, 18 Nov; nothing was installed):
+
+| Step | What the app shows |
+|---|---|
+| Devices → (+) | "Add device": a live "Looking for nearby Matter devices…" card, a "Works with: Matter" filter chip, then "Available devices (20)" as one card per type (icon + name, a Matter badge where it applies). The large title collapses into the top bar on scroll |
+| Pick a type | A full-screen step: ✕ top left, the device's illustration, a centred title ("Install your camera", "Plug in your plug"), one line of help, the input or choice, and the primary button pinned at the bottom (disabled until the step is valid) |
+| Camera | Serial number typed **or** "Scan label" (QR), then Next |
+| Plug | Easy / Advanced mode, then a 2.4 GHz Wi-Fi step (network, password) with Previous / Next |
+| Sensors | A bottom sheet first: "Choose a security hub", listing the installed hubs with their status |
+| Missing prerequisite | A bottom sheet with an illustration: "No smart hub installed… Do you want to install it now?" |
+| ✕ at any step | A confirmation: "Cancel installation", Yes, cancel / No, continue |
+
+**"Add a thing" follows the same pattern**, so it feels native:
+
+| Device flow | Thing flow |
+|---|---|
+| (+) on Devices | (+) on Things |
+| List of device types, Matter devices found nearby | **Suggested**: things the camera already sees in the room, with their crops. **Or** a list of common things (keys, wallet, glasses, phone, mug, laptop, TV remote) and "Other…" to type a name |
+| "Choose a security hub" sheet | "Choose a camera" sheet, cameras with their status |
+| "No smart hub installed" sheet | "No camera installed" sheet (`422` from `create_thing`) |
+| Serial number or Scan label | **Show it to the camera** (about 3 s, live progress) **or** take 3 photos with the phone |
+| Final step | The crop it learned, the name, and an optional place ("usually on the hall table"); Done |
+| Cancel installation | Same dialog: "Cancel adding this thing?" |
+
+The thing's flow then runs as below.
+
 1. App: Things → (+) → name (or pick a suggestion) → "Show it to the camera".
 2. Platform → edge: `enrol(thing, camera)`.
 3. Edge: for about 3 s, detects the thing in the frames, keeps ~8 crops, computes the fingerprint, and returns a photo.

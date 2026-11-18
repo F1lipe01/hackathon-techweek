@@ -77,7 +77,8 @@ prototype/.venv/bin/python prototype/record.py --seconds 120 --name take   # vid
    - Never press the system Back key on a root screen.
    - Never tap switches, ▶ (run scenario), *Mark all as read*, or settings.
    - Never capture screens that may show personal data (Profile, other apps).
-5. **People in camera footage.** Recordings of the lab stay local. Use a take in the pitch only with the agreement of everyone in it, or blur them.
+5. **One heavy job at a time on the team laptop (16 GB M1 Pro).** On 18 Nov 2026 two video renders, the detector, the camera service and video encodes ran together and the Mac stopped with a watchdog panic. Run every render, model run on clips and long encode through `video/tools/heavy.sh <command>`, which takes a shared lock and waits until the machine is quiet; give Remotion renders `--concurrency=2`; check with stills and 1080p previews, and render 4K once, at the end. Stop the camera service (`edge.py`) while rendering.
+6. **People in camera footage.** Recordings of the lab stay local. Use a take in the pitch only with the agreement of everyone in it, or blur them.
 
 ## Key decisions (18 Nov 2026)
 

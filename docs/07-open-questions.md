@@ -90,5 +90,5 @@ From [the v4 summary](../deliverables/use-case-report/top5-summary.md). The came
 | 36 | **Reading the camera stream with our code.** The ffprobe probe through the go2rtc relay got no answer on 18 Nov. The camera has a `streamingSwitch` capability that may need to be on; we have not changed it | Ask the mentors (checkpoint question 2) before touching it |
 | 37 | **Detection rate for small objects (keys) is unmeasured** | Us, Thursday, with the camera in its demo position |
 | 38 | **Indoor-camera acceptance in Portugal: no data.** Plan: ask 20 people before Friday | Team |
-| 39 | **Brand not chosen.** Options sheet: `assets/brand/options/brand-options.html`. The report keeps the template's Lato and Arial whatever is chosen | Team, before building the slides |
+| ~~39~~ | **Brand chosen** (18 Nov): Trail, Switzer, MEO colours. See `assets/brand/README.md`. The report keeps the template's Lato and Arial | Done |
 | 40 | **"Test Motion" and the team's "Detect-motion" scenario both fire on camera motion** and set the light to different colours. Turn one off before testing the other | Team |

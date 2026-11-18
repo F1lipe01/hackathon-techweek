@@ -33,28 +33,32 @@
     --ink: #1f3038; --muted: #5d6b72;
     --accent: #0d7480; --accent-ink: #ffffff; --accent-hover: #0a5f69;
     --field: #1f3038; --field-ink: #eef3f5; --field-a: #5cc2cb; --field-i: #eef3f5;
+    --signal: #5cc2cb;
     color-scheme: light;
   }
-  body:has(#c-biro:checked), .pal-biro {
-    --bg: #ffffff; --surface: #f4f4f4; --surface-2: #e6e6e6;
-    --ink: #111111; --muted: #6b6b6b;
-    --accent: #1a4be0; --accent-ink: #ffffff; --accent-hover: #143cb6;
-    --field: #111111; --field-ink: #f4f4f4; --field-a: #8aa5ff; --field-i: #f4f4f4;
+  body:has(#c-meo:checked), .pal-meo {
+    --bg: #ffffff; --surface: #f2f2f2; --surface-2: #e3e3e3;
+    --ink: #000032; --muted: #42414f; /* meo.pt grey; #747380 fails 4.5:1 on #f2f2f2 */
+    --accent: #2e26ff; --accent-ink: #ffffff; --accent-hover: #2620d4;
+    --signal: #00ff9d;
+    --field: #2e26ff; --field-ink: #ffffff; --field-a: #ffffff; --field-i: #00ff9d;
     color-scheme: light;
   }
-  body:has(#c-rose:checked), .pal-rose {
-    --bg: #ebe5e3; --surface: #e1dad7; --surface-2: #d3cac6;
-    --ink: #2b2622; --muted: #6a615d;
-    --accent: #0f7d45; --accent-ink: #ffffff; --accent-hover: #0b6437;
-    --field: #2b2622; --field-ink: #ebe5e3; --field-a: #5cc28d; --field-i: #ebe5e3;
+  body:has(#c-app:checked), .pal-app {
+    --bg: #eef3fb; --surface: #e4ebf7; --surface-2: #f6f6f6;
+    --ink: #1a2233; --muted: color-mix(in srgb, #1a2233 80%, #eef3fb); /* derived: the app grey #73727c fails 4.5:1 */
+    --accent: #175bcc; --accent-ink: #ffffff; --accent-hover: #1948a3;
+    --signal: #5fbeb5;
+    --field: #1a2233; --field-ink: #eef3fb; --field-a: #5fbeb5; --field-i: #eef3fb;
     color-scheme: light;
   }
-  body:has(#c-graphite:checked), .pal-graphite {
-    --bg: #18191b; --surface: #222427; --surface-2: #30343a;
-    --ink: #eff0f1; --muted: #9c9ea3;
-    --accent: #ff4a1f; --accent-ink: #18191b; --accent-hover: #ff6a45;
-    --field: #eff0f1; --field-ink: #18191b; --field-a: #e8431b; --field-i: #18191b;
-    color-scheme: dark;
+  body:has(#c-labs:checked), .pal-labs {
+    --bg: #ffffff; --surface: #f6f6f6; --surface-2: #dddddd;
+    --ink: #000000; --muted: #555555; /* alticelabs.com grey; #747474 fails 4.5:1 */
+    --accent: #0084d6; --accent-ink: #ffffff; --accent-hover: #003a99;
+    --signal: #003399;
+    --field: #003399; --field-ink: #ffffff; --field-a: #02a1ea; --field-i: #ffffff;
+    color-scheme: light;
   }
 
   /* Typefaces */
@@ -169,7 +173,7 @@
     font-size: clamp(2rem, 11cqi, 10rem);
   }
   .stage-lockup svg { width: 1.15em; height: 1.15em; }
-  .brand-name { font-family: var(--font-brand); font-weight: var(--brand-weight); letter-spacing: var(--brand-track); line-height: 1; white-space: nowrap; color: var(--field-i); }
+  .brand-name { font-family: var(--font-brand); font-weight: var(--brand-weight); letter-spacing: var(--brand-track); line-height: 1; white-space: nowrap; color: var(--field-ink); }
 
   .stage-row { display: grid; gap: clamp(20px, 3cqi, 40px); align-items: end; }
   @container (min-width: 620px) { .stage-row { grid-template-columns: auto minmax(0, 1fr); } }
@@ -278,13 +282,15 @@
   .pal-text p { max-width: 44ch; }
   .pal-marks { display: flex; flex-wrap: wrap; gap: clamp(12px, 2vw, 28px); align-items: center; }
   .pal-marks svg { width: clamp(36px, 3.4vw, 72px); height: auto; aspect-ratio: 1; }
-  .pal-swatches { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0; margin: 0; border-radius: var(--radius-ui); overflow: hidden; min-height: 112px; }
+  .pal-swatches { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap: 0; margin: 0; border-radius: var(--radius-ui); overflow: hidden; min-height: 112px; }
   .pal-swatches div { padding: 12px 14px; display: flex; flex-direction: column; justify-content: flex-end; min-width: 0; }
   .pal-swatches dt { font-weight: 600; }
   .pal-swatches dd { margin: 0; font-size: var(--step-small); font-variant-numeric: tabular-nums; }
   .sw-bg { background: var(--surface); color: var(--ink); }
   .sw-ink { background: var(--ink); color: var(--bg); }
   .sw-accent { background: var(--accent); color: var(--accent-ink); }
+  .sw-signal { background: var(--signal); color: var(--ink); }
+  .pal-text .src { color: var(--muted); font-size: var(--step-small); max-width: 52ch; margin-top: 0.6em; }
 
   @media (min-width: 1000px) {
     .pal { grid-template-columns: minmax(0, 4fr) minmax(0, 4fr) minmax(0, 4fr); align-items: center; }

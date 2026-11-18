@@ -5,13 +5,13 @@
     </marker>
   </defs>
 
-  <!-- memory band (top, over Visão and Decisão) -->
-  <rect x="415" y="2" width="377.5" height="38" rx="6" fill="#F3F4F4" stroke="#BDBDBD" stroke-width="1.5"/>
-  <text x="603.75" y="26" text-anchor="middle" font-size="14" fill="#2b2b2b"><tspan font-weight="700">Memória</tspan>: o quê, onde e quando (sem vídeo)</text>
+  <!-- top band: a sentence creates a sensor -->
+  <rect x="207.5" y="2" width="585" height="38" rx="6" fill="#F3F4F4" stroke="#BDBDBD" stroke-width="1.5"/>
+  <text x="500" y="26" text-anchor="middle" font-size="14.5" fill="#2b2b2b"><tspan font-weight="700">Uma frase cria um sensor:</tspan> «avisa-me se o gato não beber água até às 18h»</text>
 
-  <!-- MCP band (bottom, under Decisão and Resposta) -->
-  <rect x="622.5" y="192" width="377.5" height="38" rx="6" fill="#F3F4F4" stroke="#BDBDBD" stroke-width="1.5"/>
-  <text x="811.25" y="216" text-anchor="middle" font-size="14" fill="#2b2b2b"><tspan font-weight="700">MCP Cognitive Home</tspan>: contexto e ações</text>
+  <!-- bottom band: the MCP -->
+  <rect x="415" y="192" width="585" height="38" rx="6" fill="#F3F4F4" stroke="#BDBDBD" stroke-width="1.5"/>
+  <text x="707.5" y="216" text-anchor="middle" font-size="14.5" fill="#2b2b2b"><tspan font-weight="700">MCP da Cognitive Home</tspan>: estado da casa e ações nos dispositivos</text>
 
   <!-- boxes -->
   <g stroke="#4bd26c" stroke-width="2">
@@ -23,39 +23,37 @@
   </g>
 
   <g text-anchor="middle" fill="#2b2b2b">
-    <text x="85" y="92" font-size="18" font-weight="700">Câmara</text>
-    <text x="85" y="118" font-size="14.5" fill="#555">vídeo da casa</text>
-    <text x="85" y="137" font-size="14.5" fill="#555">(RTSP)</text>
+    <text x="85" y="93" font-size="19" font-weight="700">Ver</text>
+    <text x="85" y="120" font-size="14.5" fill="#555">câmara da casa,</text>
+    <text x="85" y="140" font-size="14.5" fill="#555">em tempo real</text>
 
-    <text x="292.5" y="92" font-size="18" font-weight="700">Privacidade</text>
-    <text x="292.5" y="118" font-size="14.5" fill="#555">só as zonas escolhidas;</text>
-    <text x="292.5" y="137" font-size="14.5" fill="#555">o resto é descartado</text>
+    <text x="292.5" y="93" font-size="19" font-weight="700">Filtrar</text>
+    <text x="292.5" y="120" font-size="14.5" fill="#555">só as zonas escolhidas;</text>
+    <text x="292.5" y="140" font-size="14.5" fill="#555">o resto é descartado</text>
 
-    <text x="500" y="92" font-size="18" font-weight="700">Visão</text>
-    <text x="500" y="118" font-size="14.5" fill="#555">deteta as coisas</text>
-    <text x="500" y="137" font-size="14.5" fill="#555">pelo nome e segue-as</text>
+    <text x="500" y="93" font-size="19" font-weight="700">Perceber</text>
+    <text x="500" y="120" font-size="14.5" fill="#555">IA multimodal</text>
+    <text x="500" y="140" font-size="14.5" fill="#555">e regras fixas</text>
 
-    <text x="707.5" y="92" font-size="18" font-weight="700">Decisão</text>
-    <text x="707.5" y="118" font-size="14.5" fill="#555">regras primeiro;</text>
-    <text x="707.5" y="137" font-size="14.5" fill="#555">agente de IA só</text>
-    <text x="707.5" y="156" font-size="14.5" fill="#555">se houver dúvida</text>
+    <text x="707.5" y="93" font-size="19" font-weight="700">Lembrar</text>
+    <text x="707.5" y="120" font-size="14.5" fill="#555">objeto, local e hora,</text>
+    <text x="707.5" y="140" font-size="14.5" fill="#555">sem guardar vídeo</text>
 
-    <text x="915" y="92" font-size="18" font-weight="700">Resposta</text>
-    <text x="915" y="118" font-size="14.5" fill="#555">nada · lembrar · avisar</text>
-    <text x="915" y="137" font-size="14.5" fill="#555">agir · escalar</text>
+    <text x="915" y="93" font-size="19" font-weight="700">Agir</text>
+    <text x="915" y="120" font-size="14.5" fill="#555">luz, tomada, alarme</text>
+    <text x="915" y="140" font-size="14.5" fill="#555">e avisos</text>
   </g>
 
-  <!-- flow arrows -->
+  <!-- arrows -->
   <g stroke="#555" stroke-width="2" fill="none" marker-end="url(#ah)">
     <line x1="173" y1="116" x2="204" y2="116"/>
     <line x1="380.5" y1="116" x2="411.5" y2="116"/>
     <line x1="588" y1="116" x2="619" y2="116"/>
     <line x1="795.5" y1="116" x2="826.5" y2="116"/>
-    <!-- Visão writes memory; Decisão reads it -->
-    <line x1="500" y1="58" x2="500" y2="43"/>
-    <line x1="707.5" y1="42" x2="707.5" y2="57"/>
-    <!-- Decisão reads context from MCP; Resposta acts through MCP -->
-    <line x1="707.5" y1="190" x2="707.5" y2="175"/>
+    <!-- the sentence configures the understanding step -->
+    <line x1="500" y1="42" x2="500" y2="57"/>
+    <!-- understanding reads the home's state; acting goes through the MCP -->
+    <line x1="500" y1="190" x2="500" y2="175"/>
     <line x1="915" y1="174" x2="915" y2="189"/>
   </g>
 </svg>

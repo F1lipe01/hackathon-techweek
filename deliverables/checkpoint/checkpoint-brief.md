@@ -1,10 +1,10 @@
 # Mentor checkpoint · IT-Porto · Wed 18 Nov 2026
 
-<p class="lead">Challenge #3, Altice Labs. Our product: <b>Track Things</b>, the home that remembers the things that matter. Bring this page to the call; the questions are ranked, so start at the top.</p>
+<p class="lead">Challenge #3, Altice Labs. Our product: <b>Track Things</b>. The camera becomes the home's main source of information, and a sentence is enough to create a new sensor. Bring this page to the call; the questions are ranked, so start at the top.</p>
 
 ## Say this first (30 seconds)
 
-> Today the kit's camera tells the platform one thing: "motion detected". We turn it into the home's memory. You tell the home which things matter, such as your keys, wallet, the cat or the coffee machine. It remembers where and when it last saw each one, answers "where are my keys?", warns you at the door if you're leaving without them, and acts on the plug, light and alarm through the MCP. It looks only at the zones you choose, and it never identifies people. It lives as a tab in Altice's existing app, with four new MCP tools.
+> Today the kit's camera tells the platform one thing: "motion detected". We make it the home's main source of information. With a multimodal AI behind it, one camera becomes as many sensors as you can describe in a sentence: "where did I leave my keys?", "warn me if the baby climbs the bookshelf", "tell me if the cat hasn't drunk water by 6 pm", "was the plant watered this week?". Track Things sees, understands, remembers and acts, through the MCP, on the light, the plug and the alarm. It looks only at the zones you choose. It lives as a tab in Altice's app, with four new MCP tools.
 
 ## Where we are
 
@@ -18,12 +18,12 @@
 
 ## What we'll show on Friday, on the real kit
 
-1. "Where are my keys?" → "On the hall table, at 08:42", with the image crop as proof.
-2. Leaving without the keys: the door opens, the home warns you and the light blinks.
-3. The house is empty and the coffee machine is on: the plug switches off and the home reports the energy saved.
+1. A sentence becomes a sensor, live: we type "warn me if the mug is left on the desk", and the home starts watching for it.
+2. "Where are my keys?" → "On the hall table, at 08:42", with the image crop as proof.
+3. Leaving without the keys: the door opens, the home warns you and the light blinks.
 4. Someone in the hall and no known phone at home: a snapshot with two buttons, siren or alarm. Nothing sounds without a yes.
 
-Plan B: a recorded video of the same four moments.
+Plan B: the same four moments on a recorded clip of the kit camera, replayed as if live.
 
 ## Questions for you, most important first
 

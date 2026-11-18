@@ -63,7 +63,7 @@
     <div class="hero-text">
       <h1 id="hero-title">Pick the look of Track Things</h1>
       <p class="lead">Choose one logo, one typeface and one colour further down. This preview changes as you choose. When it looks right, copy the line below and paste it back in the chat.</p>
-      <p class="choice" aria-live="polite"><span id="choice-text">Logo: Bracket · Typeface: Hanken Grotesk · Colour: Frost and slate</span></p>
+      <p class="choice" aria-live="polite"><span id="choice-text">Logo: Trail · Typeface: Switzer · Colour: MEO</span></p>
       <button type="button" class="action" id="copy">Copy my choice</button>
       <p class="fine">The 2-page report keeps the organisers' template (Lato headings, Arial text). This choice is for the slides, the prototype and the logo.</p>
     </div>
@@ -125,7 +125,7 @@
         <h3>Trail</h3>
         <p>A thing moves into the frame and is kept. Says "camera" and "tracking" at once.</p>
         <p class="watch">Viewfinder corners are common in scan icons, Google Lens among them. The trail of dots is lost at 16 px.</p>
-        <label class="pick"><input type="radio" name="logo" value="Trail" id="l-trail"> Choose Trail</label>
+        <label class="pick"><input type="radio" name="logo" value="Trail" id="l-trail" checked> Choose Trail</label>
       </div>
     </article>
 
@@ -139,7 +139,7 @@
         <h3>Bracket</h3>
         <p>One thing selected in the home: [ • ]. The sharpest at 16 px, and it works as a symbol inside text: [•] chaves, [•] carteira.</p>
         <p class="watch">Abstract. It needs the name beside it the first few times people see it.</p>
-        <label class="pick"><input type="radio" name="logo" value="Bracket" id="l-bracket" checked> Choose Bracket</label>
+        <label class="pick"><input type="radio" name="logo" value="Bracket" id="l-bracket"> Choose Bracket</label>
       </div>
     </article>
 
@@ -200,7 +200,7 @@
         <p>Vistas pela última vez na mesa da entrada, às 08:42. A casa avisa se sair sem elas. 1 s · 0,26 USD · 40,9 %</p>
         <h3>Hanken Grotesk</h3>
         <p class="meta">Calm and neutral, medium weight, no shouting. Google Fonts, SIL Open Font License, so it is in Google Slides and installs for PowerPoint.</p>
-        <label class="pick"><input type="radio" name="type" value="Hanken Grotesk" id="t-hanken" checked> Choose Hanken Grotesk</label>
+        <label class="pick"><input type="radio" name="type" value="Hanken Grotesk" id="t-hanken"> Choose Hanken Grotesk</label>
       </div>
     </article>
 
@@ -222,7 +222,7 @@
         <p>Vistas pela última vez na mesa da entrada, às 08:42. A casa avisa se sair sem elas. 1 s · 0,26 USD · 40,9 %</p>
         <h3>Switzer</h3>
         <p class="meta">A Swiss neo-grotesk: exact and unshowy, reads as hardware and software. Fontshare, free for commercial use; not in Google Slides.</p>
-        <label class="pick"><input type="radio" name="type" value="Switzer" id="t-switzer"> Choose Switzer</label>
+        <label class="pick"><input type="radio" name="type" value="Switzer" id="t-switzer" checked> Choose Switzer</label>
       </div>
     </article>
 
@@ -242,53 +242,53 @@
   <section id="colour" class="group" aria-labelledby="colour-title">
     <div class="group-head">
       <h2 id="colour-title">Colour</h2>
-      <p>Four palettes from a library distilled from studied award sites: one page colour, one ink, one accent. Each band is set in its own palette, with the five marks in it.</p>
+      <p>Exact colours taken from the source, not picked by eye: the MEO logo file, MEO's own stylesheet, our screenshots of the Altice app and the Altice Labs site. Each band is drawn in its own palette, with the five marks in it.</p>
     </div>
-
+    <article class="pal pal-meo">
+      <div class="pal-text">
+        <h3>MEO</h3>
+        <p>Track Things would be sold by MEO, which has 40.9 % of fixed broadband in Portugal. The frame takes the MEO logo blue. The thing takes the mint that meo.pt uses to show where your keyboard focus is: the colour MEO already uses for "you are here".</p>
+        <p class="src">Blue #2E26FF: logo-meo.svg. Navy #000032, mint #00FF9D (focus outline), greys #F2F2F2, #E3E3E3, #42414F, hover #2620D4: meo.pt theme.css. Read 18 Nov 2026.</p>
+        <label class="pick"><input type="radio" name="colour" value="MEO" id="c-meo" checked> Choose MEO</label>
+      </div>
+      <div class="pal-marks" aria-hidden="true"><svg><use href="#m-trail"/></svg><svg><use href="#m-bracket"/></svg><svg><use href="#m-home"/></svg><svg><use href="#m-tag"/></svg><svg><use href="#m-wordmark"/></svg></div>
+      <dl class="pal-swatches"><div class="sw-bg"><dt>Page</dt><dd>#FFFFFF</dd></div><div class="sw-ink"><dt>Ink</dt><dd>#000032</dd></div><div class="sw-accent"><dt>Accent</dt><dd>#2E26FF</dd></div><div class="sw-signal"><dt>Found</dt><dd>#00FF9D</dd></div></dl>
+    </article>
+    <article class="pal pal-app">
+      <div class="pal-text">
+        <h3>Altice app</h3>
+        <p>The colours of the Cognitive Home app our kit runs on, so a Things tab would look native from day one. Its grey matches MEO's grey almost exactly. Dark marks use the teal of Altice's own dark-mode render.</p>
+        <p class="src">Page #EEF3FB, card #E4EBF7, ink #1A2233, status blue #175BCC, grey #73727C: our app screenshot, 16 Nov. Teal #5FBEB5: Altice Connected Home brochure render.</p>
+        <label class="pick"><input type="radio" name="colour" value="Altice app" id="c-app"> Choose Altice app</label>
+      </div>
+      <div class="pal-marks" aria-hidden="true"><svg><use href="#m-trail"/></svg><svg><use href="#m-bracket"/></svg><svg><use href="#m-home"/></svg><svg><use href="#m-tag"/></svg><svg><use href="#m-wordmark"/></svg></div>
+      <dl class="pal-swatches"><div class="sw-bg"><dt>Page</dt><dd>#EEF3FB</dd></div><div class="sw-ink"><dt>Ink</dt><dd>#1A2233</dd></div><div class="sw-accent"><dt>Accent</dt><dd>#175BCC</dd></div><div class="sw-signal"><dt>Dark accent</dt><dd>#5FBEB5</dd></div></dl>
+    </article>
+    <article class="pal pal-labs">
+      <div class="pal-text">
+        <h3>Altice Labs</h3>
+        <p>The engineering house that builds the platform: a black logo and a technical blue. Suits the operator-facing pitch to the jury more than a consumer screen.</p>
+        <p class="src">Black #000000: Altice Labs logo. Blue #0084D6, deep blue #003399, light blue #02A1EA, greys #F6F6F6, #DDDDDD, #555555: alticelabs.com. White text on #0084D6 is 4.2 : 1, so use it for large text and shapes.</p>
+        <label class="pick"><input type="radio" name="colour" value="Altice Labs" id="c-labs"> Choose Altice Labs</label>
+      </div>
+      <div class="pal-marks" aria-hidden="true"><svg><use href="#m-trail"/></svg><svg><use href="#m-bracket"/></svg><svg><use href="#m-home"/></svg><svg><use href="#m-tag"/></svg><svg><use href="#m-wordmark"/></svg></div>
+      <dl class="pal-swatches"><div class="sw-bg"><dt>Page</dt><dd>#FFFFFF</dd></div><div class="sw-ink"><dt>Ink</dt><dd>#000000</dd></div><div class="sw-accent"><dt>Accent</dt><dd>#0084D6</dd></div><div class="sw-signal"><dt>Deep</dt><dd>#003399</dd></div></dl>
+    </article>
     <article class="pal pal-frost">
       <div class="pal-text">
         <h3>Frost and slate</h3>
-        <p>Cool, technical, trustworthy. Closest to the teal we have used so far.</p>
-        <label class="pick"><input type="radio" name="colour" value="Frost and slate" id="c-frost" checked> Choose Frost and slate</label>
+        <p>What we have used so far. A good palette, but it comes from a design library, not from Altice or MEO.</p>
+        <p class="src">From the design skill's palette library. No Altice source.</p>
+        <label class="pick"><input type="radio" name="colour" value="Frost and slate" id="c-frost"> Choose Frost and slate</label>
       </div>
       <div class="pal-marks" aria-hidden="true"><svg><use href="#m-trail"/></svg><svg><use href="#m-bracket"/></svg><svg><use href="#m-home"/></svg><svg><use href="#m-tag"/></svg><svg><use href="#m-wordmark"/></svg></div>
-      <dl class="pal-swatches"><div class="sw-bg"><dt>Page</dt><dd>#F7F9FA</dd></div><div class="sw-ink"><dt>Ink</dt><dd>#1F3038</dd></div><div class="sw-accent"><dt>Accent</dt><dd>#0D7480</dd></div></dl>
-    </article>
-
-    <article class="pal pal-biro">
-      <div class="pal-text">
-        <h3>Sheet and biro</h3>
-        <p>White paper and a ballpoint blue. Plain, practical, hard to dislike.</p>
-        <label class="pick"><input type="radio" name="colour" value="Sheet and biro" id="c-biro"> Choose Sheet and biro</label>
-      </div>
-      <div class="pal-marks" aria-hidden="true"><svg><use href="#m-trail"/></svg><svg><use href="#m-bracket"/></svg><svg><use href="#m-home"/></svg><svg><use href="#m-tag"/></svg><svg><use href="#m-wordmark"/></svg></div>
-      <dl class="pal-swatches"><div class="sw-bg"><dt>Page</dt><dd>#FFFFFF</dd></div><div class="sw-ink"><dt>Ink</dt><dd>#111111</dd></div><div class="sw-accent"><dt>Accent</dt><dd>#1A4BE0</dd></div></dl>
-    </article>
-
-    <article class="pal pal-rose">
-      <div class="pal-text">
-        <h3>Rose grey and green</h3>
-        <p>A warm, lived-in grey with a plant green. The most domestic of the four.</p>
-        <label class="pick"><input type="radio" name="colour" value="Rose grey and green" id="c-rose"> Choose Rose grey and green</label>
-      </div>
-      <div class="pal-marks" aria-hidden="true"><svg><use href="#m-trail"/></svg><svg><use href="#m-bracket"/></svg><svg><use href="#m-home"/></svg><svg><use href="#m-tag"/></svg><svg><use href="#m-wordmark"/></svg></div>
-      <dl class="pal-swatches"><div class="sw-bg"><dt>Page</dt><dd>#EBE5E3</dd></div><div class="sw-ink"><dt>Ink</dt><dd>#2B2622</dd></div><div class="sw-accent"><dt>Accent</dt><dd>#0F7D45</dd></div></dl>
-    </article>
-
-    <article class="pal pal-graphite">
-      <div class="pal-text">
-        <h3>Graphite and orange</h3>
-        <p>A dark device and a safety orange: the security-product look. Strong on a projector.</p>
-        <label class="pick"><input type="radio" name="colour" value="Graphite and orange" id="c-graphite"> Choose Graphite and orange</label>
-      </div>
-      <div class="pal-marks" aria-hidden="true"><svg><use href="#m-trail"/></svg><svg><use href="#m-bracket"/></svg><svg><use href="#m-home"/></svg><svg><use href="#m-tag"/></svg><svg><use href="#m-wordmark"/></svg></div>
-      <dl class="pal-swatches"><div class="sw-bg"><dt>Page</dt><dd>#18191B</dd></div><div class="sw-ink"><dt>Ink</dt><dd>#EFF0F1</dd></div><div class="sw-accent"><dt>Accent</dt><dd>#FF4A1F</dd></div></dl>
+      <dl class="pal-swatches"><div class="sw-bg"><dt>Page</dt><dd>#F7F9FA</dd></div><div class="sw-ink"><dt>Ink</dt><dd>#1F3038</dd></div><div class="sw-accent"><dt>Accent</dt><dd>#0D7480</dd></div><div class="sw-signal"><dt>Dark accent</dt><dd>#5CC2CB</dd></div></dl>
     </article>
   </section>
 
   <section class="close" aria-labelledby="close-title">
-    <h2 id="close-title">My recommendation</h2>
-    <p>Bracket, Hanken Grotesk, Frost and slate. The bracket is the only mark that stays sharp at favicon size and can sit inside a sentence. Hanken is calm, and it is in Google Slides, so every laptop on the team renders the deck the same way. Frost and slate keeps the teal the team has already seen. It is your decision.</p>
+    <h2 id="close-title">Where we are</h2>
+    <p>You chose Trail and Switzer. For colour I recommend MEO: its logo blue for the frame and its focus mint for the thing. MEO is the operator that would sell Track Things, and on meo.pt the mint already means "here". The animated logo is in assets/brand/animation.</p>
   </section>
 </main>
 

@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Track Things · logo reveal</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@600&display=block" rel="stylesheet">
+<style>
+  /* Themes. Every colour is an exact value taken from a source (see assets/brand/README.md). */
+  :root, [data-theme="meo-blue"] {
+    --ground: #2E26FF;  /* MEO logo blue, logo-meo.svg */
+    --frame: #FFFFFF;   /* corners and trail */
+    --thing: #00FF9D;   /* meo.pt focus colour: "here it is" */
+    --word: #FFFFFF;
+    --halo: #00FF9D;
+  }
+  [data-theme="meo-light"] { --ground: #FFFFFF; --frame: #2E26FF; --thing: #000032; --word: #000032; --halo: #00FF9D; }
+  [data-theme="meo-navy"]  { --ground: #000032; --frame: #FFFFFF; --thing: #00FF9D; --word: #FFFFFF; --halo: #00FF9D; }
+  [data-theme="app"]       { --ground: #EEF3FB; --frame: #175BCC; --thing: #1A2233; --word: #1A2233; --halo: #175BCC; }
+  [data-theme="labs"]      { --ground: #FFFFFF; --frame: #0084D6; --thing: #000000; --word: #000000; --halo: #0084D6; }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--ground);
+    font-family: "Switzer", "Helvetica Neue", Arial, sans-serif;
+    display: grid; grid-template-rows: 1fr auto;
+    min-height: 100svh; overflow: hidden;
+  }
+  .stage { display: grid; place-items: center; min-width: 0; }
+
+  .lockup {
+    display: flex; align-items: center; gap: 0.3em;
+    font-size: min(8vw, 14vh);
+  }
+  .mark { width: 1.15em; height: 1.15em; overflow: visible; flex: none; }
+  .mark .frame { fill: none; stroke: var(--frame); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+  .mark .trail { fill: var(--frame); }
+  .mark .dot { fill: var(--thing); }
+  .mark .halo { fill: var(--halo); opacity: 0; }
+  .mark .frame, .mark .trail, .mark .dot, .mark .halo { transform-box: fill-box; transform-origin: center; }
+
+  .word {
+    font-weight: 600; letter-spacing: -0.04em; line-height: 1;
+    color: var(--word); white-space: nowrap;
+    padding-bottom: 0.08em; /* room for descenders inside the clip */
+  }
+
+  /* Controls: hidden when exporting frames */
+  .controls {
+    display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: center;
+    padding: 16px; font: 500 15px/1.2 "Helvetica Neue", Arial, sans-serif; color: var(--word);
+  }
+  .controls button, .controls select, .controls label {
+    font: inherit; color: var(--word); background: color-mix(in srgb, var(--word) 12%, transparent);
+    border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer;
+    transition: background-color 160ms ease-out, transform 120ms ease-out;
+  }
+  .controls select option { color: #000; }
+  .controls label:has(input:checked) { background: var(--word); color: var(--ground); }
+  .controls input { position: absolute; opacity: 0; pointer-events: none; }
+  .controls :is(button, select, label):active { transform: scale(0.97); }
+  .controls :is(button, select, label:has(input)):focus-visible,
+  .controls label:has(input:focus-visible) { outline: 2px solid var(--word); outline-offset: 3px; }
+  @media (hover: hover) and (pointer: fine) {
+    .controls :is(button, select, label):hover { background: color-mix(in srgb, var(--word) 22%, transparent); }
+    .controls label:has(input:checked):hover { background: var(--word); }
+  }
+  .export .controls { display: none; }
+</style>
+</head>
+<body>
+<main class="stage">
+  <div class="lockup" id="lockup" role="img" aria-label="Track Things">
+    <svg class="mark" id="mark" viewBox="0 0 64 64" aria-hidden="true">
+      <circle class="halo" id="halo" cx="35" cy="29" r="8"/>
+      <path class="frame" id="c1" d="M7 21 V12 Q7 7 12 7 H21"/>
+      <path class="frame" id="c2" d="M43 7 H52 Q57 7 57 12 V21"/>
+      <path class="frame" id="c3" d="M57 43 V52 Q57 57 52 57 H43"/>
+      <path class="frame" id="c4" d="M7 43 V52 Q7 57 12 57 H21"/>
+      <circle class="trail" id="t1" cx="19" cy="45" r="2.4" opacity="0.35"/>
+      <circle class="trail" id="t2" cx="25.5" cy="38.5" r="3" opacity="0.6"/>
+      <circle class="dot" id="dot" cx="35" cy="29" r="8"/>
+    </svg>
+    <span class="word" id="word" aria-hidden="true">Track Things</span>
+  </div>
+</main>
+
+<nav class="controls" aria-label="Animation controls">
+  <button type="button" id="replay">Replay</button>
+  <label><input type="radio" name="mode" value="expand" checked> Mark to wordmark</label>
+  <label><input type="radio" name="mode" value="collapse"> Wordmark to mark</label>
+  <select id="theme" aria-label="Colours">
+    <option value="meo-blue">MEO blue</option>
+    <option value="meo-light">MEO on white</option>
+    <option value="meo-navy">MEO navy</option>
+    <option value="app">Altice app</option>
+    <option value="labs">Altice Labs</option>
+  </select>
+</nav>
+
+<script>
+/* One timeline, two uses:
+   - live: the Web Animations run normally (off the main thread where possible);
+   - export (?export=1): everything is paused and window.renderAt(ms) sets the time,
+     so render.mjs can capture exact frames for the MP4. */
+(function () {
+  const params = new URLSearchParams(location.search);
+  const EXPORT = params.has('export');
+  const $ = (id) => document.getElementById(id);
+  const mark = $('mark'), word = $('word'), lockup = $('lockup');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches && !EXPORT;
+
+  // Curves from the animation guide: strong ease-out to enter, strong ease-in-out to move on screen.
+  const OUT = 'cubic-bezier(0.23, 1, 0.32, 1)';
+  const IN_OUT = 'cubic-bezier(0.77, 0, 0.175, 1)';
+
+  let mode = params.get('mode') === 'collapse' ? 'collapse' : 'expand';
+  let theme = params.get('theme') || 'meo-blue';
+  let anims = [];
+  window.DURATION = 0;
+
+  function a(el, frames, opts) {
+    const anim = el.animate(frames, Object.assign({ fill: 'both' }, opts));
+    anims.push(anim);
+    return anim;
+  }
+
+  // Distance from the mark's place in the lockup to the centre of the lockup.
+  function shift() {
+    const g = lockup.getBoundingClientRect().width;
+    const m = mark.getBoundingClientRect().width;
+    return (g - m) / 2;
+  }
+
+  function build() {
+    anims.forEach((x) => x.cancel());
+    anims = [];
+    const S = shift();
+    const centred = `translateX(${S}px)`;
+    const home = 'translateX(0px)';
+    const shut = 'inset(-10% 100% -10% 0)';
+    const open = 'inset(-10% -6% -10% 0)'; /* negative right inset: the last letter overhangs its box */
+
+    if (reduce) {
+      // Fewer and gentler: no travel, only a short fade to the final state.
+      const end = mode === 'expand' ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 1 }];
+      a(lockup, end, { duration: 200, easing: 'ease' });
+      if (mode === 'collapse') a(word, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: 'ease' });
+      window.DURATION = 200;
+      return;
+    }
+
+    if (mode === 'expand') {
+      // 1. The thing moves in, small, leaving its trail behind.
+      a($('dot'), [
+        { transform: 'translate(-16px, 16px) scale(0.6)', opacity: 0 },
+        { opacity: 1, offset: 0.25 },
+        { transform: 'translate(0px, 0px) scale(1)', opacity: 1 }
+      ], { duration: 560, easing: OUT });
+      a($('t1'), [{ opacity: 0, transform: 'scale(0.8)' }, { opacity: 0.35, transform: 'scale(1)' }], { delay: 90, duration: 260, easing: OUT });
+      a($('t2'), [{ opacity: 0, transform: 'scale(0.8)' }, { opacity: 0.6, transform: 'scale(1)' }], { delay: 170, duration: 260, easing: OUT });
+
+      // 2. The frame locks on, corner by corner, clockwise.
+      const from = { c1: [-7, -7], c2: [7, -7], c3: [7, 7], c4: [-7, 7] };
+      ['c1', 'c2', 'c3', 'c4'].forEach((id, i) => {
+        const [x, y] = from[id];
+        a($(id), [
+          { transform: `translate(${x}px, ${y}px) scale(1.06)`, opacity: 0 },
+          { transform: 'translate(0px, 0px) scale(1)', opacity: 1 }
+        ], { delay: 380 + i * 45, duration: 520, easing: OUT });
+      });
+
+      // 3. Found: one pulse in the signal colour.
+      a($('halo'), [{ transform: 'scale(1)', opacity: 0.85 }, { transform: 'scale(2.6)', opacity: 0 }], { delay: 880, duration: 640, easing: OUT, fill: 'forwards' });
+      a($('dot'), [{ transform: 'scale(1)' }, { transform: 'scale(1.14)' }, { transform: 'scale(1)' }], { delay: 880, duration: 300, easing: IN_OUT, fill: 'none' });
+
+      // 4. The name unrolls out of the mark while the mark moves to its place.
+      a(mark, [{ transform: centred }, { transform: home }], { delay: 1250, duration: 900, easing: IN_OUT });
+      a(word, [{ transform: centred, clipPath: shut }, { transform: home, clipPath: open }], { delay: 1250, duration: 900, easing: IN_OUT });
+      window.DURATION = 3600;
+    } else {
+      // Reverse: the name rolls back into the mark, the mark returns to the centre and pulses.
+      a(mark, [{ transform: home }, { transform: centred }], { delay: 500, duration: 850, easing: IN_OUT });
+      a(word, [{ transform: home, clipPath: open }, { transform: centred, clipPath: shut }], { delay: 500, duration: 850, easing: IN_OUT });
+      a($('halo'), [{ transform: 'scale(1)', opacity: 0.85 }, { transform: 'scale(2.6)', opacity: 0 }], { delay: 1300, duration: 640, easing: OUT, fill: 'forwards' });
+      a($('dot'), [{ transform: 'scale(1)' }, { transform: 'scale(1.14)' }, { transform: 'scale(1)' }], { delay: 1300, duration: 300, easing: IN_OUT, fill: 'none' });
+      window.DURATION = 2600;
+    }
+  }
+
+  function play() {
+    build();
+    if (EXPORT) anims.forEach((x) => x.pause());
+  }
+
+  // Export hook: set every animation to time ms and wait for the frame to paint.
+  window.renderAt = (ms) => new Promise((resolve) => {
+    anims.forEach((x) => { x.currentTime = ms; });
+    requestAnimationFrame(() => requestAnimationFrame(resolve));
+  });
+
+  function applyTheme() { document.documentElement.dataset.theme = theme; $('theme').value = theme; }
+
+  if (EXPORT) document.documentElement.classList.add('export');
+  applyTheme();
+  document.querySelector(`input[value="${mode}"]`).checked = true;
+
+  $('replay').addEventListener('click', play);
+  document.addEventListener('change', (e) => {
+    if (e.target.name === 'mode') { mode = e.target.value; play(); }
+    if (e.target.id === 'theme') { theme = e.target.value; applyTheme(); }
+  });
+  addEventListener('resize', () => { if (!EXPORT) play(); });
+
+  document.fonts.ready.then(() => { play(); window.READY = true; });
+})();
+</script>
+</body>
+</html>

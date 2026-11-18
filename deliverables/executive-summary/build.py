@@ -243,6 +243,12 @@ def build_pdf(tmp, meta, blocks, fontdir):
     (tmp / "header.svg").write_text(
         f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="5.31cm" height="1.31cm" viewBox="0 0 312 77">'
         f'<image width="312" height="77" xlink:href="data:image/png;base64,{logo}"/></svg>', encoding="utf8")
+    # the template's header text, right-aligned beside the logo (GalanoGrotesque is not embedded; Arial, as Google Docs shows)
+    (tmp / "header-right.svg").write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="8cm" height="1.0cm" viewBox="0 0 302 38" '
+        'font-family="Arial, Helvetica, sans-serif" text-anchor="end">'
+        '<text x="302" y="16" font-size="14.67" font-weight="700" fill="#000">AVEIRO TECH CITY - HACKATHON</text>'
+        '<text x="302" y="33" font-size="13.33" fill="#7f7f7f">Sumário Executivo – 2026</text></svg>', encoding="utf8")
     (tmp / "footer.svg").write_text(
         '<svg xmlns="http://www.w3.org/2000/svg" width="9cm" height="0.9cm" viewBox="0 0 340 34" font-family="Arial, Helvetica, sans-serif" font-size="10.7" fill="#7f7f7f">'
         '<text x="0" y="12" font-weight="700">AVEIRO TECH CITY</text>'
@@ -274,6 +280,7 @@ def build_pdf(tmp, meta, blocks, fontdir):
     css = font_faces(fontdir) + """
 @page { size: A4; margin: 2.54cm;
   @top-left { content: url(header.svg); vertical-align: bottom; padding-bottom: 0.05cm; }
+  @top-right { content: url(header-right.svg); vertical-align: bottom; padding-bottom: 0.05cm; }
   @bottom-left { content: url(footer.svg); vertical-align: top; padding-top: 0.45cm; }
   @bottom-right { content: counter(page); vertical-align: top; padding-top: 1.0cm;
                   font: 8pt Calibri, Carlito, Arial, sans-serif; color: #7f7f7f; } }

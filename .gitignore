@@ -34,3 +34,4 @@ build/
 # Prototype: local env and runtime data (camera crops, memory)
 prototype/.venv/
 prototype/data/
+prototype/.venv-vision/

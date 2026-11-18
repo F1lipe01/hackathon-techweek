@@ -361,14 +361,13 @@ async function loadDevices() {
   } catch (e) { $('devsrc').textContent = e.message; }
 }
 
-// Scale the 393-pt iPhone screen to the frame, so the app never reflows or overflows (see .device in app.css).
-const phone = document.querySelector('.phone'), device = $('device');
+// Scale the 402 x 874 pt iPhone 18 Pro screen to the frame, so the app never reflows or overflows (see .device in app.css).
+const screenWrap = $('screenwrap'), device = $('device');
 function fitDevice() {
-  if (matchMedia('(max-width: 520px)').matches) { device.style.zoom = ''; device.style.height = ''; return; }
-  device.style.zoom = phone.clientWidth / 393;   // the 393 x 852 pt screen scales as a whole
-  device.style.height = '';
+  if (matchMedia('(max-width: 520px)').matches) { device.style.zoom = ''; return; }
+  device.style.zoom = screenWrap.clientWidth / 402;
 }
-new ResizeObserver(fitDevice).observe(phone);
+new ResizeObserver(fitDevice).observe(screenWrap);
 fitDevice();
 
 // live clock in the iPhone status bar

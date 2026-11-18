@@ -21,11 +21,11 @@
     --gutter: clamp(16px, 2.4vw, 40px);
     /* One height drives both columns: the camera block (title + video + buttons) and the iPhone are the same
        height. It fits the window's height and, side by side, its width too:
-       video + phone = 16/9 (h - 120) + 393/852 (h - 22) + 22 = 2.2391 h - 201.5 */
+       video + phone = 16/9 (h - 120) + 1350/2760 h = 2.2669 h - 213.3 (the phone image is 1350 x 2760) */
     --gap: clamp(24px, 3.5vw, 64px);
     --app-h: clamp(560px, calc(100svh - 120px), 880px);
     --stage-w: calc((var(--app-h) - 120px) * 16 / 9);
-    --phone-w: calc((var(--app-h) - 22px) * 393 / 852 + 22px);
+    --phone-w: calc(var(--app-h) * 1350 / 2760);
     --radius: 14px;
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   }
@@ -70,7 +70,7 @@
 
   .split { display: grid; gap: var(--gap); padding: var(--gutter); align-items: start; justify-content: center; }
   @media (min-width: 1100px) {
-    :root { --app-h: min(clamp(560px, calc(100svh - 120px), 880px), calc((100vw - 2 * var(--gutter) - var(--gap) + 201px) / 2.2391)); }
+    :root { --app-h: min(clamp(560px, calc(100svh - 120px), 880px), calc((100vw - 2 * var(--gutter) - var(--gap) + 213px) / 2.2669)); }
     .split { grid-template-columns: var(--stage-w) var(--phone-w); }
   }
 }
@@ -133,16 +133,14 @@
   .phone-note { font-size: var(--step-small); color: var(--muted); text-align: center; max-width: 40ch; }
   /* iPhone frame at 9:16. Inside it, .device is laid out at 393 pt (an iPhone's width) and zoomed to fit,
      so nothing reflows or overflows when the window is small: the whole screen scales, as on a real device. */
-  .phone {
-    /* iPhone 18: screen 1179 x 2556 px = 393 x 852 pt. Bezel 11 px each side. */
-    --pw: min(100%, var(--phone-w));
-    position: relative; width: var(--pw);
-    background: var(--app-bg); border-radius: 58px; overflow: hidden;
-    border: 11px solid #0c0c0c; /* taste-skill-ignore: device bezel */
-    box-shadow: 0 0 0 2px #3a3a3c; /* taste-skill-ignore: the frame's metal edge */
-  }
+  /* iPhone 18 Pro: our own frame (web/iphone-frame.svg, 1350 x 2760) with the screen showing through it.
+     Screen area: x 72, y 69, 1206 x 2622, corner radius 191 (in the frame's units). */
+  .phone { --pw: min(100%, var(--phone-w)); position: relative; width: var(--pw); aspect-ratio: 1350 / 2760; }
+  .screen-wrap { position: absolute; left: 5.3333%; top: 2.5%; width: 89.3333%; height: 95%;
+    border-radius: 15.837% / 7.284%; overflow: hidden; background: var(--app-bg); }
+  .frame { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6; }
   .device {
-    position: relative; width: 393px; height: 852px; /* zoomed by fitDevice() */
+    position: relative; width: 402px; height: 874px; /* iPhone 18 Pro in points; zoomed by fitDevice() */
     display: grid; grid-template-rows: auto minmax(0, 1fr) auto;
     color: var(--app-ink); font-family: var(--app-font);
   }
@@ -247,7 +245,9 @@
     .btn:active { transform: none; }
   }
   @media (max-width: 520px) {
-    .phone { --pw: 100%; border-width: 0; border-radius: 0; box-shadow: none; }
+    .phone { --pw: 100%; aspect-ratio: auto; }
+    .screen-wrap { position: static; width: auto; height: auto; border-radius: 0; }
+    .frame { display: none; }
     .device { width: auto; height: auto !important; zoom: 1 !important; }
     .ios-status, .home-indicator { display: none; }
     .screen { grid-template-rows: auto auto; }

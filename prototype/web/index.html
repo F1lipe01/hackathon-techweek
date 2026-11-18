@@ -79,7 +79,8 @@
   <!-- ======================= APP: a copy of the Altice app, plus the Things tab ======================= -->
   <section class="phone-wrap" aria-label="Altice app with the new Things tab">
     <div class="phone">
-     <!-- The screen is laid out at the real iPhone width (393 pt) and scaled as a whole to fit the frame (app.js: fitDevice). -->
+     <!-- The screen is laid out at the iPhone 18 Pro's real size (402 x 874 pt) and scaled as a whole to fit the frame (app.js: fitDevice). -->
+     <div class="screen-wrap" id="screenwrap">
      <div class="device" id="device">
       <!-- iPhone status bar and Dynamic Island -->
       <div class="ios-status" aria-hidden="true">
@@ -183,8 +184,10 @@
       </nav>
       <span class="home-indicator" aria-hidden="true"></span>
      </div>
+     </div>
+     <img class="frame" src="/web/iphone-frame.svg" alt="" aria-hidden="true">
     </div>
-    <p class="phone-note">Copy of the Altice app (light theme) on an iPhone 18 screen (393 × 852 pt), with the new <b>Things</b> tab.</p>
+    <p class="phone-note">Copy of the Altice app (light theme) on an iPhone 18 Pro screen (402 × 874 pt), with the new <b>Things</b> tab. Frame drawn by us to Apple's proportions.</p>
   </section>
 </main>
 

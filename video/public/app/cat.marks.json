@@ -1,0 +1,22 @@
+[
+ {
+  "name": "start",
+  "s": 0.401
+ },
+ {
+  "name": "tap [data-act=\"suggest\"]",
+  "s": 2.312
+ },
+ {
+  "name": "suggest",
+  "s": 2.508
+ },
+ {
+  "name": "tap [data-act=\"close-sheet\"]",
+  "s": 5.798
+ },
+ {
+  "name": "alert",
+  "s": 7.396
+ }
+]

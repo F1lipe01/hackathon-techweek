@@ -46,6 +46,8 @@ const I = {
   wandC: '<svg viewBox="0 0 24 24"><path d="M3.5 20.5 14 10" stroke="#3aa58b" stroke-width="2.4" stroke-linecap="round"/><path d="m16 3 1 2.6 2.6 1-2.6 1-1 2.6-1-2.6-2.6-1 2.6-1Z" fill="#c837b5"/><circle cx="20.5" cy="12.5" r="1.2" fill="#c837b5"/><circle cx="11" cy="4" r="1" fill="#c837b5"/></svg>',
   wand: S('<path d="M4 20 15 9M15 4v2M19 8h2M18 5l1-1M12 5l-1-1"/><path d="m14 7 3 3"/>'),
   eventsC: '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="12" height="17" rx="2" fill="#f08a24"/><circle cx="16.5" cy="16.5" r="5" fill="#2f7be8"/><path d="M16.5 14.2v2.6l1.6 1" stroke="#fff" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>',
+  // ThingTracker's sensors: a line bell in the app's teal (the wand stays only on the Altice app's own Scenarios)
+  sensor: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#2abe9e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15Z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg>',
   bellC: '<svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.6 2.1H4.4Z" fill="#6c3fd1"/><circle cx="12" cy="20.6" r="2" fill="#6c3fd1"/></svg>',
   infoC: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#22a99a"/><path d="M12 11v6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.3" fill="#fff"/></svg>',
   gearC: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#f08a24"/><circle cx="12" cy="12" r="3.4" fill="#fff"/></svg>',
@@ -266,9 +268,9 @@ function renderThings() {
   for (const [k, ts] of groups) html += sec('th-' + k, k, ts.length) + `<ul class="cards">${ts.map((t) => thingCard(t)).join('')}</ul>`;
   const sugg = state.events.filter((e) => e.kind === 'suggest' && !state.rules.some((r) => r.sentence === e.sentence)).slice(0, 3);
   if (sugg.length) html += sec('sugg', 'Suggested for your home', sugg.length) + `<ul class="cards">${sugg.map((e) => `<li><button type="button" class="card" data-act="suggest" data-id="${esc(e.id)}">
-    <span class="ic">${I.wandC}</span><span><span class="nm">${esc(e.title)}</span><span class="st">Add: “${esc(e.sentence)}”</span></span><span></span></button></li>`).join('')}</ul>`;
+    <span class="ic">${I.sensor}</span><span><span class="nm">${esc(e.title)}</span><span class="st">Add: “${esc(e.sentence)}”</span></span><span></span></button></li>`).join('')}</ul>`;
   if (state.rules.length) html += sec('sensors', 'Sensors', state.rules.length) + `<ul class="cards">${state.rules.map((r) => `<li><button type="button" class="card" data-act="sensor" data-id="${esc(r.id)}">
-    <span class="ic">${I.wandC}</span><span><span class="nm">${esc(r.title)}</span><span class="st ${r.active ? '' : 'grey'}">${r.active ? 'Active' : 'Paused'}</span></span><span></span></button></li>`).join('')}</ul>`;
+    <span class="ic">${I.sensor}</span><span><span class="nm">${esc(r.title)}</span><span class="st ${r.active ? '' : 'grey'}">${r.active ? 'Active' : 'Paused'}</span></span><span></span></button></li>`).join('')}</ul>`;
   tb.innerHTML = html;
 }
 function renderFavorites() {
@@ -356,7 +358,7 @@ function thingPage(id) {
       <div class="hero">${p ? `<img class="photo" src="${crop(p)}" alt="">` : I.book.replace('<svg', '<svg width="60" height="60"')}<span class="st ${cls}">${esc(st)}</span></div>
       ${fp ? `<div class="single" style="padding-top:12px"><div style="font-size:14.5px;font-weight:600;padding:2px 0 10px">Visual fingerprint · ${fp.n} views</div>
         <div class="views-grid">${fp.crops.map((c) => `<img src="${crop(c)}" alt="">`).join('')}</div></div><div style="height:18px"></div>` : ''}
-      <div class="group">${row(I.eventsC, 'Sightings', 'sightings')}${row(I.wandC, 'Sensors', 'scenarios')}${row(I.bellC, 'Notifications', 'notifications')}</div>
+      <div class="group">${row(I.eventsC, 'Sightings', 'sightings')}${row(I.sensor, 'Sensors', 'scenarios')}${row(I.bellC, 'Notifications', 'notifications')}</div>
       <div style="height:18px"></div><div class="group">${fp ? '' : row(I.recC, 'Register with the camera', 'reregister')}<button type="button" class="row danger" data-act="remove-thing">${I.x}<span>Remove thing</span><span></span></button></div>`;
   }, { live: true });
   el.dataset.id = id;
@@ -445,7 +447,7 @@ const REAL_SCENARIOS = ['Test Motion', 'Turn Off Camera', 'Detect-motion', 'test
 function scenariosPage() {
   push(() => `${phead('', '', `<button type="button" class="ibtn" data-act="stub" data-title="Filter" aria-label="Filter">${I.filter}</button><button type="button" class="ibtn" data-act="stub" data-title="Search" aria-label="Search">${I.search}</button>`)}
     <div class="ptitle">Scenarios</div>
-    ${state.rules.map((r) => `<div class="scard">${I.wandC}<span><div class="nm">${esc(r.title)}</div><div class="st ${r.active ? '' : 'grey'}">${r.active ? 'Active' : 'Paused'} · ThingTracker</div></span><span class="play">${I.play}</span></div>`).join('')}
+    ${state.rules.map((r) => `<div class="scard">${I.sensor}<span><div class="nm">${esc(r.title)}</div><div class="st ${r.active ? '' : 'grey'}">${r.active ? 'Active' : 'Paused'} · ThingTracker</div></span><span class="play">${I.play}</span></div>`).join('')}
     ${REAL_SCENARIOS.map((n) => `<div class="scard">${I.wandC}<span><div class="nm">${esc(n)}</div><div class="st">Active</div></span><span class="play">${I.play}</span></div>`).join('')}
     <div class="bottom-bar"><button type="button" class="btn-p" data-act="assistant">Add scenario</button></div>`, { live: true });
 }
@@ -541,7 +543,7 @@ async function ask(text) {
     const r = await api('/api/assistant', { method: 'POST', body: JSON.stringify({ text }) });
     if (r.kind === 'sensor') {
       reply = { text: 'Done. I created a sensor; it is also in Menu > Scenarios.',
-        html: `<ul class="cards" style="padding:0"><li><div class="card"><span class="ic">${I.wandC}</span><span><span class="nm">${esc(r.sensor.title)}</span><span class="st">Active</span></span><span></span></div></li></ul>` };
+        html: `<ul class="cards" style="padding:0"><li><div class="card"><span class="ic">${I.sensor}</span><span><span class="nm">${esc(r.sensor.title)}</span><span class="st">Active</span></span><span></span></div></li></ul>` };
     } else {
       const cards = r.candidates?.length ? r.candidates.map((t) => thingCard(t, 'ask-about')).join('') : r.thing ? thingCard(r.thing) : '';
       reply = { text: r.answer, html: cards ? `<ul class="cards" style="padding:0">${cards}</ul>` : '' };

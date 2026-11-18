@@ -1,0 +1,42 @@
+[
+ {
+  "name": "start",
+  "s": 0.4
+ },
+ {
+  "name": "tap [data-act=\"add-thing\"].btn-p",
+  "s": 2.317
+ },
+ {
+  "name": "tap [data-act=\"pick-thing\"][data-name=\"Wallet\"]",
+  "s": 4.525
+ },
+ {
+  "name": "register",
+  "s": 4.725
+ },
+ {
+  "name": "view-1",
+  "s": 5.854
+ },
+ {
+  "name": "view-2",
+  "s": 6.881
+ },
+ {
+  "name": "view-3",
+  "s": 7.896
+ },
+ {
+  "name": "added",
+  "s": 8.921
+ },
+ {
+  "name": "tap .bottom-bar [data-act=\"finish\"]",
+  "s": 12.805
+ },
+ {
+  "name": "done",
+  "s": 13.001
+ }
+]

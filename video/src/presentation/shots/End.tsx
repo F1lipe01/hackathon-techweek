@@ -1,34 +1,41 @@
-// Shot 13. The end card, text only: "ThingTracker" and "by Altice Labs".
+// Act 7, s23 (6 s): the end card. On the downbeat the official mark lands centred (its corners close in, the dot
+// settles with its trail), then it moves to its place as the name is carried out of it. One beat after the lockup
+// settles it glides up a little, and "by" with the official Altice Labs logo, on one line, rises softly into place just
+// under it, the pair optically centred. Then everything is dead still for 3,3 s; the music ends on the bar line.
 import React from "react";
-import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { theme } from "../../theme";
-import { Title } from "../type";
-import { Paper, clamp, ramp } from "../ui";
-import { SHOT_FRAMES, onBeat } from "../timeline";
+import { ramp } from "../ui";
+import { EndorsementLine, MarkParts, Wordmark, lockupGeom } from "../brand";
+import { lerp } from "../geom";
 
-export const END_FRAMES = SHOT_FRAMES.end;
+const OUT = theme.ease.out;
+const IN_OUT = theme.ease.inOut;
+const W = 620; // the lockup: 32 % of the frame's width
+const H = (127 * W) / 736.2; // its height
+const EW = Math.round(W / 3); // "by" + the logo: a third of the lockup's width
+const EH = ((EW * 0.75) * 893) / 2765; // the logo's height on that line
+const GAP = Math.round(0.35 * H);
 
-export const End: React.FC = () => {
+export const S23: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const B = (n: number) => onBeat("end", n);
+  const groupTop = 540 - (H + GAP + EH) / 2;
+  const settledY = groupTop + H / 2; // the lockup's centre once the endorsement is in
+  const up = ramp(frame, 49, 67, IN_OUT); // 0,6 s, one beat after the lockup settles
+  const g = lockupGeom(W, 960, lerp(540, settledY, up));
+  const centred = 960 - g.mark(32, 0).x; // the mark alone, centred on the frame
+  const dx = lerp(centred, 0, ramp(frame, 12, 32, IN_OUT));
+  // the mark lands on the downbeat: corners close in from just outside, the dot settles with its trail
+  const corners = [0, 1, 2, 3].map((i) => 0.45 + 0.55 * ramp(frame, i * 1.5, 10 + i * 1.5, OUT));
+  const d = ramp(frame, 0, 12, OUT);
+  const wipe = ramp(frame, 14, 34, OUT);
+  const e = ramp(frame, 60, 80, OUT);
+  const m = g.mark(0, 0);
   return (
-    <AbsoluteFill>
-      <Paper />
-      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", transform: `scale(${1 + 0.04 * ramp(frame, 0, END_FRAMES, theme.ease.inOut)})` }}>
-        <div style={{ display: "flex", fontFamily: theme.fonts.display, fontWeight: 600, fontSize: 150, letterSpacing: "-0.04em", lineHeight: 1, color: theme.colors.ink }}>
-          {"ThingTracker".split("").map((ch, i) => {
-            const p = spring({ frame: frame - 2 - i * 1.6, fps, config: theme.spring.snappy });
-            return (
-              <span key={i} style={{ display: "inline-block", opacity: interpolate(p, [0, 0.6], [0, 1], clamp), transform: `translateY(${28 * (1 - p)}px)`, filter: `blur(${8 * (1 - p)}px)` }}>
-                {ch}
-              </span>
-            );
-          })}
-        </div>
-        <div style={{ height: 30 }} />
-        <Title text="by Altice Labs" size={44} max={1200} weight={500} at={B(3)} entrance="track" color={theme.colors.inkDim} tracking={-0.01} align="center" />
-      </AbsoluteFill>
+    <AbsoluteFill style={{ background: theme.colors.white }}>
+      <MarkParts x={m.x + dx} y={m.y} unit={g.unit} corners={corners} trail={0.5 + 0.5 * d} dot={[-6 * (1 - d), 6 * (1 - d), lerp(0.8, 1, d), 1]} />
+      {frame >= 14 ? <Wordmark g={g} wipe={wipe} dx={dx - 10 * (1 - wipe)} /> : null}
+      <EndorsementLine cx={960} top={groupTop + H + GAP + (1 - e) * 16} width={EW} style={{ opacity: e }} />
     </AbsoluteFill>
   );
 };

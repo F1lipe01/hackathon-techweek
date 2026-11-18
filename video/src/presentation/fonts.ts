@@ -4,9 +4,11 @@
 import { continueRender, delayRender, staticFile } from "remotion";
 import { loadFont as loadMontserrat } from "@remotion/google-fonts/Montserrat";
 import { loadFont as loadMono } from "@remotion/google-fonts/JetBrainsMono";
+import { loadFont as loadInter } from "@remotion/google-fonts/Inter";
 
 loadMontserrat("normal", { weights: ["400", "500", "600", "700"], subsets: ["latin", "latin-ext"] });
 loadMono("normal", { weights: ["400", "500", "600"], subsets: ["latin", "latin-ext"] });
+loadInter("normal", { weights: ["500"], subsets: ["latin"] }); // "by" on the end card
 
 const WEIGHTS = ["400", "500", "600", "700"] as const;
 

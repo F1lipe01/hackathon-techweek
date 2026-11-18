@@ -1,0 +1,26 @@
+[
+ {
+  "name": "start",
+  "s": 0.4
+ },
+ {
+  "name": "tap #fab",
+  "s": 1.902
+ },
+ {
+  "name": "tap #askfield",
+  "s": 3.574
+ },
+ {
+  "name": "type",
+  "s": 3.761
+ },
+ {
+  "name": "tap [data-act=\"send\"]",
+  "s": 6.532
+ },
+ {
+  "name": "sent",
+  "s": 6.714
+ }
+]

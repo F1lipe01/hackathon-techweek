@@ -148,3 +148,15 @@ export const SmallPrint: React.FC<{ text: string; dark?: boolean; at?: number; s
     </div>
   );
 };
+
+/** The phone scenes' caption: a 64 px heading on the fixed left column, a 36 px line under it. */
+export const Caption: React.FC<{ title: string; line?: string; at: number; lineAt?: number; entrance?: Entrance; exitAt?: number }> = ({ title, line, at, lineAt, entrance = "rise", exitAt }) => (
+  <div style={{ position: "absolute", left: 110, top: 430, width: 800 }}>
+    <Title text={title} size={64} max={800} at={at} entrance={entrance} exitAt={exitAt} />
+    {line ? (
+      <div style={{ marginTop: 18 }}>
+        <Title text={line} size={36} max={800} weight={500} at={lineAt ?? at + 14} entrance="blur" exitAt={exitAt} color={theme.colors.inkDim} tracking={-0.015} />
+      </div>
+    ) : null}
+  </div>
+);

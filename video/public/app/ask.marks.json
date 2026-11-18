@@ -1,0 +1,42 @@
+[
+ {
+  "name": "start",
+  "s": 0.401
+ },
+ {
+  "name": "tap #fab",
+  "s": 2.006
+ },
+ {
+  "name": "assistant",
+  "s": 2.206
+ },
+ {
+  "name": "tap #askfield",
+  "s": 3.793
+ },
+ {
+  "name": "type-question",
+  "s": 3.988
+ },
+ {
+  "name": "tap [data-act=\"send\"]",
+  "s": 6.427
+ },
+ {
+  "name": "sent-question",
+  "s": 6.621
+ },
+ {
+  "name": "type-sensor",
+  "s": 10.823
+ },
+ {
+  "name": "tap [data-act=\"send\"]",
+  "s": 14.91
+ },
+ {
+  "name": "sent-sensor",
+  "s": 15.1
+ }
+]

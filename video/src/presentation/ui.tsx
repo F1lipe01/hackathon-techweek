@@ -312,3 +312,65 @@ export const trackAt = (track: Track, t: number): Rect => {
   const q = [1, 2, 3, 4].map((j) => a[j] + (b[j] - a[j]) * u);
   return { x: q[0] * 1920, y: q[1] * 1080, w: (q[2] - q[0]) * 1920, h: (q[3] - q[1]) * 1080 };
 };
+
+/* ------------------------------------------------------------------ a phone the camera moves into */
+
+/** A camera key on a phone: at frame `at`, scale `s`, looking at the app point (fx, fy) (402 × 874 pt). */
+export type ZoomKey = { at: number; s: number; fx: number; fy: number };
+
+export const PT = { w: 402, h: 874 } as const;
+
+/** Where the phone is drawn at `frame`: its top-left corner on screen, its scale, and how zoomed it is (0 → 1). */
+export const zoomState = (frame: number, keys: ZoomKey[], height: number, x: number, y: number, target: { x: number; y: number }) => {
+  let i = 0;
+  while (i < keys.length - 2 && frame >= keys[i + 1].at) i++;
+  const a = keys[i];
+  const b = keys[Math.min(i + 1, keys.length - 1)];
+  const u = b.at > a.at ? ramp(frame, a.at, b.at, theme.ease.inOut) : 0;
+  const s = mix(a.s, b.s, u);
+  const fx = mix(a.fx, b.fx, u);
+  const fy = mix(a.fy, b.fy, u);
+  const w = phoneWidth(height);
+  const k = (w * SCREEN.width) / PT.w;
+  const px = w * SCREEN.left + fx * k; // the focus, in phone pixels
+  const py = height * SCREEN.top + fy * k;
+  const z = Math.min(1, Math.max(0, (s - 1) / 0.6));
+  const rest = { x: x - w / 2 + px, y: y - height / 2 + py };
+  const T = { x: mix(rest.x, target.x, z), y: mix(rest.y, target.y, z) };
+  return { left: T.x - px * s, top: T.y - py * s, s, z, k, w };
+};
+
+/** The app point (ptx, pty) on screen, for a phone drawn with zoomState. */
+export const phonePoint = (st: ReturnType<typeof zoomState>, height: number, ptx: number, pty: number) => ({
+  x: st.left + (st.w * SCREEN.left + ptx * st.k) * st.s,
+  y: st.top + (height * SCREEN.top + pty * st.k) * st.s,
+});
+
+/**
+ * A phone in the room that the camera moves into: it tilts in, then the keys push onto the element that matters
+ * (held, then pulled back). While zoomed it is flat, so it stays sharp; a soft shadow sits under it.
+ */
+export const ZoomPhone: React.FC<{
+  height: number; x: number; y: number; at?: number; keys: ZoomKey[]; target?: { x: number; y: number }; children: React.ReactNode;
+}> = ({ height, x, y, at = 0, keys, target = { x: 1400, y: 540 }, children }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const p = spring({ frame: frame - at, fps, config: { damping: 18, stiffness: 70, mass: 1.1 } });
+  const st = zoomState(frame, keys, height, x, y, target);
+  const flat = 1 - st.z;
+  const idleY = Math.sin(frame / 46) * 1.6 * p * flat;
+  const idleX = Math.cos(frame / 60) * 1.0 * p * flat;
+  return (
+    <div style={{ position: "absolute", left: 0, top: 0, transformOrigin: "0 0", transform: `translate(${st.left}px, ${st.top + 120 * (1 - p)}px) scale(${st.s})`, opacity: interpolate(p, [0, 0.25], [0, 1], clamp) }}>
+      <div
+        style={{
+          position: "relative", width: phoneWidth(height), height,
+          transform: `perspective(2400px) rotateY(${(-26 * (1 - p) - 4) * flat + idleY}deg) rotateX(${(10 * (1 - p) + 2) * flat + idleX}deg)`,
+        }}
+      >
+        <div style={{ position: "absolute", left: "8%", right: "8%", bottom: -height * 0.05, height: height * 0.08, borderRadius: "50%", background: alpha(theme.colors.ink, 0.28 * flat), filter: "blur(28px)" }} />
+        <Phone height={height}>{children}</Phone>
+      </div>
+    </div>
+  );
+};

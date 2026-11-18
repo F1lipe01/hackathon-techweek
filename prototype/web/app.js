@@ -638,7 +638,7 @@ device.addEventListener('input', (e) => {
 async function refresh() {
   try { state = await api('/api/state'); } catch { $('status').textContent = 'Server not reachable'; return; }
   $('status').textContent = '';
-  renderEdge(state.edge); renderLog();
+  renderEdge(state.edge); renderLog(); renderDoor(state.door);
   // re-render the app only when its data changed, so a tap is never lost to a redraw
   const sig = JSON.stringify([state.home, state.things, state.rules, state.enrol, state.events.length, state.events[0]?.id]);
   if (sig !== lastSig) { lastSig = sig; if (!stack.length) renderTab(ui.tab); else refreshPage(); }
@@ -648,6 +648,25 @@ async function refresh() {
     if (!firstLoad && e.kind === 'alert') toast(e.title || 'Alert', e.text, e.crop);
   }
   firstLoad = false;
+}
+
+// The front door: "Simulate: door opens" opens the simulated Contact sensor and closes it 3 s later, as someone
+// going out would. The server checks the "leave home without" sensors when it opens (server.py: /api/sim/door).
+const simDoor = $('simdoor');
+simDoor.addEventListener('click', async () => {
+  simDoor.disabled = true; simDoor.textContent = 'Door open…';
+  try {
+    await api('/api/sim/door', { method: 'POST', body: JSON.stringify({ open: true }) });
+    refresh();
+    await new Promise((r) => setTimeout(r, 3000));
+    await api('/api/sim/door', { method: 'POST', body: JSON.stringify({ open: false }) });
+  } catch (e) { $('status').textContent = e.message; }
+  simDoor.disabled = false; simDoor.textContent = 'Simulate: door opens';
+  refresh();
+});
+function renderDoor(d) {
+  simDoor.title = d?.live ? 'The Contact sensor is live through the MCP; this button adds a simulated opening.'
+    : 'The MCP session is not live: this simulates the Contact sensor on the front door.';
 }
 
 // Scale the 402 x 874 pt screen to the frame, so the app never reflows: the whole screen scales, as on a real device.

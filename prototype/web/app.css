@@ -450,3 +450,15 @@
     .pulse, .typing i { animation: none; }
   }
 }
+
+/* ---------------------------------------------------------------- the simulated front door (app.js: simDoor)
+   A quiet text pill like the header links, at the right end of the activity header, on the spend text's baseline.
+   On a phone the spend text gives way (ellipsis) before the pill would wrap. */
+@layer layout {
+  .log-head .spend { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .sim-door { flex: none; margin-right: -12px; padding: 7px 12px; border: 0; border-radius: 999px; background: none;
+    color: var(--ink); font: 500 0.875rem/1.2 var(--font); white-space: nowrap; cursor: pointer;
+    transition: background-color 160ms ease-out; }
+  .sim-door:disabled { color: var(--muted); cursor: default; }
+  @media (hover: hover) and (pointer: fine) { .sim-door:hover:not(:disabled) { background: var(--ground); } }
+}

@@ -26,29 +26,32 @@
   </symbol>
 </svg>
 
-<header class="top"><div class="top-in">
+<header class="top">
   <span class="brand"><svg aria-hidden="true"><use href="#mark"/></svg>ThingTracker</span>
   <span class="mode" id="mode">Prototype</span>
-</div></header>
+</header>
 
+<!-- One grid fills the window: the camera and its notes on the left, the phone on the right.
+     Every block starts on the same left edge and fills its column exactly. -->
 <main class="split">
   <!-- ======================= CAMERA: what the system sees ======================= -->
-  <section class="cam" aria-labelledby="cam-title">
-    <div class="stage" id="stage">
-      <video id="video" playsinline muted autoplay loop hidden></video>
-      <img id="kitimg" alt="Live picture from the kit camera">
-      <div class="boxes" id="boxes" aria-hidden="true"></div>
-      <div class="stage-top"><span class="place">Work Room <small>Kit camera</small></span><span class="edge-pill" id="edge" aria-live="polite" hidden></span></div>
-      <p class="stage-msg" id="stagemsg">Connecting to the kit camera…</p>
-    </div>
-    <p class="caption">The camera stays idle until something moves. Then the models on this computer find the things you registered, recognise each one by its visual fingerprint and draw a box around it. Only a small crop of each thing goes into the home's memory.</p>
+  <div class="stage" id="stage" role="img" aria-label="Kit camera, Work Room, with the boxes the models draw">
+    <video id="video" playsinline muted autoplay loop hidden></video>
+    <img id="kitimg" alt="">
+    <div class="boxes" id="boxes" aria-hidden="true"></div>
+    <div class="stage-top"><span class="place">Work Room · Kit camera</span><span class="edge-pill" id="edge" aria-live="polite" hidden></span></div>
+    <p class="stage-msg" id="stagemsg">Connecting to the kit camera…</p>
+  </div>
 
-    <div class="log-head">
-      <h2>Activity</h2>
-      <span class="status" id="status" aria-live="polite"></span>
-      <span class="spend" id="spend"></span>
+  <section class="info" aria-label="How it works and recent activity">
+    <div class="about">
+      <h2>How it works</h2>
+      <p>The camera stays idle until something moves. Then the models on this computer find the things you registered, recognise each one by its visual fingerprint and keep only a small crop of it.</p>
     </div>
-    <ol class="log" id="log"></ol>
+    <div class="activity">
+      <div class="log-head"><h2>Activity</h2><span class="status" id="status" aria-live="polite"></span><span class="spend" id="spend"></span></div>
+      <ol class="log" id="log"></ol>
+    </div>
   </section>
 
   <!-- ======================= APP: a copy of the Altice app, plus the Things tab ======================= -->
@@ -96,7 +99,7 @@
      </div>
      <img class="frame" src="/web/iphone-frame.svg" alt="" aria-hidden="true">
     </div>
-    <p class="caption small">The Altice app with the new <b>Things</b> tab and assistant</p>
+    <p class="caption">The Altice app as it is today, with the new Things tab and the assistant on every tab.</p>
   </section>
 </main>
 

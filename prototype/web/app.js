@@ -98,12 +98,22 @@ function useSource(next) {
   kitimg.onerror = () => stageMsg('The kit camera is not answering. Is it powered and on the Wi-Fi?');
   kitimg.src = '/api/kit/stream.mjpg?t=' + Date.now();
 }
+// Where the picture sits inside the stage. "cover" fills the stage and crops the edges; "contain" letterboxes it.
 function contentRect(el, w, h) {
   const sw = el.clientWidth, sh = el.clientHeight;
   if (!w || !h) return { x: 0, y: 0, w: sw, h: sh };
-  const s = Math.min(sw / w, sh / h);
+  const s = (el.dataset.fit === 'cover' ? Math.max : Math.min)(sw / w, sh / h);
   return { x: (sw - w * s) / 2, y: (sh - h * s) / 2, w: w * s, h: h * s };
 }
+// The stage takes whatever shape the grid gives it. Fill it when that crops less than about 15 % of the picture;
+// otherwise show the whole picture with bars, so nothing the camera sees is hidden.
+function fitStage() {
+  const w = kitimg.naturalWidth || 16, h = kitimg.naturalHeight || 9;
+  const r = (stage.clientWidth / stage.clientHeight) / (w / h);
+  stage.dataset.fit = r > 0.85 && r < 1.18 ? 'cover' : 'contain';
+}
+new ResizeObserver(fitStage).observe(stage);
+kitimg.addEventListener('load', fitStage, { once: true });
 const boxHtml = (bs) => bs.map((x) => {
   const [x1, y1, x2, y2] = x.box;
   return `<div class="box ${esc(x.kind)}" style="left:${x1 * 100}%;top:${y1 * 100}%;width:${(x2 - x1) * 100}%;height:${(y2 - y1) * 100}%"><b>${esc(x.label)}</b></div>`;
@@ -114,6 +124,7 @@ async function drawBoxes() {
   try { lastBoxes = await api('/api/edge/boxes'); } catch { return; }
   const el = $('boxes');
   if (source !== 'kit') { el.replaceChildren(); return; }
+  fitStage();    // the stream's size is only known after its first frame
   const r = contentRect(stage, kitimg.naturalWidth, kitimg.naturalHeight);
   Object.assign(el.style, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px' });
   el.dataset.stale = lastBoxes.age > 4 ? '1' : '';

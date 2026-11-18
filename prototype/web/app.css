@@ -31,14 +31,13 @@
     --font: "Switzer", "Helvetica Neue", Arial, sans-serif;
     --app-font: "Montserrat", "Helvetica Neue", Arial, sans-serif;
     --step-small: 0.8125rem; --step-body: 0.9375rem;
-    --head-h: 56px; --pad: 18px; --gap: 40px;
-    /* the page is one centred composition: the camera column and the phone share the same top and bottom */
-    --avail-h: calc(100svh - var(--head-h) - 2 * var(--pad));
-    --phone-h: calc(var(--avail-h) - 44px);                 /* room for the caption under the phone */
-    --phone-w: calc(var(--phone-h) * 1350 / 2760);
-    --below: 236px;                                          /* caption + activity under the video */
-    --cam-w: min(calc((var(--avail-h) - var(--below)) * 16 / 9), calc(100vw - 2 * var(--gutter) - var(--gap) - var(--phone-w)));
-    --gutter: 28px;
+    /* the page: one grid that fills the window. Columns: camera (the rest) | phone; rows: camera | notes.
+       The phone takes the full height, unless that would make it wider than a third of the window. */
+    --head-h: 60px; --gutter: 28px; --col-gap: 32px; --row-gap: 20px;
+    --avail-h: calc(100svh - var(--head-h) - var(--gutter));
+    --cap-h: 40px;                                            /* the caption under the phone */
+    --info-h: 132px;                                          /* the notes under the camera */
+    --phone-w: min(calc((var(--avail-h) - var(--cap-h)) * 1350 / 2760), 32vw);
     --radius: 14px;
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
     --app-fade: cubic-bezier(0.2, 0, 0, 1);   /* the app's screen crossfade: fast start, ease out (280-300 ms) */
@@ -59,65 +58,68 @@
   code { font-size: 0.92em; }
 }
 
-/* ---------------------------------------------------------------- the page: everything on one desktop screen */
+/* ---------------------------------------------------------------- the page: one grid, every edge shared */
 @layer layout {
-  .top { height: var(--head-h); background: var(--ground); display: flex; justify-content: center; padding: 0 var(--gutter); }
-  .top-in { display: flex; align-items: center; justify-content: space-between; gap: 18px; width: min(100%, calc(var(--cam-w) + var(--gap) + var(--phone-w))); }
+  .top { height: var(--head-h); display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 var(--gutter); }
   .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 1.125rem; letter-spacing: -0.03em; flex: none; }
   .brand svg { width: 26px; height: 26px; }
-  .mode { flex: none; font-size: var(--step-small); padding: 4px 10px; border-radius: 999px; background: var(--surface); color: var(--muted); }
+  .mode { flex: none; font-size: var(--step-small); padding: 4px 12px; border-radius: 999px; background: var(--ground); color: var(--muted); }
   .mode.live { background: #fdecec; color: var(--app-red); }
 
-  .split { display: grid; gap: 28px; padding: var(--pad) var(--gutter); }
-  .phone-wrap { display: grid; justify-items: center; align-content: start; gap: 14px; }
-  .caption { font-size: 0.86rem; line-height: 1.5; color: var(--muted); text-align: center; text-wrap: balance; }
-  .caption b { color: var(--ink); font-weight: 600; }
-  .caption.small { font-size: 0.8rem; line-height: 1.4; }
-  @media (min-width: 1000px) {
+  /* small screens: one column, read from top to bottom */
+  .split { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "stage" "info" "phone"; gap: var(--row-gap);
+    padding: 0 var(--gutter) var(--gutter); }
+  .stage { grid-area: stage; }
+  .info { grid-area: info; }
+  .phone-wrap { grid-area: phone; display: grid; gap: 12px; align-content: start; justify-self: center; width: min(100%, 380px); }
+
+  /* text: left-aligned, as wide as the block it belongs to */
+  h2 { font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.01em; color: var(--ink); }
+  .caption, .about p { font-size: 0.875rem; line-height: 1.5; color: var(--muted); text-align: left; }
+
+  /* desktop and tablet in landscape: the whole page on one screen, the camera takes all the room the phone leaves */
+  @media (min-width: 1000px) and (min-height: 560px) {
     body { height: 100svh; overflow: hidden; display: grid; grid-template-rows: var(--head-h) minmax(0, 1fr); }
-    .split { min-height: 0; grid-template-columns: var(--cam-w) var(--phone-w); column-gap: var(--gap); justify-content: center; align-items: stretch; }
-    .phone-wrap { grid-template-rows: var(--phone-h) auto; }
-    .phone { height: var(--phone-h); width: var(--phone-w); }
+    /* the camera row is 16:9 at the column's width, never taller than the window allows; the notes take what is left */
+    .split { min-height: 0; grid-template-columns: minmax(0, 1fr) var(--phone-w); grid-template-rows: auto minmax(var(--info-h), 1fr);
+      grid-template-areas: "stage phone" "info phone"; column-gap: var(--col-gap); }
+    .phone-wrap { width: var(--phone-w); justify-self: stretch; }
+    .phone { width: var(--phone-w); }
   }
 }
 
 @layer camera {
-  .cam { display: grid; grid-template-rows: auto auto auto minmax(0, 1fr); gap: 14px; min-width: 0; min-height: 0; }
-  .cam-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
-  .cam-head h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1.1; }
-  .cam-head h1 small { font-size: 0.95rem; font-weight: 500; color: var(--muted); letter-spacing: 0; margin-left: 6px; }
-  .seg { display: inline-flex; gap: 4px; padding: 4px; background: var(--surface-2); border-radius: 999px; }
-  .seg label { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 0.4em 0.9em; border-radius: 999px; cursor: pointer; font-weight: 500; font-size: 0.9rem; transition: background-color 160ms ease-out; }
-  .seg .ti { width: 1.05em; height: 1.05em; }
-  .seg input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
-  .seg label:has(input:checked) { background: var(--ground); }
-
-  /* the video takes the room the page leaves it: never taller than the window allows */
-  .stage { position: relative; background: #000; border-radius: var(--radius); overflow: hidden; aspect-ratio: 16 / 9; width: 100%; }
-  /* the camera burns its clock into the top-left corner: our labels go along the bottom */
-  .stage-top { position: absolute; z-index: 2; left: 14px; right: 14px; bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; pointer-events: none; }
-  .place { color: #fff; font-weight: 600; font-size: 1.05rem; letter-spacing: -0.01em; padding: 5px 12px; border-radius: 999px; background: rgb(0 0 0 / 0.5); }
-  .place small { font-weight: 500; font-size: 0.82rem; opacity: 0.75; margin-left: 4px; }
+  /* the camera fills its cell; the picture covers it when the crop is small, else it is letterboxed (app.js: fitStage) */
+  .stage { position: relative; min-width: 0; min-height: 0; background: #000; border-radius: var(--radius); overflow: hidden; aspect-ratio: 16 / 9; }
+  @media (min-width: 1000px) and (min-height: 560px) { .stage { max-height: calc(var(--avail-h) - var(--info-h) - var(--row-gap)); } }
   .stage video, .stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
-  .stage-msg { position: absolute; inset: 0 0 auto 0; padding: 10px 14px; color: #fff; background: rgb(0 0 0 / 0.6); font-size: var(--step-small); }
+  .stage[data-fit="cover"] video, .stage[data-fit="cover"] img { object-fit: cover; }
+  /* the camera burns its clock into the top-left corner: our labels go along the bottom */
+  .stage-top { position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; pointer-events: none; }
+  .place { color: #fff; font-weight: 600; font-size: 0.95rem; letter-spacing: -0.01em; padding: 6px 12px; border-radius: 999px; background: rgb(0 0 0 / 0.55); white-space: nowrap; }
+  .stage-msg { position: absolute; inset: 0 0 auto 0; padding: 10px 16px; color: #fff; background: rgb(0 0 0 / 0.6); font-size: var(--step-small); }
   .stage-msg:empty { display: none; }
-  .cam-bar { display: flex; align-items: center; gap: 8px; min-height: 26px; }
-  .status { color: var(--muted); font-size: var(--step-small); margin-left: auto; }
-  .privacy { font-size: 0.78rem; line-height: 1.45; color: var(--muted); max-width: 110ch; }
-  .log-head { display: flex; align-items: baseline; gap: 12px; }
-  .log-head .status { margin-left: 0; }
-  .log-head .spend { margin-left: auto; }
-  .log-head h2 { font-size: 1rem; font-weight: 600; }
-  .spend { font-size: var(--step-small); color: var(--muted); font-variant-numeric: tabular-nums; }
-  /* activity: a grid of cards that fills the width under the video, newest first; older ones scroll away */
-  .log { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); grid-auto-rows: min-content;
-    gap: 8px; align-content: start; overflow: auto; min-height: 0; scrollbar-width: thin; }
-  .log li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; align-items: start; padding: 10px 12px; background: var(--ground); border-radius: 12px; font-size: 0.8rem; line-height: 1.4; }
-  .log li img { grid-row: span 2; width: 44px; height: 44px; border-radius: 8px; object-fit: cover; }
-  .log li span { min-width: 0; }
+
+  /* under the camera: "How it works" (one part) and the activity (two parts), headings on one line */
+  .info { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--row-gap) var(--col-gap); align-content: start; min-height: 0; }
+  @media (min-width: 760px) { .info { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); } }
+  .about, .activity { display: grid; gap: 10px; align-content: start; min-width: 0; min-height: 0; }
+  .log-head { display: flex; align-items: baseline; gap: 12px; min-width: 0; }
+  .status { color: var(--muted); font-size: var(--step-small); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .spend { margin-left: auto; font-size: var(--step-small); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* activity: one row of cards, newest first; older ones drop out of sight instead of piling up */
+  .log { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    grid-template-rows: 72px; grid-auto-rows: 0; column-gap: 8px; row-gap: 0; overflow: hidden; }
+  .log li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; height: 72px; padding: 10px 12px;
+    background: var(--ground); border-radius: 12px; font-size: 0.78rem; line-height: 1.35; overflow: hidden; }
+  .log li img { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
+  .log li > time { width: 48px; text-align: center; font-weight: 600; }
+  .log li span { min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
   .log time { color: var(--muted); font-variant-numeric: tabular-nums; }
   .log .alert { background: #fdecec; }
   .log small { display: block; color: var(--muted); overflow-wrap: anywhere; }
+  .log:empty::before { content: "Nothing yet. Register a thing in the app, then move it in front of the camera."; grid-column: 1 / -1;
+    display: flex; align-items: center; height: 72px; padding: 0 14px; border-radius: 12px; background: var(--ground); color: var(--muted); font-size: 0.8125rem; }
 
   /* live boxes from the edge service */
   .boxes { position: absolute; pointer-events: none; transition: opacity 300ms var(--ease-out); }
@@ -141,7 +143,6 @@
 /* ---------------------------------------------------------------- the phone and the app copy */
 @layer phone {
   .phone { --pw: auto; position: relative; aspect-ratio: 1350 / 2760; max-width: 100%; }
-  @media (max-width: 999px) { .phone { width: min(100%, 420px); } }
   .screen-wrap { position: absolute; left: 5.3333%; top: 2.5%; width: 89.3333%; height: 95%;
     border-radius: 15.837% / 7.284%; overflow: hidden; background: var(--app-bg); }
   .frame { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6; }

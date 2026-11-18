@@ -118,7 +118,7 @@ def exemplo():
         vx, vy = x + 14, top + 50            # visual area: cw - 28 wide, 122 tall
         if i == 0:
             f.rect(vx, vy + 8, cw - 28, 100, fill="#EEF3FB", stroke=None, rx=16)
-            lines = wrap("«Avisa-me se sair de casa sem as chaves»", cw - 60, 16.5)
+            lines = wrap("“Avisa-me se sair de casa sem as chaves”", cw - 60, 16.5)
             y0 = vy + 58 - (len(lines) - 1) * 11
             for k, ln in enumerate(lines):
                 f.text(vx + (cw - 28) / 2, y0 + k * 22, ln, 16.5, False, INK, "middle")
@@ -244,3 +244,6 @@ def arquitetura():
 if __name__ == "__main__":
     exemplo()
     arquitetura()
+    import shutil
+    shutil.copy(ROOT / "docs" / "architecture" / "thingtracker-architecture.svg", HERE / "arquitetura.svg")
+    print("copied arquitetura.svg from docs/architecture")

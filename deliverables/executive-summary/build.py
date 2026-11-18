@@ -28,6 +28,7 @@ GREEN, GREY = "4bd26c", "666666"
 FIG_W_CM = 15.9  # text width of the template is 15.93 cm
 FIG_ALT = {"figura-exemplo": "Exemplo do ThingTracker: uma frase, a câmara vê, a casa lembra, a casa age",
            "figura-arquitetura": "Como funciona o ThingTracker: em casa, na plataforma Altice e no modelo de linguagem",
+           "arquitetura": "Arquitetura do ThingTracker: em casa, na plataforma Altice e no modelo de linguagem",
            "fluxo": "Fluxo do ThingTracker: ver, filtrar, perceber, lembrar, agir"}
 
 
@@ -62,7 +63,10 @@ def parse(md):
             blocks.append(("li", s[2:]))
         elif s.startswith("[[figura:"):
             flush()
-            blocks.append(("fig", s[len("[[figura:"):-2].strip().removesuffix(".png").removesuffix(".svg")))
+            name, _, caption = s[len("[[figura:"):-2].partition("|")
+            blocks.append(("fig", name.strip().removesuffix(".png").removesuffix(".svg")))
+            if caption.strip():
+                blocks.append(("caption", caption.strip()))
         else:
             para.append(s)
     flush()
@@ -150,7 +154,7 @@ BODY_SPACING = '<w:spacing w:before="0" w:after="100" w:line="264" w:lineRule="a
 
 
 def w_blocks(blocks, fig_rids):
-    out = []
+    out, fig_no = [], [0]
     for kind, text in blocks:
         if kind == "h":
             out.append(w_par(text, '<w:keepNext/><w:spacing w:before="200" w:after="80" w:line="276" w:lineRule="auto"/>',
@@ -166,6 +170,11 @@ def w_blocks(blocks, fig_rids):
         elif kind == "sources":
             out.append(w_par(text, '<w:spacing w:before="120" w:after="0" w:line="240" w:lineRule="auto"/>',
                              size=15, color=GREY))
+        elif kind == "caption":
+            fig_no[0] += 1
+            out.append(w_par(f"**Figura {fig_no[0]}** – {text}",
+                             '<w:spacing w:before="0" w:after="140" w:line="240" w:lineRule="auto"/><w:jc w:val="center"/>',
+                             size=17, color=GREY))
         elif kind == "fig":
             n = list(fig_rids).index(text)
             fig_rid, (fw, fh) = fig_rids[text], fig_size(text)
@@ -265,7 +274,7 @@ def build_pdf(tmp, meta, blocks, fontdir):
         '<text x="0" y="28"><tspan font-weight="700">Aveiro Tech City Hackathon </tspan>– 4ª Edição</text></svg>',
         encoding="utf8")
 
-    parts, items = [], []
+    parts, items, n_fig = [], [], 0
 
     def close_list():
         if items:
@@ -283,6 +292,9 @@ def build_pdf(tmp, meta, blocks, fontdir):
             items.append(f"<li>{inline_html(text)}</li>")
         elif kind == "sources":
             parts.append(f'<p class="sources">{inline_html(text)}</p>')
+        elif kind == "caption":
+            n_fig += 1
+            parts.append(f'<p class="caption"><b>Figura {n_fig}</b> – {inline_html(text)}</p>')
         elif kind == "fig":
             parts.append(f'<figure><img src="{(HERE / (text + ".png")).as_uri()}" alt="{x(FIG_ALT.get(text, text))}"></figure>')
     close_list()
@@ -307,6 +319,7 @@ code { font: 9.5pt 'Courier New', monospace; }
 figure { margin: 3pt 0 6pt; break-inside: avoid; }
 figure img { width: 100%; display: block; }
 .sources { font-size: 7.5pt; line-height: 1.25; color: #666; margin-top: 6pt; }
+.caption { font-size: 8.5pt; line-height: 1.25; color: #555; text-align: center; margin: -3pt 0 7pt; }
 """
     page = (f'<!doctype html><html lang="pt-PT"><meta charset="utf-8"><title>{OUT}</title><style>{css}</style><body>'
             f'<div class="t1">Equipa {x(meta["equipa"])}</div>'
@@ -332,7 +345,7 @@ def main():
             render_figure(tmp, fontdir, name)
         docx = build_docx(tmp, meta, blocks)
         pdf = build_pdf(tmp, meta, blocks, fontdir)
-    words = sum(len(re.sub(r"[*`_]", "", t).split()) for k, t in blocks if k != "fig")
+    words = sum(len(re.sub(r"[*`_]", "", t).split()) for k, t in blocks if k not in ("fig", "caption"))
     print(f"built {docx}\nbuilt {pdf}\nwords: {words}")
 
 

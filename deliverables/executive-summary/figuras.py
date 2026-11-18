@@ -235,10 +235,10 @@ def exemplo_real():
         photo(f, FOTOS / spec["views"][0], x, vy, iw, 2 * th + 6, rx=6)
     for k, v in enumerate(spec["views"][:2 * cols] if len(spec["views"]) > 1 else []):
         photo(f, FOTOS / v, x + (k % cols) * (tw + 6), vy + (k // cols) * (th + 6), tw, th, rx=6)
-    f.para(x, vy + 2 * th + 6 + 26, L(f"O nome “_{en}_” pesquisa a _thing_; as imagens geram uma assinatura digital e visual, "
+    f.para(x, vy + 2 * th + 6 + 26, L(f"O detetor procura {art} {pt}; as fotografias geram uma assinatura visual, "
                                       "guardada em casa e na base de dados da Altice.",
-                                      f"The name “{en}” is the search term; the images make a digital and visual fingerprint of "
-                                      "the thing, stored at home and in Altice’s database."), iw, 13.5, 17.5)
+                                      f"The detector looks for the {en}; the photos make a visual fingerprint, "
+                                      "stored at home and in Altice’s database."), iw, 13.5, 17.5)
 
     # 2. detection: the scene, with the box the edge drew
     x = X0 + cw + gap + ix

@@ -19,7 +19,7 @@ A solução proposta, o _ThingTracker_, transforma a câmara da casa num sensor 
 
 Para registar uma _thing_, por exemplo uma criança, o utilizador indica o nome na aplicação e mostra-a à câmara durante alguns segundos. O detetor local procura a criança e as imagens geram uma assinatura digital e visual da _thing_, guardada em casa e na base de dados da Altice. O utilizador pode então perguntar “onde está a criança?”.
 
-Uma frase como “avisa-me se a criança estiver em perigo” segue para o Serviço _ThingTracker_, que a envia ao modelo de linguagem com as _things_ registadas. O modelo interpreta o que é perigo, para a criança e para os outros (uma faca, o fogão, uma janela aberta), e devolve regras estruturadas, gravadas como cenário através do MCP e avaliadas em casa; as ações seguem pelo MCP. O mesmo princípio aplica-se a outros casos:
+Uma frase como “avisa-me se a criança estiver em perigo” segue para o Serviço _ThingTracker_, que a envia ao modelo de linguagem com as _things_ registadas. O modelo interpreta o que é perigo, para a criança e para os outros (um detergente, o fogão), e devolve regras estruturadas, gravadas como cenário através do MCP e avaliadas em casa; as ações seguem pelo MCP. O mesmo princípio aplica-se a outros casos:
 
 - Perdidos e achados: com a carteira registada, se o utilizador sair de casa sem ela, é avisado.
 - Animais: se a porta abrir e o cão deixar de ser visto, o utilizador é avisado.

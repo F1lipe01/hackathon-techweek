@@ -214,8 +214,14 @@ def exemplo_real():
     gap, top, h = 30, 6, 300
     X0 = 1.5                                   # inset: the outer strokes stay inside the image
     cw = (W - 3 * gap - 2 * X0) / 4
-    titles = L(["Registo visual", "Deteção", spec.get("t3_pt", "Pergunta"), "Regra e ação"],
-               ["Visual enrolment", "Detection", spec.get("t3_en", "Question"), "Rule and action"])
+    RF = bool(spec.get("rule_first"))           # the rule is set beforehand: panel 1; the alert panel ends with the action
+    slot = {"reg": 1, "det": 2, "alert": 3, "rule": 0} if RF else {"reg": 0, "det": 1, "alert": 2, "rule": 3}
+    if RF:
+        titles = L(["Antes: a regra", "Registo visual", "Deteção", "Alerta e ação"],
+                   ["Beforehand: the rule", "Visual enrolment", "Detection", "Alert and action"])
+    else:
+        titles = L(["Registo visual", "Deteção", spec.get("t3_pt", "Pergunta"), "Regra e ação"],
+                   ["Visual enrolment", "Detection", spec.get("t3_en", "Question"), "Rule and action"])
     for i, title in enumerate(titles):
         x = X0 + i * (cw + gap)
         f.rect(x, top, cw, h)
@@ -227,7 +233,7 @@ def exemplo_real():
     ix, iw = 14, cw - 28
 
     # 1. registration: six of the real views, then what they become
-    x, vy = X0 + ix, top + 50
+    x, vy = X0 + slot['reg'] * (cw + gap) + ix, top + 50
     cols = 2 if len(spec["views"]) <= 4 else 3
     tw = (iw - (cols - 1) * 6) / cols
     th = tw * 2 / 3
@@ -241,7 +247,7 @@ def exemplo_real():
                                       "stored at home and in Altice’s database."), iw, 13.5, 17.5)
 
     # 2. detection: the scene, with the box the edge drew
-    x = X0 + cw + gap + ix
+    x = X0 + slot['det'] * (cw + gap) + ix
     sc = Image.open(FOTOS / spec["scene"])
     sh = 128
     photo(f, FOTOS / spec["scene"], x, vy, iw, sh, rx=6)
@@ -269,17 +275,32 @@ def exemplo_real():
            iw, 13.5, 17.5)
 
     # 3. the alert sent to the phone with the photo of the moment (spec "alert"), or the question and its answer
-    x = X0 + 2 * (cw + gap) + ix
+    x = X0 + slot['alert'] * (cw + gap) + ix
     if spec.get("alert3"):
         al = spec["alert3"]
-        ch = 168
+        bsz = 12.5
+        body3 = wrap(L(al["body_pt"], al["body_en"]), iw - 20, bsz, True)
+        assert len(body3) <= 2, body3
+        ch = 214 if RF else 168
         f.rect(x, vy, iw, ch, fill="#FFF", stroke=LINE, rx=14)
         f.o.append(f'<circle cx="{x + 16}" cy="{vy + 17}" r="5" fill="#D2403A"/>')
         f.text(x + 27, vy + 21.5, L(al["head_pt"], al["head_en"]), 11, True, "#D2403A")
-        photo(f, FOTOS / spec["answer"], x + 10, vy + 32, iw - 20, 84, rx=8)
-        f.text(x + 10, vy + 136, L(al["body_pt"], al["body_en"]), 13.5, True, INK)
-        f.text(x + 10, vy + 155, L(al["meta_pt"], al["meta_en"]), 12, False, MUTED)
-        f.para(x, vy + ch + 26, L(al["note_pt"], al["note_en"]), iw, 13.5, 17.5)
+        ph3 = 84 if len(body3) == 1 else 70
+        photo(f, FOTOS / spec["answer"], x + 10, vy + 32, iw - 20, ph3, rx=8)
+        ty = vy + 32 + ph3 + 20
+        for j, ln in enumerate(body3):
+            f.text(x + 10, ty + j * 16, ln, bsz, True, INK)
+        ty += (len(body3) - 1) * 16 + 18
+        f.text(x + 10, ty, L(al["meta_pt"], al["meta_en"]), 11.5, False, MUTED)
+        if RF:
+            bw3 = (iw - 28) / 2
+            f.rect(x + 10, vy + ch - 36, bw3, 26, fill="#D2403A", stroke=None, rx=13)
+            f.text(x + 10 + bw3 / 2, vy + ch - 18.5, L("Ligar alarme", "Sound alarm"), 12, True, "#FFF", "middle")
+            f.rect(x + 18 + bw3, vy + ch - 36, bw3, 26, fill="#EEF1F5", stroke=None, rx=13)
+            f.text(x + 18 + bw3 + bw3 / 2, vy + ch - 18.5, L("Tudo bem", "It's fine"), 12, True, INK, "middle")
+            assert ty + 10 <= vy + ch - 36, "alert card overflows"
+        else:
+            f.para(x, vy + ch + 26, L(al["note_pt"], al["note_en"]), iw, 13.5, 17.5)
         q, ans = "", []
     else:
         q = L(spec.get("q_pt", f"Onde está {art} {pt}?"), spec.get("q_en", f"Where is my {en}?"))
@@ -297,37 +318,45 @@ def exemplo_real():
         f.para(x, vy + 184, L("A memória da casa responde com o último local e a hora.",
                               "The home memory answers with the last place and time."), iw, 13.5, 17.5)
 
-    # 4. a safety rule written as a sentence, evaluated at home, and the notification it sends: the alarm sounds only
-    #    if the user says so (architecture: the siren needs a "yes")
-    x = X0 + 3 * (cw + gap) + ix
+    # 4. (or 1, with "rule_first") a safety rule written as a sentence, what the language model makes of it, and either the rule
+    #    running at home (the alert panel holds the action) or the notification it sends
+    x = X0 + slot['rule'] * (cw + gap) + ix
     y = vy
-    for k, (t, fill) in enumerate([(L(spec.get("rule_pt", "“Avisa-me se uma criança estiver perto de uma faca”"),
-                                        spec.get("rule_en", "“Tell me if a child is near a knife”")), "#EEF3FB"),
-                                    (L(spec.get("model_pt", "Regra avaliada em casa"), spec.get("model_en", "Rule evaluated at home")), "#FFF")]):
+    steps4 = [(L(spec.get("rule_pt", "“Avisa-me se uma criança estiver perto de uma faca”"),
+                 spec.get("rule_en", "“Tell me if a child is near a knife”")), "#EEF3FB"),
+              (L(spec.get("model_pt", "Regra avaliada em casa"), spec.get("model_en", "Rule evaluated at home")), "#FFF")]
+    if RF:
+        steps4.append((L("Regra ativa, avaliada em casa", "Rule active, evaluated at home"), "#E7F6EC"))
+    for k, (t, fill) in enumerate(steps4):
         lines = balanced(t, iw - 16, 13.5) if EN else wrap(t, iw - 16, 13.5)
         ph = 12 + 16 * len(lines)
         f.rect(x, y, iw, ph, fill=fill, stroke=None if fill != "#FFF" else LINE, rx=8)
         for j, ln in enumerate(lines):
             f.text(x + iw / 2, y + ph / 2 + 5 - (len(lines) - 1) * 8 + j * 16, ln, 13.5, False, INK, "middle")
-        f.arrow(x + iw / 2, y + ph + 1, x + iw / 2, y + ph + 9)
+        if k < len(steps4) - 1 or not RF:
+            f.arrow(x + iw / 2, y + ph + 1, x + iw / 2, y + ph + 9)
         y += ph + 10
-    # the notification, as it arrives on the phone
-    nh = 116
-    f.rect(x, y, iw, nh, fill="#FFF", stroke=LINE, rx=14)
-    f.rect(x + 10, y + 10, 16, 16, fill="#2ABE9E", stroke=None, rx=4)
-    f.text(x + 32, y + 22, L("THINGTRACKER · COZINHA", "THINGTRACKER · KITCHEN"), 10.5, True, MUTED)
-    body = wrap(L(spec.get("alert_pt", "Uma criança está junto a uma faca na bancada."),
-                  spec.get("alert_en", "A child is next to a knife on the counter.")), iw - 20, 13.5, True)
-    for j, ln in enumerate(body[:2]):
-        f.text(x + 10, y + 46 + j * 17, ln, 13.5, True, INK)
-    bw = (iw - 28) / 2
-    f.rect(x + 10, y + nh - 36, bw, 26, fill="#D2403A", stroke=None, rx=13)
-    f.text(x + 10 + bw / 2, y + nh - 18.5, L("Ligar alarme", "Sound alarm"), 12, True, "#FFF", "middle")
-    f.rect(x + 18 + bw, y + nh - 36, bw, 26, fill="#EEF1F5", stroke=None, rx=13)
-    f.text(x + 18 + bw + bw / 2, y + nh - 18.5, L("Tudo bem", "It's fine"), 12, True, INK, "middle")
-    assert len(body) <= 2, body
-    assert width(L("Ligar alarme", "Sound alarm"), 12, True) + 12 <= bw, "button label too wide"
-    y += nh + 10
+    if RF:
+        f.para(x, y + 16, L("Define-se uma vez; a partir daí, a casa vigia.", "Set once; from then on, the home watches."), iw, 13.5, 17.5)
+        y += 40
+    else:
+        # the notification, as it arrives on the phone
+        nh = 116
+        f.rect(x, y, iw, nh, fill="#FFF", stroke=LINE, rx=14)
+        f.rect(x + 10, y + 10, 16, 16, fill="#2ABE9E", stroke=None, rx=4)
+        f.text(x + 32, y + 22, L("THINGTRACKER · COZINHA", "THINGTRACKER · KITCHEN"), 10.5, True, MUTED)
+        body = wrap(L(spec.get("alert_pt", "Uma criança está junto a uma faca na bancada."),
+                      spec.get("alert_en", "A child is next to a knife on the counter.")), iw - 20, 13.5, True)
+        for j, ln in enumerate(body[:2]):
+            f.text(x + 10, y + 46 + j * 17, ln, 13.5, True, INK)
+        bw = (iw - 28) / 2
+        f.rect(x + 10, y + nh - 36, bw, 26, fill="#D2403A", stroke=None, rx=13)
+        f.text(x + 10 + bw / 2, y + nh - 18.5, L("Ligar alarme", "Sound alarm"), 12, True, "#FFF", "middle")
+        f.rect(x + 18 + bw, y + nh - 36, bw, 26, fill="#EEF1F5", stroke=None, rx=13)
+        f.text(x + 18 + bw + bw / 2, y + nh - 18.5, L("Tudo bem", "It's fine"), 12, True, INK, "middle")
+        assert len(body) <= 2, body
+        assert width(L("Ligar alarme", "Sound alarm"), 12, True) + 12 <= bw, "button label too wide"
+        y += nh + 10
     assert y - 10 <= top + h - 6, f"panel 4 overflows by {y - 10 - (top + h - 6):.0f}"
     if EN:                                   # labels drawn without wrapping must still fit their panel
         for s_ in (q, L("", "If there are two, it asks:")):

@@ -6,17 +6,17 @@
  "time": "16h30",
  "score": "",
  "views": [
-  "crianca-registo.jpg"
+  "crianca2-registo.jpg"
  ],
- "scene": "crianca-cena.jpg",
- "answer": "crianca-resposta.jpg",
+ "scene": "crianca2-cena.jpg",
+ "answer": "crianca2-alerta.jpg",
  "boxes": [
   {
    "box": [
-    255,
-    28,
-    506,
-    336
+    180,
+    38,
+    492,
+    489
    ],
    "pt": "Criança",
    "en": "Child",
@@ -24,13 +24,13 @@
   },
   {
    "box": [
-    85,
-    163,
-    192,
-    252
+    342,
+    196,
+    398,
+    240
    ],
-   "pt": "Faca",
-   "en": "Knife",
+   "pt": "Detergente",
+   "en": "Detergent pod",
    "danger": true
   }
  ],
@@ -40,21 +40,22 @@
  "answer_en": "In the kitchen, by the counter, at 16:30.",
  "rule_pt": "“Avisa-me se a criança estiver em perigo”",
  "rule_en": "“Tell me if the child is in danger”",
- "model_pt": "O modelo de linguagem define o perigo: facas, fogão, janelas",
- "model_en": "The language model defines danger: knives, stove, windows",
+ "model_pt": "O modelo de linguagem define o perigo: detergentes e fogão",
+ "model_en": "The language model defines danger: detergents and the stove",
  "alert_pt": "Queres ligar o alarme da casa?",
  "alert_en": "Sound the home alarm?",
- "source": "Photo: stock preview supplied by the team, child's face blurred. Boxes drawn on the photo for the figure.",
+ "source": "Photo supplied by the team, child's face and brand logos blurred. Boxes drawn on the photo for the figure.",
  "t3_pt": "Alerta",
  "t3_en": "Alert",
  "alert3": {
   "head_pt": "ALERTA ENVIADO",
   "head_en": "ALERT SENT",
-  "body_pt": "A criança está em perigo.",
-  "body_en": "The child is in danger.",
-  "meta_pt": "Cozinha · 16h30",
-  "meta_en": "Kitchen · 16:30",
+  "body_pt": "A criança pôs um detergente na boca.",
+  "body_en": "The child put a detergent pod in their mouth.",
+  "meta_pt": "Cozinha · 16h30 · com fotografia",
+  "meta_en": "Kitchen · 16:30 · with photo",
   "note_pt": "O aviso chega ao telemóvel dos pais com a fotografia do momento.",
   "note_en": "The alert reaches the parents’ phone with a photo of the moment."
- }
+ },
+ "rule_first": true
 }

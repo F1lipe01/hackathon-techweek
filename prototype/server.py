@@ -108,11 +108,113 @@ def deadline_ticker():
 threading.Thread(target=deadline_ticker, daemon=True).start()
 
 
+
+# ---------------------------------------------------------------------- edge service (prototype/edge.py)
+EDGE = {"state": "offline", "checked": 0, "analysed": 0, "last_motion": 0.0, "last_person": 0.0, "updated": 0.0, "ms": None}
+_last_crop = {}
+
+
+def edge_online():
+    return time.time() - EDGE["updated"] < 15
+
+
+@app.post("/api/edge/status")
+def edge_status(payload: dict = Body(...)):
+    for k in ("state", "checked", "analysed", "last_motion", "change"):
+        if k in payload:
+            EDGE[k] = payload[k]
+    EDGE["updated"] = time.time()
+    return {"ok": True}
+
+
+@app.post("/api/edge/observe")
+def edge_observe(payload: dict = Body(...)):
+    """What the edge saw: thing, place, a small crop of the thing, and how many people. Never the full frame."""
+    now_ = time.time()
+    EDGE["updated"], EDGE["ms"] = now_, payload.get("ms")
+    if int(payload.get("people", 0)) > 0:
+        EDGE["last_person"] = now_
+    known = {t["id"]: t["name"] for t in store.things()}
+    last = {t["id"]: t.get("last_seen") for t in store.snapshot()["things"]}
+    for sgt in payload.get("sightings", [])[:12]:
+        tid = sgt.get("thing_id")
+        if tid not in known:
+            continue
+        place = "".join(ch for ch in str(sgt.get("place", "room")).lower() if ch.isalpha() or ch == " ")[:24] or "room"
+        zone = {"id": "place-" + place, "name": place}
+        prev = last.get(tid)
+        moved = not prev or prev.get("zone_id") != zone["id"] or now_ - prev["ts"] > 600
+        crop = None
+        if sgt.get("crop_b64") and (moved or now_ - _last_crop.get(tid, 0) > 60):
+            crop = f"{time.strftime('%Y%m%d-%H%M%S')}-{tid}.jpg"
+            (CROPS / crop).write_bytes(base64.b64decode(sgt["crop_b64"]))
+            _last_crop[tid] = now_
+        elif prev:
+            crop = prev.get("crop")
+        store.add_observation(tid, zone, "", crop)
+        if moved:
+            store.add_event("seen", f"{known[tid]} seen " + ("in the room." if place == "room" else f"on the {place}."), thing_id=tid, crop=crop)
+    return {"ok": True}
+
+
+def _stay_start(thing_id, place):
+    """When the thing's current stay in this place began (sightings less than 5 min apart), or None."""
+    start, prev_ts = None, None
+    for o in reversed(store.state["observations"]):
+        if o["thing_id"] != thing_id:
+            continue
+        if o["zone_name"] != place or (prev_ts and prev_ts - o["ts"] > 300):
+            break
+        start, prev_ts = o["ts"], o["ts"]
+    return start
+
+
+def rules_engine():
+    """Evaluates the local rules every 2 s against the memory and the edge's presence signals."""
+    while True:
+        now_ = time.time()
+        for r in store.active_rules():
+            if r.get("engine") != "local" or now_ - r.get("last_fired", 0) < r.get("cooldown_s", 300):
+                continue
+            kind, mins = r.get("kind"), float(r.get("minutes") or 0)
+            try:
+                if kind == "left_for":
+                    last = next((o for o in reversed(store.state["observations"]) if o["thing_id"] == r.get("thing_id")), None)
+                    place = r.get("place") or (last or {}).get("zone_name")
+                    if last and last["zone_name"] == place and now_ - last["ts"] < 120:
+                        start = _stay_start(r["thing_id"], place)
+                        if start and now_ - start >= mins * 60:
+                            fire(r, crop=last.get("crop"), evidence=f"On the {place} for {int((now_ - start) // 60)} min.")
+                elif kind == "nobody_for" and edge_online():
+                    quiet = now_ - max(EDGE["last_motion"], EDGE["last_person"], r.get("armed_at", 0))
+                    if quiet >= mins * 60:
+                        fire(r, evidence=f"No movement for {int(quiet // 60)} min.")
+                        store.update_rule(r["id"], armed_at=now_)
+                elif kind == "someone_arrives" and edge_online():
+                    lp = EDGE["last_person"]
+                    if lp > r.get("seen_person", 0) and lp - r.get("seen_person", 0) > max(mins, 5) * 60:
+                        if r.get("seen_person"):
+                            fire(r, evidence="Someone arrived after the room was empty.")
+                        store.update_rule(r["id"], seen_person=lp)
+                    elif lp > r.get("seen_person", 0):
+                        store.update_rule(r["id"], seen_person=lp)
+                elif kind == "seen_in":
+                    last = next((o for o in reversed(store.state["observations"]) if o["thing_id"] == r.get("thing_id")), None)
+                    if last and now_ - last["ts"] < 10 and (not r.get("place") or last["zone_name"] == r["place"]):
+                        fire(r, crop=last.get("crop"), evidence=f"Seen on the {last['zone_name']}.")
+            except Exception as e:  # one bad rule must not stop the engine
+                print("rule error", r.get("id"), e)
+        time.sleep(2)
+
+
+threading.Thread(target=rules_engine, daemon=True).start()
+
 # ---------------------------------------------------------------------- API
 @app.get("/api/state")
 def state():
     s = store.snapshot()
     s["settings"] = {"live_actions": actions.LIVE, "ai": brain.enabled, "budget_usd": brain.cap, "kit_camera": bool(os.environ.get("CAMERA_RTSP_URL"))}
+    s["edge"] = {**EDGE, "online": edge_online()}
     return s
 
 
@@ -213,16 +315,13 @@ def ask(payload: dict = Body(...)):
 
 @app.post("/api/rules")
 def add_rule(payload: dict = Body(...)):
+    """A sentence becomes a local rule: the language model (or, with AI off, a template) compiles it once;
+    the rules engine then evaluates it on the camera's sightings, at no cost per check."""
     sentence = str(payload.get("sentence", "")).strip()[:300]
     if not sentence:
         raise HTTPException(400, "sentence is required")
-    zones = store.zones()
-    compiled = _llm(brain.compile, sentence, zones, store.things())
-    if compiled["zone_id"] not in {z["id"] for z in zones}:
-        compiled["zone_id"] = zones[0]["id"]
-    if compiled.get("new_thing"):
-        store.add_thing(compiled["new_thing"])
-    compiled["cooldown_s"] = max(60, min(3600, int(compiled.get("cooldown_s", 300))))
+    compiled = _llm(brain.compile_local, sentence, store.things())
+    compiled.update(engine="local", zone_id="", cooldown_s=max(60, min(3600, int(compiled.get("cooldown_s", 300)))))
     rule = store.add_rule(sentence, compiled)
     store.add_event("sensor", f"New sensor: {rule['title']}.", rule_id=rule["id"])
     return rule

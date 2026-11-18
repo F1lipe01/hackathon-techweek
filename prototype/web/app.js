@@ -269,11 +269,39 @@ function toast(title, text) {
 }
 
 const ZONE = (id) => state.zones.find((z) => z.id === id)?.name || id;
+const THING = (id) => state.things.find((x) => x.id === id)?.name || id;
+// A rule in words: local rules (compiled from a sentence, run by the rules engine) or the older zone rules.
+function ruleText(r) {
+  const act = ACTION[r.action] || r.action;
+  if (r.engine === 'local') {
+    const where = r.place ? ` on the ${r.place}` : '';
+    const what = {
+      left_for: `${THING(r.thing_id)}${where} for ${r.minutes} min`,
+      nobody_for: `Nobody here for ${r.minutes} min`,
+      someone_arrives: 'Someone arrives in an empty room',
+      seen_in: `${THING(r.thing_id)} seen${where}`,
+    }[r.kind] || r.kind;
+    return `${what} · ${act}`;
+  }
+  return `${ZONE(r.zone_id)} · ${act}${r.mode === 'not_by_deadline' ? ' · by ' + r.deadline : ''}`;
+}
+// The edge service: idle until something moves, then it analyses (prototype/edge.py)
+function renderEdge(e) {
+  const pill = $('edge');
+  if (!e || !e.online) { pill.hidden = true; return; }
+  pill.hidden = false;
+  pill.dataset.state = e.state;
+  const n = (v) => Number(v || 0).toLocaleString('en');
+  pill.textContent = e.state === 'active'
+    ? `Camera: movement, analysing · ${n(e.analysed)} analyses`
+    : `Camera idle, waiting for movement · ${n(e.checked)} checks, ${n(e.analysed)} analyses`;
+}
 const ACTION = { notify: 'Notify me', light_red: 'Light turns red', light_blue: 'Light turns blue', light_green: 'Light turns green',
   light_off: 'Light off', plug_off: 'Plug off', plug_on: 'Plug on' };
 
 function render() {
   const s = state;
+  renderEdge(s.edge);
   $('things-title').textContent = `Your things (${s.things.length})`;
   $('things').innerHTML = s.things.map((t) => {
     const l = t.last_seen;
@@ -284,7 +312,7 @@ function render() {
   $('sensors-title').textContent = `Sensors (${s.rules.length})`;
   $('rules').innerHTML = s.rules.map((r) => `
     <li class="card"><span class="ic">${mark}</span>
-      <span><b>${esc(r.title)}</b><span class="q">${esc(ZONE(r.zone_id))} · ${esc(ACTION[r.action] || r.action)}${r.mode === 'not_by_deadline' ? ' · by ' + esc(r.deadline) : ''}</span></span>
+      <span><b>${esc(r.title)}</b><span class="q">${esc(ruleText(r))}</span></span>
       <label class="switch"><input type="checkbox" data-rule="${esc(r.id)}" ${r.active ? 'checked' : ''} aria-label="Turn on ${esc(r.title)}"><span></span></label>
     </li>`).join('') || '<li class="empty-note">No sensors yet. Describe one in a sentence above.</li>';
 
@@ -368,6 +396,8 @@ fitDevice();
 // live clock in the iPhone status bar
 const tick = () => { $('iostime').textContent = new Date().toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit' }); };
 tick(); setInterval(tick, 15000);
+// live: the edge keeps adding sightings and alerts, so keep the screen current while it is visible
+setInterval(() => { if (!document.hidden) refresh(); }, 3000);
 
 useSource('webcam');
 refresh();

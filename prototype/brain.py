@@ -164,6 +164,63 @@ class Brain:
         return self._call("compile", REASON_MODEL, system, content, schema, max_tokens=800, thinking_off=False)
 
 
+    # ------------------------------------------------------------------ a sentence -> a local rule (the camera era)
+    LOCAL_KINDS = ("left_for", "nobody_for", "someone_arrives", "seen_in")
+
+    def compile_local(self, sentence, things):
+        """Compile a sentence once into a rule that the rules engine evaluates locally, at no cost per check."""
+        if not self.enabled:
+            return self._sim_compile_local(sentence, things)
+        system = (
+            "You turn one sentence from a home user into a rule for the ThingTracker rules engine. The camera detects the "
+            "home's things, the places they are on (desk, table, shelf, sofa, bench) and people. Kinds: "
+            "left_for (a thing stays on a place for N minutes), nobody_for (no movement or people for N minutes), "
+            "someone_arrives (a person appears after the room was empty), seen_in (a thing is seen, optionally on a place). "
+            "Actions: notify, plug_off, light_red, light_blue, light_green. Use the given thing ids; place is one of the "
+            "places or empty. Title: short, in the language of the sentence. Message: what the user is told when it fires."
+        )
+        schema = {"type": "object", "properties": {
+            "title": {"type": "string"}, "kind": {"type": "string", "enum": list(self.LOCAL_KINDS)},
+            "thing_id": {"type": "string"}, "place": {"type": "string"}, "minutes": {"type": "number"},
+            "action": {"type": "string", "enum": ["notify", "plug_off", "light_red", "light_blue", "light_green"]},
+            "message": {"type": "string"}, "cooldown_s": {"type": "integer"}},
+            "required": ["title", "kind", "thing_id", "place", "minutes", "action", "message", "cooldown_s"],
+            "additionalProperties": False}
+        content = [{"type": "text", "text": json.dumps({"sentence": sentence, "things": [
+            {"id": t["id"], "name": t["name"]} for t in things]}, ensure_ascii=False)}]
+        return self._call("compile", REASON_MODEL, system, content, schema, max_tokens=800, thinking_off=False)
+
+    def _sim_compile_local(self, sentence, things):
+        """Keyword templates in English and Portuguese, so the demo runs with AI off (no cost)."""
+        low = sentence.lower()
+        alias = {"keys": ["key", "chave"], "wallet": ["carteira"], "glasses": ["óculos", "oculos"], "phone": ["telemóvel", "telemovel", "telefone"],
+                 "mug": ["caneca", "chávena", "cup"], "laptop": ["portátil", "portatil", "computador"], "remote": ["comando"],
+                 "bottle": ["garrafa"], "waterbottle": ["garrafa", "bottle"], "backpack": ["mochila"]}
+        thing = next((t for t in things if t["name"].lower() in low or t["id"] in low
+                      or any(a in low for a in alias.get(t["id"], []))), None)
+        place = next((en for en, words in {"desk": ["desk", "secretária", "secretaria"], "table": ["table", "mesa"],
+                                            "shelf": ["shelf", "prateleira", "estante"], "sofa": ["sofa", "sofá"]}.items()
+                      if any(w in low for w in words)), "")
+        m = re.search(r"(\d+)\s*(min|minut|hora|hour|h\b)", low)
+        minutes = (int(m.group(1)) * (60 if m.group(2).startswith(("hora", "hour", "h")) else 1)) if m else 10
+        action = "notify"
+        if any(w in low for w in ("light", "luz", "lâmpada", "lampada")):
+            action = "light_red" if ("red" in low or "vermelh" in low) else "light_green" if ("green" in low or "verde" in low) else "light_blue"
+        if ("plug" in low or "tomada" in low) and ("off" in low or "deslig" in low):
+            action = "plug_off"
+        if any(w in low for w in ("nobody", "no one", "ninguém", "ninguem", "empty", "vazi")):
+            kind = "nobody_for"
+        elif any(w in low for w in ("arrive", "comes in", "someone", "chega", "entra", "alguém", "alguem")):
+            kind = "someone_arrives"
+        elif thing and any(w in low for w in ("left", "leave", "stays", "deixad", "esquec", "fica")):
+            kind = "left_for"
+        else:
+            kind = "seen_in"
+        title = sentence.strip().rstrip(".")
+        return {"title": (title[:38] + "…") if len(title) > 40 else title, "kind": kind,
+                "thing_id": thing["id"] if thing else "", "place": place, "minutes": minutes, "action": action,
+                "message": sentence.strip(), "cooldown_s": 300}
+
     # ------------------------------------------------------------------ simulation (TT_AI unset): no API calls, no cost
     def _sim_ask(self, question, memory):
         q = question.lower()

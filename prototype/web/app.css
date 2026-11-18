@@ -254,3 +254,7 @@
     .status { margin-left: 0; width: 100%; }
   }
 }
+
+/* edge service status: idle (blue) or analysing (green) */
+.edge-pill { font-size: var(--step-small); padding: 3px 10px; border-radius: 999px; background: #EEF3FB; color: #0A3FA3; white-space: nowrap; }
+.edge-pill[data-state="active"] { background: #E7F6EC; color: #146C35; }

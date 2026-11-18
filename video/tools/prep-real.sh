@@ -14,3 +14,6 @@ ffmpeg -v error -y -i public/real/kit-desk-6s.mp4 -an \
   -vf "scale=3840:2160:flags=lanczos,unsharp=5:5:0.6,$WARM" \
   -c:v libx264 -crf 19 -preset medium -g 15 -bf 0 -pix_fmt yuv420p -movflags +faststart public/real/kit-desk-6s-uhd.mp4
 ls -la public/real/*.mp4
+# the same home, further out of focus, so the edit needs no heavy CSS blur on a full-frame video
+ffmpeg -v error -y -i public/real/bg-home.mp4 -an -vf "gblur=sigma=14" \
+  -c:v libx264 -crf 20 -preset medium -g 15 -bf 0 -pix_fmt yuv420p -movflags +faststart public/real/bg-home-soft.mp4

@@ -1,5 +1,6 @@
-// 1 · Registo: the colleague's phone recording, three passages at real speed, in a modern phone tilted over the bright
-// home. Each photo taken becomes one of the 3 views of the fingerprint (R.views3) and flies into the glass card.
+// 1 · Registo: the colleague's phone recording, three clean passages at real speed (no fingers on the lens), in a
+// modern phone over the bright home. At each photo the phone holds the captured frame and that photo's crop glides,
+// in one eased move, into its slot of the fingerprint (R.views3).
 import React from "react";
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { theme } from "../theme";
@@ -7,40 +8,60 @@ import { VideoAt } from "./devices";
 import { Body, Heading, Overline } from "./layers";
 import { clamp, Cue, look, mmss, warm } from "./look";
 import { R } from "./recognition";
-import { BlurIn, ContactShadow, Glass, ModernPhone, Plate } from "./stage";
+import { BlurIn, ContactShadow, Glass, ModernPhone } from "./stage";
 
 const { c, a } = look;
 
-// public/real/phone-3seg-2x.mp4: the three passages of footage/phone-photos.mp4 (frames 12–69, 667–720, 1059–1167),
-// joined and upscaled 2x with lanczos and light sharpening by video/tools/prep-real.sh.
+// public/real/phone-3seg-2x.mp4 holds frames 12–68, 667–719 and 1059–1166 of footage/phone-photos.mp4, joined and
+// upscaled 2x with lanczos and light sharpening by video/tools/prep-real.sh.
 const CLIP = "real/phone-3seg-2x.mp4";
-const SEGS = [
-  { f0: 12, f1: 69 },
-  { f0: 667, f1: 720 },
-  { f0: 1059, f1: 1167 },
-].map((s) => ({ ...s, len: s.f1 - s.f0 }));
-const CLIP_AT = SEGS.reduce<number[]>((acc, s, i) => [...acc, i === 0 ? 0 : acc[i - 1] + SEGS[i - 1].len], []);
-const V3 = R.views3.views;
-const BOX = (n: number) => R.views[n - 1].box_phone_px;
+const CLIP_RANGES = [
+  { from: 12, to: 69, at: 0 },
+  { from: 667, to: 720, at: 57 },
+  { from: 1059, to: 1167, at: 110 },
+];
+const clipFrameOf = (src: number) => {
+  const r = CLIP_RANGES.find((x) => src >= x.from && src < x.to)!;
+  return r.at + src - r.from;
+};
 
+// the three passages used (source frames, end excluded), each around one photo. The third stops at 37.0 s, before the
+// colleague's fingers come over the lens. `blink` is where the camera app darkens its preview for 3 frames on capture.
+const V3 = R.views3.views;
+const PASSAGES = [
+  { from: 12, to: 69, blink: 44 },
+  { from: 667, to: 720, blink: 694 },
+  { from: 1066, to: 1111, blink: 1087 },
+].map((p, i) => ({ ...p, press: Math.round(V3[i].t * theme.fps) }));
+const FLIGHT = 24;   // frames the phone holds the photo while its crop glides to the slot
 const LEAD = 10;
-const SEG_START = SEGS.reduce<number[]>((acc, s, i) => [...acc, i === 0 ? LEAD : acc[i - 1] + SEGS[i - 1].len], []);
-const PRESS_F = V3.map((v, i) => SEG_START[i] + Math.round(v.t * theme.fps) - SEGS[i].f0);
-const LAND = 20;
-const HOLD = 14;
-export const REGISTO_FRAMES = SEG_START[2] + SEGS[2].len + HOLD;
+const HOLD_END = 18;
+
+// the source frame shown at each output frame
+const TIMELINE: number[] = [];
+const PRESS_F: number[] = [];
+const PASSAGE_START: number[] = [];
+for (let i = 0; i < LEAD; i++) TIMELINE.push(PASSAGES[0].from);
+PASSAGES.forEach((p) => {
+  PASSAGE_START.push(TIMELINE.length);
+  for (let s = p.from; s < p.to; s++) {
+    if (s === p.press) {
+      PRESS_F.push(TIMELINE.length);
+      for (let k = 0; k <= FLIGHT; k++) TIMELINE.push(s);
+    } else if (s >= p.blink && s < p.blink + 3) {
+      TIMELINE.push(p.blink - 1);                    // hold through the camera app's capture blink
+    } else {
+      TIMELINE.push(s);
+    }
+  }
+});
+for (let i = 0; i < HOLD_END; i++) TIMELINE.push(TIMELINE[TIMELINE.length - 1]);
+export const REGISTO_FRAMES = TIMELINE.length;
 export const REGISTO_CUES: Cue[] = [
-  { at: 0, file: "whooshBig" },
-  { at: 6, file: "whoosh", volume: 0.7 },
-  ...PRESS_F.flatMap((pf, i) => [
-    { at: pf - 1, file: "shutter" },
-    { at: pf + 3, file: i % 2 ? "swipeAlt" : "swipe" },
-    { at: pf + LAND - 2, file: "paper" },
-  ]),
-  { at: PRESS_F[2] + LAND + 6, file: "lockonSoft" },
+  ...PRESS_F.flatMap((pf) => [{ at: pf, file: "shutter" }, { at: pf + 3, file: "slide" }]),
 ];
 
-// the phone: screen 392 x 850 CSS px (the 2x clip is shown at half size, sharp in 4K), tilted in 3D
+// the phone: screen 392 x 850 CSS px (the 2x clip at half size, sharp in 4K), a slight 3D tilt
 const SW = 392;
 const SH = 850;
 const PHONE_C = { x: 430, y: 560 };
@@ -75,95 +96,68 @@ const project = (dx: number, dy: number, rotY: number, rotX: number, scale: numb
   const x2 = dx * Math.cos(ry) + z1 * Math.sin(ry);
   const z2 = -dx * Math.sin(ry) + z1 * Math.cos(ry);
   const s = PERSP / (PERSP - z2 * scale);
-  return { x: PHONE_C.x + tx + x2 * scale * s, y: PHONE_C.y + y1 * scale * s };
+  return { x: PHONE_C.x + (x2 * scale + tx) * s, y: PHONE_C.y + y1 * scale * s };
+};
+
+// the crop each view was made from (tight_crop: the box plus 8 % on each side), in px of the 392 x 850 recording
+const cropBox = (b: readonly number[]) => {
+  const w = b[2] - b[0];
+  const h = b[3] - b[1];
+  return [Math.max(0, b[0] - w * 0.08), Math.max(65, b[1] - h * 0.08), Math.min(SW, b[2] + w * 0.08), Math.min(589, b[3] + h * 0.08)];
 };
 
 export const Registo: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const seg = Math.max(0, SEG_START.filter((s) => frame >= s).length - 1);
-  const local = Math.max(0, Math.min(SEGS[seg].len - 1, frame - SEG_START[seg]));
-  const clipFrame = CLIP_AT[seg] + local;
-  const srcSecond = (SEGS[seg].f0 + local) / fps;
-  const cutIn = seg > 0 ? interpolate(frame - SEG_START[seg], [0, 6], [1, 0], { ...clamp, easing: theme.ease.out }) : 0;
-  const landed = PRESS_F.filter((pf) => frame >= pf + LAND).length;
-  const sig = interpolate(frame, [PRESS_F[2] + LAND + 6, PRESS_F[2] + LAND + 26], [0, 1], { ...clamp, easing: theme.ease.out });
+  const src = TIMELINE[Math.min(TIMELINE.length - 1, frame)];
+  const landed = PRESS_F.filter((pf) => frame >= pf + FLIGHT).length;
+  const sig = interpolate(frame, [PRESS_F[2] + FLIGHT + 4, PRESS_F[2] + FLIGHT + 24], [0, 1], { ...clamp, easing: theme.ease.out });
 
-  // the phone arrives turning towards the camera, then breathes
-  const enter = spring({ frame, fps, config: { damping: 18, stiffness: 70, mass: 1.1 } });
-  const rotY = 30 * (1 - enter) + 11 + Math.sin(frame / 46) * 1.2;
-  const rotX = 4 + 6 * (1 - enter);
-  const tx = -120 * (1 - enter);
-  const scale = 0.92 + 0.08 * enter;
+  // the phone arrives turning towards the camera, then rests at a slight angle
+  const enter = spring({ frame, fps, config: { damping: 20, stiffness: 70, mass: 1.1 } });
+  const rotY = 24 * (1 - enter) + 7 + Math.sin(frame / 60) * 0.8;
+  const rotX = 3 + 5 * (1 - enter);
+  const tx = -100 * (1 - enter);
+  const scale = 0.94 + 0.06 * enter;
   const phoneTransform = `perspective(${PERSP}px) translateX(${tx}px) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${scale})`;
 
-  // a box on the phone's screen (px of the 392 x 850 recording) as a rectangle on the frame
-  const boxOnFrame = (b: readonly number[], pad = 0): Rect => {
-    const w = b[2] - b[0];
-    const h = b[3] - b[1];
-    const x0 = Math.max(0, b[0] - w * pad), y0 = Math.max(65, b[1] - h * pad);
-    const x1 = Math.min(SW, b[2] + w * pad), y1 = Math.min(589, b[3] + h * pad);
-    const p0 = project(x0 - SW / 2, y0 - SH / 2, rotY, rotX, scale, tx);
-    const p1 = project(x1 - SW / 2, y1 - SH / 2, rotY, rotX, scale, tx);
+  const boxOnFrame = (b: readonly number[]): Rect => {
+    const p0 = project(b[0] - SW / 2, b[1] - SH / 2, rotY, rotX, scale, tx);
+    const p1 = project(b[2] - SW / 2, b[3] - SH / 2, rotY, rotX, scale, tx);
     return { x: p0.x, y: p0.y, w: p1.x - p0.x, h: p1.y - p0.y };
   };
+  const card = spring({ frame: frame - 6, fps, config: { damping: 20, stiffness: 80, mass: 1 } });
 
   return (
     <AbsoluteFill>
-      <Plate dur={REGISTO_FRAMES} offset={3} blur={14} zoom={[1.08, 1.14]} pan={[30, -30]} />
 
-      <ContactShadow x={PHONE_C.x + tx + 20} y={PHONE_C.y + SH / 2 + 46} w={460} opacity={0.4 * enter} />
+      <ContactShadow x={PHONE_C.x + tx + 16} y={PHONE_C.y + SH / 2 + 46} w={460} opacity={0.4 * enter} />
       <div style={{ position: "absolute", left: PHONE_C.x - (SW + 2 * BEZEL) / 2, top: PHONE_C.y - (SH + 2 * BEZEL) / 2,
-        transform: phoneTransform, opacity: interpolate(enter, [0, 0.25], [0, 1], clamp),
-        filter: `drop-shadow(0 50px 50px ${a(warm.shadow, 0.35)})` }}>
+        transform: phoneTransform, opacity: interpolate(enter, [0, 0.25], [0, 1], clamp), filter: `drop-shadow(0 50px 50px ${a(warm.shadow, 0.35)})` }}>
         <ModernPhone w={SW} h={SH}>
-          <VideoAt src={CLIP} second={clipFrame / fps} />
-          <AbsoluteFill style={{ background: c.ink, opacity: cutIn }} />
+          <VideoAt src={CLIP} second={clipFrameOf(src) / fps} />
+          {/* while its crop glides out, the photo's place on the screen is veiled, so the book is never seen twice */}
           {PRESS_F.map((pf, i) => {
-            const o = interpolate(frame, [pf - 1, pf, pf + 8], [0, 0.75, 0], { ...clamp, easing: theme.ease.out });
-            return o > 0 ? <AbsoluteFill key={i} style={{ background: c.white, opacity: o }} /> : null;
+            const o = interpolate(frame, [pf, pf + 6, pf + FLIGHT - 2, pf + FLIGHT + 6], [0, 0.55, 0.55, 0], { ...clamp, easing: theme.ease.inOut });
+            if (o <= 0) return null;
+            const [x0, y0, x1, y1] = cropBox(R.views[V3[i].n - 1].box_phone_px);
+            return <div key={i} style={{ position: "absolute", left: x0, top: y0, width: x1 - x0, height: y1 - y0, background: c.white, opacity: o, borderRadius: 4 }} />;
           })}
         </ModernPhone>
       </div>
 
-      {/* where in the colleague's recording we are */}
-      <div style={{ position: "absolute", left: PHONE_C.x - 170 + tx, top: 52, width: 340, display: "flex", justifyContent: "center",
-        opacity: enter }}>
+      <div style={{ position: "absolute", left: PHONE_C.x - 170 + tx, top: 52, width: 340, display: "flex", justifyContent: "center", opacity: enter }}>
         <Glass strong style={{ borderRadius: 999, padding: "9px 18px", display: "flex", gap: 12, alignItems: "center",
           fontFamily: theme.fonts.mono, fontSize: 18, color: c.ink, fontVariantNumeric: "tabular-nums" }}>
           <span style={{ width: 9, height: 9, borderRadius: 9, background: c.alert }} />
-          <span>telemóvel {mmss(srcSecond)}</span>
+          <span>telemóvel {mmss(src / fps)}</span>
           <span style={{ color: c.inkDim }}>tempo real</span>
         </Glass>
       </div>
 
-      {/* OWLv2's box on each photo */}
-      <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
-        {V3.map((v, i) => {
-          const pf = PRESS_F[i];
-          const o = interpolate(frame, [pf - 2, pf + 1, pf + 10, pf + 16], [0, 1, 1, 0], clamp);
-          if (o <= 0) return null;
-          const r = boxOnFrame(BOX(v.n));
-          return (
-            <g key={i} opacity={o}>
-              <rect x={r.x} y={r.y} width={r.w} height={r.h} rx={6} fill="none" stroke={c.labs} strokeWidth={3} />
-              <rect x={r.x} y={r.y - 30} width={118} height={26} rx={6} fill={c.labs} />
-              <text x={r.x + 9} y={r.y - 11} fill={c.white} fontFamily={theme.fonts.mono} fontSize={16}>OWLv2 · livro</text>
-            </g>
-          );
-        })}
-      </svg>
-
-      {/* the glass card: what happens, the 3 views, the fingerprint */}
-      {(() => {
-        const p = spring({ frame: frame - 6, fps, config: theme.spring.smooth });
-        return (
-          <div style={{ position: "absolute", left: CARD.x, top: CARD.y, width: CARD.w, height: CARD.h, opacity: p,
-            transform: `translateX(${(1 - p) * 60}px)` }}>
-            <Glass style={{ width: "100%", height: "100%" }} />
-          </div>
-        );
-      })()}
+      <div style={{ position: "absolute", left: CARD.x, top: CARD.y, width: CARD.w, height: CARD.h, opacity: card, transform: `translateX(${(1 - card) * 50}px)` }}>
+        <Glass style={{ width: "100%", height: "100%" }} />
+      </div>
       <div style={{ position: "absolute", left: CARD.x + 56, top: CARD.y + 52, width: CARD.w - 112, display: "flex", flexDirection: "column", gap: 16 }}>
         <BlurIn at={10}><Overline>1 · Registo</Overline></BlurIn>
         <BlurIn at={14}><Heading size={62}>Três fotografias do livro</Heading></BlurIn>
@@ -171,14 +165,14 @@ export const Registo: React.FC = () => {
       </div>
       {V3.map((v, i) => {
         const s = slotRect(i);
-        const filled = frame >= PRESS_F[i] + LAND;
-        const fillP = interpolate(frame, [PRESS_F[i] + LAND - 2, PRESS_F[i] + LAND + 8], [0, 1], { ...clamp, easing: theme.ease.out });
+        const filled = frame >= PRESS_F[i] + FLIGHT;
+        const fillP = interpolate(frame, [PRESS_F[i] + FLIGHT - 4, PRESS_F[i] + FLIGHT + 8], [0, 1], { ...clamp, easing: theme.ease.out });
         return (
           <div key={i} style={{ position: "absolute", left: s.x, top: s.y, width: s.w,
             opacity: interpolate(frame, [16 + i * 4, 28 + i * 4], [0, 1], { ...clamp, easing: theme.ease.out }) }}>
             <div style={{ width: s.w, height: s.h, borderRadius: 18, boxSizing: "border-box",
-              background: filled ? c.white : a(c.white, 0.45), border: filled ? `1px solid ${a(c.ink, 0.06)}` : `2px dashed ${look.dimLine}`,
-              boxShadow: filled ? `0 ${18 * fillP}px 30px -18px ${a(warm.shadow, 0.6)}` : "none" }} />
+              background: a(c.white, 0.45 + 0.55 * fillP), border: filled ? `1px solid ${a(c.ink, 0.06)}` : `2px dashed ${look.dimLine}`,
+              boxShadow: `0 ${18 * fillP}px 30px -18px ${a(warm.shadow, 0.6 * fillP)}` }} />
             <div style={{ marginTop: 10, fontFamily: theme.fonts.mono, fontSize: 18, color: filled ? c.ink : c.inkDim, display: "flex", justifyContent: "space-between" }}>
               <span>vista {i + 1}</span><span style={{ color: c.inkDim }}>foto {mmss(v.t)}</span>
             </div>
@@ -187,14 +181,14 @@ export const Registo: React.FC = () => {
       })}
       {V3.map((v, i) => {
         const pf = PRESS_F[i];
-        if (frame < pf + 2) return null;
-        const p = interpolate(frame, [pf + 2, pf + LAND], [0, 1], { ...clamp, easing: theme.ease.inOut });
-        const start = boxOnFrame(BOX(v.n), 0.08);
+        if (frame < pf) return null;
+        const p = interpolate(frame, [pf, pf + FLIGHT], [0, 1], { ...clamp, easing: theme.ease.inOut });
+        const start = boxOnFrame(cropBox(R.views[v.n - 1].box_phone_px));
         const r = lerpRect(start, fitIn(slotRect(i), start.w / start.h), p);
-        const lift = Math.sin(Math.PI * p);
+        const arc = i === 0 ? 0 : -150 * Math.sin(Math.PI * p);       // pass over the slots already filled
         return (
-          <Img key={i} src={staticFile(v.file)} style={{ position: "absolute", left: r.x, top: r.y - 40 * lift, width: r.w, height: r.h, objectFit: "fill",
-            borderRadius: 8, transform: `scale(${1 + 0.06 * lift})`, boxShadow: `0 ${24 * lift + 6}px ${30 * lift + 12}px -10px ${a(warm.shadow, 0.45)}` }} />
+          <Img key={i} src={staticFile(v.file)} style={{ position: "absolute", left: r.x, top: r.y + arc, width: r.w, height: r.h, objectFit: "fill",
+            borderRadius: 4 + 4 * p, boxShadow: `0 ${16 * Math.sin(Math.PI * p) + 4}px ${24 * Math.sin(Math.PI * p) + 10}px -10px ${a(warm.shadow, 0.4)}` }} />
         );
       })}
       <div style={{ position: "absolute", left: SLOTS_X, top: SLOTS_Y + SLOT + 70, display: "flex", alignItems: "center", gap: 20 }}>

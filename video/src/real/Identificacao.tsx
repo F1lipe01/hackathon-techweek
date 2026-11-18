@@ -7,7 +7,7 @@ import { VideoAt } from "./devices";
 import { Heading, Overline, Typed } from "./layers";
 import { clamp, Cue, look, mmss, pt, warm } from "./look";
 import { R } from "./recognition";
-import { BlurIn, Brackets, Glass, Plate } from "./stage";
+import { BlurIn, Brackets, Glass } from "./stage";
 
 const { c, a } = look;
 const K = R.kit;
@@ -31,29 +31,22 @@ const KS = CARD.w / 1920;
 const KH = CARD.h / KS;                                     // the footage area, in 1920-wide units (slightly taller than 16:9)
 const PANEL = { x: 1300, y: FRAME.y, w: 550, h: FRAME.h };
 
-// timeline (scene frames): the live feed at real speed up to the analysed frame, then the analysis
-const SRC0 = MOTION.t - 3.0;
+// timeline (scene frames): a short live feed at real speed up to the analysed frame, then the analysis
+const SRC0 = MOTION.t - 1.0;
 const FREEZE = Math.round((K.frame_s - SRC0) * theme.fps);
 const T = {
   motion: Math.round((MOTION.t - SRC0) * theme.fps),
-  owl: FREEZE + 10, place: FREEZE + 26,
-  pushIn: FREEZE + 40, pushLen: 56,
-  dino: FREEZE + 70, bars: FREEZE + 86,
-  best: FREEZE + 124, yours: FREEZE + 140,
-  ctrl: FREEZE + 188, ctrlRes: FREEZE + 200,
+  owl: FREEZE + 8, place: FREEZE + 18,
+  pushIn: FREEZE + 26, pushLen: 54,
+  dino: FREEZE + 40, bars: FREEZE + 52,
+  best: FREEZE + 90,
+  ctrl: FREEZE + 122, ctrlRes: FREEZE + 132,
 };
-export const IDENT_FRAMES = FREEZE + 262;
+const LOCK = T.pushIn + T.pushLen - 10;                    // the brackets close on the book
+export const IDENT_FRAMES = FREEZE + 190;
 export const IDENT_CUES: Cue[] = [
-  { at: 0, file: "whooshBig" },
-  { at: 8, file: "whoosh", volume: 0.7 },
-  { at: T.motion, file: "tap", volume: 0.7 },
-  { at: FREEZE - 1, file: "shutterCam" },
-  { at: T.owl, file: "lockon" },
-  { at: T.pushIn, file: "whoosh" },
-  { at: T.pushIn + T.pushLen - 6, file: "lockonBig" },
-  { at: T.bars, file: "tapAlt" },
-  { at: T.yours - 1, file: "swipe", volume: 0.8 },
-  { at: T.ctrl, file: "tap" },
+  { at: FREEZE, file: "capture" },
+  { at: LOCK, file: "click" },
 ];
 
 const center = (b: readonly number[]) => [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
@@ -78,126 +71,93 @@ export const Identificacao: React.FC = () => {
   const src = Math.min(K.frame_s, SRC0 + frame / fps);
   const frozen = frame >= FREEZE;
 
-  // the card arrives; the camera tightens on the desk, then pushes in slowly on the book
-  const cardIn = spring({ frame: frame - 2, fps, config: { damping: 18, stiffness: 80, mass: 1 } });
+  // the card arrives; the camera drifts in on the desk, then pushes in slowly on the book
+  const cardIn = spring({ frame: frame - 2, fps, config: { damping: 20, stiffness: 80, mass: 1 } });
   const push = interpolate(frame, [T.pushIn, T.pushIn + T.pushLen], [0, 1], { ...clamp, easing: theme.ease.inOut });
-  const z = 1.12 * interpolate(push, [0, 1], [1, 1.32]) + interpolate(frame, [0, T.pushIn], [0, 0.03], clamp);
+  const drift = interpolate(frame, [0, T.pushIn], [0, 0.04], { ...clamp, easing: theme.ease.inOut });
+  const z = 1.12 + drift + 0.38 * push;
   const focus = [960 + (BOOK_C[0] - 120 - 960) * push, 470 + (BOOK_C[1] - 30 - 470) * push];
   const hw = 960 / z;
   const hh = KH / 2 / z;
   const px = Math.min(1920 - hw, Math.max(hw, focus[0]));
   const py = Math.min(1080 - hh, Math.max(hh, focus[1]));
-  const toS = (x: number, y: number) => [CARD.x + KS * ((x - px) * z + 960), CARD.y + KS * ((y - py) * z + KH / 2)];
-  const rectS = (b: readonly number[]) => {
-    const [x0, y0] = toS(b[0], b[1]);
-    const [x1, y1] = toS(b[2], b[3]);
-    return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
-  };
-  const fade = (at: number, len = 8) => interpolate(frame, [at, at + len], [0, 1], { ...clamp, easing: theme.ease.out });
-  const flash = interpolate(frame, [FREEZE - 1, FREEZE, FREEZE + 8], [0, 0.45, 0], clamp);
+  const inv = 1 / (z * KS);                                // footage px per screen px: keeps strokes and labels steady
+  const fade = (at: number, len = 10) => interpolate(frame, [at, at + len], [0, 1], { ...clamp, easing: theme.ease.out });
 
-  const book = rectS(K.book_box);
-  const place = rectS(K.place_box!);
-  const ctrl = rectS(CTRL.box!);
-  const lock = spring({ frame: frame - (T.pushIn + T.pushLen - 6), fps, config: theme.spring.snappy });
-  const candO = fade(T.owl) * (1 - Math.min(1, lock * 1.5));
+  const [b0, b1, b2, b3] = K.book_box;
+  const lock = interpolate(frame, [LOCK - 8, LOCK + 10], [0, 1], { ...clamp, easing: theme.ease.out });
+  const candO = fade(T.owl) * (1 - Math.min(1, lock * 2.5));     // the candidate's label leaves before the lock's arrives
   const placeO = fade(T.place) * interpolate(push, [0.2, 0.6], [1, 0], clamp);
-  const yours = spring({ frame: frame - T.yours, fps, config: theme.spring.smooth });
-  const ctrlO = fade(T.ctrl, 10);
-  const lockPad = 26 * (1 - lock) + 8;
+  const ctrlO = fade(T.ctrl);
+  const pad = (8 + 28 * (1 - lock)) * inv;
+  const L = [b0 - pad, b1 - pad, b2 + pad, b3 + pad];
 
   return (
     <AbsoluteFill>
-      <Plate dur={IDENT_FRAMES} offset={1} blur={16} zoom={[1.1, 1.16]} pan={[-30, 30]} />
 
       <div style={{ position: "absolute", left: FRAME.x, top: 70, display: "flex", flexDirection: "column", gap: 10 }}>
         <BlurIn at={4}><Overline>2 · Identificação</Overline></BlurIn>
         <BlurIn at={8}><Heading size={56}>A câmara do kit, no laboratório</Heading></BlurIn>
       </div>
 
-      {/* the camera-view card */}
+      {/* the camera-view card: the footage and its boxes share one transform, so the boxes move exactly with the image */}
       <div style={{ position: "absolute", left: FRAME.x, top: FRAME.y, width: FRAME.w, height: FRAME.h, opacity: cardIn,
-        transform: `perspective(2400px) translateY(${(1 - cardIn) * 50}px) rotateX(${(1 - cardIn) * 8}deg) scale(${0.96 + 0.04 * cardIn})` }}>
+        transform: `perspective(2400px) translateY(${(1 - cardIn) * 40}px) rotateX(${(1 - cardIn) * 6}deg) scale(${0.97 + 0.03 * cardIn})` }}>
         <Glass strong style={{ position: "absolute", inset: 0, borderRadius: 30 }} />
         <div style={{ position: "absolute", left: PAD, top: PAD, width: CARD.w, height: CARD.h, borderRadius: 20, overflow: "hidden", background: c.bgAlt }}>
           <div style={{ position: "absolute", left: 0, top: 0, width: 1920, height: KH, transformOrigin: "0 0",
             transform: `scale(${KS}) translate(${960 - px * z}px, ${KH / 2 - py * z}px) scale(${z})` }}>
-            <div style={{ width: 1920, height: 1080 }}>
+            <div style={{ position: "absolute", left: 0, top: 0, width: 1920, height: 1080 }}>
               <VideoAt src={KIT_CLIP} second={src - KIT_T0} />
             </div>
+            <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}>
+              {placeO > 0 ? (
+                <rect x={K.place_box![0]} y={K.place_box![1]} width={K.place_box![2] - K.place_box![0]} height={K.place_box![3] - K.place_box![1]}
+                  rx={6 * inv} fill="none" stroke={c.white} strokeWidth={2} strokeDasharray="10 8" vectorEffect="non-scaling-stroke" opacity={placeO} />
+              ) : null}
+              {candO > 0 ? (
+                <rect x={b0} y={b1} width={b2 - b0} height={b3 - b1} rx={4 * inv} fill="none" stroke={c.labs} strokeWidth={3}
+                  vectorEffect="non-scaling-stroke" opacity={candO} />
+              ) : null}
+              {lock > 0 ? (
+                <g opacity={lock}>
+                  <rect x={L[0]} y={L[1]} width={L[2] - L[0]} height={L[3] - L[1]} rx={12 * inv} fill={a(c.labs, 0.08)} />
+                  <Brackets x={L[0]} y={L[1]} w={L[2] - L[0]} h={L[3] - L[1]} len={26 * inv} color={c.labs} width={4} nonScaling />
+                </g>
+              ) : null}
+              {ctrlO > 0 ? (
+                <rect x={CTRL.box![0]} y={CTRL.box![1]} width={CTRL.box![2] - CTRL.box![0]} height={CTRL.box![3] - CTRL.box![1]} rx={6 * inv}
+                  fill="none" stroke={c.alert} strokeWidth={3} strokeDasharray="9 6" vectorEffect="non-scaling-stroke" opacity={ctrlO} />
+              ) : null}
+            </svg>
+            {/* labels, pinned to their boxes' top-left corners at a constant size on screen */}
+            {placeO > 0 ? <BoxTab x={K.place_box![0] + 10 * inv} y={K.place_box![1] + 40 * inv} inv={inv} bg={a(c.ink, 0.55)} opacity={placeO}>secretária · {pt(K.place_score!)}</BoxTab> : null}
+            {candO > 0 ? <BoxTab x={b0} y={b1 - 4 * inv} inv={inv} bg={c.labs} opacity={candO}>livro? · {pt(K.owl_score)}</BoxTab> : null}
+            {lock > 0.45 ? <BoxTab x={L[0]} y={L[1] - 6 * inv} inv={inv} bg={c.labs} opacity={(lock - 0.45) / 0.55} big>o teu livro · {pt(SCORE)}</BoxTab> : null}
+            {ctrlO > 0 ? <BoxTab x={CTRL.box![0]} y={CTRL.box![1] - 4 * inv} inv={inv} bg={c.alert} opacity={ctrlO}>garrafa · {pt(CTRL.score!)}</BoxTab> : null}
           </div>
-          <AbsoluteFill style={{ background: c.white, opacity: flash }} />
           {/* HUD */}
           <svg width={CARD.w} height={CARD.h} style={{ position: "absolute", inset: 0 }}>
             <Brackets x={22} y={22} w={CARD.w - 44} h={CARD.h - 44} len={34} width={3} opacity={0.85} />
           </svg>
           <div style={{ position: "absolute", left: 44, top: 40, display: "flex", gap: 10, alignItems: "center", padding: "8px 14px", borderRadius: 999,
             background: a(c.ink, 0.42), color: c.white, fontFamily: theme.fonts.mono, fontSize: 17 }}>
-            <span style={{ width: 10, height: 10, borderRadius: 10, background: frozen ? c.labs : c.alert,
-              opacity: frozen ? 1 : 0.6 + 0.4 * Math.cos(frame / 5) }} />
+            <span style={{ width: 10, height: 10, borderRadius: 10, background: frozen ? c.labs : c.alert }} />
             {frozen ? "imagem analisada" : "REC"} · Câmara do kit · Laboratório
           </div>
           <div style={{ position: "absolute", right: 44, top: 40, padding: "8px 14px", borderRadius: 999, background: a(c.ink, 0.42), color: c.white,
             fontFamily: theme.fonts.mono, fontSize: 17, fontVariantNumeric: "tabular-nums" }}>
-            18 nov 2026 · 16:30{frozen ? "" : ` · ${mmss(src)}`}
+            18 nov 2026 · 16:30
           </div>
         </div>
       </div>
 
-      {/* boxes, in screen space, clipped to the footage */}
-      <svg width={1920} height={1080} style={{ position: "absolute", inset: 0, opacity: cardIn }}>
-        <defs>
-          <clipPath id="kitcard"><rect x={CARD.x} y={CARD.y} width={CARD.w} height={CARD.h} rx={20} /></clipPath>
-        </defs>
-        <g clipPath="url(#kitcard)">
-          {placeO > 0 ? (
-            <g opacity={placeO}>
-              <rect x={place.x} y={place.y} width={place.w} height={place.h} rx={6} fill="none" stroke={c.white} strokeWidth={2} strokeDasharray="10 8" />
-              <rect x={place.x + 8} y={place.y + 8} width={190} height={28} rx={8} fill={a(c.ink, 0.55)} />
-              <text x={place.x + 18} y={place.y + 28} fill={c.white} fontFamily={theme.fonts.mono} fontSize={16}>secretária · {pt(K.place_score!)}</text>
-            </g>
-          ) : null}
-          {candO > 0 ? (
-            <g opacity={candO}>
-              <rect x={book.x} y={book.y} width={book.w} height={book.h} rx={4} fill="none" stroke={c.labs} strokeWidth={3} />
-              <rect x={book.x} y={book.y - 32} width={150} height={27} rx={8} fill={c.labs} />
-              <text x={book.x + 10} y={book.y - 13} fill={c.white} fontFamily={theme.fonts.mono} fontSize={16}>livro? · {pt(K.owl_score)}</text>
-            </g>
-          ) : null}
-          {lock > 0.01 ? (
-            <g opacity={Math.min(1, lock * 1.4)}>
-              <rect x={book.x - lockPad} y={book.y - lockPad} width={book.w + 2 * lockPad} height={book.h + 2 * lockPad} rx={12}
-                fill={a(c.labs, 0.08)} stroke="none" />
-              <Brackets x={book.x - lockPad} y={book.y - lockPad} w={book.w + 2 * lockPad} h={book.h + 2 * lockPad} len={26} color={c.labs} width={5} />
-            </g>
-          ) : null}
-          {ctrlO > 0 ? (
-            <rect x={ctrl.x} y={ctrl.y} width={ctrl.w} height={ctrl.h} rx={6} fill="none" stroke={c.alert} strokeWidth={3} strokeDasharray="9 6" opacity={ctrlO} />
-          ) : null}
-        </g>
-      </svg>
-      {yours > 0.01 ? (
-        <div style={{ position: "absolute", left: book.x + book.w / 2, top: book.y - lockPad - 14, opacity: Math.min(1, yours * 1.3),
-          transform: `translate(-50%, -100%) translateY(${(1 - yours) * 14}px) scale(${0.9 + 0.1 * yours})`, transformOrigin: "50% 100%",
-          padding: "10px 18px", borderRadius: 14, background: c.labs, color: c.white, fontFamily: theme.fonts.display, fontSize: 28, fontWeight: 600,
-          whiteSpace: "nowrap", boxShadow: `0 14px 30px -12px ${a(c.labsDeep, 0.55)}` }}>
-          Livro · é o teu <span style={{ fontFamily: theme.fonts.mono, fontWeight: 500, fontSize: 23 }}>{pt(SCORE)}</span>
-        </div>
-      ) : null}
-      {ctrlO > 0 ? (
-        <div style={{ position: "absolute", left: ctrl.x + ctrl.w / 2, top: ctrl.y - 12, transform: `translate(-50%, -100%) translateY(${(1 - ctrlO) * 10}px)`,
-          opacity: ctrlO, padding: "7px 13px", borderRadius: 10, background: c.white, color: c.alert, fontFamily: theme.fonts.mono, fontSize: 20,
-          fontWeight: 500, whiteSpace: "nowrap", border: `2px solid ${c.alert}` }}>
-          garrafa · {pt(CTRL.score!)} &lt; {pt(K.threshold)}
-        </div>
-      ) : null}
-
       {/* the edge service's analysis, on a light panel */}
       {(() => {
-        const p = spring({ frame: frame - 8, fps, config: { damping: 18, stiffness: 80, mass: 1 } });
+        const p = spring({ frame: frame - 8, fps, config: { damping: 20, stiffness: 80, mass: 1 } });
         return (
           <div style={{ position: "absolute", left: PANEL.x, top: PANEL.y, width: PANEL.w, height: PANEL.h, opacity: p,
-            transform: `translateX(${(1 - p) * 60}px)` }}>
+            transform: `translateX(${(1 - p) * 50}px)` }}>
             <Glass strong style={{ position: "absolute", inset: 0, borderRadius: 30 }} />
             <div style={{ position: "absolute", inset: 0, padding: "26px 30px", boxSizing: "border-box", fontFamily: theme.fonts.mono, fontSize: 19,
               lineHeight: 1.6, color: c.ink }}>
@@ -205,15 +165,15 @@ export const Identificacao: React.FC = () => {
                 {[0, 1, 2].map((i) => <span key={i} style={{ width: 10, height: 10, borderRadius: 10, background: a(c.ink, 0.14) }} />)}
                 <span style={{ marginLeft: 8 }}>edge.py · análise desta imagem</span>
               </div>
-              <CodeLine at={8} text="à espera de movimento…" color={c.inkDim} />
+              <CodeLine at={4} text="à espera de movimento…" color={c.inkDim} />
               <CodeLine at={T.motion} text={`movimento ${pt(MOTION.changed * 100)} % > 0,6 % → analisar`} />
               <CodeLine at={T.owl} text={`OWLv2   "${R.query}"`} bold />
-              <CodeLine at={T.owl + 8} text={`1 candidato · confiança ${pt(K.owl_score)}`} indent={1} color={c.inkDim} />
+              <CodeLine at={T.owl + 6} text={`1 candidato · confiança ${pt(K.owl_score)}`} indent={1} color={c.inkDim} />
               <CodeLine at={T.place} text={`lugar: secretária · ${pt(K.place_score!)}`} indent={1} color={c.inkDim} />
               <CodeLine at={T.dino} text="DINOv2  semelhança com as 3 vistas" bold />
               <Bars />
               <CodeLine at={T.best} text={`máx. ${pt(SCORE)} · vista ${BEST + 1}`} indent={1} />
-              <CodeLine at={T.yours} text={`${pt(SCORE)} ≥ ${pt(K.threshold)} → Livro · é o teu`} color={c.labs} bold />
+              <CodeLine at={LOCK} text={`${pt(SCORE)} ≥ ${pt(K.threshold)} → é o teu livro`} color={c.labs} bold />
               <CodeLine at={T.ctrl} text={`controlo "${CTRL.query}"`} color={c.inkDim} />
               <CodeLine at={T.ctrlRes} text={`garrafa ${pt(CTRL.score!)} < ${pt(K.threshold)} → não é`} indent={1} color={c.alert} />
               <Pair />
@@ -224,6 +184,16 @@ export const Identificacao: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+/** A detection label sitting on a box's top edge, like the camera's own labels; constant size on screen. */
+const BoxTab: React.FC<{ x: number; y: number; inv: number; bg: string; opacity: number; big?: boolean; children: React.ReactNode }> = ({
+  x, y, inv, bg, opacity, big, children,
+}) => (
+  <div style={{ position: "absolute", left: x, top: y, width: 0, height: 0, transform: `scale(${inv})`, transformOrigin: "0 0", opacity }}>
+    <div style={{ position: "absolute", left: 0, bottom: 0, padding: big ? "7px 14px" : "5px 10px", borderRadius: 8, background: bg, color: c.white,
+      fontFamily: theme.fonts.mono, fontSize: big ? 22 : 16, fontWeight: big ? 700 : 500, whiteSpace: "nowrap" }}>{children}</div>
+  </div>
+);
 
 const Bars: React.FC = () => {
   const frame = useCurrentFrame();

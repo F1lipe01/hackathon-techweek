@@ -19,6 +19,12 @@ export const warm = {
   shadow: "#5B4532",
 } as const;
 
+/** Colours of the app copy, sampled on its recording: the sensor card's background and its title ink. */
+export const appUi = {
+  card: "#F6FBFD",
+  ink: "#1A2233",
+} as const;
+
 // Portuguese number formatting: decimal comma.
 export const pt = (v: number, d = 2) => v.toFixed(d).replace(".", ",");
 export const mmss = (t: number) => `0:${String(Math.floor(t)).padStart(2, "0")}`;

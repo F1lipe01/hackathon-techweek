@@ -30,6 +30,19 @@ export const Plate: React.FC<{ offset?: number; blur?: number; zoom?: [number, n
   );
 };
 
+/** The one home behind the whole film: played slowly from start to end, so it never cuts; its focus, wash and framing
+ *  are driven by the caller (they change smoothly from scene to scene). The plate is already out of focus
+ *  (bg-home-soft.mp4), so `blur` only adds a few px on top. */
+export const RoomPlate: React.FC<{ rate: number; blur: number; wash: number; zoom: number; x: number }> = ({ rate, blur, wash, zoom, x }) => (
+  <AbsoluteFill style={{ overflow: "hidden", background: c.bg }}>
+    <AbsoluteFill style={{ transform: `translateX(${x}px) scale(${zoom})`, filter: `${blur > 0.2 ? `blur(${blur}px) ` : ""}brightness(1.06) saturate(1.04)` }}>
+      <OffthreadVideo src={staticFile("real/bg-home-soft.mp4")} muted playbackRate={rate} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    </AbsoluteFill>
+    <AbsoluteFill style={{ background: c.white, opacity: wash }} />
+    <AbsoluteFill style={{ background: `radial-gradient(ellipse at 70% 20%, ${a(warm.light, 0.35)}, transparent 60%)` }} />
+  </AbsoluteFill>
+);
+
 /** A translucent white card. */
 export const Glass: React.FC<{ style?: React.CSSProperties; children?: React.ReactNode; strong?: boolean }> = ({ style, children, strong }) => (
   <div style={{ background: a(c.white, strong ? 0.9 : 0.78), border: `1px solid ${a(c.white, 0.9)}`, borderRadius: 28,
@@ -65,11 +78,12 @@ export const ModernPhone: React.FC<{ w: number; h: number; children: React.React
 };
 
 /** Corner brackets around a rectangle (viewfinder marks or a lock-on). */
-export const Brackets: React.FC<{ x: number; y: number; w: number; h: number; len?: number; color?: string; width?: number; opacity?: number }> = ({
-  x, y, w, h, len = 22, color = c.white, width = 3, opacity = 1,
+export const Brackets: React.FC<{ x: number; y: number; w: number; h: number; len?: number; color?: string; width?: number; opacity?: number; nonScaling?: boolean }> = ({
+  x, y, w, h, len = 22, color = c.white, width = 3, opacity = 1, nonScaling,
 }) => {
   const d = `M${x},${y + len} V${y} H${x + len} M${x + w - len},${y} H${x + w} V${y + len} M${x + w},${y + h - len} V${y + h} H${x + w - len} M${x + len},${y + h} H${x} V${y + h - len}`;
-  return <path d={d} fill="none" stroke={color} strokeWidth={width} strokeLinecap="round" strokeLinejoin="round" opacity={opacity} />;
+  return <path d={d} fill="none" stroke={color} strokeWidth={width} strokeLinecap="round" strokeLinejoin="round" opacity={opacity}
+    vectorEffect={nonScaling ? "non-scaling-stroke" : undefined} />;
 };
 
 /** The finishing layers: a warm grade, light grain and a very soft warm vignette (never dark). */

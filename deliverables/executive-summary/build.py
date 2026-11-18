@@ -2,7 +2,7 @@
 """Build the Sumário Executivo from sumario-executivo.md.
 
 Outputs, next to this script:
-  fluxo.png                        the flow figure, rendered from fluxo.svg
+  <figure>.png                     each [[figura: name]] in the source, rendered from <name>.svg
   sumario-executivo-IT-Porto.docx  the official template, filled in (for edits in Word / Google Docs)
   sumario-executivo-IT-Porto.pdf   the file to submit (HTML replica of the template, printed by Chrome)
 
@@ -21,13 +21,14 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 TEMPLATE = HERE / "sumario-executivo-template.docx"
 SOURCE = HERE / "sumario-executivo.md"
-FIGURE_SVG = HERE / "fluxo.svg"
-FIGURE_PNG = HERE / "fluxo.png"
 OUT = "sumario-executivo-IT-Porto"
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 GREEN, GREY = "4bd26c", "666666"
 FIG_W_CM = 15.9  # text width of the template is 15.93 cm
+FIG_ALT = {"figura-exemplo": "Exemplo do ThingTracker: uma frase, a câmara vê, a casa lembra, a casa age",
+           "figura-arquitetura": "Como funciona o ThingTracker: em casa, na plataforma Altice e no modelo de linguagem",
+           "fluxo": "Fluxo do ThingTracker: ver, filtrar, perceber, lembrar, agir"}
 
 
 # ---------- source parsing ----------
@@ -61,7 +62,7 @@ def parse(md):
             blocks.append(("li", s[2:]))
         elif s.startswith("[[figura:"):
             flush()
-            blocks.append(("fig", s[len("[[figura:"):-2].strip()))
+            blocks.append(("fig", s[len("[[figura:"):-2].strip().removesuffix(".png").removesuffix(".svg")))
         else:
             para.append(s)
     flush()
@@ -94,15 +95,23 @@ def font_faces(fontdir):
     return "\n".join(faces)
 
 
-def render_figure(tmp, fontdir):
-    svg = FIGURE_SVG.read_text(encoding="utf8")
-    page = tmp / "fig.html"
+def fig_size(name):
+    svg = (HERE / f"{name}.svg").read_text(encoding="utf8")
+    w, h = (int(float(v)) for v in re.search(r'width="([\d.]+)" height="([\d.]+)"', svg).groups())
+    return w, h
+
+
+def render_figure(tmp, fontdir, name):
+    """Render <name>.svg to <name>.png at 3x, with the template's Lato."""
+    svg = (HERE / f"{name}.svg").read_text(encoding="utf8")
+    w, h = fig_size(name)
+    page = tmp / f"{name}.html"
     page.write_text(f"<!doctype html><meta charset=utf-8><style>{font_faces(fontdir)}"
                     "html,body{margin:0;background:#fff}svg{display:block}</style>" + svg,
                     encoding="utf8")
     subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars",
-                    "--force-device-scale-factor=3", "--window-size=1000,232",
-                    "--virtual-time-budget=2000", f"--screenshot={FIGURE_PNG}",
+                    "--force-device-scale-factor=3", f"--window-size={w},{h}",
+                    "--virtual-time-budget=2000", f"--screenshot={HERE / (name + '.png')}",
                     page.as_uri()], check=True, capture_output=True)
 
 
@@ -134,7 +143,7 @@ def w_par(text, ppr="", all_bold=False, **kw):
 BODY_SPACING = '<w:spacing w:before="0" w:after="100" w:line="264" w:lineRule="auto"/>'
 
 
-def w_blocks(blocks, fig_rid):
+def w_blocks(blocks, fig_rids):
     out = []
     for kind, text in blocks:
         if kind == "h":
@@ -152,16 +161,18 @@ def w_blocks(blocks, fig_rid):
             out.append(w_par(text, '<w:spacing w:before="120" w:after="0" w:line="240" w:lineRule="auto"/>',
                              size=15, color=GREY))
         elif kind == "fig":
+            n = list(fig_rids).index(text)
+            fig_rid, (fw, fh) = fig_rids[text], fig_size(text)
             cx = int(FIG_W_CM * 360000)
-            cy = int(cx * 232 / 1000)
+            cy = int(cx * fh / fw)
             out.append(
                 '<w:p><w:pPr><w:keepNext/><w:spacing w:before="60" w:after="120"/><w:jc w:val="center"/></w:pPr>'
                 '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0">'
                 f'<wp:extent cx="{cx}" cy="{cy}"/><wp:effectExtent l="0" t="0" r="0" b="0"/>'
-                '<wp:docPr id="101" name="fluxo" descr="Fluxo do ThingTracker: ver, filtrar, perceber, lembrar, agir"/>'
+                f'<wp:docPr id="{101 + n}" name="{text}" descr="{x(FIG_ALT.get(text, text))}"/>'
                 '<wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr>'
                 '<a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">'
-                '<pic:pic><pic:nvPicPr><pic:cNvPr id="101" name="fluxo.png"/><pic:cNvPicPr/></pic:nvPicPr>'
+                f'<pic:pic><pic:nvPicPr><pic:cNvPr id="{101 + n}" name="{text}.png"/><pic:cNvPicPr/></pic:nvPicPr>'
                 f'<pic:blipFill><a:blip r:embed="{fig_rid}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>'
                 f'<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="{cx}" cy="{cy}"/></a:xfrm>'
                 '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic>'
@@ -187,16 +198,18 @@ def build_docx(tmp, meta, blocks):
 
     rels_path = src / "word" / "_rels" / "document.xml.rels"
     rels = rels_path.read_text(encoding="utf8")
-    rid = "rIdFluxo"
-    rels = rels.replace("</Relationships>",
-                        f'<Relationship Id="{rid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/fluxo.png"/></Relationships>')
+    rids = {}
+    for n, name in enumerate(t for k, t in blocks if k == "fig"):
+        rids[name] = f"rIdFig{n + 1}"
+        rels = rels.replace("</Relationships>",
+                            f'<Relationship Id="{rids[name]}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/{name}.png"/></Relationships>')
+        shutil.copy(HERE / f"{name}.png", src / "word" / "media" / f"{name}.png")
     rels_path.write_text(rels, encoding="utf8")
-    shutil.copy(FIGURE_PNG, src / "word" / "media" / "fluxo.png")
 
     body = (retitle(t1, f"Equipa {meta['equipa']}")
             + retitle(t2, f"Desafio {meta['desafio']} - Sumário Executivo")
             + '<w:p><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:p>'
-            + w_blocks(blocks, rid) + sect)
+            + w_blocks(blocks, rids) + sect)
     doc_path.write_text(f"{head}<w:body>{body}</w:body></w:document>", encoding="utf8")
 
     # well-formedness check before zipping
@@ -255,7 +268,7 @@ def build_pdf(tmp, meta, blocks, fontdir):
         elif kind == "sources":
             parts.append(f'<p class="sources">{inline_html(text)}</p>')
         elif kind == "fig":
-            parts.append(f'<figure><img src="{FIGURE_PNG.as_uri()}" alt="Fluxo do ThingTracker"></figure>')
+            parts.append(f'<figure><img src="{(HERE / (text + ".png")).as_uri()}" alt="{x(FIG_ALT.get(text, text))}"></figure>')
     close_list()
 
     css = font_faces(fontdir) + """
@@ -298,7 +311,8 @@ def main():
         with zipfile.ZipFile(TEMPLATE) as z:
             z.extractall(tmp / "docx")
         fontdir = tmp / "docx" / "word" / "fonts"
-        render_figure(tmp, fontdir)
+        for name in dict.fromkeys(t for k, t in blocks if k == "fig"):
+            render_figure(tmp, fontdir, name)
         docx = build_docx(tmp, meta, blocks)
         pdf = build_pdf(tmp, meta, blocks, fontdir)
     words = sum(len(re.sub(r"[*`]", "", t).split()) for k, t in blocks if k != "fig")

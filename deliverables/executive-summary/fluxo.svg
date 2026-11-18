@@ -28,12 +28,12 @@
     <text x="85" y="140" font-size="14.5" fill="#555">em tempo real</text>
 
     <text x="292.5" y="93" font-size="19" font-weight="700">Filtrar</text>
-    <text x="292.5" y="120" font-size="14.5" fill="#555">só as zonas escolhidas;</text>
-    <text x="292.5" y="140" font-size="14.5" fill="#555">o resto é descartado</text>
+    <text x="292.5" y="120" font-size="14.5" fill="#555">máscaras de privacidade;</text>
+    <text x="292.5" y="140" font-size="14.5" fill="#555">nada é gravado</text>
 
     <text x="500" y="93" font-size="19" font-weight="700">Perceber</text>
-    <text x="500" y="120" font-size="14.5" fill="#555">IA multimodal</text>
-    <text x="500" y="140" font-size="14.5" fill="#555">e regras fixas</text>
+    <text x="500" y="120" font-size="14.5" fill="#555">modelos de visão</text>
+    <text x="500" y="140" font-size="14.5" fill="#555">abertos, na casa</text>
 
     <text x="707.5" y="93" font-size="19" font-weight="700">Lembrar</text>
     <text x="707.5" y="120" font-size="14.5" fill="#555">objeto, local e hora,</text>

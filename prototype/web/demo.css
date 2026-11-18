@@ -1,0 +1,35 @@
+/* The product video: a 1920 x 1080 stage with the story on the left and the real app copy on the right. */
+body.demo { width: 1920px; height: 1080px; overflow: hidden; background: #f2f5fa; display: block; }
+.stagev { display: grid; grid-template-columns: 820px 1fr; height: 1080px; padding: 0 140px; gap: 80px; align-items: center; }
+.story { position: relative; height: 1000px; display: grid; grid-template-rows: auto 1fr auto; font-family: "Switzer", "Helvetica Neue", Arial, sans-serif; color: #111320; }
+.brandv { display: flex; align-items: center; gap: 14px; font-weight: 600; font-size: 28px; letter-spacing: -0.02em; padding-top: 30px; }
+.brandv svg { width: 40px; height: 40px; }
+.slide { align-self: center; display: grid; gap: 22px; transition: opacity 420ms cubic-bezier(0.23, 1, 0.32, 1), transform 420ms cubic-bezier(0.23, 1, 0.32, 1); }
+.slide.out { opacity: 0; transform: translateY(14px); }
+.kicker { justify-self: start; font-size: 20px; font-weight: 600; color: #0b7d66; background: #dff5ee; padding: 7px 16px; border-radius: 999px; }
+.kicker:empty { display: none; }
+.slide h1 { font-size: 64px; line-height: 1.05; font-weight: 700; letter-spacing: -0.035em; max-width: 15ch; }
+.slide p { font-size: 26px; line-height: 1.45; color: #56606c; max-width: 30ch; }
+.camcard { position: relative; margin: 14px 0 0; width: 720px; border-radius: 22px; overflow: hidden; box-shadow: 0 20px 50px rgb(26 34 51 / 0.16); }
+.camcard img { display: block; width: 100%; aspect-ratio: 900 / 580; object-fit: cover; }
+.camlabel { position: absolute; left: 16px; bottom: 14px; color: #fff; font-weight: 600; font-size: 17px; padding: 6px 14px; border-radius: 999px; background: rgb(0 0 0 / 0.5); }
+/* the wallet sits at x 551-659, y 303-359 of the 900 x 580 scene */
+.cambox { position: absolute; left: calc(551 / 900 * 100%); top: calc(303 / 580 * 100%); width: calc(108 / 900 * 100%); height: calc(56 / 580 * 100%);
+  border: 3px solid #0084d6; border-radius: 8px; box-shadow: 0 0 0 1px rgb(0 0 0 / 0.35); animation: boxin 520ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+.cambox b { position: absolute; left: -3px; bottom: calc(100% + 6px); white-space: nowrap; font: 600 16px/1 "Switzer", Arial, sans-serif; color: #fff; background: #0084d6; padding: 7px 10px; border-radius: 6px; }
+@keyframes boxin { from { opacity: 0; transform: scale(1.35); } }
+.steps { list-style: none; margin: 0; padding: 0 0 34px; display: flex; gap: 12px; counter-reset: s; }
+.steps li { counter-increment: s; display: flex; align-items: center; gap: 10px; font-size: 19px; font-weight: 500; color: #8a93a0; padding: 10px 16px 10px 10px; border-radius: 999px; background: #e7ecf3; transition: background-color 300ms, color 300ms; }
+.steps li::before { content: counter(s); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #cfd7e2; color: #fff; font-weight: 700; font-size: 15px; transition: background-color 300ms; }
+.steps li.on { background: #1a2233; color: #fff; }
+.steps li.on::before { background: #2abe9e; color: #1a2233; }
+.steps li.done { color: #1a2233; }
+.steps li.done::before { background: #2abe9e; }
+.phonev { display: grid; justify-items: center; align-items: center; }
+.phonev .phone { height: 1000px; width: calc(1000px * 1350 / 2760); }
+/* a finger shows where the person taps */
+.finger { position: fixed; z-index: 50; left: 0; top: 0; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%;
+  background: rgb(26 34 51 / 0.22); border: 2px solid rgb(255 255 255 / 0.85); box-shadow: 0 4px 14px rgb(0 0 0 / 0.18);
+  opacity: 0; transition: left 520ms cubic-bezier(0.65, 0, 0.35, 1), top 520ms cubic-bezier(0.65, 0, 0.35, 1), opacity 240ms ease-out, transform 140ms ease-out; pointer-events: none; }
+.finger.show { opacity: 1; }
+.finger.press { transform: scale(0.8); background: rgb(42 190 158 / 0.45); }

@@ -493,8 +493,9 @@ function chatHtml() {
 }
 function openAssistant(prefill = '') {
   if (!chat.length) {
+    const n = (state.things[0]?.name || 'keys').toLowerCase();     // the examples use a thing the home really has
     chat.push({ text: 'Hi! Ask me anything about your home, like where you left something, or describe a sensor in one sentence.',
-      html: `<div class="suggest">${['Where is my book?', 'Tell me if I leave home without my book', 'What did the camera see today?'].map((s) => `<button type="button" data-ask="${esc(s)}">${esc(s)}</button>`).join('')}</div>` });
+      html: `<div class="suggest">${[`Where is my ${n}?`, `Tell me if I leave home without my ${n}`, 'What did the camera see today?'].map((s) => `<button type="button" data-ask="${esc(s)}">${esc(s)}</button>`).join('')}</div>` });
   }
   openSheet({ head: `<div class="shead"><b>Assistant</b><button type="button" class="ibtn" data-act="close-sheet" aria-label="Close">${I.x}</button></div>`, body: chatHtml(),
     foot: `<input class="field" id="askfield" placeholder="Ask anything" maxlength="300" autocomplete="off" value="${esc(prefill)}"><button type="button" class="send" data-act="send" aria-label="Send">${I.send}</button>` },
@@ -643,6 +644,7 @@ fitDevice();
 const tick = () => { $('iostime').textContent = new Date().toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit' }); };
 tick(); setInterval(tick, 15000);
 
+window.__ttRefresh = refresh;     // lets web/demo.html (the scripted product video) redraw on cue
 useSource('kit');
 renderTabs();
 await refresh();

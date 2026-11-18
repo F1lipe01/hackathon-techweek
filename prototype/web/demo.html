@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, initial-scale=1">
+<title>ThingTracker · vídeo do produto</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/web/app.css">
+<link rel="stylesheet" href="/web/demo.css">
+<!-- the scripted data and the timeline must be in place before the app starts -->
+<script src="/web/demo.js"></script>
+</head>
+<body class="demo">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="mark" viewBox="0 0 64 64">
+    <g fill="none" stroke="var(--a, #0084D6)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M7 21 V12 Q7 7 12 7 H21"/><path d="M43 7 H52 Q57 7 57 12 V21"/>
+      <path d="M7 43 V52 Q7 57 12 57 H21"/><path d="M57 43 V52 Q57 57 52 57 H43"/>
+    </g>
+    <circle cx="19" cy="45" r="2.4" fill="var(--a, #0084D6)" opacity="0.35"/>
+    <circle cx="25.5" cy="38.5" r="3" fill="var(--a, #0084D6)" opacity="0.6"/>
+    <circle cx="35" cy="29" r="8" fill="var(--i, #000)"/>
+  </symbol>
+</svg>
+<main class="stagev">
+  <section class="story">
+    <div class="brandv"><svg aria-hidden="true"><use href="#mark"/></svg>ThingTracker</div>
+    <div class="slide" id="slide">
+      <span class="kicker" id="kicker"></span>
+      <h1 id="title"></h1>
+      <p id="sub"></p>
+      <figure class="camcard" id="camcard" hidden>
+        <img src="/crops/demo-scene.jpg" alt="">
+        <div class="camlabel">Work Room · câmara</div>
+        <div class="cambox" id="cambox" hidden><b>Wallet · yours 0,84</b></div>
+      </figure>
+    </div>
+    <ol class="steps" id="steps">
+      <li>Registar</li><li>Encontrar</li><li>Perguntar</li><li>Avisar</li>
+    </ol>
+  </section>
+  <section class="phonev">
+    <div class="phone">
+     <!-- The screen is laid out at the iPhone 18 Pro's size (402 x 874 pt) and scaled as a whole to fit the frame (app.js: fitDevice). -->
+     <div class="screen-wrap" id="screenwrap">
+     <div class="device" id="device">
+      <div class="ios-status" aria-hidden="true">
+        <span class="ios-time" id="iostime">9:41</span>
+        <span class="island"></span>
+        <span class="ios-icons">
+          <svg viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+          <svg viewBox="0 0 16 12"><path d="M8 11.6 10.4 9.1a3.4 3.4 0 0 0-4.8 0Z"/><path d="M8 4.6a7 7 0 0 1 4.9 2l1.4-1.5A9.1 9.1 0 0 0 8 2.5a9.1 9.1 0 0 0-6.3 2.6l1.4 1.5a7 7 0 0 1 4.9-2Z"/><path d="M8 7.5a4.1 4.1 0 0 1 2.9 1.2l1.4-1.5A6.2 6.2 0 0 0 8 5.4a6.2 6.2 0 0 0-4.3 1.8l1.4 1.5A4.1 4.1 0 0 1 8 7.5Z"/></svg>
+          <svg viewBox="0 0 27 13"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" fill="none" stroke="currentColor" stroke-opacity="0.4"/><rect x="2.5" y="2.5" width="18" height="8" rx="2"/><path d="M24.5 4.5v4a2 2 0 0 0 0-4Z" fill-opacity="0.4"/></svg>
+        </span>
+      </div>
+
+      <!-- the five tabs; pushed screens (details, flows) are added on top of them by app.js -->
+      <div class="views" id="views">
+        <section class="view tabview" id="v-favorites" hidden></section>
+        <section class="view tabview" id="v-areas" hidden></section>
+        <section class="view tabview" id="v-devices"></section>
+        <section class="view tabview" id="v-things" hidden></section>
+        <section class="view tabview" id="v-menu" hidden></section>
+      </div>
+
+      <nav class="tabs" id="tabs" aria-label="App tabs">
+        <button type="button" data-tab="favorites"><span class="tab-ic" data-icon="favorites"></span>Favorites</button>
+        <button type="button" data-tab="areas"><span class="tab-ic" data-icon="areas"></span>Areas</button>
+        <button type="button" data-tab="devices" class="on"><span class="tab-ic" data-icon="devices"></span>Devices</button>
+        <button type="button" data-tab="things"><span class="tab-ic" data-icon="things"></span>Things</button>
+        <button type="button" data-tab="menu"><span class="tab-ic" data-icon="menu"></span>Menu<span class="tab-dot"></span></button>
+      </nav>
+
+      <!-- the assistant: on every tab, ask anything ("Where is my book?") or describe a sensor in a sentence -->
+      <button type="button" class="fab" id="fab" aria-label="Open the assistant"></button>
+
+      <div class="dim" id="dim" hidden></div>
+      <div class="sheet" id="sheet" hidden role="dialog" aria-modal="true"></div>
+      <div class="dialog" id="dialog" hidden role="alertdialog" aria-modal="true"></div>
+      <div class="toast" id="toast" role="status" aria-live="assertive" hidden></div>
+      <span class="home-indicator" aria-hidden="true"></span>
+     </div>
+     </div>
+     <img class="frame" src="/web/iphone-frame.svg" alt="" aria-hidden="true">
+    </div>
+
+  </section>
+</main>
+<!-- elements the app expects on the page, kept out of view in the video -->
+<div hidden><div id="stage"><video id="video" hidden></video><img id="kitimg" alt=""><div id="boxes"></div><p id="stagemsg"></p></div>
+<span id="edge"></span><span id="status"></span><span id="spend"></span><span id="mode"></span><ol id="log"></ol></div>
+<div class="finger" id="finger"></div>
+<script src="/web/app.js" type="module"></script>
+</body>
+</html>

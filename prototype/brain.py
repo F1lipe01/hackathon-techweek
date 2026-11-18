@@ -489,12 +489,18 @@ class Brain:
     _APP_EVENT = re.compile(r"^(Now tracking:|New sensor:|Registering |Registration of )|"
                             r" registered: a visual fingerprint|Suggested sensor:")
 
+    def _by_camera(self, e):
+        """Did the camera record this event? Only its sightings: the door, alerts and sensor checks come from the
+        rules engine, and earlier answers of the assistant ('"question": answer') are neither."""
+        if "kind" in e:
+            return e["kind"] == "seen"
+        return not e["text"].startswith('"') and not self._APP_EVENT.search(e["text"])
+
     def _events(self, memory, names=None, camera=True):
         """Recent events as lines, oldest first: what the camera recorded (camera=True) or what was done in the app.
-        Only those naming one of `names` when given. Earlier answers of the assistant are logged as events
-        ('"question": answer'); they are neither."""
-        return [f"- {self._day(e['when'])}: {e['text']}" for e in memory["recent_events"] if not e["text"].startswith('"')
-                and bool(self._APP_EVENT.search(e["text"])) != camera
+        Only those naming one of `names` when given."""
+        return [f"- {self._day(e['when'])}: {e['text']}" for e in memory["recent_events"]
+                if (self._by_camera(e) if camera else bool(self._APP_EVENT.search(e["text"])))
                 and (names is None or any(n.lower() in e["text"].lower() for n in names))]
 
     @staticmethod
@@ -617,7 +623,7 @@ class Brain:
     _NEGATION = re.compile(r"\b(not|never|nothing|no|none|yet|não|nunca|nada|nenhum|nenhuma|ainda)\b|n't\b")
 
     def _camera_events(self, memory, day=None):
-        return [e for e in memory["recent_events"] if not e["text"].startswith('"') and not self._APP_EVENT.search(e["text"])
+        return [e for e in memory["recent_events"] if self._by_camera(e)
                 and (not day or self._day(e["when"]).startswith(day + " "))]
 
     def _check_camera_answer(self, answer, memory, day, lang):
@@ -639,11 +645,13 @@ class Brain:
         items = []
         for e in events:
             hhmm = e["when"].rpartition(" ")[2]
-            m = re.match(r"(.+) seen (?:on the (\w+)|in the room)", e["text"])
+            m = re.match(r"(.+) seen (?:on the (\w+)|in the room)(?: \((.+)\))?", e["text"])
             if m:
-                place = m.group(2) or "room"
-                where = (self.PLACE_PT.get(place, f"em {place}") if lang == "pt"
-                         else "in the room" if place == "room" else f"on the {place}")
+                place, cam = m.group(2) or "room", m.group(3)   # cam: the camera's place, when not the kit camera's
+                if lang == "pt":
+                    where = f"em {cam}" if cam and place == "room" else self.PLACE_PT.get(place, f"em {place}")
+                else:
+                    where = f"in the {cam}" if cam and place == "room" else "in the room" if place == "room" else f"on the {place}"
                 items.append(f"{m.group(1)} {where} ({hhmm})")
             else:
                 items.append(f"{e['text'].rstrip('.')} ({hhmm})")
@@ -655,7 +663,7 @@ class Brain:
                 else f"The camera recorded nothing {when[0]}.")
 
     PLACE_PT = {"table": "na mesa", "desk": "na secretária", "shelf": "na prateleira", "sofa": "no sofá",
-                "bench": "no banco", "room": "na sala"}
+                "bench": "no banco", "room": "na divisão"}
 
     def _fact_answer(self, t, lang):
         """A plain sentence straight from the memory, used when the model's answer disagrees with it."""

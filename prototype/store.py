@@ -202,7 +202,12 @@ class Store:
             things.append({"thing_id": t["id"], "name": t["name"],
                            "last_seen": None if not last else
                            {"when": fmt(last["ts"]), "zone": last["zone_name"], "room": last["room"], "where": last["where"]}})
-        events = [{"when": fmt(e["ts"]), "text": e["text"]} for e in self.events(15)]
+        # the camera's latest 15 sightings and the latest 15 other events, so a busy door or sensor log never
+        # pushes what the camera saw out of the memory
+        recent = self.events(200)
+        recent = sorted([e for e in recent if e["kind"] == "seen"][:15] + [e for e in recent if e["kind"] != "seen"][:15],
+                        key=lambda e: -e["ts"])
+        events = [{"when": fmt(e["ts"]), "kind": e["kind"], "text": e["text"]} for e in recent]
         return {"now": fmt(now()), "things": things, "recent_events": events[::-1]}
 
     def find_suggestion(self, sentence):

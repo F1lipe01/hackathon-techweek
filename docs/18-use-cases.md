@@ -21,7 +21,7 @@ Three terms used throughout:
 
 ## 1. Catalogue, in priority order
 
-Indoors: safety first, then care, then everyday convenience. The outdoor cases (E1 to E9) have their own section, also in priority order.
+Indoors: safety first, then care, then everyday convenience. The outdoor cases (E1 to E9) have their own section, also in priority order, and the two home-timeline cases (T1 and T2) follow it.
 
 | # | Case | Place | Devices | Feasibility |
 |---|---|---|---|---|
@@ -57,8 +57,10 @@ Indoors: safety first, then care, then everyday convenience. The outdoor cases (
 | E7 | Things left outside: bike, garden hose, bin | Garden | Other IoT | Small extension |
 | E8 | Animals in the garden: sprinkler for 5 s | Garden | Other IoT | Small extension |
 | E9 | The dog at the back door: open the pet door | Back of the house | Other IoT | Future |
+| T1 | Too late: what was near the child, and when | Kitchen | Kit | Small extension; "ate or drank" is future |
+| T2 | What happened at 4 a.m.? | All, outdoor | Kit; other IoT optional (outdoor camera) | Small extension; the bark and "unusual" are future |
 
-Of the 32 cases, 22 work with kit devices alone, and the 9 outdoor ones need an outdoor camera (other IoT). Seven already work in the prototype, 20 need a small extension (S7 partly works already) and 5 are future.
+Of the 34 cases, 24 work with kit devices alone, and the 9 outdoor ones need an outdoor camera (other IoT). Seven already work in the prototype, 22 need a small extension (S7 partly works already) and 5 are future.
 
 ### Safety
 
@@ -391,6 +393,31 @@ The following cases need an outdoor camera (other IoT): at the door, in the gard
 - Feasibility: future. Recognising one particular animal, not "a dog", by its fingerprint has not been tested and would have to be very reliable, because it opens a way into the home.
 - Limits: a similar dog or a wild animal could get in; microchip pet doors already solve this without a camera, and the camera could simply report it ("the dog came in at 15:00").
 
+### The home timeline
+
+The memory that finds things (the place, time and crop of each sighting) can also tell what happened. The two cases below, proposed by a member of the team, raise no alert: they answer a question asked afterwards, with a list of events, each with its type, time, place and image, kept for a limited time and then deleted (proposal in section 2.5).
+
+#### T1. Too late: what was near the child, and when
+
+- Question: "What was near the child this afternoon?" or, after an alert from the child-in-danger case: "Show me what happened in the kitchen between 16:00 and 16:30."
+- The camera looks for: the same as in the child-in-danger case (S2 and S5): the child near a detergent, a medicine, food or a drink, in Kitchen 1. Each event keeps its type, time, place and a crop.
+- Rule: nothing new; a query on the timeline, for example `timeline(child, Kitchen 1, 16:00–16:30)`, which the language model summarises in plain words.
+- Devices: camera (kit).
+- Action: the app shows the sequence with the crops ("16:28, next to a detergent; 16:29, next to a glass"), so the parents can decide what to tell the doctor.
+- Feasibility: small extension. The prototype already keeps, for each thing, the place, the time and a crop, and keeps the child's presence without an image; the "near" event with a crop is missing, the same as in S2 and S5. Knowing whether the child ate or drank needs an action model, which is future: the app shows what was near, and the parents judge.
+- Limits: "near" is not "ate"; what happens outside the camera's view does not appear; keeping crops of a child raises the privacy risk, so only with the parents' consent and the time limit of section 2.5.
+
+#### T2. What happened at 4 a.m.?
+
+- Question: "What happened tonight between 3:00 and 5:00?", after an alarm at home or a burglary nearby.
+- The camera looks for: events that are unusual for that home: the dog barking at an hour when it never barks, a person at a window (`"a person"`, on the outdoor camera), a door open (contact sensor). Each event keeps its type, time, place and an image; for sound only the label is kept ("bark, 4:02"), never the audio (proposal).
+- Rule: a query, for example `timeline(home, 03:00–05:00, unusual only)`, where "unusual" is measured against the home's own pattern.
+- Devices: camera (kit), whose microphone serves as a trigger; contact sensor (kit); security hub (kit), whose alarm history the MCP already reads (`get_home_security_alarm_history`); outdoor camera (other IoT), for the window.
+- Action: the app shows the list with the images; the family can pin events to keep them longer, and export them.
+- Feasibility: the prototype's timeline already keeps people and animals with place and time, without images; adding images to security events and an "unusual only" view are small extensions. Recognising a bark by its sound needs an audio model, and knowing what is unusual needs learning the home's pattern (like C2's usual hours): future. Today the prototype does not handle sound.
+- Limits: sound raises a legal question, because Article 19(4) of Lei n.º 58/2019 forbids capturing sound where video surveillance is allowed, except while the premises are closed or with the CNPD's prior authorisation; whether it applies to a private home is to verify (section 2.6). The outdoor camera follows the rules of section 2.6. Handing images to a neighbour or the authorities: to verify. With a dog that barks a lot almost everything is unusual, and the list only helps if it is short.
+- The story behind the case: a team member's neighbour was burgled; the team member's dog barked at 4 a.m., and that time helped the neighbour search the recordings of her own camera.
+
 ### IoT ideas proposed within the team: where they fit
 
 Nine ideas proposed within the team combine the camera with other devices. The table gives the catalogue case where each one fits, what the architecture already has and what is missing. Three need models beyond OWLv2 and DINOv2 (pose, licence plates and gestures) and are future; so are smoke and flame, until a trained and measured model exists.
@@ -425,7 +452,7 @@ All of these devices would have to exist on the Altice platform. The MCP write t
 ### 2.1 How many
 
 Two or three cameras indoors and, in a house, one or two outdoors is the plan (team assumption):
-- one in the kitchen, where 10 of the 32 cases happen (S1 to S5, S10, C1, C2, C3 and C5);
+- one in the kitchen, where 11 of the 34 cases happen (S1 to S5, S10, C1, C2, C3, C5 and T1);
 - one in the living room or the entrance, for presence, things and leaving home;
 - in a house, one at the door or the gate (parcels, the car, break-ins) and, with a garden, one in the garden or at the back;
 - in a flat, none outdoors: the front door opens onto the landing, which is a common part of the building and not the client's exclusive domain (section 2.6).
@@ -439,10 +466,10 @@ Three facts bear on the number of cameras:
 
 ### 2.2 Indoor and outdoor
 
-| | Indoor | Outdoor, at the door |
+| Aspect | Indoor | Outdoor, at the door |
 |---|---|---|
 | What it is for | Kitchen safety, care, things, presence | Break-ins, people at night, parcels, the car, things left outside |
-| Cases | S1 to S10, C1 to C7, V1 to V6 | E1 to E9 |
+| Cases | S1 to S10, C1 to C7, V1 to V6, T1, T2 | E1 to E9, part of T2 |
 | Care needed | Never in bedrooms or bathrooms | Only the property and, where strictly necessary, the access to it; neither the street nor the neighbours; a sign on display (to verify); motion only as the trigger, no sound (section 2.6) |
 | Hardware | The kit camera | An outdoor camera (other IoT), or the kit camera at a covered entrance if Altice confirms it |
 
@@ -457,13 +484,13 @@ Three facts bear on the number of cameras:
 
 | Place | Cases | Devices that add value |
 |---|---|---|
-| Kitchen | S1, S2, S3, S4, S5, S10, C1, C2, C3, C5, V6 | Smoke sensor and plug (kit); connected hob or oven, leak sensor, solenoid valve, smart speaker (other IoT) |
+| Kitchen | S1, S2, S3, S4, S5, S10, C1, C2, C3, C5, V6, T1 | Smoke sensor and plug (kit); connected hob or oven, leak sensor, solenoid valve, smart speaker (other IoT) |
 | Living room | S5, S6, S7, C3, C4, C5, V2, V3, V4, V5, V6 | Temperature sensor, plug and light (kit); window contact sensors, thermostat (other IoT) |
 | Entrance, inside | S7, S8, C6, C7, V1, V2 | Door contact sensor and light (kit); smart lock (other IoT) |
 | Outdoor, at the door | E1, E4, E5 | Light (kit); mailbox sensor, indoor speaker (other IoT) |
 | Garden and gate | E2, E3, E4, E7, E8 | Floodlights, blinds, outdoor speaker, gate sensor, sprinkler (other IoT) |
 | Garage entrance | E6 | Garage door motor (other IoT) |
-| Back of the house | E1, E9 | Contact sensor (kit); pet door with an electric latch (other IoT) |
+| Back of the house | E1, E9, T2 | Contact sensor (kit); pet door with an electric latch (other IoT) |
 
 ### 2.5 Privacy rules
 
@@ -473,6 +500,7 @@ Three facts bear on the number of cameras:
 - People are detected as "a person" or "a child", without identification. Recognising family members is opt-in, turned on person by person, with consent, and done on the home device.
 - The client can set masks: areas of the image that are never analysed.
 - ThingTracker records no video; observations stay 30 days on the home device.
+- Retention of timeline events (proposal): 30 days by default, then deleted; events the family pins, for example those of an alarm, are kept longer, until the family deletes them or up to a maximum still to be set. For sound only the label is kept ("bark, 4:02"), never the audio. The log of actions taken in the home, planned in the architecture, is kept 90 days.
 - Only the safety cases involving people (S7, E1, E2 and E4) send a photo of a person. The others send a crop of an object or no image at all (C6, for instance, never sends a photo).
 
 ### 2.6 Outdoor cameras in Portugal: privacy and the law
@@ -481,7 +509,7 @@ This is not legal advice: it summarises the primary sources the team checked on 
 
 - What the camera may film. Lei n.º 58/2019, which implements the GDPR in Portugal, says in Article 19(2)(a) that cameras may not cover "vias públicas, propriedades limítrofes ou outros locais que não sejam do domínio exclusivo do responsável, exceto no que seja estritamente necessário para cobrir os acessos ao imóvel" (public roads, neighbouring properties or other places not under the controller's exclusive domain, except as strictly necessary to cover the access to the property; Diário da República, 1st series, no. 151, 8 August 2019).
 - When the GDPR applies. A camera that films only the home's own fenced garden is, in principle, covered by the household exemption of GDPR Article 2(2)(c); it stops being covered if it extends, even partly, to public space or a neighbour's property (European Data Protection Board, Guidelines 3/2019, version 2.0, paras. 12 and 13; Court of Justice of the EU, Ryneš, C-212/13, 11 December 2014).
-- Sound. Article 19(4) of the same law forbids capturing sound where video surveillance is allowed, except while the premises are closed or with the CNPD's prior authorisation. Because the solution uses sound as a trigger for analysis, outdoor cameras use motion only; whether the rule applies to a private home is still to verify.
+- Sound. Article 19(4) of the same law forbids capturing sound where video surveillance is allowed, except while the premises are closed or with the CNPD's prior authorisation. Because the solution uses sound as a trigger for analysis, outdoor cameras use motion only; whether the rule applies to a private home is still to verify. For the same reason, case T2 keeps only the sound's label, never the audio.
 - Signage. Article 19(1) refers to the requirements of Article 31 of Lei n.º 34/2013, which, according to secondary sources, include a sign on display; the current wording of that article and how it applies to a private home are to verify. Where the GDPR applies, Guidelines 3/2019 (section 7.1) make the warning sign the first layer of information.
 - Plates and faces. A licence plate is personal data (Guidelines 3/2019, para. 8). Reading plates or recognising faces is opt-in only, after a legal assessment and a data protection impact assessment (DPIA).
 - The CNPD's own guidance for home cameras: to verify.
@@ -500,11 +528,11 @@ Criteria and weights from Articles 16 and 18 of the participation rules (`source
 | Criterion | Intermediate | Final | How ThingTracker answers it | Where the evidence is |
 |---|---|---|---|---|
 | Enquadramento e resposta ao Desafio (fit and response to the challenge) | 25 % | 20 % | The camera becomes a source of information; one sentence becomes a sensor, "beyond commands"; the cases combine the camera with the kit's sensors; the MCP is integrated (reads the door, acts on the plug and the light); the kitchen-safety cases answer what the mentors asked for | Prototype (`prototype/`); report (Figure 1 and the list of cases); video (`video/`, in progress); this document |
-| Facilidade de adoção do Projeto por parte dos Desafiadores (ease of adoption by the challenger) | 25 % | 20 % | A fifth tab in the existing app; actions go through the MCP Altice already has; rules are saved as platform scenarios; 22 of the 32 cases use kit devices only, and the 9 outdoor ones add an outdoor camera | Architecture (`docs/14-architecture.md`, §3 and D5); integration spec (`docs/15-integration-spec.md`); the app replica in the prototype |
-| Viabilidade de implementação e gestão futura (sustentabilidade) do Projeto (feasibility and sustainability) | 25 % | 20 % | Open-source models free for commercial use; vision only on motion, on the router or on Altice servers; the language model is called only to create a rule or answer a question; about €0.43 per home per month on the language model and €0.49 on vision (the report's estimate); 7 cases work today and 20 are small extensions | Report ("Ferramentas de IA"); architecture (§8); business case (`docs/16-business-case.md`) |
-| Possibilidade de replicação em outros territórios e contextos (replication in other territories and contexts) | — | 20 % | A platform service for any operator; no data is specific to Portugal; the language model speaks the user's language; France is the second market analysed; the rules for outdoor cameras differ by country and would have to be reviewed in each | Business case (France section); architecture (requirement N5) |
+| Facilidade de adoção do Projeto por parte dos Desafiadores (ease of adoption by the challenger) | 25 % | 20 % | A fifth tab in the existing app; actions go through the MCP Altice already has; rules are saved as platform scenarios; 24 of the 34 cases use kit devices only, and the 9 outdoor ones add an outdoor camera | Architecture (`docs/14-architecture.md`, §3 and D5); integration spec (`docs/15-integration-spec.md`); the app replica in the prototype |
+| Viabilidade de implementação e gestão futura (sustentabilidade) do Projeto (feasibility and sustainability) | 25 % | 20 % | Open-source models free for commercial use; vision only on motion, on the router or on Altice servers; the language model is called only to create a rule or answer a question; about €0.43 per home per month on the language model and €0.49 on vision (the report's estimate); 7 cases work today and 22 are small extensions | Report ("Ferramentas de IA"); architecture (§8); business case (`docs/16-business-case.md`) |
+| Possibilidade de replicação em outros territórios e contextos (replication in other territories and contexts) | — (not assessed at this stage) | 20 % | A platform service for any operator; no data is specific to Portugal; the language model speaks the user's language; France is the second market analysed; the rules for outdoor cameras differ by country and would have to be reviewed in each | Business case (France section); architecture (requirement N5) |
 | Apresentação da solução (presentation) | 25 % | 10 % | Live demo with the kit camera and the book; video with the knife-and-cat case (illustration); cases told in one sentence; five cases for the pitch and the video, one of them live (section 5) | Video; prototype; pitch |
-| Documentação (Entregáveis) da solução (documentation) | — | 10 % | Two-page report; architecture, integration spec, business case and use cases, in Portuguese and English | `deliverables/`, `docs/pt/`, `docs/` |
+| Documentação (Entregáveis) da solução (documentation) | — (not assessed at this stage) | 10 % | Two-page report; architecture, integration spec, business case and use cases, in Portuguese and English | `deliverables/`, `docs/pt/`, `docs/` |
 
 ### 3.2 Matrix
 
@@ -513,7 +541,7 @@ The team's self-assessment, for discussion. Scale per criterion:
 - Adoption: strong if the kit is enough; medium if it needs more kit units or a device Altice already mentions in its offer; weak if it needs a new kind of device on the platform.
 - Feasibility: strong if it works in the prototype; medium if it is a small extension; weak if it is future.
 - Replication: strong if it depends on neither country nor home; medium if it depends on local rules or a third-party device.
-- Presentation: strong if it can be shown live or in the video, or is one of the 8 cases in section 4; medium if it is only described.
+- Presentation: strong if it can be shown live or in the video, or is one of the pitch cases (sections 4 and 5); medium if it is only described.
 - Documentation: strong if it is also in the report or the architecture; medium if it is only in this document.
 
 | Case | Fit | Adoption | Feasibility | Replication | Presentation | Documentation |
@@ -550,6 +578,8 @@ The team's self-assessment, for discussion. Scale per criterion:
 | E7 Things left outside | strong | medium | medium | medium | medium | medium |
 | E8 Garden sprinkler | medium | weak | medium | medium | medium | medium |
 | E9 Pet door | medium | weak | weak | medium | medium | medium |
+| T1 Too late | strong | strong | medium | strong | strong | medium |
+| T2 What happened at 4 a.m. | strong | strong | medium | medium | strong | medium |
 
 "Strong" for Documentation follows the report, which mentions S1, S3, C1, C2, C6, C7, V1, V2 and E5, and the architecture.
 
@@ -642,7 +672,7 @@ The maximum total is 30. It is the team's self-assessment, for discussion.
 
 ### 5.2 The 10 finalists
 
-Chosen to cover the child at risk, pets, the older person, outdoors and security, lost and found, and two cases that show the camera as a source of information (C3 and V2).
+Chosen to cover the child at risk, pets, the older person, security, lost and found, and the cases that show the camera as a source of information (C3, V2, T1 and T2). The two home-timeline cases, T1 (24 points) and T2 (22), took the places of the parcel at the door (E5, 19) and the person in the garden at night (E2, 18). Outdoors and security are represented by T2.
 
 | # | Case | Catalogue | Impact | Novelty | Feasibility | Demo | Criteria | Privacy (risk) | Total |
 |---|---|---|---|---|---|---|---|---|---|
@@ -653,9 +683,9 @@ Chosen to cover the child at risk, pets, the older person, outdoors and security
 | 5 | "Where is the wallet?" | V2 | 3 | 4 | 5 | 5 | 5 | 2 | 26 |
 | 6 | The child in danger: detergent, knife, stove | S2 + S5 | 5 | 5 | 3 | 4 | 5 | 4 | 24 |
 | 7 | The hob on and nobody in the kitchen | S3 | 5 | 3 | 4 | 3 | 5 | 2 | 24 |
-| 8 | The cat has not been to its bowl | C1 | 3 | 3 | 5 | 3 | 4 | 1 | 23 |
-| 9 | Parcel at the door | E5 | 2 | 3 | 3 | 4 | 4 | 3 | 19 |
-| 10 | A person in the garden at night | E2 | 4 | 2 | 3 | 4 | 3 | 4 | 18 |
+| 8 | Too late: what was near the child | T1 | 4 | 5 | 4 | 4 | 5 | 4 | 24 |
+| 9 | The cat has not been to its bowl | C1 | 3 | 3 | 5 | 3 | 4 | 1 | 23 |
+| 10 | What happened at 4 a.m.? | T2 | 4 | 5 | 3 | 4 | 4 | 4 | 22 |
 
 ### 5.3 The reason for each score
 
@@ -722,6 +752,15 @@ Chosen to cover the child at risk, pets, the older person, outdoors and security
 - Criteria 5: shows a real MCP action: switching the plug off, the only write already tested.
 - Privacy (risk) 2: detects "a person", with no photos.
 
+#### T1. Too late: what was near the child – 24
+
+- Impact 4: in an emergency, knowing what and when helps the doctor; fortunately it is rare.
+- Novelty 5: the home's memory answers "what happened?" with images, not only with alerts.
+- Feasibility 4: kit only; the timeline exists; tying the child and the object into one event with a crop is missing.
+- Demo 4: filmed as the epilogue of the child-in-danger scene.
+- Criteria 5: completes the report's case and uses the language model to answer a question.
+- Privacy (risk) 4: keeps crops of a child for days; only with the parents' consent and a time limit.
+
 #### C1. The cat has not been to its bowl – 23
 
 - Impact 3: a pet that stops eating or drinking may be ill, and the alert comes the same day.
@@ -731,51 +770,43 @@ Chosen to cover the child at risk, pets, the older person, outdoors and security
 - Criteria 4: asked for by the mentors; kit only.
 - Privacy (risk) 1: no person.
 
-#### E5. Parcel at the door – 19
+#### T2. What happened at 4 a.m.? – 22
 
-- Impact 2: convenience: a parcel is not forgotten at the door.
-- Novelty 3: useful, but not very surprising.
-- Feasibility 3: needs the outdoor camera, the only extra device; the "appears" rule is missing.
-- Demo 4: staged with a box and a doormat, and the kit light turns blue.
-- Criteria 4: asked for by the mentors and mentioned in the report.
-- Privacy (risk) 3: the outdoor camera may catch the street and the courier; the alert shows only the parcel.
-
-#### E2. A person in the garden at night – 18
-
-- Impact 4: safety and peace of mind at night.
-- Novelty 2: it is what security cameras usually do already.
-- Feasibility 3: with the outdoor camera, the alert only; floodlights would be a second device.
-- Demo 4: a night scene films well.
-- Criteria 3: security is already part of Altice's offer, and the outdoor rules differ by country.
-- Privacy (risk) 4: films outdoors, sends a photo of a person and is limited by Article 19 of Lei n.º 58/2019.
+- Impact 4: after a burglary, the family and the neighbours know where to look.
+- Novelty 5: the unusual (the dog barking at 4 a.m.) becomes information; it comes from a real story.
+- Feasibility 3: the timeline exists; the bark and "unusual" need new models (future), and the window needs the outdoor camera.
+- Demo 4: a night-time timeline films well, and the real story is quick to tell.
+- Criteria 4: security is already in Altice's offer, but the timeline is new; sound raises a legal question.
+- Privacy (risk) 4: sound, an outdoor camera and images of people; for sound only the label is kept.
 
 ### 5.4 The 5 for the pitch and the video
 
 | Order | Case | Role in the story |
 |---|---|---|
-| 1 | The child in danger (S2 + S5) | Opens with fear, and with the new idea: a vague sentence the language model turns into rules |
+| 1 | The child in danger (S2 + S5), with the "too late" epilogue (T1) | Opens with fear and with the new idea, a vague sentence the language model turns into rules; the epilogue shows the home's memory |
 | 2 | Knife on the counter and the cat (S1) | Pets; the mentors' own example |
 | 3 | Nobody in the kitchen by midday (C2) | Care for someone who lives alone; works today |
-| 4 | Parcel at the door (E5) | Outdoors, and a light moment: good news, with the light turning blue |
+| 4 | What happened at 4 a.m.? (T2) | Night and security, told through a true story |
 | 5 | Live: leaving without the book, and "where is the book?" (V1 and V2) | The proof: the yellow book, the kit's door sensor and the light turning red |
 
 Why, together, they tell the best story:
-- Variety: a child, a pet, an older person, outdoors and everyday things; three scenes indoors, one outdoors and one live.
-- Emotional arc: it starts with fear (the child), moves through tenderness (the cat, the grandmother), eases with good news (the parcel) and ends with proof that it works.
-- One thread: in every scene the camera sees something and the home understands what it means; four of the five need only the kit, and two already work in the prototype (C2 and V1).
+- Variety: a child, a pet, an older person, security at night and everyday things; alerts in the moment and the home's memory afterwards.
+- Emotional arc: it starts with fear (the child), moves through tenderness (the cat, the grandmother) and the unease of the night (the dog that barked at 4 a.m.), and ends with proof that it works.
+- One thread: in every scene the camera sees something and the home understands what it means and remembers it; four of the five scenes need only the kit (T2 uses the outdoor camera for the window), and two already work in the prototype (C2 and V1).
 - The live demo closes: after four cases on video, the jury sees the real kit working.
-- Left out are well-scored cases that would repeat a theme: C3 (pills) repeats the older person, S3 (hob) repeats the kitchen, and V2 is folded into the live demo. E2 (a person in the garden at night) is the alternative to the parcel if the team wants a security moment, at the cost of more privacy risk.
+- Left out are well-scored cases that would repeat a theme: C3 (pills) repeats the older person and S3 (hob) repeats the kitchen; T1 and V2 come in as epilogues. The parcel at the door (E5), which left the 10, can come back as a light moment if the team prefers to end the video part with good news.
 
 One storyboard line per scene (the on-screen text stays in Portuguese):
-1. Child in danger: first, the sentence "avisa-me se a criança estiver em perigo" and the three rules the model wrote (detergent, knife, stove); then, in the kitchen, the child (box "criança") reaches for a detergent pod (box "detergente") and the boxes turn red; on the phone: "A criança está junto a um detergente. Cozinha, 16h30." (The child is next to a detergent. Kitchen, 16:30), with the photo and the buttons "Ligar alarme" (turn the alarm on) and "Tudo bem" (all fine).
+1. Child in danger: first, the sentence "avisa-me se a criança estiver em perigo" and the three rules the model wrote (detergent, knife, stove); then, in the kitchen, the child (box "criança") reaches for a detergent pod (box "detergente") and the boxes turn red; on the phone: "A criança está junto a um detergente. Cozinha, 16h30." (The child is next to a detergent. Kitchen, 16:30), with the photo and the buttons "Ligar alarme" (turn the alarm on) and "Tudo bem" (all fine). Epilogue (T1): the mother asks "o que esteve perto dela esta tarde?" (what was near her this afternoon?) and sees the sequence, each step with its crop: "16h28, junto a um detergente; 16h29, junto a um copo" (16:28, next to a detergent; 16:29, next to a glass).
 2. Knife and cat: the kitchen camera, from above, sees a knife on the counter (box "faca"); the cat jumps up (box "gato") and, 3 seconds later, the boxes and the light turn red; on the phone: "Há uma faca na bancada e o gato está perto." (There is a knife on the counter and the cat is close.)
 3. Grandmother: the empty kitchen and a timeline from 07:00 to 12:00 with no "pessoa" box; at midday the clock turns red; on the daughter's phone: "Ninguém passou na cozinha desde as 7h." (Nobody has been in the kitchen since 7:00.)
-4. Parcel: the doormat and a cardboard box (box "encomenda"); inside, the light turns blue; on the phone: "Deixaram uma encomenda à porta às 11h20." (A parcel was left at the door at 11:20), with a crop of the parcel.
+4. What happened at 4 a.m.: at night the family asks "o que aconteceu esta noite?" (what happened tonight?); the timeline shows two unusual events, "4h02, sala: o cão ladrou, o que nunca faz a esta hora" (4:02, living room: the dog barked, which it never does at this time; the label only, no sound recorded) and "4h05, traseiras: uma pessoa junto à janela" (4:05, back of the house: a person at the window; box "pessoa", with the crop); the family pins both to keep them.
 5. Live, with the kit camera: the yellow book on the table (box "livro", recognised with a similarity of 0.70); the door opens (the kit sensor) and the light turns red; on the phone: "Saíste sem o livro. Está na mesa." (You left without the book. It is on the table); finally, the question "onde está o livro?" (where is the book?) and the answer with the photo.
 
 Before filming:
 - The report's Figure 1 shows the alert "A criança pôs um detergente na boca." (The child put a detergent in its mouth.) Today the camera can only say "next to"; "in the hand" or "in the mouth" needs a pose model (future). For the video, "junto a um detergente" (next to a detergent) is proposed, or a "conceito" caption.
 - The child appears as an illustration, or in a staged scene with the parents' agreement.
+- In T2, recognising the bark and "unusual" is future: in the video the scene is a concept. The true story is told without names.
 - The light turning red live needs the prototype's real actions switched on, with the team's approval, and the light connected to the platform (on 16 November it had not reported since 4 November; to confirm). Without that, the app shows the simulated MCP call.
 - The prototype waits 60 seconds after the door opens; in a 3-minute demo that wait should be shorter, and it is a parameter of the rule.
 
@@ -801,5 +832,7 @@ Before filming:
 10. Sound outdoors: whether the ban in Article 19(4) of Lei n.º 58/2019 applies to a home is to verify; until then, outdoor cameras use motion only as the trigger.
 11. Licence plates: opt-in, a DPIA and legal advice before any pilot.
 12. Devices from the IoT ideas proposed within the team (floodlights, blinds, sprinkler, pet door, garage door motor, thermostat, outdoor speaker): which ones the platform supports, and whether the MCP write tool is enough to drive them, is unknown.
+13. Timeline retention: 30 days by default and longer for pinned events is a proposal, and the maximum is still to be set.
+14. Sharing timeline images with neighbours or the authorities: to verify.
 
 Sources: Aveiro Tech City Hackathon 2026 participation rules, Articles 16 and 18; Lei n.º 58/2019, Article 19 (Diário da República, 1st series, no. 151, 8 August 2019); Regulation (EU) 2016/679 (GDPR), Article 2(2)(c); Court of Justice of the EU, Ryneš, C-212/13, 11 December 2014; European Data Protection Board, Guidelines 3/2019 on processing of personal data through video devices, version 2.0, 29 January 2020 (paras. 8, 12 and 13, section 7.1); the legal sources were read on 18 November 2026; INE, Census 2021, table Q1.04 (age bands summed by the team, see `docs/12-market-research.md`); Eurostat, `hlth_dhc140` (2025, read on 18 November 2026, see `docs/12-market-research.md`); Altice Labs' Connected Home product page (see `docs/02-challenge.md`); business case (`docs/16-business-case.md`); team measurements, 18 November 2026.

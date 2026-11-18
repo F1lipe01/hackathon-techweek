@@ -21,7 +21,7 @@ Três termos usados em todo o documento:
 
 ## 1. Catálogo, por ordem de prioridade
 
-Dentro de casa, primeiro a segurança, depois o cuidado e, por fim, a conveniência. Os casos no exterior (E1 a E9) têm uma secção própria, também ordenada por prioridade.
+Dentro de casa, primeiro a segurança, depois o cuidado e, por fim, a conveniência. Os casos no exterior (E1 a E9) têm uma secção própria, também ordenada por prioridade, e os dois casos da linha do tempo da casa (T1 e T2) vêm a seguir.
 
 | # | Caso | Lugar | Dispositivos | Viabilidade |
 |---|---|---|---|---|
@@ -57,8 +57,10 @@ Dentro de casa, primeiro a segurança, depois o cuidado e, por fim, a conveniên
 | E7 | Coisas deixadas lá fora: bicicleta, mangueira, caixote do lixo | Jardim | Outro IoT | Pequena extensão |
 | E8 | Animais no jardim: rega durante 5 s | Jardim | Outro IoT | Pequena extensão |
 | E9 | O cão à porta das traseiras: abrir a portinhola | Traseiras | Outro IoT | Futuro |
+| T1 | Chegar tarde demais: o que esteve perto da criança, e quando | Cozinha | Kit | Pequena extensão; “comeu ou bebeu” é futuro |
+| T2 | O que aconteceu às 4h? | Todos, exterior | Kit; outro IoT opcional (câmara exterior) | Pequena extensão; o latido e o “invulgar” são futuro |
 
-Dos 32 casos, 22 funcionam só com dispositivos do kit, e os 9 do exterior precisam de uma câmara exterior (outro IoT). Sete já funcionam no protótipo, 20 exigem uma pequena extensão (S7 já funciona em parte) e 5 ficam para o futuro.
+Dos 34 casos, 24 funcionam só com dispositivos do kit, e os 9 do exterior precisam de uma câmara exterior (outro IoT). Sete já funcionam no protótipo, 22 exigem uma pequena extensão (S7 já funciona em parte) e 5 ficam para o futuro.
 
 ### Segurança
 
@@ -391,6 +393,31 @@ Os casos seguintes precisam de uma câmara no exterior (outro IoT): à porta, no
 - Viabilidade: futuro. Reconhecer um animal concreto, e não “um cão”, pela assinatura visual não foi testado e teria de ser muito fiável, porque abre uma passagem para dentro de casa.
 - Limites: outro cão parecido, ou um animal selvagem, poderia entrar; as portinholas com leitor de microchip já resolvem este problema sem câmara, e a câmara pode limitar-se a avisar (“o cão entrou às 15h”).
 
+### Linha do tempo da casa
+
+A memória que encontra as coisas (o lugar, a hora e o recorte de cada observação) também conta o que aconteceu. Os dois casos seguintes, propostos por uma pessoa da equipa, não disparam um aviso: respondem a uma pergunta feita depois, com uma lista de acontecimentos, cada um com o tipo, a hora, o lugar e uma imagem, guardados durante um prazo limitado e depois apagados (proposta na secção 2.5).
+
+#### T1. Chegar tarde demais: o que esteve perto da criança, e quando
+
+- Pergunta: “O que é que esteve perto da criança esta tarde?” ou, depois de um aviso do caso da criança em perigo: “Mostra-me o que aconteceu na cozinha entre as 16h e as 16h30.”
+- A câmara procura: o mesmo que no caso da criança em perigo (S2 e S5): a criança perto de um detergente, de um medicamento, de comida ou de uma bebida, na Cozinha 1. Cada acontecimento guarda o tipo, a hora, o lugar e um recorte.
+- Regra: nenhuma nova; uma consulta à linha do tempo, por exemplo `timeline(criança, Cozinha 1, 16:00–16:30)`, que o modelo de linguagem resume em linguagem corrente.
+- Dispositivos: câmara (kit).
+- Ação: a aplicação mostra a sequência com os recortes (“16h28, junto a um detergente; 16h29, junto a um copo”), para os pais decidirem o que contar ao médico.
+- Viabilidade: pequena extensão. O protótipo já guarda, para cada _thing_, o lugar, a hora e um recorte, e guarda a presença da criança sem imagem; falta o acontecimento “perto de” com recorte, o mesmo de S2 e S5. Saber se a criança comeu ou bebeu exige um modelo de ações, que é futuro: a aplicação mostra o que esteve perto, e são os pais que avaliam.
+- Limites: “perto” não é “comeu”; o que acontece fora do campo da câmara não aparece; guardar recortes de uma criança aumenta o risco de privacidade, por isso só com o consentimento dos pais e com o prazo da secção 2.5.
+
+#### T2. O que aconteceu às 4h?
+
+- Pergunta: “O que aconteceu esta noite entre as 3h e as 5h?”, depois de um alarme em casa ou de um assalto na vizinhança.
+- A câmara procura: acontecimentos invulgares para aquela casa: o cão a ladrar a uma hora em que nunca ladra, uma pessoa junto a uma janela (`"a person"`, na câmara exterior), uma porta aberta (sensor de contacto). Cada acontecimento guarda o tipo, a hora, o lugar e uma imagem; do som, guarda-se só a etiqueta (“latido, 4h02”), nunca o áudio (proposta).
+- Regra: uma consulta, por exemplo `timeline(casa, 03:00–05:00, só invulgares)`, em que “invulgar” se mede contra o padrão da própria casa.
+- Dispositivos: câmara (kit), cujo microfone serve de gatilho; sensor de contacto (kit); central de segurança (kit), cujo histórico de alarmes o MCP já lê (`get_home_security_alarm_history`); câmara exterior (outro IoT), para a janela.
+- Ação: a aplicação mostra a lista com as imagens; a família pode fixar acontecimentos, para os guardar mais tempo, e exportá-los.
+- Viabilidade: a linha do tempo do protótipo já guarda pessoas e animais com o lugar e a hora, sem imagem; juntar imagens aos acontecimentos de segurança e a vista “só invulgares” são pequenas extensões. Reconhecer um latido pelo som exige um modelo de áudio, e saber o que é invulgar exige aprender o padrão da casa (como a hora habitual de C2): futuro. Hoje, o protótipo não trata som.
+- Limites: o som levanta uma questão jurídica, porque o artigo 19.º, n.º 4, da Lei n.º 58/2019 proíbe a captação de som onde a videovigilância é admitida, salvo com as instalações encerradas ou com autorização prévia da CNPD; a aplicação a uma casa particular fica a verificar (secção 2.6). A câmara exterior segue as regras da secção 2.6. Entregar imagens a um vizinho ou às autoridades: a verificar. Num cão que ladra muito, quase tudo é invulgar, e a lista só ajuda se for curta.
+- A história que deu origem ao caso: a vizinha de uma pessoa da equipa foi assaltada; o cão dessa pessoa ladrou às 4h, e foi essa hora que ajudou a vizinha a procurar nas gravações da sua própria câmara.
+
 ### Ideias de IoT propostas na equipa: onde ficam
 
 Nove ideias propostas na equipa juntam a câmara a outros dispositivos. A tabela indica o caso do catálogo onde cada uma fica, o que a arquitetura já tem e o que falta. Três exigem modelos além do _OWLv2_ e do _DINOv2_ (pose, matrículas e gestos) e ficam como futuro; o fumo e a chama também, até haver um modelo treinado e medido.
@@ -425,7 +452,7 @@ Todos estes dispositivos teriam de existir na plataforma da Altice. A ferramenta
 ### 2.1 Quantas
 
 Preveem-se duas ou três câmaras dentro de casa e, numa moradia, uma ou duas no exterior (pressuposto da equipa):
-- uma na cozinha, onde se concentram 10 dos 32 casos (S1 a S5, S10, C1, C2, C3 e C5);
+- uma na cozinha, onde se concentram 11 dos 34 casos (S1 a S5, S10, C1, C2, C3, C5 e T1);
 - uma na sala ou na entrada, para a presença, os objetos e as saídas;
 - numa moradia, uma à porta ou no portão (encomendas, carro, intrusão) e, havendo jardim, uma no jardim ou nas traseiras;
 - num apartamento, nenhuma no exterior: a porta dá para o patamar, que é parte comum do prédio e não do domínio exclusivo do cliente (secção 2.6).
@@ -439,10 +466,10 @@ Três factos condicionam o número de câmaras:
 
 ### 2.2 Interior e exterior
 
-| | Interior | Exterior, à porta |
+| Aspeto | Interior | Exterior, à porta |
 |---|---|---|
 | Para que serve | Segurança na cozinha, cuidado, objetos, presença | Intrusão, pessoas à noite, encomendas, o carro, o que fica lá fora |
-| Casos | S1 a S10, C1 a C7, V1 a V6 | E1 a E9 |
+| Casos | S1 a S10, C1 a C7, V1 a V6, T1, T2 | E1 a E9, parte de T2 |
 | Cuidados | Fora de quartos e casas de banho | Só a propriedade e, no estritamente necessário, os acessos ao imóvel; nem a rua nem os vizinhos; aviso afixado (a verificar); só o movimento como gatilho, sem som (secção 2.6) |
 | Equipamento | Câmara do kit | Câmara exterior (outro IoT), ou a do kit numa entrada coberta, se a Altice o confirmar |
 
@@ -457,13 +484,13 @@ Três factos condicionam o número de câmaras:
 
 | Lugar | Casos | Dispositivos que acrescentam valor |
 |---|---|---|
-| Cozinha | S1, S2, S3, S4, S5, S10, C1, C2, C3, C5, V6 | Detetor de fumo e tomada (kit); placa ou forno conectados, sensor de inundação, eletroválvula, coluna inteligente (outro IoT) |
+| Cozinha | S1, S2, S3, S4, S5, S10, C1, C2, C3, C5, V6, T1 | Detetor de fumo e tomada (kit); placa ou forno conectados, sensor de inundação, eletroválvula, coluna inteligente (outro IoT) |
 | Sala | S5, S6, S7, C3, C4, C5, V2, V3, V4, V5, V6 | Sensor de temperatura, tomada e lâmpada (kit); sensores de contacto nas janelas, termóstato (outro IoT) |
 | Entrada, por dentro | S7, S8, C6, C7, V1, V2 | Sensor de contacto da porta e lâmpada (kit); fechadura inteligente (outro IoT) |
 | Exterior, à porta | E1, E4, E5 | Lâmpada (kit); sensor na caixa do correio, coluna dentro de casa (outro IoT) |
 | Jardim e portão | E2, E3, E4, E7, E8 | Holofotes, estores, coluna exterior, sensor no portão, rega (outro IoT) |
 | Entrada da garagem | E6 | Motor do portão da garagem (outro IoT) |
-| Traseiras | E1, E9 | Sensor de contacto (kit); portinhola com fecho elétrico (outro IoT) |
+| Traseiras | E1, E9, T2 | Sensor de contacto (kit); portinhola com fecho elétrico (outro IoT) |
 
 ### 2.5 Regras de privacidade
 
@@ -473,6 +500,7 @@ Três factos condicionam o número de câmaras:
 - As pessoas são detetadas como “uma pessoa” ou “uma criança”, sem identificação. O reconhecimento dos familiares é opcional, ativado pessoa a pessoa, com consentimento, e feito no equipamento de casa.
 - O cliente pode marcar máscaras: zonas da imagem que nunca são analisadas.
 - O _ThingTracker_ não grava vídeo; as observações ficam 30 dias no equipamento de casa.
+- Prazo de conservação dos acontecimentos da linha do tempo (proposta): 30 dias por omissão, e depois são apagados; os que a família fixar, por exemplo os de um alarme, ficam mais tempo, até a família os apagar ou até um prazo máximo por definir. Do som, guarda-se só a etiqueta (“latido, 4h02”), nunca o áudio. O registo das ações executadas na casa, previsto na arquitetura, fica 90 dias.
 - Só os casos de segurança com pessoas (S7, E1, E2 e E4) enviam a fotografia de uma pessoa. Os outros enviam o recorte de um objeto ou nenhuma imagem (C6, por exemplo, nunca envia fotografia).
 
 ### 2.6 Câmaras exteriores em Portugal: privacidade e lei
@@ -481,7 +509,7 @@ Esta secção não é um parecer jurídico: resume as fontes primárias verifica
 
 - O que a câmara pode filmar. A Lei n.º 58/2019, que executa o RGPD em Portugal, diz no artigo 19.º, n.º 2, alínea a), que as câmaras não podem incidir sobre “vias públicas, propriedades limítrofes ou outros locais que não sejam do domínio exclusivo do responsável, exceto no que seja estritamente necessário para cobrir os acessos ao imóvel” (Diário da República, 1.ª série, n.º 151, de 8 de agosto de 2019).
 - Quando se aplica o RGPD. Uma câmara que filma só o jardim vedado da própria casa fica, em princípio, abrangida pela isenção doméstica do artigo 2.º, n.º 2, alínea c), do RGPD; deixa de ficar se se estender, ainda que em parte, ao espaço público ou à propriedade do vizinho (Comité Europeu para a Proteção de Dados, Diretrizes 3/2019, versão 2.0, n.os 12 e 13; Tribunal de Justiça da UE, acórdão Ryneš, C-212/13, de 11 de dezembro de 2014).
-- Som. O mesmo artigo 19.º, no n.º 4, proíbe a captação de som onde a videovigilância é admitida, salvo com as instalações encerradas ou com autorização prévia da CNPD. Como a solução usa o som como gatilho da análise, as câmaras exteriores passam a usar só o movimento; falta verificar se a regra se aplica a uma casa particular.
+- Som. O mesmo artigo 19.º, no n.º 4, proíbe a captação de som onde a videovigilância é admitida, salvo com as instalações encerradas ou com autorização prévia da CNPD. Como a solução usa o som como gatilho da análise, as câmaras exteriores passam a usar só o movimento; falta verificar se a regra se aplica a uma casa particular. Pela mesma razão, o caso T2 guarda só a etiqueta do som, e nunca o áudio.
 - Aviso. O artigo 19.º, n.º 1, remete para os requisitos do artigo 31.º da Lei n.º 34/2013, que, segundo fontes secundárias, incluem um aviso afixado em local visível; a redação atual desse artigo e a sua aplicação a uma casa particular estão por verificar. Quando o RGPD se aplica, as Diretrizes 3/2019 (secção 7.1) põem o sinal de aviso como primeiro nível de informação.
 - Matrículas e rostos. Uma matrícula é um dado pessoal (Diretrizes 3/2019, n.º 8). Ler matrículas ou reconhecer rostos só por opção explícita do cliente, depois de uma avaliação jurídica e de uma avaliação de impacto (AIPD).
 - Orientação da CNPD para câmaras domésticas: a verificar.
@@ -500,11 +528,11 @@ Critérios e ponderações dos artigos 16.º e 18.º das Normas de Participaçã
 | Critério | Intermédia | Final | Como o _ThingTracker_ responde | Onde está a prova |
 |---|---|---|---|---|
 | Enquadramento e resposta ao Desafio | 25 % | 20 % | A câmara passa a ser uma fonte de informação; uma frase torna-se um sensor, “para além dos comandos”; os casos combinam a câmara com os sensores do kit; o MCP está integrado (lê a porta e atua na tomada e na luz); os casos de segurança na cozinha respondem ao pedido dos mentores | Protótipo (`prototype/`); relatório (Figura 1 e lista de casos); vídeo (`video/`, em curso); este documento |
-| Facilidade de adoção do Projeto por parte dos Desafiadores | 25 % | 20 % | Um quinto separador na aplicação existente; as ações seguem pelo MCP que a Altice já tem; as regras ficam guardadas como cenários da plataforma; 22 dos 32 casos usam só dispositivos do kit, e os 9 do exterior acrescentam uma câmara exterior | Arquitetura (`docs/pt/14-arquitetura.md`, §3 e D5); especificação de integração (`docs/pt/15-especificacao-integracao.md`); réplica da aplicação no protótipo |
-| Viabilidade de implementação e gestão futura (sustentabilidade) do Projeto | 25 % | 20 % | Modelos _open-source_ de uso comercial livre; visão só quando há movimento, no _router_ ou em servidores da Altice; o modelo de linguagem só é chamado ao criar uma regra ou responder a uma pergunta; cerca de 0,43 € por casa e por mês em modelo de linguagem e 0,49 € em visão (estimativa do relatório); 7 casos já funcionam e 20 são pequenas extensões | Relatório (“Ferramentas de IA”); arquitetura (§8); viabilidade de negócio (`docs/pt/16-viabilidade-negocio.md`) |
-| Possibilidade de replicação em outros territórios e contextos | — | 20 % | Serviço de plataforma para qualquer operador; nenhum dado é específico de Portugal; o modelo de linguagem fala a língua do utilizador; a França é o segundo mercado analisado; as regras das câmaras exteriores mudam de país para país e teriam de ser revistas em cada um | Viabilidade de negócio (secção sobre França); arquitetura (requisito N5) |
+| Facilidade de adoção do Projeto por parte dos Desafiadores | 25 % | 20 % | Um quinto separador na aplicação existente; as ações seguem pelo MCP que a Altice já tem; as regras ficam guardadas como cenários da plataforma; 24 dos 34 casos usam só dispositivos do kit, e os 9 do exterior acrescentam uma câmara exterior | Arquitetura (`docs/pt/14-arquitetura.md`, §3 e D5); especificação de integração (`docs/pt/15-especificacao-integracao.md`); réplica da aplicação no protótipo |
+| Viabilidade de implementação e gestão futura (sustentabilidade) do Projeto | 25 % | 20 % | Modelos _open-source_ de uso comercial livre; visão só quando há movimento, no _router_ ou em servidores da Altice; o modelo de linguagem só é chamado ao criar uma regra ou responder a uma pergunta; cerca de 0,43 € por casa e por mês em modelo de linguagem e 0,49 € em visão (estimativa do relatório); 7 casos já funcionam e 22 são pequenas extensões | Relatório (“Ferramentas de IA”); arquitetura (§8); viabilidade de negócio (`docs/pt/16-viabilidade-negocio.md`) |
+| Possibilidade de replicação em outros territórios e contextos | — (não avaliado nesta fase) | 20 % | Serviço de plataforma para qualquer operador; nenhum dado é específico de Portugal; o modelo de linguagem fala a língua do utilizador; a França é o segundo mercado analisado; as regras das câmaras exteriores mudam de país para país e teriam de ser revistas em cada um | Viabilidade de negócio (secção sobre França); arquitetura (requisito N5) |
 | Apresentação da solução | 25 % | 10 % | Demonstração ao vivo com a câmara do kit e o livro; vídeo com o caso da faca e do gato (ilustração); casos explicados numa frase; cinco casos para o _pitch_ e o vídeo, um deles ao vivo (secção 5) | Vídeo; protótipo; _pitch_ |
-| Documentação (Entregáveis) da solução | — | 10 % | Relatório de duas páginas; arquitetura, especificação de integração, viabilidade de negócio e casos de uso, em português e em inglês | `deliverables/`, `docs/pt/`, `docs/` |
+| Documentação (Entregáveis) da solução | — (não avaliado nesta fase) | 10 % | Relatório de duas páginas; arquitetura, especificação de integração, viabilidade de negócio e casos de uso, em português e em inglês | `deliverables/`, `docs/pt/`, `docs/` |
 
 ### 3.2 Matriz
 
@@ -513,7 +541,7 @@ Autoavaliação da equipa, para discussão. Escala de cada critério:
 - Adoção: forte se bastar o kit; médio se exigir mais unidades do kit ou um dispositivo que a Altice já refere na sua oferta; fraco se exigir um tipo de dispositivo novo na plataforma.
 - Viabilidade: forte se já funcionar no protótipo; médio se for uma pequena extensão; fraco se for futuro.
 - Replicação: forte se não depender do país nem da casa; médio se depender de regras locais ou de um dispositivo de terceiros.
-- Apresentação: forte se puder ser mostrado ao vivo ou no vídeo, ou se fizer parte dos 8 casos da secção 4; médio se só for descrito.
+- Apresentação: forte se puder ser mostrado ao vivo ou no vídeo, ou se fizer parte dos casos para a apresentação (secções 4 e 5); médio se só for descrito.
 - Documentação: forte se constar também do relatório ou da arquitetura; médio se constar só deste documento.
 
 | Caso | Enquadramento | Adoção | Viabilidade | Replicação | Apresentação | Documentação |
@@ -550,6 +578,8 @@ Autoavaliação da equipa, para discussão. Escala de cada critério:
 | E7 Coisas lá fora | forte | médio | médio | médio | médio | médio |
 | E8 Rega no jardim | médio | fraco | médio | médio | médio | médio |
 | E9 Portinhola | médio | fraco | fraco | médio | médio | médio |
+| T1 Chegar tarde demais | forte | forte | médio | forte | forte | médio |
+| T2 O que aconteceu às 4h | forte | forte | médio | médio | forte | médio |
 
 Na Documentação, “forte” segue o relatório, que refere S1, S3, C1, C2, C6, C7, V1, V2 e E5, e a arquitetura.
 
@@ -642,7 +672,7 @@ O total máximo é 30. É uma autoavaliação da equipa, para discussão.
 
 ### 5.2 Os 10 finalistas
 
-Escolhidos para cobrir a criança em risco, os animais, a pessoa idosa, o exterior e a segurança, os perdidos e achados e dois casos que mostram a câmara como fonte de informação (C3 e V2).
+Escolhidos para cobrir a criança em risco, os animais, a pessoa idosa, a segurança, os perdidos e achados e os casos que mostram a câmara como fonte de informação (C3, V2, T1 e T2). Os dois casos da linha do tempo da casa, T1 (24 pontos) e T2 (22), entraram para o lugar da encomenda à porta (E5, 19) e da pessoa no jardim à noite (E2, 18). O exterior e a segurança ficam representados por T2.
 
 | # | Caso | Catálogo | Impacto | Novidade | Viabilidade | Demonstração | Critérios | Privacidade (risco) | Total |
 |---|---|---|---|---|---|---|---|---|---|
@@ -653,9 +683,9 @@ Escolhidos para cobrir a criança em risco, os animais, a pessoa idosa, o exteri
 | 5 | “Onde está a carteira?” | V2 | 3 | 4 | 5 | 5 | 5 | 2 | 26 |
 | 6 | A criança em perigo: detergente, faca, fogão | S2 + S5 | 5 | 5 | 3 | 4 | 5 | 4 | 24 |
 | 7 | A placa ligada e ninguém na cozinha | S3 | 5 | 3 | 4 | 3 | 5 | 2 | 24 |
-| 8 | O gato não foi à taça | C1 | 3 | 3 | 5 | 3 | 4 | 1 | 23 |
-| 9 | Encomenda à porta | E5 | 2 | 3 | 3 | 4 | 4 | 3 | 19 |
-| 10 | Pessoa no jardim à noite | E2 | 4 | 2 | 3 | 4 | 3 | 4 | 18 |
+| 8 | Chegar tarde demais: o que esteve perto da criança | T1 | 4 | 5 | 4 | 4 | 5 | 4 | 24 |
+| 9 | O gato não foi à taça | C1 | 3 | 3 | 5 | 3 | 4 | 1 | 23 |
+| 10 | O que aconteceu às 4h? | T2 | 4 | 5 | 3 | 4 | 4 | 4 | 22 |
 
 ### 5.3 A razão de cada nota
 
@@ -722,6 +752,15 @@ Escolhidos para cobrir a criança em risco, os animais, a pessoa idosa, o exteri
 - Critérios 5: mostra uma ação real pelo MCP: desligar a tomada, a única escrita já testada.
 - Privacidade (risco) 2: deteta “uma pessoa”, sem fotografias.
 
+#### T1. Chegar tarde demais: o que esteve perto da criança – 24
+
+- Impacto 4: numa urgência, saber o quê e a que horas ajuda o médico; felizmente, é raro.
+- Novidade 5: a memória da casa responde a “o que aconteceu?” com imagens, e não só com avisos.
+- Viabilidade 4: só o kit; a linha do tempo existe; falta juntar a criança e o objeto num acontecimento com recorte.
+- Demonstração 4: filma-se como epílogo da cena da criança em perigo.
+- Critérios 5: completa o caso do relatório e usa o modelo de linguagem para responder a uma pergunta.
+- Privacidade (risco) 4: guarda recortes de uma criança durante dias; só com o consentimento dos pais e com prazo.
+
 #### C1. O gato não foi à taça – 23
 
 - Impacto 3: um animal que deixa de comer ou de beber pode estar doente, e o aviso chega no próprio dia.
@@ -731,51 +770,43 @@ Escolhidos para cobrir a criança em risco, os animais, a pessoa idosa, o exteri
 - Critérios 4: pedido dos mentores; só o kit.
 - Privacidade (risco) 1: nenhuma pessoa.
 
-#### E5. Encomenda à porta – 19
+#### T2. O que aconteceu às 4h? – 22
 
-- Impacto 2: conveniência: evita uma encomenda esquecida à porta.
-- Novidade 3: útil, mas pouco surpreendente.
-- Viabilidade 3: exige a câmara exterior, o único dispositivo a mais; falta a regra “aparece”.
-- Demonstração 4: encena-se com uma caixa e um tapete, e a lâmpada do kit fica azul.
-- Critérios 4: pedido dos mentores e referido no relatório.
-- Privacidade (risco) 3: a câmara exterior pode apanhar a rua e quem entrega; o aviso mostra só a encomenda.
-
-#### E2. Pessoa no jardim à noite – 18
-
-- Impacto 4: segurança e tranquilidade à noite.
-- Novidade 2: é o que as câmaras de segurança já costumam fazer.
-- Viabilidade 3: com a câmara exterior, só o aviso; os holofotes seriam um segundo dispositivo.
-- Demonstração 4: uma cena noturna filma-se bem.
-- Critérios 3: a segurança já faz parte da oferta da Altice, e as regras do exterior mudam de país para país.
-- Privacidade (risco) 4: filma o exterior, envia a fotografia de uma pessoa e está limitado pelo artigo 19.º da Lei n.º 58/2019.
+- Impacto 4: depois de um assalto, a família e os vizinhos sabem onde procurar.
+- Novidade 5: o invulgar (o cão a ladrar às 4h) passa a ser informação; nasce de uma história real.
+- Viabilidade 3: a linha do tempo existe; o latido e o “invulgar” exigem modelos novos (futuro), e a janela, a câmara exterior.
+- Demonstração 4: uma linha do tempo noturna filma-se bem, e a história real conta-se depressa.
+- Critérios 4: a segurança já está na oferta da Altice, mas a linha do tempo é nova; o som tem uma questão jurídica.
+- Privacidade (risco) 4: som, câmara exterior e imagens de pessoas; do som guarda-se só a etiqueta.
 
 ### 5.4 Os 5 para o _pitch_ e o vídeo
 
 | Ordem | Caso | Papel na história |
 |---|---|---|
-| 1 | A criança em perigo (S2 + S5) | Abre com o medo, e com a ideia nova: uma frase vaga que o modelo de linguagem transforma em regras |
+| 1 | A criança em perigo (S2 + S5), com o epílogo “chegar tarde demais” (T1) | Abre com o medo e com a ideia nova, uma frase vaga que o modelo de linguagem transforma em regras; o epílogo mostra a memória da casa |
 | 2 | Faca na bancada e o gato (S1) | Os animais; o caso que os mentores deram |
 | 3 | Ninguém na cozinha até ao meio-dia (C2) | O cuidado com quem vive só; funciona hoje |
-| 4 | Encomenda à porta (E5) | Lá fora, e um momento leve: uma boa notícia, com a lâmpada a ficar azul |
+| 4 | O que aconteceu às 4h? (T2) | A noite e a segurança, contadas com uma história verdadeira |
 | 5 | Ao vivo: sair sem o livro e “onde está o livro?” (V1 e V2) | A prova: o livro amarelo, o sensor da porta do kit e a lâmpada a ficar vermelha |
 
 Porque contam, juntos, a melhor história:
-- Variedade: uma criança, um animal, uma pessoa idosa, o exterior e os objetos do dia a dia; três cenas dentro de casa, uma lá fora e uma ao vivo.
-- Arco emocional: começa no medo (a criança), passa pela ternura (o gato, a avó), alivia com uma boa notícia (a encomenda) e acaba na prova de que funciona.
-- Um só fio: em todas, a câmara vê uma coisa e a casa percebe o que ela significa; quatro das cinco só precisam do kit, e duas já funcionam no protótipo (C2 e V1).
+- Variedade: uma criança, um animal, uma pessoa idosa, a segurança à noite e os objetos do dia a dia; os avisos no momento e a memória da casa depois.
+- Arco emocional: começa no medo (a criança), passa pela ternura (o gato, a avó), pela inquietação da noite (o cão que ladrou às 4h) e acaba na prova de que funciona.
+- Um só fio: em todas, a câmara vê uma coisa e a casa percebe o que ela significa e lembra-se dela; quatro das cinco cenas só precisam do kit (T2 usa a câmara exterior para a janela), e duas já funcionam no protótipo (C2 e V1).
 - A demonstração ao vivo fecha: depois de quatro casos em vídeo, o júri vê o kit real a funcionar.
-- Ficam de fora casos com boa nota que repetiriam um tema: C3 (comprimidos) repete a pessoa idosa, S3 (placa) repete a cozinha e V2 entra dentro da demonstração ao vivo. E2 (pessoa no jardim à noite) é a alternativa à encomenda, se a equipa quiser um momento de segurança, à custa de mais risco de privacidade.
+- Ficam de fora casos com boa nota que repetiriam um tema: C3 (comprimidos) repete a pessoa idosa e S3 (placa) repete a cozinha; T1 e V2 entram como epílogos. A encomenda à porta (E5), que saiu dos 10, pode voltar como momento leve, se a equipa preferir terminar a parte em vídeo com uma boa notícia.
 
 Uma linha de guião por cena:
-1. Criança em perigo: primeiro, a frase “avisa-me se a criança estiver em perigo” e as três regras que o modelo escreveu (detergente, faca, fogão); depois, na cozinha, a criança (caixa “criança”) estende a mão para uma cápsula de detergente (caixa “detergente”) e as caixas ficam vermelhas; no telemóvel: “A criança está junto a um detergente. Cozinha, 16h30.”, com a fotografia e os botões “Ligar alarme” e “Tudo bem”.
+1. Criança em perigo: primeiro, a frase “avisa-me se a criança estiver em perigo” e as três regras que o modelo escreveu (detergente, faca, fogão); depois, na cozinha, a criança (caixa “criança”) estende a mão para uma cápsula de detergente (caixa “detergente”) e as caixas ficam vermelhas; no telemóvel: “A criança está junto a um detergente. Cozinha, 16h30.”, com a fotografia e os botões “Ligar alarme” e “Tudo bem”. Epílogo (T1): a mãe pergunta “o que esteve perto dela esta tarde?” e vê a sequência, cada passo com o recorte: “16h28, junto a um detergente; 16h29, junto a um copo”.
 2. Faca e gato: a câmara da cozinha, do alto, vê uma faca na bancada (caixa “faca”); o gato salta (caixa “gato”) e, 3 segundos depois, as caixas e a lâmpada ficam vermelhas; no telemóvel: “Há uma faca na bancada e o gato está perto.”
 3. Avó: a cozinha vazia e uma linha do tempo das 7h às 12h sem nenhuma caixa “pessoa”; ao meio-dia, o relógio fica vermelho; no telemóvel da filha: “Ninguém passou na cozinha desde as 7h.”
-4. Encomenda: o tapete da porta e uma caixa de cartão (caixa “encomenda”); dentro de casa, a lâmpada fica azul; no telemóvel: “Deixaram uma encomenda à porta às 11h20.”, com o recorte da encomenda.
+4. O que aconteceu às 4h: de noite, a família pergunta “o que aconteceu esta noite?”; a linha do tempo mostra dois acontecimentos invulgares, “4h02, sala: o cão ladrou, o que nunca faz a esta hora” (só a etiqueta, sem som gravado) e “4h05, traseiras: uma pessoa junto à janela” (caixa “pessoa”, com o recorte); a família fixa os dois para os guardar.
 5. Ao vivo, com a câmara do kit: o livro amarelo na mesa (caixa “livro”, reconhecido com uma semelhança de 0,70); a porta abre (sensor do kit) e a lâmpada fica vermelha; no telemóvel: “Saíste sem o livro. Está na mesa.”; por fim, a pergunta “onde está o livro?” e a resposta com a fotografia.
 
 Antes de filmar:
 - A Figura 1 do relatório mostra o aviso “A criança pôs um detergente na boca.” Hoje, a câmara só consegue dizer “junto a”; “na mão” ou “na boca” exige um modelo de pose (futuro). Para o vídeo, propõe-se “junto a um detergente”, ou a legenda “conceito”.
 - A criança aparece em ilustração, ou numa encenação com o acordo dos pais.
+- Em T2, reconhecer o latido e o “invulgar” é futuro: no vídeo, a cena é conceito. A história verdadeira conta-se sem nomes.
 - A lâmpada a ficar vermelha ao vivo exige ligar as ações reais do protótipo, com a aprovação da equipa, e a lâmpada a comunicar com a plataforma (a 16 de novembro não comunicava desde 4 de novembro; a confirmar). Sem isso, a aplicação mostra a chamada MCP simulada.
 - O protótipo espera 60 segundos depois de a porta abrir; numa demonstração de 3 minutos, convém encurtar esse tempo, que é um parâmetro da regra.
 
@@ -801,5 +832,7 @@ Antes de filmar:
 10. Som no exterior: falta verificar se a proibição do artigo 19.º, n.º 4, da Lei n.º 58/2019 se aplica a uma casa; até lá, as câmaras exteriores usam só o movimento como gatilho.
 11. Matrículas: opção explícita do cliente, avaliação de impacto (AIPD) e parecer jurídico antes de qualquer piloto.
 12. Dispositivos das ideias propostas na equipa (holofotes, estores, rega, portinhola, motor do portão, termóstato, coluna exterior): falta saber quais a plataforma suporta e se a ferramenta de escrita do MCP chega para os comandar.
+13. Prazo de conservação da linha do tempo: 30 dias por omissão e mais tempo para os acontecimentos fixados é uma proposta, e o prazo máximo está por definir.
+14. Partilha de imagens da linha do tempo com vizinhos ou com as autoridades: a verificar.
 
 Fontes: Normas de Participação do Aveiro Tech City Hackathon 2026, artigos 16.º e 18.º; Lei n.º 58/2019, artigo 19.º (Diário da República, 1.ª série, n.º 151, 8 de agosto de 2019); Regulamento (UE) 2016/679 (RGPD), artigo 2.º, n.º 2, alínea c); Tribunal de Justiça da UE, acórdão Ryneš, C-212/13, 11 de dezembro de 2014; Comité Europeu para a Proteção de Dados, Diretrizes 3/2019 sobre o tratamento de dados pessoais através de dispositivos de vídeo, versão 2.0, 29 de janeiro de 2020 (n.os 8, 12 e 13, secção 7.1); as fontes jurídicas foram consultadas a 18 de novembro de 2026; INE, Censos 2021, quadro Q1.04 (soma das faixas etárias feita pela equipa, ver `docs/12-market-research.md`); Eurostat, `hlth_dhc140` (2025, consultado a 18 de novembro de 2026, ver `docs/12-market-research.md`); página do produto _Connected Home_ da Altice Labs (ver `docs/02-challenge.md`); viabilidade de negócio (`docs/pt/16-viabilidade-negocio.md`); medições da equipa, 18 de novembro de 2026.

@@ -1,7 +1,7 @@
 <title>ThingTracker Video 1 Storyboard</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap">
 <style>
 /* Layout: a review sheet. A rhythm strip of the whole cut, then acts of shot cards (frame left, script right), then the filming list. */
 :root{
@@ -59,9 +59,9 @@ section{margin-top:48px}
 
 /* decisions */
 .decs{display:grid;gap:10px}
-.dec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}
+.dec{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start}
 .dec p{color:var(--ink-2);font-size:14px;margin-top:2px}
-.seg-ctl{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.seg-ctl{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-start}
 .opt{font:500 14px/1.2 var(--sans);padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
 .opt[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .opt:focus-visible,.vbtn:focus-visible,textarea:focus-visible,.play:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
@@ -151,13 +151,35 @@ textarea{width:100%;min-height:64px;resize:vertical;font:15px/1.45 var(--sans);c
   .dec{grid-template-columns:minmax(0,1fr)} .seg-ctl{justify-content:flex-start}
   .seg{font-size:0}
 }
+
+/* v7 frames, after the study of ten Claude films: paper ground with a faint grid, the request beside its result,
+   one highlighter, real named things joined by wires. Always the film's bright look. */
+.paper{position:absolute;inset:0;background:#EFECE4;background-image:linear-gradient(rgba(60,50,30,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(60,50,30,.07) 1px,transparent 1px);background-size:22px 22px;color:#16130E;display:flex;align-items:center;justify-content:center;gap:4%;padding:5%}
+.serif{font-family:"Newsreader",Georgia,serif;font-weight:400;letter-spacing:-.01em}
+.req{background:#fff;border:1px solid rgba(0,0,0,.12);border-radius:14px 14px 4px 14px;padding:10px 14px;font:500 clamp(10px,1.3vw,15px)/1.3 var(--sans);color:#16130E;max-width:42%;box-shadow:0 6px 18px -10px rgba(0,0,0,.35)}
+.req small{display:block;font:500 10px/1 var(--mono);color:#8A8273;margin-bottom:6px;letter-spacing:.04em}
+.card{background:#fff;border-radius:16px;padding:10px;display:flex;gap:10px;align-items:center;max-width:46%;box-shadow:0 10px 26px -14px rgba(0,0,0,.45)}
+.card img{width:clamp(44px,6vw,74px);height:clamp(44px,6vw,74px);border-radius:10px;object-fit:cover;flex:none}
+.card b{display:block;font:600 clamp(10px,1.3vw,15px)/1.25 var(--sans);color:#16130E}
+.card span{display:block;font:500 clamp(9px,1.05vw,12px)/1.3 var(--mono);color:#6B6456;margin-top:4px}
+.hl{background:#F6E755;padding:0 .2em;border-radius:2px}
+.card span .hl{display:inline;font:inherit;color:#16130E;margin:0}
+.dia{position:absolute;inset:0}
+.dia svg{position:absolute;inset:0;width:100%;height:100%}
+.node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px}
+.node img{width:clamp(36px,6vw,78px);height:clamp(36px,6vw,78px);object-fit:cover;border-radius:10px;background:#fff;box-shadow:0 6px 16px -10px rgba(0,0,0,.45)}
+.node b{font:600 clamp(8px,1vw,12px)/1.1 var(--sans);color:#16130E;background:#fff;border:1px solid rgba(0,0,0,.14);border-radius:999px;padding:4px 8px;white-space:nowrap}
+.node.app .phone{width:clamp(34px,5vw,62px);aspect-ratio:9/19;border-radius:12px;background:#16130E;padding:3px;display:flex;align-items:center}
+.node.app .phone i{display:block;width:100%;height:60%;border-radius:8px;background:#fff url(img/crop-keys.jpg) center/cover}
+.chip-keys{position:absolute;transform:translate(-50%,-50%);width:clamp(18px,2.6vw,32px);height:clamp(18px,2.6vw,32px);border-radius:6px;background:url(img/crop-keys.jpg) center/cover;outline:3px solid #F6E755}
+.dia .line{position:absolute;left:0;right:0;bottom:6%;text-align:center;font-size:clamp(12px,1.7vw,20px);margin:0}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 
 <div class="wrap">
   <header class="head">
     <div>
-      <p class="eyebrow">Vídeo 1 · storyboard v6 · para aprovação</p>
+      <p class="eyebrow">Vídeo 1 · storyboard v7 · para aprovação</p>
       <h1>Nothing renders until you approve this</h1>
       <p class="lede">Every shot of the new cut, with the real frame it will use, its length, the text on screen, the motion and the sound. Mark each shot <b>Approve</b> or <b>Change</b> and write what to change; I read your marks directly and build only what you approved.</p>
     </div>
@@ -185,34 +207,39 @@ textarea{width:100%;min-height:64px;resize:vertical;font:15px/1.45 var(--sans);c
 
   <section aria-labelledby="h-changes">
     <div class="sec-head">
-      <h2 id="h-changes">What changes from v5.1</h2>
+      <h2 id="h-changes">What changes from v6</h2>
     </div>
     <div class="changes">
-      <div class="chg"><p class="said">“The pace and the effects are slow.”</p><p class="now">Shot lengths now come from six product films measured frame by frame (Pixel, Apple, Anthropic, Ring, Nest, Linear): an action the viewer must follow 1,5–2 s, one app screen 1–1,5 s, almost every cut hard, text in 6–8 frames. The film is about 44 s.</p></div>
-      <div class="chg"><p class="said">“The opening doesn't hook.”</p><p class="now">One real moment, someone about to leave home, with the questions popping fast over it, one per beat and then two, then a hard stop. The speed is in the text, as you asked in v4, not in a flicker of clips.</p></div>
-      <div class="chg"><p class="said">“Text pop-ups have no sound; the keys and the dog have no Foley.”</p><p class="now">Every visual event has its sound: a click on every text pop, keys, the door, taps on glass, the phone's buzz, a tick per view counted, a logo sting on the end card.</p></div>
-      <div class="chg"><p class="said">“The wallet section looks fake.”</p><p class="now">No stills and no wallet. Real stock phones with green screens, the real app tracked onto them with the hand and the notch on top, and the keys as the story. Shot 04 is already built (proof A).</p></div>
+      <div class="chg"><p class="said">“This is not detecting properly.” “Cat is wrongly detected.” “Wrongly selected as well.”</p><p class="now">My mistake: I had typed those boxes in by hand. Every box now comes from the detector's own output for that exact frame, checked by eye: the keys, the cat, the dog and its bowl, the person by the car.</p></div>
+      <div class="chg"><p class="said">“Good text but missing icons, otherwise is too confusing.”</p><p class="now">An app step is never text alone. It is the real app's element on a paper ground, the request beside its result, with the thing's own picture in it (shot 06 and the three cases).</p></div>
+      <div class="chg"><p class="said">“Weird image… I don't even know what it means.”</p><p class="now">Each case now opens on the thing itself, filling the frame, and names it within a second; then the request and its answer. The mother case is replaced by the dog at its bowl, which reads at a glance (a choice below).</p></div>
+      <div class="chg"><p class="said">“Missing better icons, or proper app representations… these boxes look vague.”</p><p class="now">How it works is drawn with the kit's real devices, photographed and named: the cameras, the gateway, Altice, the app. Wires join them, and the keys' small crop is the only thing that travels.</p></div>
+      <div class="chg"><p class="said">“Make it as Claude videos do.”</p><p class="now">Ten recent Anthropic films studied frame by frame (video/research/claude-videos-study.md). Their rules are below and in every shot: paper and black grounds, a serif for story lines and a plain sans for the app, text that cuts on without bouncing, one highlighter, music that marks the sections.</p></div>
     </div>
   </section>
 
   <section aria-labelledby="h-research">
     <div class="sec-head">
-      <h2 id="h-research">What the research and the measurements say</h2>
-      <p>From video/research/compositing-playbook.md and pacing.md (19 Nov).</p>
+      <h2 id="h-research">What the Claude films do</h2>
+      <p>Ten films from Anthropic's channel, Feb to Sep 2026, studied frame by frame and by their sound (19 Nov). Rules we take, in our own look.</p>
     </div>
     <ul class="research">
-      <li><b>Speed comes from the opening and short app screens,</b> not from cutting the actions the viewer must understand. No measured film speeds up towards its end.<p class="src">Six films measured shot by shot</p></li>
-      <li><b>Hard cuts, 90–100 %.</b> Soft transitions only where time passes and at the end.<p class="src">Pixel, Ring, Anthropic, Apple, Nest</p></li>
-      <li><b>Text in 6–8 frames.</b> Words in a quick series hold under a second; a line on its own holds about 2 s.<p class="src">Pixel's “Little / Big / Huge mistakes”; Nest; Anthropic</p></li>
-      <li><b>A sound for every visual event,</b> landing on the frame of contact, never before it; whooshes peak where the move is fastest; the mix at −14 LUFS.<p class="src">ITU-R BT.1359; EBU R128; sound-design guides</p></li>
-      <li><b>Phones in ads are filmed blank and the screen is replaced.</b> Ours are stock green-screen phones, tracked (2 px accuracy in 4K tests) with the thumb and notch kept on top.<p class="src">Frame.io, ProVideo Coalition, Mocha guides</p></li>
-      <li><b>The real product, never a mock-up.</b> Every screen is a recording of the prototype; things the prototype can't do yet are labelled “conceito”.<p class="src">AGENTS.md</p></li>
+      <li><b>An app step is the real element, not a text card,</b> cropped to 40–60 % of the frame width on a plain ground, with the user's sentence beside it.<p class="src">Introducing Claude Opus 4.6; Claude Fable 5 and 5.1</p></li>
+      <li><b>Every request is paired with its result.</b> No prompt is shown without what it produced.<p class="src">Opus 4.6 shows 13 outputs, each with its request</p></li>
+      <li><b>How it works is drawn with named real things,</b> joined by wires, and a highlight travels to the one in use. No outlined boxes in any of the ten films.<p class="src">Model Hardware Standard</p></li>
+      <li><b>A case opens on the thing itself, filling the frame,</b> and is named within about a second; the words name something visible.<p class="src">Opus 4.6</p></li>
+      <li><b>One highlighter marks the thing that matters</b> (yellow, about #F6E755), or the rest dims. Never bold.<p class="src">Translating Claude's thoughts; When AIs act emotional</p></li>
+      <li><b>Pictures of real objects, never an icon set or emoji.</b><p class="src">Translating Claude's thoughts</p></li>
+      <li><b>Three type voices:</b> a book serif for story lines, a plain sans for the app, monospace only for machine things such as times. Text cuts on or fades in 2–3 frames; no slide, no bounce.<p class="src">All ten</p></li>
+      <li><b>Hard cuts inside a section (92–100 %).</b> One shrinking montage at most, to open or to land on the end card.<p class="src">The live-action films</p></li>
+      <li><b>Music marks the structure:</b> it changes on section cuts; no whoosh on text or UI in any of the ten. Loudness about −14 LUFS.<p class="src">Measured on all ten</p></li>
+      <li><b>The end card is quiet:</b> the mark, then the name, held 2–3 s; the music resolves on the cut; no drum hit.<p class="src">All ten</p></li>
     </ul>
   </section>
 
   <section aria-labelledby="h-dec">
     <div class="sec-head">
-      <h2 id="h-dec">Three choices to make first</h2>
+      <h2 id="h-dec">Five choices to make first</h2>
       <p>The first option of each is my recommendation. Your choice is saved at once; the optional shots below follow it.</p>
     </div>
     <div class="decs" id="decs"></div>
@@ -231,20 +258,22 @@ textarea{width:100%;min-height:64px;resize:vertical;font:15px/1.45 var(--sans);c
 </div>
 
 <script>
-const BOXES = {"v03":[{"label":"chaves","box":[0.43,0.58,0.585,0.66]}],"v09":[{"label":"gato","box":[0.17,0.36,0.5,0.88]}],"v11":[{"label":"pessoa · 04:02","box":[0.715,0.6,0.745,0.86]}]}; // detector boxes, fitted to these frames
+const BOXES = {"v03":[{"label":"chaves","box":[0.2856,0.5887,0.5339,0.6621]}],"v09":[{"label":"gato","box":[0.5289,0.2608,0.9999,0.7991]}],"v10":[{"label":"cão","box":[0.199,0.029,0.498,0.788]},{"label":"tigela","box":[0.212,0.584,0.433,0.77]}],"v11":[{"label":"pessoa · 04:02","box":[0.1649,0.3883,0.244,0.7393]}]}; // the detector's own boxes (OWLv2, public/stock/boxes), interpolated to these frames' times and checked by eye
 
 const QUESTIONS = [];
 const QUESTIONS_STACK = [];
 
 const DECISIONS = [
- {id:"e1",q:"How the opening moves",note:"v4's fast montage was rejected (“constant quick flick”); v5.1's calm moments didn't hook. The first keeps one real moment steady and puts the speed in the questions.",opts:["One real moment, fast questions over it","A fast montage, one question on each clip"]},
- {id:"e2",q:"Length",note:"The measured films run 60–90 s, but every extra second has to earn its place.",opts:["About 45 s","About 60 s, with two more cases (the dog, the parcel)"]},
+ {id:"e1",q:"How the opening moves",note:"v4's fast montage was rejected (“constant quick flick”); v5.1's calm moments didn't hook. The Claude films open either on one strong image with text cut on, or with one shrinking montage.",opts:["One real moment, the questions cut on over it in plain type","A shrinking montage of things we lose (from half a second down to a tenth), landing on the title"]},
+ {id:"e3",q:"Sound on text",note:"In your v5.1 notes you asked for a sound on every text pop. None of the ten Claude films does that: the music carries the text and real sounds go on real actions (keys, the door, the phone's buzz).",opts:["As the Claude films: real sounds on real actions, text silent, music marks sections","A soft click on every text pop as well"]},
+ {id:"e4",q:"The care case",note:"The woman by the window didn't read. The dog at its bowl is understood at a glance. Older people's independence can still be shown, but it needs its own clear moment.",opts:["Replace it with the dog at its bowl","Keep the mother, redone: her kitchen still empty at noon, and the app's alert"]},
+ {id:"e2",q:"Length",note:"The measured films run 60–90 s, but every extra second has to earn its place.",opts:["About 45 s","About 60 s, with two more cases (the dog and the mother both, the parcel)"]},
  {id:"d7",q:"The privacy line “Nenhum vídeo nem imagem completa sai de casa.”",note:"True of the prototype today: the camera service sends only small crops. As a product promise it needs the team's yes.",opts:["Keep it","Drop it"]}
 ];
 
 const ACTS = [
  {id:"b1",n:"1",title:"The opening",sub:"One real moment; the questions arrive fast over it, each with a sound; then a hard stop.",shots:[
-  {id:"v01",d:4,kind:"stock",img:"v01",src:"Stock · leaving-home-1 (Pexels)",say:"As chaves? · Fechei a porta? · O cão já comeu? · A mãe já acordou? · Desliguei o fogão? · A encomenda chegou?",pic:"Someone at the front door, about to go out, seen from behind. Over her, short questions pop in: one per beat for the first four, then two per beat. Each replaces the last.",motion:"Real speed with a slow push. Each question springs in over 6 frames and is cut out by the next one.",sound:"A soft click on every question, rising a little in pitch; the music builds; the door handle as her hand finds it.",rev:"A steady shot carries the eye and the text carries the speed. Only Pixel cuts on sound hits; we cut the questions on the beat."},
+  {id:"v01",d:4,kind:"stock",img:"v01",src:"Stock · leaving-home-1 (Pexels)",say:"As chaves? · Fechei a porta? · O cão já comeu? · A mãe já acordou? · Desliguei o fogão? · A encomenda chegou?",pic:"Someone at the front door, about to go out, seen from behind. Over her, short questions pop in: one per beat for the first four, then two per beat. Each replaces the last.",motion:"Real speed with a slow push. Each question cuts on in the serif (no bounce) and is cut out by the next one.",sound:"The music builds under the questions; the door handle as her hand finds it. A click per question only if you choose it below.",rev:"A steady shot carries the eye and the text carries the speed. Only Pixel cuts on sound hits; we cut the questions on the beat."},
   {id:"v02",d:1,kind:"graphic",gfx:'<div><p class="big">&nbsp;</p><p class="small">the last frame, darkened · silence</p></div>',src:"Graphic",say:null,pic:"Hard stop: the questions vanish on the beat; the frame darkens for one second.",motion:"Nothing moves.",sound:"The music stops; only the room's sound.",rev:"Pixel and Anthropic both rest for 1–2 s after their opening."}
  ]},
  {id:"b2",n:"2",title:"The answer",sub:"The first box of the film, on the music's drop.",shots:[
@@ -253,20 +282,20 @@ const ACTS = [
  {id:"b3",n:"3",title:"The keys, from the camera to the alert",sub:"Every screen is the real prototype, tracked onto a real phone held in a hand.",shots:[
   {id:"v04",d:5,kind:"film",img:"v04",src:"Built and rendered · proof A (Pexels phone and keys + the real app)",say:"Mostra-se uma vez.",pic:"A hand holds an iPhone; the app shows the home camera's live view of keys held out to it, with its orange box. Cut to the camera's own view: the brackets lock on, the views count to 8. Back to the phone, pushing into “Keys added”.",motion:"Three cuts on the beat; a slow push, then a push into the screen.",sound:"A click on the line, a tick per view, keys in the hands, a whoosh on the push, a click as “Keys added” settles.",tag:"already built"},
   {id:"v05",d:5,kind:"film",img:"v05",src:"Stock · green-screen phone over a café table (Pexels) + the real app",say:"Basta perguntar.",pic:"A hand types on the phone: “Where are my keys?”. The answer card “On the hall table · 08:12” with its photo. The camera pushes into the card, and the photo grows into the hall table.",motion:"App steps of 1,5–2 s; a push of 1,5× and a hold to read; the photo grows to full frame in 12 frames.",sound:"A soft tap per letter, the send tap, the answer pops in, a whoosh as the photo grows."},
-  {id:"v06",d:2.5,kind:"film",gfx:'<div><p class="big">Tell me if I leave home without my keys</p><p class="small">→ the card “Active”</p></div>',src:"The real app, recorded",say:"Uma frase torna-se um sensor.",pic:"Inside the phone, filling the frame: the sentence is sent and becomes the card “Left home without the keys · Active”.",motion:"The card slides up and settles.",sound:"Typing carries over into the next shot (an L-cut); a click as the card settles."},
+    {id:"v06",d:2.5,kind:"film",gfx:'<div class="paper"><div class="req"><small>REQUEST</small>Tell me if I leave home without my keys</div><div class="card"><img src="img/crop-keys.jpg" alt=""><div><b>Left home without the keys</b><span><span class="hl">Active</span> · front door</span></div></div></div>',src:"The real app's elements, recorded (sentence and card)",say:"Uma frase torna-se um sensor.",pic:"On a paper ground: the sentence as it was typed, beside the card it became: the keys' own picture, “Left home without the keys”, and “Active” marked with the highlighter.",motion:"The sentence cuts on; 8 frames later the card cuts on beside it; the highlighter sweeps across “Active” in 6 frames.",sound:"The send tap; then the music carries it.",rev:"Was text on grey. The Claude films show the real element with its request beside it, never a text card."},
   {id:"v07",d:2.5,kind:"stock",img:"v07",src:"Stock · leaving-home-2 (Pexels)",say:null,pic:"She shuts the front door behind her. A small inset in the corner: the keys left on the hall table, under their box.",motion:"The camera holds; the inset slides in.",sound:"The door: handle, latch and thud on their frames; the phone's buzz starts on the last beat (a J-cut)."},
   {id:"v08",d:2.5,kind:"film",img:"v08",src:"Stock · green-screen phone outdoors (Pexels) + the real app",say:null,pic:"Outside, a hand holds the phone: the real alert “Saíste sem as chaves · Ficaram na mesa da entrada”, with the keys' crop.",motion:"A gentle push until the alert reads, then still.",sound:"The real phone buzz, then the alert; the music dips 5 dB under it."}
  ]},
  {id:"b4",n:"4",title:"The home understands",sub:"Three quick cases, 4 s each: footage with its box, the phone, the result.",shots:[
-  {id:"v09",d:4,kind:"stock",img:"v09",src:"Stock · cat-counter-2 (Pexels) · the detector's real box",say:"A cozinha, mais segura.",pic:"The cat on the counter, boxed “gato”. On a phone: the proposal “Avisar se o gato subir à bancada?”, a tap on Ativar, the alert with the cat's crop.",motion:"Lock-on, cut to the phone, cut to the alert.",sound:"A click on the lock, a tap, the buzz.",tag:"conceito"},
-  {id:"v10",d:4,kind:"stock",img:"v10",src:"Stock · elderly-reading-1 (Pexels)",say:"“A minha mãe já acordou?”",pic:"Her morning by the window; no box on her face, only a time chip “08:12”. On a phone, the answer: “Sim. Está na sala desde as 8h12.”",motion:"A slow push; cut to the phone; the answer pops in.",sound:"A quiet room; the answer's pop."},
-  {id:"v11",d:4,kind:"stock",img:"v11",src:"Stock · garden-night-2 (Pexels) · the detector's real box",say:"O que aconteceu às 4h?",pic:"The garden at night, a person by the car, boxed “pessoa · 04:02”. Next morning the app answers with the two events of the night, each with its crop.",motion:"A slow push in the dark; a bright cut to the phone.",sound:"Night air; a click on the lock; the answer's pop.",tag:"conceito"}
+    {id:"v09",d:4,kind:"stock",img:"v09",src:"Stock · cat-counter-2 (Pexels) · the detector's box for this frame",say:"O gato na bancada.",pic:"Opens on the cat filling the frame, its box locking on, named at once. Then on paper: the request “Tell me if the cat jumps on the counter” beside the alert card with the cat's own crop, “Cat on the kitchen counter · 14:32”.",motion:"Lock-on, a hard cut to the pair; the card cuts on 8 frames after the request.",sound:"A soft click on the lock; the phone's buzz on the card.",tag:"conceito",rev:"A case opens on the thing itself and names it within a second (Opus 4.6)."},
+    {id:"v10",d:4,kind:"stock",img:"v10",src:"Stock · dog-bowl-2 (Pexels) · the detector's boxes for this frame",say:"O cão já comeu?",pic:"Opens on the puppy eating from its bowl, boxes on the dog and the bowl. Then on paper: the question “Has the dog eaten today?” beside the answer card with the dog's crop, “Yes · at its bowl at 08:05”.",motion:"Lock-on, a hard cut to the pair.",sound:"A real bowl clink and kibble; the answer cuts on silently.",tag:"conceito",rev:"Replaces the woman by the window, which didn't read (your note). A choice below keeps her."},
+    {id:"v11",d:4,kind:"stock",img:"v11",src:"Stock · garden-night-2 (Pexels) · the detector's box for this frame",say:"O que aconteceu às 4h?",pic:"Opens on the person by the car at night, boxed, with the time in monospace. Then on paper, next morning: “What happened last night?” beside the answer card with the person's crop, “04:02 · a person by the car”.",motion:"A slow push in the dark; a hard cut to the bright pair.",sound:"Night air; a click on the lock; the answer cuts on silently.",tag:"conceito"},
  ]},
  {id:"b5",n:"5",title:"How it works",sub:"",shots:[
-  {id:"v12",d:2.5,kind:"graphic",gfx:'<div class="flow"><span>Em casa<br><em>a câmara vê o que mudou</em></span>→<span>Altice<br><em>reconhece as coisas</em></span>→<span>Na app<br><em>respostas e avisos</em></span></div>',src:"Drawn graphic",say:"Nenhum vídeo nem imagem completa sai de casa.",pic:"Three parts on one line, each appearing on a beat; the privacy line lands on the last.",motion:"One part per beat; still at the end.",sound:"A soft click per part.",tag:"team to confirm the line"}
+    {id:"v12",d:3,kind:"graphic",gfx:'<div class="paper" style="display:block"><div class="dia"><svg viewBox="0 0 100 56.25" preserveAspectRatio="none" aria-hidden="true"><g fill="none" stroke="#16130E" stroke-width=".35"><path d="M17 10.5 C 30 10.5, 30 21.5, 41 21.5"/><path d="M17 32.5 C 30 32.5, 30 21.5, 41 21.5"/><path d="M47 21.5 L 63 21.5"/><path d="M69 21.5 L 83 21.5"/></g><path d="M47 21.5 L 63 21.5" fill="none" stroke="#F6E755" stroke-width="1.6" opacity=".9"/></svg><div class="node" style="left:13%;top:21%"><img src="img/dev-camera.jpg" alt=""><b>Câmara · entrada</b></div><div class="node" style="left:13%;top:60%"><img src="img/dev-camera.jpg" alt=""><b>Câmara · cozinha</b></div><div class="node" style="left:44%;top:40%"><img src="img/dev-gateway.jpg" alt=""><b>Em casa · gateway</b></div><div class="chip-keys" style="left:56%;top:38%"></div><div class="node" style="left:66%;top:40%"><img src="img/by-altice-labs-light.svg" alt="" style="object-fit:contain;padding:6px"><b>Altice</b></div><div class="node app" style="left:87%;top:40%"><div class="phone"><i></i></div><b>A app</b></div><p class="line serif">Nenhum vídeo nem imagem completa sai de casa.</p></div></div>',src:"The kit's real devices (assets/devices) and the Altice Labs logo",say:"Nenhum vídeo nem imagem completa sai de casa.",pic:"On a paper ground with a faint grid: the two cameras, photographed and named, wired to the gateway at home; from there one wire to Altice and one to the app. Only the keys' small crop travels along the wire, marked with the highlighter. The privacy line in the serif below.",motion:"Each device cuts on with its wire, one per beat; then the crop travels from home to the app in 20 frames, the wire it is on turning yellow.",sound:"The music carries it; no whoosh.",tag:"team to confirm the line",rev:"Was three outlined boxes (“vague”, your note). The Claude films draw named real things joined by wires, and a highlight travels to the one in use."},
  ]},
  {id:"b6",n:"6",title:"The end",sub:"",shots:[
-  {id:"v13",d:4,kind:"graphic",gfx:'<div style="display:flex;flex-direction:column;align-items:center;width:100%"><img src="img/thingtracker-light.svg" alt="ThingTracker" style="width:54%;height:auto"><img src="img/by-altice-labs-light.svg" alt="by Altice Labs" style="width:20%;height:auto;margin-top:3%"></div>',src:"Unchanged from v5.1 (the part you liked)",say:"ThingTracker · by Altice Labs",pic:"The end card as it is: ThingTracker lands, then “by” and the Altice Labs logo on one line.",motion:"As in v5.1.",sound:"New: a logo sting. A short rise into the landing, an impact on the frame the name lands, with the music's last hit, and a smaller tuned hit a second later for “by Altice Labs”."}
+  {id:"v13",d:4,kind:"graphic",gfx:'<div style="display:flex;flex-direction:column;align-items:center;width:100%"><img src="img/thingtracker-light.svg" alt="ThingTracker" style="width:54%;height:auto"><img src="img/by-altice-labs-light.svg" alt="by Altice Labs" style="width:20%;height:auto;margin-top:3%"></div>',src:"Unchanged from v5.1 (the part you liked)",say:"ThingTracker · by Altice Labs",pic:"The end card as it is: ThingTracker lands, then “by” and the Altice Labs logo on one line.",motion:"As in v5.1.",sound:"New: the music resolves on the cut to the card; one soft tuned note as ThingTracker lands and a quieter one as “by Altice Labs” arrives. No drum hit (the Claude films end quietly)."}
  ]}
 ];
 
@@ -287,7 +316,7 @@ function included(shot){
 }
 function allShots(){ return ACTS.flatMap(a => a.shots); }
 const D = s => typeof s.d === "function" ? s.d() : s.d;
-const REVISED_AT = "2026-11-19T09:00:00Z";
+const REVISED_AT = "2026-11-19T11:00:00Z";
 
 /* ---------- rendering ---------- */
 function frameHTML(s){

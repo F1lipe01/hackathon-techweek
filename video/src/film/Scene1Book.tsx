@@ -303,7 +303,6 @@ const EmptySlots: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ 3: the lab (one take) */
-const BOOK = [0.628, 0.7238, 0.6727, 0.7438];            // the book on the desk: the take before and after he takes it, differenced
 const AP = [0.66, 0.705, 0.693, 0.732];
 const ALARM = [0.3135, 0.3023, 0.3243, 0.3115];
 const DOOR: [number, number][] = [[0.339, 0.268], [0.435, 0.289], [0.414, 0.651], [0.321, 0.637]];
@@ -312,6 +311,10 @@ const BEEP_LEN = 6.67;
 export const beepAt = (s: number) => { const m = s % BEEP_LEN; return Math.max(0, ...BEEPS.map(([a, b]) => Math.min(interpolate(m, [a - 0.03, a + 0.12], [0, 1], clamp), interpolate(m, [b - 0.05, b + 0.3], [1, 0], clamp)))); };
 export const KIND = { thing: "#2ABE9E", person: "#FFFFFF", device: "#8B7CF6", alarm: "#E5322D", door: "#C9D1DB", open: "#E8710A", ok: "#1FA37F" };
 type Det = { frames: { t: number; boxes: { label: string; score: number; box: number[] }[] }[] };
+// The book as the system recognises it (video/tools/book_region.py): OWLv2 "a photo of yellow book" on the 640 x 480
+// region around the desk at full resolution, each candidate compared by DINOv2 with a fingerprint registered from the
+// same camera in another take (book-grab); 0,62 or more is the book. Median 0,93 over the 68 frames it lies there.
+type BookDet = { match: number; region: number[]; frames: { t: number; cands: { box: number[]; camera: number }[] }[] };
 export const Label: React.FC<{ x: number; y: number; kind: string; text?: string; color: string; dark?: boolean; below?: boolean }> = ({ x, y, kind, text, color, dark, below }) => (
   <div style={{ position: "absolute", left: x, top: y, transform: below ? undefined : "translateY(-100%)", marginTop: below ? 6 : -6, display: "flex", borderRadius: 7,
     overflow: "hidden", fontFamily: SANS, fontWeight: 600, fontSize: 21, whiteSpace: "nowrap", boxShadow: "0 4px 14px -6px rgb(0 0 0 / 0.5)" }}>
@@ -336,6 +339,7 @@ export const ms = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}
 const LabLayer: React.FC = () => {
   const f = useCurrentFrame();
   const det = useJson<Det>("takes/scene1/book-full.boxes.json");
+  const bd = useJson<BookDet>("takes/scene1/book-full.region.json");
   const t = takeT(f);
   const ringing = f >= ALARM_ON && f < ALARM_OFF;
   const beep = ringing ? beepAt((f - ALARM_ON) / 30) : 0;
@@ -346,6 +350,15 @@ const LabLayer: React.FC = () => {
     const s = det.frames.map((x) => ({ t: x.t, b: x.boxes.filter((y) => y.label === "a person" && y.score >= 0.15).sort((p, q) => q.score - p.score)[0] })).filter((x) => x.b);
     const a = [...s].reverse().find((x) => x.t <= t), c = s.find((x) => x.t >= t);
     if (a && c && c.t - a.t < 1.2) { const u = c.t > a.t ? (t - a.t) / (c.t - a.t) : 0; person = a.b.box.map((v, i) => v + (c.b.box[i] - v) * u); }
+  }
+  let book: { b: number[]; s: number } | null = null;
+  if (bd) {
+    const near = bd.frames.reduce((p, x) => (Math.abs(x.t - t) < Math.abs(p.t - t) ? x : p), bd.frames[0]);
+    const c = Math.abs(near.t - t) <= 0.5 ? near.cands.filter((x) => x.camera >= bd.match).sort((p, q) => q.camera - p.camera)[0] : undefined;
+    if (c) {
+      const [RX, RY, RW, RH] = bd.region;
+      book = { b: [(RX + c.box[0] * RW) / 2304, (RY + c.box[1] * RH) / 1296, (RX + c.box[2] * RW) / 2304, (RY + c.box[3] * RH) / 1296], s: c.camera };
+    }
   }
   const open = DOOR_OPEN.some(([a, b]) => t >= a && t < b);
   const doorColor = open ? KIND.open : KIND.door;
@@ -365,7 +378,8 @@ const LabLayer: React.FC = () => {
       </svg>
       <Label x={DOOR[3][0] * 1920 + 8} y={DOOR[3][1] * 1080 - 14} kind="door" text={open ? "aberta" : "fechada"} color={doorColor} dark={!open} />
       {person ? <Box b={person} kind="person" text={taken ? "com o livro" : undefined} color={taken ? KIND.ok : KIND.person} dark={!taken} /> : null}
-      {!taken ? <Box b={BOOK} kind="thing" text={left && f >= CLOSE ? "livro · ficou na mesa" : "livro"} color={left && f >= CLOSE && f < ALARM_OFF ? KIND.alarm : KIND.thing} pad={0.01} below /> : null}
+      {!taken && book ? <Box b={book.b} kind="thing" text={`${left && f >= CLOSE ? "livro · ficou na mesa" : "livro"} · ${book.s.toFixed(2).replace(".", ",")}`}
+        color={left && f >= CLOSE && f < ALARM_OFF ? KIND.alarm : KIND.thing} pad={0.01} below /> : null}
       <Box b={AP} kind="device" text="ponto de acesso" color={KIND.device} brackets={false} />
       <Box b={ALARM} kind="device" text={ringing ? "alarme · a tocar" : "alarme"} color={ringing ? KIND.alarm : KIND.device} pad={0.008} brackets={false} />
       <div style={{ position: "absolute", left: 36, bottom: 32, padding: "10px 18px", borderRadius: 999, fontFamily: SANS, fontSize: 24, background: chip[1], color: chip[2], boxShadow: "0 10px 30px -10px rgb(0 0 0 / 0.4)" }}>{chip[0]}</div>

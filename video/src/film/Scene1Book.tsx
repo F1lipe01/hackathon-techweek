@@ -140,10 +140,11 @@ const Rec: React.FC<{ src: string; from: number; rate?: number; w?: number; h?: 
   <OffthreadVideo src={staticFile(src)} muted trimBefore={Math.round(from * 30)} playbackRate={rate} style={{ position: "absolute", left: (SCR_W - w) / 2, top, width: w, height: h }} />
 );
 /** A serif line streamed word by word: each new word arrives in the accent and settles into ink. */
-const Line: React.FC<{ text: string; from: number; to: number; top?: number; left?: number; size?: number; align?: "left" | "center"; width?: number; color?: string }> = ({ text, from, to, top = 420, left = 150, size = 62, align = "left", width = 760, color = INK }) => {
+const Line: React.FC<{ text: string; from: number; to: number; top?: number; left?: number; size?: number; align?: "left" | "center"; width?: number; color?: string }> = ({ text, from, to, top = 400, left = 150, size = 84, align = "left", width = 900, color = INK }) => {   // the team: bigger headlines (84 px, was 62)
   const f = useCurrentFrame();
   if (f < from || f > to) return null;
-  const fade = interpolate(f, [to - 10, to], [1, 0], clamp);
+  const dive = Math.max(0, Math.min(1, (camAt(f).s - 1.03) / 0.25));   // a line steps aside while the camera dives into the phone
+  const fade = interpolate(f, [to - 10, to], [1, 0], clamp) * (1 - dive);
   return (
     <div style={{ position: "absolute", left, top, width, opacity: fade, textAlign: align, fontFamily: SERIF, fontSize: size, lineHeight: 1.13, letterSpacing: "-0.015em" }}>
       {text.split(" ").map((w, k) => {
@@ -474,7 +475,7 @@ export const Scene1Book: React.FC = () => {
         {f < T.test + 30 ? <PhoneAt cx={cxA} bars={{ time: "15:52", mode: f < T.grow + 10 ? "home" : f < T.s1 ? "splash" : f >= T.cam && f < T.s3 ? "none" : "app" }}><ScreenA /></PhoneAt> : null}
         <Line text="Abre-se a app." from={44} to={150} />
         <Line text="Adiciona-se o livro." from={150} to={T.cam} />
-        <Line text="Fotografa-se de vários lados." from={T.cam} to={T.s3 + 4} top={300} />
+        <Line text="Fotografa-se de vários lados." from={T.cam} to={T.s3 + 4} top={190} />
         <PhotoCard />
         <Line text="Dá-se-lhe um nome." from={T.s3 + 30} to={T.s4} />
         <Line text="E uma frase cria o cenário." from={T.s4 + 40} to={T.test + 6} />

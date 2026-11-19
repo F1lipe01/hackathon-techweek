@@ -1,118 +1,118 @@
 [
  {
   "name": "start",
-  "s": 0.399
+  "s": 0.4
  },
  {
   "name": "things",
-  "s": 1.701
+  "s": 1.702
  },
  {
   "name": "tap .btn-p[data-act=\"add-thing\"]",
-  "s": 2.41,
+  "s": 2.405,
   "x": 201,
   "y": 440
  },
  {
   "name": "add",
-  "s": 2.622
+  "s": 2.619
  },
  {
   "name": "tap [data-act=\"pick-thing\"][data-name=\"Book\"]",
-  "s": 4.407,
+  "s": 4.405,
   "x": 201,
   "y": 525.6
  },
  {
   "name": "method",
-  "s": 4.601
+  "s": 4.6
  },
  {
   "name": "tap [data-act=\"take-photos\"]",
-  "s": 6.586,
+  "s": 6.585,
   "x": 201,
   "y": 455.3
  },
  {
   "name": "take-photos",
-  "s": 6.764
+  "s": 6.767
  },
  {
   "name": "photos",
-  "s": 7.421
+  "s": 7.467
  },
  {
   "name": "tap #tname",
-  "s": 9.608,
+  "s": 9.646,
   "x": 201,
   "y": 463.8
  },
  {
   "name": "tap #tdesc",
-  "s": 11.175,
+  "s": 11.208,
   "x": 201,
   "y": 573.5
  },
  {
   "name": "tap [data-act=\"save-thing\"]",
-  "s": 13.306,
+  "s": 13.459,
   "x": 201,
   "y": 772.3
  },
  {
   "name": "save-thing",
-  "s": 13.501
+  "s": 13.656
  },
  {
   "name": "added",
-  "s": 13.509
+  "s": 13.667
  },
  {
   "name": "tap [data-act=\"new-scenario\"]",
-  "s": 16.007,
+  "s": 16.155,
   "x": 201,
   "y": 515.7
  },
  {
   "name": "scenario",
-  "s": 16.201
+  "s": 16.35
  },
  {
   "name": "tap #scentext",
-  "s": 17.885,
+  "s": 18.032,
   "x": 201,
   "y": 320
  },
  {
   "name": "type",
-  "s": 18.065
+  "s": 18.215
  },
  {
   "name": "typed",
-  "s": 23.496
+  "s": 23.732
  },
  {
   "name": "tap [data-act=\"save-scenario\"]",
-  "s": 24.686,
+  "s": 24.922,
   "x": 201,
   "y": 436
  },
  {
   "name": "save-scenario",
-  "s": 24.884
+  "s": 25.115
  },
  {
   "name": "saved",
-  "s": 27.737
+  "s": 27.921
  },
  {
   "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
-  "s": 31.022,
+  "s": 31.205,
   "x": 201,
   "y": 607.7
  },
  {
   "name": "done",
-  "s": 31.222
+  "s": 31.4
  }
 ]

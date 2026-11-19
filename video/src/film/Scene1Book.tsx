@@ -54,19 +54,27 @@ const CLOSE = T.lab + Math.round((11.9 - A0) * 30);     // the door shuts behind
 const ALARM_ON = CLOSE + 150;                            // the rule waits 5 s after the door shuts
 const GRAB = 34.3;                                        // he lifts the book (take seconds)
 const ALERT_OPEN = 3.23;                                  // alert-book-open: the alert page is up
-const ALARM_OFF_T = 6.53;                                 // alert-book-open: "Turn off the alarm" pressed
+const ALARM_OFF_T = 6.54;                                 // alert-book-open: "Turn off the alarm" pressed
 const ALARM_OFF = T.tap + 2 + Math.round((ALARM_OFF_T - ALERT_OPEN) * 30);
 
-/* ------------------------------------------------------------------ the page, the drifting camera, the phone */
-const PH = 900, PW = phoneWidth(PH), KS = (PH * SCREEN.height) / 2622;
+/* ------------------------------------------------------------------ the page, the camera, the phone */
+// The team's phone (an Android phone, screen 720 × 1600 = 9:20), drawn here: a thin even bezel, a punch-hole camera,
+// and its real status and navigation bars (cut from its screenshot) fixed above whatever the screen shows. The screen
+// is drawn in content px: 1206 × 2680 (the screenshots × 1206/720). The app recordings (1206 × 2622, their iPhone status
+// row and home bar hidden by record_app.mjs) sit REC_Y higher, so the app starts right under the real status bar.
+const SCR_W = 1206, SCR_H = 2680, PK = SCR_W / 720;
+const px = (x: number) => x * PK, py = (y: number) => y * PK;
+const SB_H = py(84), NAV_Y = py(1504);                  // the status bar's height and the navigation bar's top, measured on the screenshot
+const REC_Y = -21;
+const PH = 900, BEZ = 9, SHC = PH - 2 * BEZ, KS = SHC / SCR_H, SWC = SCR_W * KS, PW = SWC + 2 * BEZ;
 const phoneBox = (cx: number) => ({ x: cx - PW / 2, y: 540 - PH / 2 });
 const OVER = 1.01;   // the screen's content is drawn 1 % larger, centred, so no edge shows while the phone moves
-const scr = (cx: number, sx: number, sy: number) => ({ x: phoneBox(cx).x + SCREEN.left * PW + KS * (OVER * sx - ((OVER - 1) / 2) * 1206),
-  y: phoneBox(cx).y + SCREEN.top * PH + KS * (OVER * sy - ((OVER - 1) / 2) * 2622) });
+const scr = (cx: number, sx: number, sy: number) => ({ x: phoneBox(cx).x + BEZ + KS * (OVER * sx - ((OVER - 1) / 2) * SCR_W),
+  y: phoneBox(cx).y + BEZ + KS * (OVER * sy - ((OVER - 1) / 2) * SCR_H) });
 const CX = { centre: 960, right: 1370, left: 560, cRight: 1300 };
 type CK = { at: number; s: number; x: number; y: number };
 const H0 = { s: 1, x: 960, y: 540 };
-const BTN = scr(CX.right, 603, 1366), FIELDS = scr(CX.right, 603, 1560), TXT = scr(CX.right, 603, 1000), NOTE = scr(CX.cRight, 603, 300);   // the notification card's centre
+const BTN = scr(CX.right, 603, 1366 + REC_Y), FIELDS = scr(CX.right, 603, 1560 + REC_Y), TXT = scr(CX.right, 603, 1000 + REC_Y), NOTE = scr(CX.cRight, 603, SB_H + 14 + px(273) / 2);
 const CAM: CK[] = [
   { at: 0, ...H0 }, { at: 196, ...H0 }, { at: 222, s: 2.0, ...BTN }, { at: 246, s: 2.0, ...BTN }, { at: 270, ...H0 },
   { at: 414, ...H0 }, { at: 434, s: 1.9, ...FIELDS }, { at: 484, s: 1.9, ...FIELDS }, { at: 502, ...H0 },
@@ -87,21 +95,49 @@ const Grain: React.FC = () => (
     <rect width="100%" height="100%" filter="url(#paper)" />
   </svg>
 );
-/** The phone at a centre x, its screen drawn in the app's pixels (1206 × 2622); still unless it is moved. */
-const PhoneAt: React.FC<{ cx: number; shadow?: number; children: React.ReactNode }> = ({ cx, shadow = 0, children }) => {
+type BarMode = "home" | "splash" | "app" | "none";
+const ClockText: React.FC<{ time: string; color: string }> = ({ time, color }) => (
+  <span style={{ position: "absolute", left: px(77), top: px(24.5), fontFamily: ROBOTO, fontWeight: 500, fontSize: px(31), lineHeight: 1, color, letterSpacing: "0.01em" }}>{time}</span>
+);
+/** The phone's own bars, above everything on its screen: on the home screen the screenshot's (only the clock changes);
+ *  over the app (or its loading) the real glyphs in dark, the way Android draws them on a light app. */
+const Bars: React.FC<{ mode: BarMode; time: string }> = ({ mode, time }) => {
+  if (mode === "none") return null;
+  if (mode === "home") return (<><div style={{ position: "absolute", left: px(64), top: 0, width: px(92), height: px(80), background: "#010101" }} /><ClockText time={time} color="#EDEDED" /></>);
+  return (
+    <>
+      <div style={{ position: "absolute", left: 0, top: 0, width: SCR_W, height: SB_H, background: mode === "splash" ? "#36D09E" : "transparent" }} />
+      <Img src={staticFile("phone/status-dark.png")} style={{ position: "absolute", left: 0, top: 0, width: SCR_W, height: SB_H }} />
+      <div style={{ position: "absolute", left: px(64), top: 0, width: px(92), height: px(80), background: mode === "splash" ? "#36D09E" : "transparent" }} />
+      <ClockText time={time} color="#1C1C1C" />
+      <div style={{ position: "absolute", left: 0, top: NAV_Y, width: SCR_W, height: SCR_H - NAV_Y, background: mode === "splash" ? "#D6F6EB" : "#EEF3FB" }} />
+      <Img src={staticFile("phone/nav-dark.png")} style={{ position: "absolute", left: 0, top: NAV_Y, width: SCR_W, height: SCR_H - NAV_Y }} />
+    </>
+  );
+};
+/** The phone at a centre x: a dark body with a thin even bezel, side buttons, the screen and its punch-hole camera. */
+const PhoneAt: React.FC<{ cx: number; shadow?: number; bars: { mode: BarMode; time: string }; children: React.ReactNode }> = ({ cx, shadow = 0, bars, children }) => {
   const { x, y } = phoneBox(cx);
   return (
-    <div style={{ position: "absolute", left: x, top: y, filter: shadow ? `drop-shadow(0 ${40 * shadow}px ${70 * shadow}px rgba(0,0,0,${0.45 * shadow}))` : undefined }}>
-      <Phone height={PH}>
-        <div style={{ position: "absolute", inset: -3, background: "#000" }} />
-        <div style={{ position: "absolute", left: 0, top: 0, width: 1206, height: 2622, transform: `translate(${-((OVER - 1) / 2) * 1206 * KS}px, ${-((OVER - 1) / 2) * 2622 * KS}px) scale(${KS * OVER})`,
-          transformOrigin: "0 0", overflow: "hidden" }}>{children}</div>
-      </Phone>
+    <div style={{ position: "absolute", left: x, top: y, width: PW, height: PH, filter: shadow ? `drop-shadow(0 ${40 * shadow}px ${70 * shadow}px rgba(0,0,0,${0.45 * shadow}))` : undefined }}>
+      <div style={{ position: "absolute", right: -2.5, top: PH * 0.2, width: 4, height: PH * 0.115, borderRadius: 2, background: "#2B2C30" }} />
+      <div style={{ position: "absolute", right: -2.5, top: PH * 0.36, width: 4, height: PH * 0.065, borderRadius: 2, background: "#2B2C30" }} />
+      <div style={{ position: "absolute", inset: 0, borderRadius: 54, background: "linear-gradient(150deg, #44464C 0%, #1B1C20 28%, #0E0F11 100%)",
+        boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.09), inset 0 0 0 3px rgba(0,0,0,0.6), 0 40px 70px -36px rgba(50,35,15,0.5), 0 12px 26px -14px rgba(50,35,15,0.35)" }} />
+      <div style={{ position: "absolute", left: BEZ, top: BEZ, width: SWC, height: SHC, borderRadius: 46, overflow: "hidden", background: "#000" }}>
+        <div style={{ position: "absolute", left: 0, top: 0, width: SCR_W, height: SCR_H, transform: `translate(${-((OVER - 1) / 2) * SCR_W * KS}px, ${-((OVER - 1) / 2) * SCR_H * KS}px) scale(${KS * OVER})`,
+          transformOrigin: "0 0", overflow: "hidden" }}>
+          {children}
+          <Bars {...bars} />
+        </div>
+        <div style={{ position: "absolute", left: SWC / 2 - 7, top: 10, width: 14, height: 14, borderRadius: 7, background: "#050506",
+          boxShadow: "inset 0 0 0 1.5px #1C1D21, inset 2px 2px 3px rgba(90,100,130,0.35)" }} />
+      </div>
     </div>
   );
 };
-const Rec: React.FC<{ src: string; from: number; rate?: number; w?: number }> = ({ src, from, rate = 1, w = 1206 }) => (
-  <OffthreadVideo src={staticFile(src)} muted trimBefore={Math.round(from * 30)} playbackRate={rate} style={{ position: "absolute", left: (1206 - w) / 2, top: 0, width: w, height: 2622 }} />
+const Rec: React.FC<{ src: string; from: number; rate?: number; w?: number; h?: number; top?: number }> = ({ src, from, rate = 1, w = SCR_W, h = 2622, top = REC_Y }) => (
+  <OffthreadVideo src={staticFile(src)} muted trimBefore={Math.round(from * 30)} playbackRate={rate} style={{ position: "absolute", left: (SCR_W - w) / 2, top, width: w, height: h }} />
 );
 /** A serif line streamed word by word: each new word arrives in the accent and settles into ink. */
 const Line: React.FC<{ text: string; from: number; to: number; top?: number; left?: number; size?: number; align?: "left" | "center"; width?: number; color?: string }> = ({ text, from, to, top = 420, left = 150, size = 62, align = "left", width = 760, color = INK }) => {
@@ -118,16 +154,9 @@ const Line: React.FC<{ text: string; from: number; to: number; top?: number; lef
   );
 };
 
-/* ------------------------------------------------------------------ the team's phone (720 × 1600 screenshots and its recording) */
-const PK = 1206 / 720, POY = (1600 * PK - 2622) / 2;
-const px = (x: number) => x * PK, py = (y: number) => y * PK - POY;
-const PhoneImg: React.FC<{ src: string }> = ({ src }) => <Img src={staticFile(src)} style={{ position: "absolute", left: 0, top: -POY, width: 1206, height: 1600 * PK }} />;
-const Clock: React.FC<{ time: string; bg: string; color: string }> = ({ time, bg, color }) => (
-  <div style={{ position: "absolute", left: px(70), top: py(20), width: px(82), height: px(44), background: bg }}>
-    <span style={{ position: "absolute", left: px(7), top: px(4.5), fontFamily: ROBOTO, fontWeight: 500, fontSize: px(31), lineHeight: 1, color, letterSpacing: "0.01em" }}>{time}</span>
-  </div>
-);
-const Home: React.FC<{ time: string }> = ({ time }) => (<><PhoneImg src="phone/home.jpg" /><Clock time={time} bg="#010101" color="#E6E6E6" /></>);
+/* ------------------------------------------------------------------ the team's phone: its screenshots and recordings */
+const PhoneImg: React.FC<{ src: string }> = ({ src }) => <Img src={staticFile(src)} style={{ position: "absolute", left: 0, top: 0, width: SCR_W, height: SCR_H }} />;
+const Home: React.FC = () => <PhoneImg src="phone/home.jpg" />;
 /** One touch mark that glides between the taps like a pointer: it eases into each tap (slowing almost to a stop),
  *  presses, and moves on; between moves it keeps a slight drift so it never quite stops. `hide` lists frame ranges. */
 type Way = { f: number; x: number; y: number; press?: boolean };
@@ -147,30 +176,30 @@ const Cursor: React.FC<{ ways: Way[]; hide?: [number, number][]; show?: [number,
   return <div style={{ position: "absolute", left: x - 34, top: y - 34, width: 68, height: 68, borderRadius: 34, background: `rgba(20,24,30,${0.16 + 0.12 * press})`,
     border: "3px solid rgba(255,255,255,0.88)", boxShadow: "0 4px 14px rgb(0 0 0 / 0.18)", opacity: fade, transform: `scale(${1 - 0.18 * press})` }} />;
 };
-const ADD_TAPS = { add: [2.41, 201, 440], pick: [4.407, 201, 525.6], photos: [6.586, 201, 455.3], name: [9.608, 201, 463.8], what: [11.175, 201, 573.5],
-  save: [13.306, 201, 772.3], scen: [16.007, 201, 515.7], text: [17.885, 201, 320], saveScen: [24.686, 201, 436], done: [31.022, 201, 607.7] } as const;
-const ALERT_TAP_OFF = [6.528, 201, 596] as const;
-/** The system's opening: the app's window grows out of what was tapped; inside, the Altice app's real loading, then the app. */
+const ADD_TAPS = { add: [2.405, 201, 440], pick: [4.405, 201, 525.6], photos: [6.585, 201, 455.3], name: [9.646, 201, 463.8], what: [11.208, 201, 573.5],
+  save: [13.459, 201, 772.3], scen: [16.155, 201, 515.7], text: [18.032, 201, 320], saveScen: [24.922, 201, 436], done: [31.205, 201, 607.7] } as const;   // add-book.marks.json
+const ALERT_TAP_OFF = [6.54, 201, 596] as const;   // app points; screen y = 3 × y + REC_Y
+/** The system's opening: the app's window grows out of what was tapped, under the phone's bars; inside, the Altice
+ *  app's real loading (a screen recording of the team's phone), then the app. */
 const Grow: React.FC<{ at: number; from: [number, number, number, number]; r0: number; splash?: boolean; appAt?: number; children?: React.ReactNode }> = ({ at: a, from, r0, splash = true, appAt = 34, children }) => {
   const f = useCurrentFrame();
   if (f < a) return null;
   const u = ez(f, a, a + 14);
   const [x, y, w, h] = from;
-  const W = lerp(w, 1206, u), H = lerp(h, 2622, u);
+  const W = lerp(w, SCR_W, u), H = lerp(h, SCR_H, u);
   const app = splash ? ez(f, a + appAt, a + appAt + 10) : ez(f, a + 4, a + 12);
   return (
     <div style={{ position: "absolute", left: x * (1 - u), top: y * (1 - u), width: W, height: H, borderRadius: r0 * (1 - u), overflow: "hidden", boxShadow: "0 30px 90px rgb(0 0 0 / 0.35)" }}>
-      <div style={{ position: "absolute", left: 0, top: 0, width: 1206, height: 2622, transform: `scale(${W / 1206}, ${H / 2622})`, transformOrigin: "0 0", background: "#27BE9F" }}>
-        {splash ? <Sequence from={a} layout="none"><OffthreadVideo src={staticFile("phone/open-splash.mp4")} muted trimBefore={5}
-          style={{ position: "absolute", left: 0, top: -POY, width: 1206, height: 1600 * PK }} /></Sequence> : null}
-        {splash ? <Clock time="15:52" bg="#27BE9F" color="#1E1E1E" /> : null}
+      <div style={{ position: "absolute", left: 0, top: 0, width: SCR_W, height: SCR_H, transform: `scale(${W / SCR_W}, ${H / SCR_H})`, transformOrigin: "0 0", background: splash ? "#36D09E" : "#EEF3FB" }}>
+        {splash ? <Sequence from={a} layout="none"><OffthreadVideo src={staticFile("phone/open-splash.mp4")} muted trimBefore={12}
+          style={{ position: "absolute", left: 0, top: 0, width: SCR_W, height: SCR_H }} /></Sequence> : null}
         <AbsoluteFill style={{ opacity: app }}>{children}</AbsoluteFill>
       </div>
     </div>
   );
 };
-const ICON: [number, number, number, number] = [px(390), py(708), px(108), px(108)];
-const CARD: [number, number, number, number] = [px(28), py(60), px(664), px(273)];   // measured on the team's phone (720 px wide)
+const ICON: [number, number, number, number] = [px(390), py(708), px(108), px(108)];   // SmartHome Beta on the home screen
+const CARD: [number, number, number, number] = [px(28), SB_H + 14, px(664), px(273)];   // under the status bar; size measured on the team's phone
 /** The notification as the team's phone draws it, measured on a real one with a picture (19 Nov, 720 px wide): a light
  *  card (#F3F3F3, radius 44); the app's round icon (48) at left; "app • time" in grey; the picture (96, radius 10) at
  *  the top right beside the round expand button (48, #CBD6C6); the title (medium) and the whole message below. */
@@ -197,8 +226,8 @@ const Notice: React.FC<{ at: number }> = ({ at: a }) => {
 /* ------------------------------------------------------------------ 1: the app, the photos */
 const SHOT = [1.3, 7.83, 11.17, 16.2, 23.03, 27.27, 31.8, 36.1];   // the colleague's 8 shutter presses
 const SEG = 16, BEFORE = 0.35, PRESS = Math.round(BEFORE * 30);
-const S4_END = T.s4 + Math.floor(((36.4 - 13.7) / 1.5) * 30) - 2;   // add-book ends at 36.4 s
-const tapF = (s0: number, f0: number, rate: number, t: readonly [number, number, number]) => ({ f: Math.round(at(s0, f0, rate, t[0])), x: t[1] * 3, y: t[2] * 3, press: true });
+const S4_END = T.s4 + Math.floor(((36.26 - 13.7) / 1.5) * 30) - 2;   // add-book ends at 36.27 s
+const tapF = (s0: number, f0: number, rate: number, t: readonly [number, number, number]) => ({ f: Math.round(at(s0, f0, rate, t[0])), x: t[1] * 3, y: t[2] * 3 + REC_Y, press: true });
 const A1 = (t: readonly [number, number, number]) => tapF(1.38, T.s1, 1.25, t), A3 = (t: readonly [number, number, number]) => tapF(7.44, T.s3, 1.4, t), A4 = (t: readonly [number, number, number]) => tapF(13.7, T.s4, 1.5, t);
 const rest = (w: Way, df: number, dx: number, dy: number): Way => ({ f: w.f + df, x: w.x + dx, y: w.y + dy });   // aside, off the text being typed
 const WAYS_A: Way[] = (() => {
@@ -212,16 +241,16 @@ const ScreenA: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: "#000" }}>
-      {f < T.s1 + 12 ? <Home time="15:52" /> : null}
+      {f < T.s1 + 12 ? <Home /> : null}
       {f < T.cam + 2 ? <Grow at={T.grow} from={ICON} r0={40}><Sequence from={T.s1} layout="none"><Rec src="app/add-book.mp4" from={1.38} rate={1.25} /></Sequence></Grow> : null}
       {f >= T.cam && f < T.s3 ? SHOT.map((t, i) => (
         <Sequence key={i} from={T.cam + i * SEG} durationInFrames={i === SHOT.length - 1 ? T.s3 - T.cam - i * SEG : SEG} layout="none">
-          <AbsoluteFill style={{ background: "#000" }}><Rec src="footage/phone-photos.mp4" from={t - BEFORE} w={1209} /></AbsoluteFill>
+          <AbsoluteFill style={{ background: "#000" }}><Rec src="footage/phone-photos.mp4" from={t - BEFORE} w={CAM_W} h={SCR_H} top={0} /></AbsoluteFill>
         </Sequence>)) : null}
       {f >= T.s3 && f < T.s4 ? <Sequence from={T.s3} layout="none"><Rec src="app/add-book.mp4" from={7.44} rate={1.4} /></Sequence> : null}
       <EmptySlots />
       {f >= T.s4 && f < S4_END ? <Sequence from={T.s4} layout="none"><Rec src="app/add-book.mp4" from={13.7} rate={1.5} /></Sequence> : null}
-      {f >= S4_END ? <Img src={staticFile("phone/add-book-last.png")} style={{ position: "absolute", inset: 0, width: 1206, height: 2622 }} /> : null}
+      {f >= S4_END ? <Img src={staticFile("phone/add-book-last.png")} style={{ position: "absolute", left: 0, top: REC_Y, width: SCR_W, height: 2622 }} /> : null}
       <Cursor ways={WAYS_A} show={[54, T.test + 4]} hide={[[T.grow - 2, T.s1 + 10], [T.cam - 1, T.s3 + 16]]} />
     </AbsoluteFill>
   );
@@ -229,7 +258,9 @@ const ScreenA: React.FC = () => {
 const GRID: Rect = { x: 150, y: 420, w: 844, h: 472 };
 const slot = (j: number): Rect => ({ x: GRID.x + 24 + (j % 4) * 202, y: GRID.y + 56 + Math.floor(j / 4) * 202, w: 190, h: 190 });
 const r4 = (r: { x: number; y: number }, w: number, h: number): Rect => ({ x: r.x, y: r.y, w: w * KS * OVER, h: h * KS * OVER });
-const VIEWFINDER = r4(scr(CX.right, 308, 386), 898, 1264);
+const CAM_W = Math.round((392 * SCR_H) / 850);   // the colleague's camera recording (392 × 850), to cover the screen
+const CAM_K = CAM_W / 392, CAM_X = (SCR_W - CAM_W) / 2;
+const VIEWFINDER = r4(scr(CX.right, CAM_X + 100 * CAM_K, 125 * CAM_K), 292 * CAM_K, 410 * CAM_K);   // where the photos were cut from its preview
 const APP_SLOTS: [number, number, number, number][] = [[114, 618, 231, 232], [362, 618, 232, 232], [612, 618, 231, 232], [861, 618, 231, 232],
   [114, 867, 232, 231], [362, 867, 232, 231], [612, 867, 231, 231], [860, 867, 232, 231]];
 const BACK = (j: number) => T.s3 + 2 + 2 * j;            // photo j leaves the card for its slot in the app
@@ -253,7 +284,7 @@ const PhotoCard: React.FC = () => {
         if (f < p.at) return null;
         const back = BACK(p.j);
         if (f >= back + BACK_LEN) return null;                 // landed: the app's own thumbnail is now showing
-        const app = APP_SLOTS[p.j], to = r4(scr(CX.right, app[0], app[1]), app[2], app[3]);
+        const app = APP_SLOTS[p.j], to = r4(scr(CX.right, app[0], app[1] + REC_Y), app[2], app[3]);
         const q = f < p.at + 14 ? lerpRect(VIEWFINDER, slot(p.j), ez(f, p.at, p.at + 14, theme.ease.out)) : f < back ? slot(p.j) : lerpRect(slot(p.j), to, ez(f, back, back + BACK_LEN));
         const flying = f < p.at + 14 || f >= back;
         return <Img key={p.j} src={staticFile(p.src)} style={{ position: "absolute", left: q.x, top: q.y, width: q.w, height: q.h, objectFit: "cover",
@@ -267,7 +298,7 @@ const PhotoCard: React.FC = () => {
 const EmptySlots: React.FC = () => {
   const f = useCurrentFrame();
   if (f < T.s3 || f >= BACK(7) + BACK_LEN) return null;
-  return <>{APP_SLOTS.map(([x, y, w, h], j) => f < BACK(j) + BACK_LEN ? <div key={j} style={{ position: "absolute", left: x, top: y, width: w, height: h, borderRadius: 24, background: "#D9E1EE" }} /> : null)}</>;
+  return <>{APP_SLOTS.map(([x, y, w, h], j) => f < BACK(j) + BACK_LEN ? <div key={j} style={{ position: "absolute", left: x, top: y + REC_Y, width: w, height: h, borderRadius: 24, background: "#D9E1EE" }} /> : null)}</>;
 };
 
 /* ------------------------------------------------------------------ 3: the lab (one take) */
@@ -341,7 +372,6 @@ const LabLayer: React.FC = () => {
       <div style={{ position: "absolute", right: 36, top: 30, display: "flex", alignItems: "center", gap: 14, padding: "9px 16px", borderRadius: 10, background: "rgba(10,12,16,0.72)",
         fontFamily: MONO, fontWeight: 500, fontSize: 24, color: "#fff", letterSpacing: "0.02em" }}>
         <span style={{ width: 12, height: 12, borderRadius: 6, background: "#ff3b30", opacity: Math.floor(f / 15) % 2 ? 1 : 0.35 }} />REC {ms(t)}
-        <span style={{ opacity: 0.45 }}>|</span>{hms(CLOCK0 + t)}
       </div>
     </AbsoluteFill>
   );
@@ -365,22 +395,53 @@ const LabFrame: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ 3: the phone over the lab */
-const ALERT_END = T.tap + 2 + Math.floor((13.06 - ALERT_OPEN) * 30) - 2;
+const ALERT_END = T.tap + 2 + Math.floor((12.99 - ALERT_OPEN) * 30) - 2;
 const AlertRec: React.FC = () => {
   const f = useCurrentFrame();
   return f < ALERT_END ? <Sequence from={T.tap + 2} layout="none"><Rec src="app/alert-book-open.mp4" from={ALERT_OPEN} /></Sequence>
-    : <Img src={staticFile("phone/alert-last.png")} style={{ position: "absolute", inset: 0, width: 1206, height: 2622 }} />;
+    : <Img src={staticFile("phone/alert-last.png")} style={{ position: "absolute", left: 0, top: REC_Y, width: SCR_W, height: 2622 }} />;
 };
 const ScreenC: React.FC = () => (
   <AbsoluteFill style={{ background: "#000" }}>
-    <Home time="16:00" />
+    <Home />
     <Notice at={T.notice} />
     <Grow at={T.tap} from={CARD} r0={px(40)} splash={false}><AlertRec /></Grow>
     <Cursor show={[T.notice + 10, T.cut + 20]} hide={[[T.tap + 4, T.tap + 30]]} ways={[{ f: T.notice + 10, x: 820, y: 1500 },
       { f: T.tap, x: CARD[0] + CARD[2] * 0.42, y: CARD[1] + CARD[3] / 2, press: true }, { f: T.tap + 34, x: 760, y: 1500 },
-      { f: ALARM_OFF, x: ALERT_TAP_OFF[1] * 3, y: ALERT_TAP_OFF[2] * 3, press: true }, { f: T.cut + 20, x: 820, y: 2100 }]} />
+      { f: ALARM_OFF, x: ALERT_TAP_OFF[1] * 3, y: ALERT_TAP_OFF[2] * 3 + REC_Y, press: true }, { f: T.cut + 20, x: 820, y: 2100 }]} />
   </AbsoluteFill>
 );
+
+/* ------------------------------------------------------------------ the local models at work (bottom right) */
+// Facts from the prototype: edge.py (google/owlv2-base-patch16-ensemble, facebook/dinov2-small), llm_local.py
+// (mlx-community/Qwen3-1.7B-4bit). DINOv2 made the book's fingerprint from its 8 photos; Qwen3 compiled the sentence;
+// OWLv2 ran over the lab take (video/tools/detect_take.py).
+const MODELS = [
+  { from: Math.round(at(7.44, T.s3, 1.4, 13.46)), until: Math.round(at(13.7, T.s4, 1.5, 16.0)), name: "DINOv2", what: "impressão visual do livro" },
+  { from: Math.round(at(13.7, T.s4, 1.5, 24.92)), until: Math.round(at(13.7, T.s4, 1.5, 27.92)), name: "Qwen3-1.7B", what: "a frase passa a cenário" },
+  { from: T.lab + 20, until: T.success, name: "OWLv2", what: "deteta pessoas e coisas" },
+];
+const ModelsCard: React.FC = () => {
+  const f = useCurrentFrame();
+  if (f < MODELS[0].from || f > T.success + 10) return null;
+  const shown = MODELS.filter((m) => f >= m.from).slice(-2);
+  const out = ez(f, T.success - 6, T.success + 6);
+  return (
+    <div style={{ position: "absolute", right: 36, bottom: 30, width: 392, padding: "12px 16px 10px", borderRadius: 14, background: "rgba(255,255,255,0.93)",
+      boxShadow: "0 14px 34px -14px rgba(40,30,15,0.4), 0 0 0 1px rgba(30,25,15,0.06)", fontFamily: SANS, opacity: ez(f, MODELS[0].from, MODELS[0].from + 10) * (1 - out) }}>
+      <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: "#7A756C", marginBottom: 6 }}>Modelos locais</div>
+      {shown.map((m) => {
+        const busy = f < m.until;
+        return (
+          <div key={m.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0", opacity: ez(f, m.from, m.from + 10), transform: `translateY(${8 * (1 - ez(f, m.from, m.from + 12, theme.ease.out))}px)` }}>
+            <span style={{ width: 9, height: 9, borderRadius: 5, background: busy ? ACCENT : "#C9C3B8", opacity: busy ? 0.55 + 0.45 * Math.abs(Math.sin(f / 8)) : 1 }} />
+            <span style={{ fontSize: 20, fontStyle: "italic", fontWeight: 600, color: INK, whiteSpace: "nowrap" }}>{m.name}</span>
+            <span style={{ fontSize: 18, color: "#6E695F", whiteSpace: "nowrap" }}>{m.what}</span>
+          </div>);
+      })}
+    </div>
+  );
+};
 
 /* ------------------------------------------------------------------ the scene */
 export const Scene1Book: React.FC = () => {
@@ -395,7 +456,7 @@ export const Scene1Book: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: PAPER }}>
       <AbsoluteFill style={{ transform: f < T.lab ? camCss(f) : camCss(f), transformOrigin: "0 0" }}>
-        {f < T.test + 30 ? <PhoneAt cx={cxA}><ScreenA /></PhoneAt> : null}
+        {f < T.test + 30 ? <PhoneAt cx={cxA} bars={{ time: "15:52", mode: f < T.grow + 10 ? "home" : f < T.s1 ? "splash" : f >= T.cam && f < T.s3 ? "none" : "app" }}><ScreenA /></PhoneAt> : null}
         <Line text="Abre-se a app." from={44} to={150} />
         <Line text="Adiciona-se o livro." from={150} to={T.cam} />
         <Line text="Fotografa-se de vários lados." from={T.cam} to={T.s3 + 4} top={300} />
@@ -406,7 +467,7 @@ export const Scene1Book: React.FC = () => {
       </AbsoluteFill>
       <LabFrame />
       <AbsoluteFill style={{ transform: camCss(f), transformOrigin: "0 0" }}>
-        {f >= T.phoneIn && f < T.cut + 20 ? <PhoneAt cx={cxC2} shadow={1}><ScreenC /></PhoneAt> : null}
+        {f >= T.phoneIn && f < T.cut + 20 ? <PhoneAt cx={cxC2} shadow={1} bars={{ time: "16:00", mode: f < T.tap + 10 ? "home" : "app" }}><ScreenC /></PhoneAt> : null}
       </AbsoluteFill>
       {/* the close: a green wash, a check, the line */}
       {f >= T.success ? (
@@ -425,17 +486,17 @@ export const Scene1Book: React.FC = () => {
             opacity: ez(f, T.end, T.end + 18) }} />
           <EndorsementLine cx={960} top={575} width={290} style={{ opacity: ez(f, T.end + 14, T.end + 30) }} />
         </AbsoluteFill>) : null}
+      <ModelsCard />
       <Grain />
       {/* sound: the song throughout, lower under the lab and under the alarm; light taps on each press; the shutters; the
           alarm (from 5 s after the door shuts until it is turned off); the buzz; the team's whooshes, one kind per moment,
           each placed so its peak lands on the fastest frame of its move (peaks measured: slow-gentle 0,28 s, zoom-soft
           0,37 s, throw 0,07 s, fast 0,15 s, riser-soft 0,43 s, bass-slow 1,12 s) */}
-      <Audio src={staticFile("audio/music/bed-real.wav")} volume={(v) => 0.12 * interpolate(v, [0, 20, T.lab, T.lab + 30, ALARM_ON - 10, ALARM_ON, ALARM_OFF, ALARM_OFF + 20, T.success - 10, T.success + 20, SCENE1_FRAMES - 30, SCENE1_FRAMES],
-        [0, 1, 1, 0.75, 0.75, 0.3, 0.3, 0.75, 0.75, 1.15, 1.15, 0], clamp)} />
-      {[[T.glide, "move-glide"], [T.test - 2, "move-exit"], [T.phoneIn, "move-in"], [T.aside, "move-aside"], [T.cut - 10, "move-out"]].map(([a, n], i) => (
-        <Sequence key={`m${i}`} from={(a as number) - 2} layout="none"><Audio src={staticFile(`audio/sfx/whoosh/${n}.wav`)} volume={0.3} /></Sequence>))}
+      <Audio src={staticFile("audio/music/bed-real-long.wav")} volume={(v) => 0.5 * interpolate(v, [0, 20, T.lab, T.lab + 30, ALARM_ON - 10, ALARM_ON, ALARM_OFF, ALARM_OFF + 20, T.success - 10, T.success + 20, SCENE1_FRAMES - 40, SCENE1_FRAMES],
+        [0, 1, 1, 0.85, 0.85, 0.5, 0.5, 0.85, 0.85, 1.1, 1.1, 0], clamp)} />
       {[[209, "zoom-soft", 0.9], [424, "zoom-soft", 0.9], [596, "zoom-soft", 0.9], [1383, "zoom-soft", 0.9],
-        [T.s3 + 12, "fast", 0.12], [T.lab + 11, "riser-soft", 0.22], [T.success + 13, "bass-slow", 0.2],
+        [T.glide + 18, "slow-gentle", 0.32], [T.test + 12, "fast", 0.08], [T.phoneIn + 4, "slow-gentle", 0.32], [T.aside + 15, "slow-gentle", 0.28], [T.cut + 14, "fast", 0.07],
+        [T.s3 + 12, "fast", 0.07], [T.lab + 11, "riser-soft", 0.15], [T.success + 13, "riser-soft", 0.13],
         ...SHOT.map((_, i) => [T.cam + i * SEG + PRESS + 1 + 4, "throw", 0.07] as const)].map(([peak, n, vol], i) => {
         const PEAK: Record<string, number> = { "slow-gentle": 0.28, "zoom-soft": 0.37, throw: 0.07, fast: 0.15, "riser-soft": 0.43, "bass-slow": 1.12 };
         return <Sequence key={`w${i}`} from={Math.round((peak as number) - PEAK[n as string] * 30)} layout="none"><Audio src={staticFile(`audio/sfx/whoosh/${n}.wav`)} volume={vol as number} /></Sequence>;
@@ -446,7 +507,7 @@ export const Scene1Book: React.FC = () => {
       <Sequence from={ALARM_ON} durationInFrames={ALARM_OFF - ALARM_ON + 4} layout="none"><Audio src={staticFile("audio/sfx/scene1/alarm-beep.wav")} loop
         volume={(v) => { const g = ALARM_ON + v; return (g < T.phoneIn ? 0.5 : g < T.aside ? 0.22 : 0.4) * (1 - ez(g, ALARM_OFF, ALARM_OFF + 4)); }} /></Sequence>
       <Sequence from={T.notice} layout="none"><Audio src={staticFile("audio/sfx/scene1/buzz.wav")} volume={0.5} /></Sequence>
-      {[Math.round(at(13.7, T.s4, 1.5, 27.737)), T.success + 40].map((a, i) => (
+      {[Math.round(at(13.7, T.s4, 1.5, 27.921)), T.success + 40].map((a, i) => (
         <Sequence key={`ok${i}`} from={a - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={i ? 0.5 : 0.35} /></Sequence>))}
     </AbsoluteFill>
   );

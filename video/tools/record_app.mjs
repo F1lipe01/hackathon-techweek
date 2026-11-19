@@ -46,6 +46,7 @@ const RAW_CSS = `
     transition: left 480ms cubic-bezier(0.65, 0, 0.35, 1), top 480ms cubic-bezier(0.65, 0, 0.35, 1), opacity 200ms ease-out, transform 120ms ease-out; }
   .rec-finger.show { opacity: 1; } .rec-finger.press { transform: scale(0.86); background: rgb(42 190 158 / 0.28); }
   .rec-finger { display: none !important; }  /* the film draws one touch that glides between the taps (marks.json x, y) */
+  .ios-status > *, .home-indicator { opacity: 0 !important; }  /* the film draws the team's phone's own Android status and navigation bars */
 `;
 
 // Concept takes (act 6, marked "conceito" in the film): the same real app, but /api/state and /api/assistant are

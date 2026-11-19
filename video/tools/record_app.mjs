@@ -68,7 +68,8 @@ async function take(name, clock, script) {
     await page.route('**/api/state', async (route) => {
       const s = await (await fetch(BASE + '/api/state')).json();
       s.events = [...C.events, ...s.events];
-      s.rules = [...C.rules, ...s.rules];
+      s.rules = C.onlyRules ? [...C.rules] : [...C.rules, ...s.rules];  // onlyRules: the take shows only its own sensors
+      s.things = [...(C.things || []), ...s.things];  // things a concept take starts with (the book, already registered)
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(s) });
     });
     await page.route('**/api/assistant', async (route) => {
@@ -141,6 +142,9 @@ async function take(name, clock, script) {
   rmSync(frames, { recursive: true, force: true });
   console.log(`${name}: ${shots.length} frames, ${(shots.at(-1).t - t0).toFixed(1)} s → ${out}`);
 }
+
+const BOOK = { id: 'concept-book', name: 'Book', description: 'yellow book', fingerprint: { n: 8, crops: ['concept-book-thing.jpg'] },
+  last_seen: { ts: today(14, 4), zone_name: 'desk', room: 'Work Room', crop: 'concept-book-thing.jpg' } };
 
 const TAKES = {
   // Things tab → Add things → Wallet → three views → "Wallet added" → Done
@@ -297,6 +301,40 @@ const TAKES = {
       await refresh();
       mark('alert');
       await pause(5000);
+    }); },
+  // scene 1, the start: the book is registered (Things), and one sentence sets the rule: the alarm and a message
+  'rule-book': () => { Object.assign(C, { on: true, onlyRules: true, events: [], rules: [], delay: 900, things: [BOOK],
+    reply: (text) => { const r = { id: 'concept-book-rule', title: 'Book left behind', sentence: text, active: true }; C.rules = [r]; return { kind: 'sensor', sensor: r }; } });
+    return take('rule-book', '14:05', async ({ tap, hideFinger, type, mark }) => {
+      await pause(1600);
+      mark('things');
+      await tap('#fab');
+      mark('assistant');
+      await pause(900);
+      await tap('#askfield');
+      await hideFinger();
+      mark('type');
+      await type('Every time I leave without my book, sound the alarm and send me a message');
+      await pause(350);
+      await tap('[data-act="send"]');
+      mark('sent');
+      await hideFinger();
+      await pause(4500);
+    }); },
+  // scene 1, the end: the alert arrives; tapping it opens the camera's picture, large
+  'alert-book-open': () => { Object.assign(C, { on: true, onlyRules: true, events: [], things: [BOOK],
+    rules: [{ id: 'concept-book-rule', title: 'Book left behind', sentence: 'Every time I leave without my book, sound the alarm and send me a message', active: true }], reply: null });
+    return take('alert-book-open', '14:10', async ({ page, refresh, mark, tap, hideFinger }) => {
+      await pause(1200);
+      conceptEvent({ kind: 'alert', ts: today(14, 10), title: 'Left without the book', text: 'The door closed and your book is still on the desk. The alarm is on.',
+        crop: 'concept-book.jpg', snapshot: 'concept-snapshot.jpg', alarm: 'The lab siren is sounding.', place: 'Work Room camera' });
+      await refresh();
+      mark('alert');
+      await pause(1600);
+      await tap('#toast');
+      mark('open');
+      await hideFinger();
+      await pause(4500);
     }); },
   // video 1 v7, the dog: "Has the dog eaten today?", answered with its picture at the bowl
   dog: () => { Object.assign(C, { on: true, events: [], rules: [], delay: 900,

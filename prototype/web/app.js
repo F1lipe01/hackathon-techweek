@@ -465,9 +465,17 @@ function notificationsPage() {
     return `${phead('', '', `<button type="button" class="ibtn" data-act="stub" data-title="Filter" aria-label="Filter">${I.filter}</button>`)}<div class="ptitle">Notifications</div>
       <div class="unread-h"><b>Unread (${unreadCount()})</b><span data-act="mark-read" role="button" style="cursor:pointer">Mark all as read</span></div>
       ${list.length ? '' : '<div class="empty"><p>No notifications yet.</p></div>'}
-      ${list.map((e) => { const thing = e.kind === 'alert'; return `<div class="nrow ${ui.read.has(e.id) ? 'read' : ''}"><span>${I.bellC}</span><span><b>${esc(thing ? e.title || 'ThingTracker' : e.device || 'Device')}</b><small>${esc(e.text)} · ${ago(e.ts)}</small>
+      ${list.map((e) => { const thing = e.kind === 'alert'; return `<div class="nrow ${ui.read.has(e.id) ? 'read' : ''}" ${thing ? `data-act="open-alert" data-id="${esc(e.id)}" role="button" style="cursor:pointer"` : ''}><span>${I.bellC}</span><span><b>${esc(thing ? e.title || 'ThingTracker' : e.device || 'Device')}</b><small>${esc(e.text)} · ${ago(e.ts)}</small>
         ${e.crop ? `<img class="crop" src="${crop(e.crop)}" alt="">` : ''}<span class="tag">${thing ? 'Things' : 'Device'}</span></span>${I.chevR}</div>`; }).join('')}`;
   }, { live: true });
+}
+/** An alert, opened from its notification: the camera's picture, large, what happened and when, and the alarm's state. */
+function alertPage(e) {
+  push(() => `${phead('', '')}<div class="ptitle">${esc(e.title || 'Alert')}</div>
+    <div class="alert-shot">${e.snapshot || e.crop ? `<img src="${crop(e.snapshot || e.crop)}" alt="What the camera saw">` : ''}<span class="when">${hm(e.ts)} · ${esc(e.place || 'Camera')}</span></div>
+    <p class="alert-text">${esc(e.text || '')}</p>
+    ${e.alarm ? `<div class="alert-alarm"><span class="dot"></span><b>Alarm on</b><small>${esc(e.alarm)}</small></div>` : ''}
+    <div class="bottom-bar alert-actions">${e.alarm ? '<button type="button" class="btn-p danger" data-act="stub" data-title="Turn off the alarm">Turn off the alarm</button>' : ''}<button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`);
 }
 function settingsPage() {
   push(() => `${phead('', '')}<div class="ptitle">Settings</div><h3 class="gtitle">Notifications</h3><div class="group">${row(I.bell, 'Type of notifications', 'stub')}</div>
@@ -564,8 +572,11 @@ function dialog(title, text, actions) {
   };
 }
 let toastTimer;
-function toast(title, text, img) {
+function toast(title, text, img, ev) {
   const t = $('toast');
+  t._event = ev || null;
+  t.onclick = () => { if (t._event) { t.classList.remove('show'); t.hidden = true; alertPage(t._event); } };
+  t.style.cursor = ev ? 'pointer' : '';
   t.innerHTML = `${img ? `<img src="${crop(img)}" alt="">` : '<svg style="--a:#2abe9e;--i:#1a2233"><use href="#mark"/></svg>'}<div><b>Altice Home · ${esc(title)}</b>${esc(text)}</div>`;
   t.hidden = false; requestAnimationFrame(() => t.classList.add('show'));
   clearTimeout(toastTimer);
@@ -602,6 +613,7 @@ device.addEventListener('click', async (e) => {
     case 'scenarios': scenariosPage(); break;
     case 'rooms': roomsPage(); break;
     case 'notifications': notificationsPage(); break;
+    case 'open-alert': { const ev = (state.events || []).find((x) => String(x.id) === el.dataset.id); if (ev) alertPage(ev); break; }
     case 'settings': settingsPage(); break;
     case 'mark-read': notes().forEach((x) => ui.read.add(x.id)); store.set('tt-read', [...ui.read]); refreshPage(); renderTabs(); break;
     case 'stub': stub(el.dataset.title || el.textContent.trim()); break;
@@ -659,7 +671,7 @@ async function refresh() {
   for (const e of state.events) {
     if (seen.has(e.id)) continue;
     seen.add(e.id);
-    if (!firstLoad && e.kind === 'alert') toast(e.title || 'Alert', e.text, e.crop);
+    if (!firstLoad && e.kind === 'alert') toast(e.title || 'Alert', e.text, e.crop, e);
   }
   firstLoad = false;
 }

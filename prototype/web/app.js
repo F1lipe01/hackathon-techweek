@@ -622,13 +622,16 @@ function notificationsPage() {
   }, { live: true });
 }
 /** An alert, opened from its notification: the camera's picture, large, what happened and when, and the alarm's state. */
+/** A small beacon (blue and red halves on a dark base, light rays): an original drawing, no force's badge or logo. */
+const ICON_BEACON = '<svg viewBox="0 0 40 40" width="40" height="40"><path d="M11 28V19a9 9 0 0 1 18 0v9Z" fill="#2563EB"/><path d="M20 10a9 9 0 0 1 9 9v9h-9Z" fill="#DC2626"/><rect x="8" y="28" width="24" height="5" rx="2" fill="#1a2233"/><path d="M20 3.5v3M7.5 8.5l2 2M32.5 8.5l-2 2M3.5 19h3M33.5 19h3" stroke="#1a2233" stroke-width="2.2" stroke-linecap="round"/></svg>';
 function alertPage(e) {
   document.body.classList.add('alert-open');
   const page = push(() => `${phead('', '')}<div class="ptitle">${esc(e.title || 'Alert')}</div>
     <div class="alert-shot">${e.snapshot || e.crop ? `<img src="${crop(e.snapshot || e.crop)}" alt="What the camera saw">` : ''}<span class="when">${hm(e.ts)} · ${esc(e.place || 'Camera')}</span></div>
     <p class="alert-text">${esc(e.text || '')}</p>
     ${e.alarm ? (e.alarmOff ? `<div class="alert-alarm off"><span class="dot"></span><b>Alarm off</b><small>Turned off from the app at ${hm(e.alarmOff)}.</small></div>` : `<div class="alert-alarm"><span class="dot"></span><b>Alarm on</b><small>${esc(e.alarm)}</small></div>`) : ''}
-    <div class="bottom-bar alert-actions">${e.alarm && !e.alarmOff ? '<button type="button" class="btn-p danger" data-act="alarm-off">Turn off the alarm</button>' : ''}<button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`);
+    ${e.unknown ? `<div class="alert-reco"><span class="beacon">${ICON_BEACON}</span><span><b>Possible intrusion</b><small>An unknown person came in and took something. We recommend calling the police.</small></span></div>` : ''}
+    <div class="bottom-bar alert-actions${e.unknown ? ' three' : ''}">${e.unknown ? '<button type="button" class="btn-p police" data-act="call-police">Call the police (112)</button>' : ''}${e.alarm && !e.alarmOff ? `<button type="button" class="${e.unknown ? 'btn-s' : 'btn-p danger'}" data-act="alarm-off">Turn off the alarm</button>` : ''}<button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`);
   page._alert = e;
 }
 function settingsPage() {
@@ -782,6 +785,8 @@ device.addEventListener('click', async (e) => {
     case 'pick-thing': if (el.dataset.q === 'person') personMethodPage(el.dataset.name); else methodPage(el.dataset.name, el.dataset.q); break;
     case 'record-face': $('facein')?.click(); break;
     case 'save-person': savePerson(el); break;
+    // the prototype never dials: it only asks, as a real phone would before a call
+    case 'call-police': dialog('Call 112?', 'The phone would call the emergency number. The prototype does not dial.', [['Cancel', 'btn-s', null], ['Call', 'btn-p police', null]]); break;
     case 'take-photos': $('photoin')?.click(); break;
     case 'pick-camera': pop(); startRegister(pending.name, pending.q); break;
     case 'save-thing': saveThing(el); break;

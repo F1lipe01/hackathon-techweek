@@ -445,14 +445,14 @@ const TAKES = {
       const rule = st.rules.find((r) => r.unknown);
       await pause(1200);
       conceptEvent({ kind: 'alert', ts: today(16, 26), title: rule?.title || 'Unknown person at home', rule_id: rule?.id,
-        text: 'Someone the camera does not know came in. The alarm is on.', crop: 'concept-stranger-face.jpg',
+        text: 'Someone the camera does not know came in. The alarm is on.', unknown: true, crop: 'concept-stranger-face.jpg',
         snapshot: 'concept-stranger.jpg', alarm: 'The lab siren is sounding.', place: 'Work Room camera' });
       await refresh();
       mark('alert');
       await pause(1600);
       await page.evaluate(() => document.getElementById('toast').click());
       mark('open');
-      await pause(3500);
+      await pause(4000);
     }); },
   // scene 1, the end: the alert arrives; tapping it opens the camera's picture, large
   // the app's real state (the book and its rule, made in the add-book take); only the alert of 14:10 is added, because the

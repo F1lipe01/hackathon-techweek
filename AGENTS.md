@@ -37,6 +37,20 @@ prototype/.venv/bin/python prototype/record.py --seconds 120 --name take   # vid
   - Division of work in `brain.py`: the code decides which things a question is about (two wallets: it asks which one), and checks the answer against the memory; the model writes the words. A sentence's light or plug action, minutes and place are taken from its words; the model writes the title and the message. An answer that disagrees with the memory is replaced by a plain sentence built from it; a rule that is not valid falls back to the templates.
   - Measured on the team's M1 Pro (18 Nov 2026): answers in 0.4 to 1.7 s, rules in 1.5 to 3.2 s. English is reliable; Portuguese answers are understandable but not always European Portuguese.
   - Switches: `TT_LLM=off` uses the templates only; `TT_AI=1 TT_LLM=local` keeps Claude for the camera and the local model for the assistant. `TT_LLM_MODEL=mlx-community/Qwen3-4B-Instruct-2507-4bit` (Apache-2.0, 2.1 GB) was tried: about three times slower, and no better in Portuguese.
+- **Faces** (`faces.py`, on the home device, opt-in): YuNet finds a face inside a person box, SFace compares it with the family's templates. The edge sends the server only the result: a person's id, `unknown` or `not_visible`.
+  - Models, both from [opencv_zoo](https://github.com/opencv/opencv_zoo), run on the CPU through OpenCV's `cv2.FaceDetectorYN` and `cv2.FaceRecognizerSF`, licences checked on each model folder's README and LICENSE (19 Nov 2026):
+    - YuNet, `face_detection_yunet_2023mar.onnx`, MIT (Copyright (c) 2020 Shiqi Yu), sha256 `8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4`;
+    - SFace, `face_recognition_sface_2021dec.onnx`, Apache-2.0, sha256 `0ba9fbfa01b5270c96627c4ef784da859931e02f04419c829e83484087c34e79`.
+  - The weights are not in git (`prototype/models/` is gitignored). Fetch them once, check the hashes, and load them only as weights; nothing downloaded is executed:
+    ```
+    mkdir -p prototype/models && cd prototype/models
+    curl -LO https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx
+    curl -LO https://github.com/opencv/opencv_zoo/raw/main/models/face_recognition_sface/face_recognition_sface_2021dec.onnx
+    shasum -a 256 *.onnx
+    ```
+  - Setup: `opencv-python-headless` (5.1.0) in `prototype/.venv-vision`.
+  - Threshold: cosine 0.30 to a template, below OpenCV's recommended 0.363, chosen on the lab take, where the kit camera's faces are 40 to 86 px. A face is judged only when YuNet scores it at least 0.8, it is at least 40 px wide and it is not turned too far; otherwise it is `not_visible`, never `unknown`. The numbers are in `faces.THRESHOLD_NOTE`.
+  - Templates live in the home device's own database, `prototype/data/edge.db`, table `face_templates`, never in the server's.
 - **Database** (`store.py`, file `prototype/data/home.db`, SQLite). Two kinds of tables:
   - a copy of what the Altice platform already holds, in its own model (`home`, `rooms`, `devices`), refreshed through the MCP's read-only tools when logged in;
   - ThingTracker's additions (`things`, `fingerprints`, `sightings`, `sensors`, `events`, `spend`), which in production would live in the platform's database, per customer.

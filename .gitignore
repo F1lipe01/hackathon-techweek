@@ -36,5 +36,7 @@ prototype/.venv/
 prototype/data/
 prototype/.venv-vision/
 prototype/.venv-llm/
+# Face models (ONNX weights from opencv_zoo): fetched once, see AGENTS.md
+prototype/models/
 deliverables/executive-summary/.fonts/
 prototype/web/docs/

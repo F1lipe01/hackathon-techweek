@@ -2,6 +2,36 @@
 
 How the project moved, day by day: what changed, why, and what the team said. Git history has every step; this page is the summary. Newest day first.
 
+## Thu 19 Nov: research before the rebuild, and a shoot set up for compositing
+
+**After v5.1 was rejected (night of 18–19 Nov)**
+- The team's verdict on v5.1:
+  - slow pace and slow effects;
+  - an opening that doesn't hook;
+  - silent text pops and actions;
+  - a wallet section that looked fake.
+- So research came first, on six questions: faking real actions, screen replacement, the viewfinder, green screens on phones, pace and sound. It is in `video/research/compositing-playbook.md`, with 45 sources.
+- **Two findings changed the plan:**
+  - Phones in ads are filmed with a blank or marker screen and the app is tracked in afterwards.
+  - The prototype registers a thing by showing it to the home camera, not by phone photos. So the proof of the registration shot is built twice: proof A shows the real flow, proof B shows the photo concept and is labelled "conceito".
+- **Rules from 18 Nov that turned out to be misread:**
+  - "17 characters per second" was Netflix's limit for children.
+  - "Sound only on changes of state" made the cut silent.
+  - Both are replaced: every visual event gets a sound.
+
+**Tools for today's takes**
+- Marker screens for the held iPhone:
+  - dark green where a thumb crosses the screen, so it can be keyed;
+  - grey where nothing touches it.
+- A marker tracker: ArUco markers plus an ECC planar fit.
+  - On a synthetic 4K plate with motion blur, a fast flick and a thumb: 0,42 px median error and 2,1 px worst. v5.1's tracker fitted a rectangle and was wrong under perspective.
+  - A thumb keyer.
+  - A Remotion layer (`TrackedScreen`) that adds motion blur, defocus, the keyed bezel and thumb, glow and grain.
+- The shoot sheet, published for the team: settings (4K, 30 fps, 1/50 s against 50 Hz flicker, HEVC), 17 shots plus a hook pack, the sounds to record on set, and a first-take tracking check.
+
+**Blocked**
+- The Mac's disk fell to about 3 GB free. Headless Chrome then stopped rendering stills, so the latest `TrackedScreen` changes are not render-checked yet.
+
 ## Wed 18 Nov: from an idea to a submitted report, a prototype and a pitch
 
 **Morning: the product and the prototype**

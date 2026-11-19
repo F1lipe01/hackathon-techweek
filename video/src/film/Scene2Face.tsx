@@ -46,8 +46,8 @@ const lerpRect = (a: Rect, b: Rect, u: number): Rect => ({ x: lerp(a.x, b.x, u),
 const T = {
   glide: 30, tapIcon: 80, grow: 82, s1: 118,      // the app opens; add-person from 1.38 s at 1.25x: Person, the name, Record
   face: 292,                                       // the face scan (drawn: the phone's camera screen)
-  s3: 456,                                         // add-person from 10.74 s (the saving page's first frame) at 1.25x: saving, added, Continue, the suggestion, Turn on
-  s4: 683, s4b: 710,                               // the rule is compiled (20.2-22.45 s at 2.5x), then saved, Done (1.25x)
+  s3: 456,                                         // add-person from 10.77 s (the saving page's first frame) at 1.25x: saving, added, Continue, the suggestion, Turn on
+  s4: 683, s4b: 710,                               // the rule is compiled ("Turning on…", still: 20.23-25.44 s at 5.8x), then saved, Done (1.25x)
   test: 820, lab: 910,                             // "Vamos testar?" (held 3 s); the lab opens out of the page
   f1: 1090, f1end: 1210,                           // Filipe's face: caught, compared, matched (4 s)
   cut: 1426,                                       // a cut to the stranger
@@ -59,7 +59,9 @@ const T = {
 export const SCENE2_FRAMES = T.end + 120;
 const at = (s0: number, f0: number, rate: number, t: number) => f0 + ((t - s0) / rate) * 30;
 /** add-person's second at frame f, for the part after T.s4 (three speeds). */
-const appSrc = (t: number) => (t < 20.2 ? at(10.74, T.s3, 1.25, t) : t < 22.45 ? at(20.2, T.s4, 2.5, t) : at(22.45, T.s4b, 1.25, t));   // add-person after the scan
+const S3_SRC = 10.77, S4_SRC = S3_SRC + ((T.s4 - T.s3) / 30) * 1.25, S4B_SRC = 25.44;   // add-person.marks.json (v5): saving page, compile, saved page (25.467)
+const S4_RATE = ((S4B_SRC - S4_SRC) * 30) / (T.s4b - T.s4);
+const appSrc = (t: number) => (t < S4_SRC ? at(S3_SRC, T.s3, 1.25, t) : t < S4B_SRC ? at(S4_SRC, T.s4, S4_RATE, t) : at(S4B_SRC, T.s4b, 1.25, t));   // add-person after the scan
 
 /* ------------------------------------------------------------------ the take (face-take: one go) */
 const TAKE = "takes/scene2/face-take.mp4";
@@ -233,8 +235,8 @@ const Notice: React.FC<{ at: number }> = ({ at: a }) => {
 };
 
 /* ------------------------------------------------------------------ 1: the app, the face */
-const PERSON_TAPS = { add: [2.394, 249, 90], pick: [4.367, 201, 525.6], name: [6.337, 201, 306.8], face: [8.339, 201, 507], next: [16.912, 201, 520.1],
-  on: [20.069, 116, 419.6], done: [25.832, 201, 607.7] } as const;   // add-person.marks.json (v4)
+const PERSON_TAPS = { add: [2.393, 249, 90], pick: [4.369, 201, 525.6], name: [6.374, 201, 306.8], face: [8.386, 201, 507], next: [16.91, 201, 520.1],
+  on: [20.085, 116, 419.6], done: [28.876, 201, 607.7] } as const;   // add-person.marks.json (v5)
 // The face scan (v2): selfie A, mirrored as enrolment previews are, from 0,5 s at 1,3x. Its face is tracked (OWLv2 face
 // and nose boxes, every other frame: public/phone/person/track.json) and the clip is moved under a fixed oval so the face
 // stays centred and fills 86 % of the oval's height; the clip always covers the oval. Measured turns of the mirrored
@@ -311,7 +313,7 @@ const FaceScan: React.FC = () => {
     </AbsoluteFill>
   );
 };
-const APP_END = Math.round(appSrc(28.85)) - 2;   // add-person ends at 28.93 s
+const APP_END = Math.round(appSrc(31.85)) - 2;   // add-person ends at 31.93 s
 const tapF = (f: number, t: readonly [number, number, number]) => ({ f, x: t[1] * 3, y: t[2] * 3 + REC_Y, press: true });
 const WAYS_A: Way[] = (() => {
   const s1 = (t: readonly [number, number, number]) => tapF(Math.round(at(1.38, T.s1, 1.25, t[0])), t);
@@ -328,9 +330,9 @@ const ScreenA: React.FC = () => {
       {f < T.s1 + 12 ? <Home /> : null}
       {f < T.face + 2 ? <Grow at={T.grow} from={ICON} r0={40}><Sequence from={T.s1} layout="none"><Rec src="app/add-person.mp4" from={1.38} rate={1.25} /></Sequence></Grow> : null}
       {f >= T.face && f < T.s3 ? <FaceScan /> : null}
-      {f >= T.s3 && f < T.s4 ? <Sequence from={T.s3} layout="none"><Rec src="app/add-person.mp4" from={10.74} rate={1.25} /></Sequence> : null}
-      {f >= T.s4 && f < T.s4b ? <Sequence from={T.s4} layout="none"><Rec src="app/add-person.mp4" from={20.2} rate={2.5} /></Sequence> : null}
-      {f >= T.s4b && f < APP_END ? <Sequence from={T.s4b} layout="none"><Rec src="app/add-person.mp4" from={22.45} rate={1.25} /></Sequence> : null}
+      {f >= T.s3 && f < T.s4 ? <Sequence from={T.s3} layout="none"><Rec src="app/add-person.mp4" from={S3_SRC} rate={1.25} /></Sequence> : null}
+      {f >= T.s4 && f < T.s4b ? <Sequence from={T.s4} layout="none"><Rec src="app/add-person.mp4" from={S4_SRC} rate={S4_RATE} /></Sequence> : null}
+      {f >= T.s4b && f < APP_END ? <Sequence from={T.s4b} layout="none"><Rec src="app/add-person.mp4" from={S4B_SRC} rate={1.25} /></Sequence> : null}
       <Cursor ways={WAYS_A} show={[54, T.test + 4]} hide={[[T.grow - 2, T.s1 + 10], [T.face - 1, T.s3 + 24]]} />
     </AbsoluteFill>
   );
@@ -565,7 +567,7 @@ const Suggestion: React.FC<{ cx: number }> = ({ cx }) => {
 /* ------------------------------------------------------------------ the local models at work (bottom right) */
 // What really ran: Qwen3-1.7B compiled the sentence (/api/rules); OWLv2 found the people in the take (detect_take.py).
 const MODELS = [
-  { from: Math.round(appSrc(20.07)), until: Math.round(appSrc(22.56)), name: "Qwen3-1.7B", what: "a sugestão passa a regra" },
+  { from: Math.round(appSrc(20.09)), until: Math.round(appSrc(25.47)), name: "Qwen3-1.7B", what: "a sugestão passa a regra" },
   { from: T.lab + 20, until: LAB_OUT, name: "OWLv2", what: "deteta pessoas e coisas" },
 ];
 const ModelsCard: React.FC = () => {
@@ -595,7 +597,7 @@ const SERIF_LINES: [string, number][] = [["Abre-se a app.", 44], ["Adiciona-se u
   ["E sugere a segurança da casa.", T.s3 + 149], ["Vamos testar?", T.test + 10], ["O Filipe entrou, e o alarme não tocou.", T.close + 16], ["Um desconhecido entra, e o alarme é ativado.", T.close + 44]];
 const WORD_KEYS = SERIF_LINES.flatMap(([text, from]) => text.split(" ").map((_, k) => from + 4 + 3 * k));
 const typedAt = (start: number, n: number, step: number) => Array.from({ length: n }, (_, i) => start + i * step);
-const APP_KEYS = typedAt(6.524, 6, 0.0725).map((t) => Math.round(at(1.38, T.s1, 1.25, t)));   // "Filipe", typed until 6.959 s (named)
+const APP_KEYS = typedAt(6.573, 6, 0.0725).map((t) => Math.round(at(1.38, T.s1, 1.25, t)));   // "Filipe", typed until 7.008 s (named)
 
 /* ------------------------------------------------------------------ the scene */
 export const Scene2Face: React.FC = () => {
@@ -653,8 +655,8 @@ export const Scene2Face: React.FC = () => {
       {[T.f1, T.f2].map((a, i) => <Sequence key={`sc${i}`} from={a + 30} layout="none"><Audio src={staticFile("audio/sfx/ui/scan.wav")} volume={0.5} /></Sequence>)}
       <Sequence from={T.f1 + 62 - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={0.42} /></Sequence>
       <Sequence from={T.f2 + 62 - 2} layout="none"><Audio src={staticFile("audio/sfx/ui/wrong.wav")} volume={0.9} /></Sequence>
-      <Sequence from={Math.round(appSrc(13.5)) - 6} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={0.22} /></Sequence>
-      <Sequence from={Math.round(appSrc(22.552)) - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={0.35} /></Sequence>
+      <Sequence from={Math.round(appSrc(13.533)) - 6} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={0.22} /></Sequence>
+      <Sequence from={Math.round(appSrc(25.55)) - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={0.35} /></Sequence>
       <Sequence from={ALARM_FILE0} durationInFrames={LAB_OUT + 16 - ALARM_FILE0} layout="none"><Audio src={staticFile("audio/sfx/scene1/alarm-beep.wav")} loop
         volume={(v) => { const g = ALARM_FILE0 + v; return (g < T.phoneIn ? 0.5 : g < T.aside ? 0.22 : 0.36) * (1 - ez(g, LAB_OUT - 4, LAB_OUT + 16)); }} /></Sequence>
       <Sequence from={T.notice} layout="none"><Audio src={staticFile("audio/sfx/scene1/buzz.wav")} volume={0.5} /></Sequence>

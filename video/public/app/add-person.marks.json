@@ -1,7 +1,7 @@
 [
  {
   "name": "start",
-  "s": 0.4
+  "s": 0.401
  },
  {
   "name": "things",
@@ -9,74 +9,84 @@
  },
  {
   "name": "tap .ahead [data-act=\"add-thing\"], header [data-act=\"add-thing\"], [data-act=\"add-thing\"]",
-  "s": 2.413,
+  "s": 2.394,
   "x": 249,
   "y": 90
  },
  {
   "name": "add",
-  "s": 2.596
+  "s": 2.58
  },
  {
   "name": "tap [data-act=\"pick-thing\"][data-name=\"Person\"]",
-  "s": 4.417,
+  "s": 4.367,
   "x": 201,
   "y": 525.6
  },
  {
   "name": "new-person",
-  "s": 4.616
+  "s": 4.561
  },
  {
   "name": "tap #pname",
-  "s": 6.404,
+  "s": 6.337,
   "x": 201,
   "y": 306.8
  },
  {
   "name": "named",
-  "s": 7.042
+  "s": 6.959
  },
  {
   "name": "tap [data-act=\"record-face\"]",
-  "s": 8.428,
+  "s": 8.339,
   "x": 201,
   "y": 507
  },
  {
   "name": "record-face",
-  "s": 8.639
+  "s": 8.524
  },
  {
   "name": "upload",
-  "s": 10.141
+  "s": 10.025
  },
  {
   "name": "added",
-  "s": 13.089
+  "s": 14.33
+ },
+ {
+  "name": "tap section.page:last-of-type .bottom-bar [data-act=\"person-next\"]",
+  "s": 16.912,
+  "x": 201,
+  "y": 520.1
+ },
+ {
+  "name": "suggestion",
+  "s": 17.091
  },
  {
   "name": "tap [data-act=\"security-on\"]",
-  "s": 16.166,
+  "s": 20.069,
   "x": 116,
-  "y": 577.7
+  "y": 419.6
  },
  {
   "name": "security-on",
-  "s": 16.361
+  "s": 20.259
  },
  {
   "name": "saved",
-  "s": 19.186
+  "s": 22.552
  },
  {
   "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
-  "s": 22.483,
+  "s": 25.832,
   "x": 201,
   "y": 607.7
  },
  {
   "name": "done",
-  "s": 22.678
+  "s": 26.035
  }
 ]

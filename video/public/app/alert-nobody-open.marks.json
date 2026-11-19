@@ -1,36 +1,36 @@
 [
  {
   "name": "start",
-  "s": 0.401
+  "s": 0.399
  },
  {
   "name": "alert",
-  "s": 1.632
+  "s": 1.627
  },
  {
   "name": "open",
-  "s": 3.239,
+  "s": 3.23,
   "x": 201,
   "y": 83.5
  },
  {
   "name": "tap [data-act=\"sim-off\"][data-id=\"sim-lights\"]",
-  "s": 6.148,
+  "s": 6.128,
   "x": 339.4,
   "y": 472.4
  },
  {
   "name": "lights-off",
-  "s": 6.325
+  "s": 6.323
  },
  {
   "name": "tap [data-act=\"sim-off\"][data-id=\"sim-ac\"]",
-  "s": 9.509,
+  "s": 9.502,
   "x": 339.4,
   "y": 546.4
  },
  {
   "name": "ac-off",
-  "s": 9.684
+  "s": 9.686
  }
 ]

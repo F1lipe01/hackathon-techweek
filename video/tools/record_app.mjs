@@ -100,8 +100,13 @@ async function take(name, clock, script) {
   const marks = [];
   const mark = (n, extra = {}) => marks.push({ name: n, t: Date.now() / 1000, ...extra });
   await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 94, maxWidth: W * DSF, maxHeight: H * DSF, everyNthFrame: 1 });
-  // keep frames coming while nothing changes, so the timing stays exact
-  const keepAlive = setInterval(() => page.evaluate(() => { document.body.style.outlineColor = document.body.style.outlineColor === 'red' ? 'blue' : 'red'; }).catch(() => {}), 100);
+  // keep frames coming while nothing changes, so the timing stays exact and no frame caught mid-transition is held:
+  // Chrome sends a screencast frame only when something is painted, so a 2 px corner changes shade (invisibly) every 50 ms
+  const keepAlive = setInterval(() => page.evaluate(() => {
+    let k = document.getElementById('rec-tick');
+    if (!k) { k = document.createElement('div'); k.id = 'rec-tick'; k.style.cssText = 'position:fixed;right:0;bottom:0;width:2px;height:2px;z-index:2147483647;pointer-events:none'; document.body.append(k); }
+    k.style.background = k.style.background === 'rgba(0, 0, 0, 0.01)' ? 'rgba(0, 0, 0, 0.02)' : 'rgba(0, 0, 0, 0.01)';
+  }).catch(() => {}), 50);
   await pause(400);
   mark('start');
 
@@ -414,7 +419,11 @@ const TAKES = {
       await fc.setFiles(join(IMG, 'person/face-scan.mp4'));
       await page.waitForSelector('.added-person', { state: 'visible', timeout: 30000 });
       mark('added');
-      await pause(2400);
+      await pause(1900);
+      await tap('section.page:last-of-type .bottom-bar [data-act="person-next"]');
+      mark('suggestion');
+      await hideFinger();
+      await pause(2300);
       await tap('[data-act="security-on"]');
       mark('security-on');
       await hideFinger();

@@ -1,118 +1,118 @@
 [
  {
   "name": "start",
-  "s": 0.402
+  "s": 0.4
  },
  {
   "name": "things",
-  "s": 1.705
+  "s": 1.701
  },
  {
   "name": "tap #tabs [data-tab=\"menu\"], [data-tab=\"menu\"]",
-  "s": 2.419,
+  "s": 2.389,
   "x": 357,
   "y": 808.5
  },
  {
   "name": "menu",
-  "s": 2.605
+  "s": 2.574
  },
  {
   "name": "tap .group [data-act=\"scenarios\"]",
-  "s": 4.297,
+  "s": 4.251,
   "x": 201,
   "y": 212.3
  },
  {
   "name": "scenarios",
-  "s": 4.485
+  "s": 4.423
  },
  {
   "name": "tap section.page:last-of-type .bottom-bar [data-act=\"new-scenario\"]",
-  "s": 6.277,
+  "s": 6.198,
   "x": 201,
   "y": 785
  },
  {
   "name": "new-1",
-  "s": 6.452
+  "s": 6.39
  },
  {
   "name": "tap #scentext",
-  "s": 8.138,
+  "s": 8.066,
   "x": 201,
   "y": 228
  },
  {
   "name": "typed-1",
-  "s": 12.072
+  "s": 11.855
  },
  {
   "name": "tap [data-act=\"save-scenario\"]",
-  "s": 13.464,
+  "s": 13.232,
   "x": 201,
   "y": 344
  },
  {
   "name": "save-1",
-  "s": 13.634
+  "s": 13.406
  },
  {
   "name": "saved-1",
-  "s": 13.637
+  "s": 13.41
  },
  {
   "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
-  "s": 16.927,
+  "s": 16.687,
   "x": 201,
   "y": 586.7
  },
  {
   "name": "done-1",
-  "s": 17.099
+  "s": 16.871
  },
  {
   "name": "tap section.page:last-of-type .bottom-bar [data-act=\"new-scenario\"]",
-  "s": 19.086,
+  "s": 18.85,
   "x": 201,
   "y": 785
  },
  {
   "name": "new-2",
-  "s": 19.289
+  "s": 19.037
  },
  {
   "name": "tap #scentext",
-  "s": 20.981,
+  "s": 20.714,
   "x": 201,
   "y": 228
  },
  {
   "name": "typed-2",
-  "s": 25.693
+  "s": 25.322
  },
  {
   "name": "tap [data-act=\"save-scenario\"]",
-  "s": 27.079,
+  "s": 26.698,
   "x": 201,
   "y": 344
  },
  {
   "name": "save-2",
-  "s": 27.249
+  "s": 26.885
  },
  {
   "name": "saved-2",
-  "s": 27.252
+  "s": 26.888
  },
  {
   "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
-  "s": 30.544,
+  "s": 30.167,
   "x": 201,
   "y": 607.7
  },
  {
   "name": "done-2",
-  "s": 30.735
+  "s": 30.336
  }
 ]

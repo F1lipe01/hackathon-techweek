@@ -443,6 +443,21 @@ const ModelsCard: React.FC = () => {
   );
 };
 
+/* ------------------------------------------------------------------ typing: a key strike per word and per typed letter */
+// Twelve strikes cut from the team's typing recording (public/audio/sfx/ui/key-1..12.wav), rotated so neighbours differ.
+const SERIF_LINES: [string, number][] = [["Abre-se a app.", 44], ["Adiciona-se o livro.", 150], ["Fotografa-se de vários lados.", T.cam], ["Dá-se-lhe um nome.", T.s3 + 30],
+  ["E uma frase cria o cenário.", T.s4 + 40], ["Vamos testar?", T.test + 10], ["Desta vez, o alarme não tocou.", T.success + 28], ["O livro saiu com ele.", T.success + 52]];
+const WORD_KEYS = SERIF_LINES.flatMap(([text, from]) => text.split(" ").map((_, k) => from + 4 + 3 * k));   // as Line streams its words
+// the app: "Book" and "yellow book" at the recorder's pace (a letter every 55-90 ms, from about 0,26 s after the tap on the
+// field); the sentence spread evenly between its typing marks (add-book.marks.json: type 18.215 s, typed 23.732 s)
+const SENTENCE = "Every time I leave without my book, sound the alarm and send me a message";
+const typedAt = (start: number, n: number, step: number) => Array.from({ length: n }, (_, i) => start + i * step);
+const APP_KEYS = [
+  ...typedAt(ADD_TAPS.name[0] + 0.26, 4, 0.0725).map((t) => Math.round(at(7.44, T.s3, 1.4, t))),
+  ...typedAt(ADD_TAPS.what[0] + 0.26, 11, 0.0725).map((t) => Math.round(at(7.44, T.s3, 1.4, t))),
+  ...typedAt(18.215, SENTENCE.length, (23.732 - 18.215) / SENTENCE.length).map((t) => Math.round(at(13.7, T.s4, 1.5, t))),
+];
+
 /* ------------------------------------------------------------------ the scene */
 export const Scene1Book: React.FC = () => {
   const f = useCurrentFrame();
@@ -503,6 +518,8 @@ export const Scene1Book: React.FC = () => {
       <Sequence from={ALARM_ON} durationInFrames={ALARM_OFF - ALARM_ON + 4} layout="none"><Audio src={staticFile("audio/sfx/scene1/alarm-beep.wav")} loop
         volume={(v) => { const g = ALARM_ON + v; return (g < T.phoneIn ? 0.5 : g < T.aside ? 0.22 : 0.4) * (1 - ez(g, ALARM_OFF, ALARM_OFF + 4)); }} /></Sequence>
       <Sequence from={T.notice} layout="none"><Audio src={staticFile("audio/sfx/scene1/buzz.wav")} volume={0.5} /></Sequence>
+      {WORD_KEYS.map((a, i) => <Sequence key={`kw${i}`} from={a} layout="none"><Audio src={staticFile(`audio/sfx/ui/key-${((i * 7) % 12) + 1}.wav`)} volume={0.22} /></Sequence>)}
+      {APP_KEYS.map((a, i) => <Sequence key={`ka${i}`} from={a} layout="none"><Audio src={staticFile(`audio/sfx/ui/key-${((i * 5) % 12) + 1}.wav`)} volume={0.15} /></Sequence>)}
       {[Math.round(at(13.7, T.s4, 1.5, 27.921)), T.success + 40].map((a, i) => (
         <Sequence key={`ok${i}`} from={a - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={i ? 0.5 : 0.35} /></Sequence>))}
     </AbsoluteFill>

@@ -1,0 +1,200 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2060 1337" width="2060" height="1337" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="C4, nível 3: componentes"><title>C4, nível 3: componentes</title><defs><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2060" height="1337" fill="#FFFFFF"/><rect x="20.0" y="24.0" width="930.0" height="1261.0" rx="18" fill="#F4F4F4"/>
+<text x="40.0" y="54.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Em casa · agente da casa, no </tspan><tspan font-weight="700" font-style="italic">router</tspan></text>
+<text x="40.0" y="74.0" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Sem acelerador de IA</text>
+<rect x="1040.0" y="24.0" width="1000.0" height="1261.0" rx="18" fill="#EEF3FB"/>
+<text x="1060.0" y="54.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice · visão e serviço </tspan><tspan font-weight="700" font-style="italic">ThingTracker</tspan><tspan font-weight="700">, por casa</tspan></text>
+<text x="1060.0" y="74.0" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Os componentes da coluna do meio correm no serviço, para cada casa</text>
+<rect x="40.0" y="110.0" width="190.0" height="126.2" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="54.0" y="137.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Câmaras</tspan></text>
+<text x="54.0" y="159.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[existente]</text>
+<text x="54.0" y="182.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">RTSP na rede da casa</text>
+<rect x="350.0" y="110.0" width="250.0" height="126.2" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="364.0" y="137.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Captura</tspan></text>
+<text x="364.0" y="159.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">ffmpeg</tspan>,<tspan font-style="italic"> OpenCV</tspan>]</text>
+<text x="364.0" y="182.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Uma ligação aberta por câmara; só os</text>
+<text x="364.0" y="200.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">últimos 3 s, em memória, para o juiz</text>
+<rect x="350.0" y="292.1" width="250.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="364.0" y="319.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Máscaras de privacidade</tspan></text>
+<text x="364.0" y="343.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Apaga as zonas que a família marcou,</text>
+<text x="364.0" y="360.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">antes de qualquer análise</text>
+<rect x="350.0" y="456.8" width="250.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="364.0" y="484.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Filtro de movimento</tspan></text>
+<text x="364.0" y="506.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[160 × 90, cinzento, a cada 0,5 s]</text>
+<text x="364.0" y="529.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Abre se mais de 0,6 % dos píxeis</text>
+<text x="364.0" y="547.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">mudar e fica aberto 6 s; abre também a</text>
+<text x="364.0" y="564.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">pedido</text>
+<rect x="350.0" y="638.9" width="250.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="364.0" y="666.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Recorte da região</tspan></text>
+<text x="364.0" y="690.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">A região que mudou, ou a pedida, no</text>
+<text x="364.0" y="707.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">máximo 640 × 640; cerca de 1 por</text>
+<text x="364.0" y="725.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">segundo</text>
+<rect x="350.0" y="821.1" width="250.0" height="128.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="364.0" y="848.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Rostos (opcional)</tspan></text>
+<text x="364.0" y="870.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">YuNet</tspan> +<tspan font-style="italic"> SFace</tspan>, no CPU]</text>
+<text x="364.0" y="893.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Encontra, alinha e compara: ≥ 0,363 dá</text>
+<text x="364.0" y="911.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">o nome; abaixo, “rosto desconhecido”</text>
+<rect x="40.0" y="821.1" width="190.0" height="128.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="54.0" y="848.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Padrões faciais</tspan></text>
+<text x="54.0" y="870.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">SQLite</tspan> cifrado]</text>
+<text x="54.0" y="893.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Até 8 por pessoa; nunca</text>
+<text x="54.0" y="911.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">saem de casa</text>
+<rect x="730.0" y="456.8" width="200.0" height="657.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="744.0" y="484.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Canal seguro</tspan></text>
+<text x="744.0" y="506.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[MQTT sobre mTLS]</text>
+<text x="744.0" y="529.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Uma ligação de saída</text>
+<text x="744.0" y="553.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Envia regiões e rótulos; recebe</text>
+<text x="744.0" y="570.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">pedidos</text>
+<text x="744.0" y="594.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Sem internet, guarda eventos</text>
+<text x="744.0" y="611.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">e rótulos numa fila, nunca</text>
+<text x="744.0" y="629.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">imagens</text>
+<rect x="1060.0" y="1005.2" width="240.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1074.0" y="1033.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Mediador</tspan></text>
+<text x="1074.0" y="1054.5" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[MQTT]</text>
+<text x="1074.0" y="1078.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Recebe as regiões de cada casa e</text>
+<text x="1074.0" y="1095.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">entrega-lhe os pedidos</text>
+<rect x="1060.0" y="821.1" width="240.0" height="128.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1074.0" y="848.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Filas de visão</tspan></text>
+<text x="1074.0" y="872.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Urgente: pedidos, registos, clipes</text>
+<text x="1074.0" y="889.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">para o juiz e casas com regra de</text>
+<text x="1074.0" y="907.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">segurança ativa</text>
+<text x="1074.0" y="930.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Lote: o resto, nas horas calmas</text>
+<rect x="1060.0" y="638.9" width="240.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1074.0" y="666.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Deteção</tspan></text>
+<text x="1074.0" y="688.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">OWLv2</tspan>, GPU L4]</text>
+<text x="1074.0" y="711.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Objetos registados da casa, “a</text>
+<text x="1074.0" y="729.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">person” e superfícies (secretária,</text>
+<text x="1074.0" y="746.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">mesa)</text>
+<rect x="1060.0" y="456.8" width="240.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1074.0" y="484.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Vetores</tspan></text>
+<text x="1074.0" y="506.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">DINOv2 small</tspan>, GPU L4]</text>
+<text x="1074.0" y="529.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Um vetor de 384 números por</text>
+<text x="1074.0" y="547.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">candidato</text>
+<rect x="1060.0" y="110.0" width="240.0" height="126.2" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1074.0" y="137.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Juiz</tspan></text>
+<text x="1074.0" y="159.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[visão-linguagem, GPU, raramente]</text>
+<text x="1074.0" y="182.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Vê 2 a 3 s da região num momento</text>
+<text x="1074.0" y="200.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">duvidoso; responde sim, não ou</text>
+<text x="1074.0" y="217.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">incerto, com uma frase</text>
+<rect x="1060.0" y="292.1" width="240.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1074.0" y="319.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Fluxo da casa</tspan></text>
+<text x="1074.0" y="341.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[partição por casa]</text>
+<text x="1074.0" y="364.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Resultados de cada casa, pela ordem</text>
+<text x="1074.0" y="382.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">de chegada</text>
+<rect x="1430.0" y="292.1" width="260.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1444.0" y="319.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Comparação</tspan></text>
+<text x="1444.0" y="341.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">pgvector</tspan>]</text>
+<text x="1444.0" y="364.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Cada vetor contra as 8 vistas de cada</text>
+<text x="1444.0" y="382.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">objeto: ≥ 0,62 é o seu</text>
+<rect x="1430.0" y="456.8" width="260.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1444.0" y="484.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Seguimento</tspan></text>
+<text x="1444.0" y="508.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Sobre uma pessoa: na mão. Ausente 3</text>
+<text x="1444.0" y="525.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">análises depois: levado. Noutro sítio:</text>
+<text x="1444.0" y="543.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">mudado</text>
+<rect x="1430.0" y="638.9" width="260.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1444.0" y="666.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Motor de presença</tspan></text>
+<text x="1444.0" y="690.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">OCUPADA, A SAIR, VAZIA ou INCERTA;</text>
+<text x="1444.0" y="707.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">pede atualizações se só as câmaras o</text>
+<text x="1444.0" y="725.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">sustentam</text>
+<rect x="1430.0" y="821.1" width="260.0" height="128.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1444.0" y="848.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Motor de regras</tspan></text>
+<text x="1444.0" y="872.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Decide: regras compiladas, a cada</text>
+<text x="1444.0" y="889.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">evento e temporizador; pede verificações</text>
+<text x="1444.0" y="907.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">ativas e, num momento duvidoso, o juiz</text>
+<rect x="1430.0" y="1005.2" width="260.0" height="255.8" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1444.0" y="1033.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Avisos e ações</tspan></text>
+<text x="1444.0" y="1056.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Título, mensagem, miniatura, cartões de</text>
+<text x="1444.0" y="1074.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">ação, faixa da porta, sugestão</text>
+<text x="1444.0" y="1097.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Um “Sim” vira uma chamada MCP; a</text>
+<text x="1444.0" y="1115.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">sirene segue a escolha da família; armar</text>
+<text x="1444.0" y="1132.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">o alarme pergunta sempre</text>
+<rect x="1800.0" y="292.1" width="220.0" height="290.8" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1814.0" y="319.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL</tspan></text>
+<text x="1814.0" y="341.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">pgvector</tspan>]</text>
+<text x="1814.0" y="364.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Assinaturas, observações, regras,</text>
+<text x="1814.0" y="382.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">avisos</text>
+<rect x="1800.0" y="638.9" width="220.0" height="126.1" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="1814.0" y="666.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma Altice</tspan></text>
+<text x="1814.0" y="688.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[existente]</text>
+<text x="1814.0" y="711.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Eventos da porta e telemóveis no</text>
+<text x="1814.0" y="729.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi</text>
+<rect x="1800.0" y="821.1" width="220.0" height="128.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.4"/>
+<text x="1814.0" y="848.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">Cache</tspan></text>
+<text x="1814.0" y="870.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">Redis</tspan>]</text>
+<text x="1814.0" y="893.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Presença, trajetos, contadores,</text>
+<text x="1814.0" y="911.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">temporizadores</text>
+<rect x="1800.0" y="1005.2" width="220.0" height="108.6" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="1814.0" y="1033.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Notificações e aplicação</tspan></text>
+<text x="1814.0" y="1054.5" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[existente]</text>
+<text x="1814.0" y="1078.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Mostram o aviso e devolvem o</text>
+<text x="1814.0" y="1095.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">“Sim”</text>
+<rect x="1800.0" y="1169.9" width="220.0" height="91.2" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="1814.0" y="1197.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Servidor MCP</tspan></text>
+<text x="1814.0" y="1219.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[existente]</text>
+<text x="1814.0" y="1242.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan></text>
+<path d="M230.0 173.1 H340.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="238.0" y="166.1" font-size="11" font-weight="400" fill="#333333" text-anchor="start">RTSP</text>
+<path d="M475.0 236.2 V282.1" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="484.0" y="268.0" font-size="11" font-weight="400" fill="#333333" text-anchor="start">imagem</text>
+<path d="M475.0 400.8 V446.8" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="484.0" y="425.5" font-size="11" font-weight="400" fill="#333333" text-anchor="start">imagem com</text>
+<text x="484.0" y="439.8" font-size="11" font-weight="400" fill="#333333" text-anchor="start">máscaras</text>
+<path d="M475.0 582.9 V628.9" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="484.0" y="614.8" font-size="11" font-weight="400" fill="#333333" text-anchor="start">aberto</text>
+<path d="M475.0 765.1 V811.1" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="484.0" y="796.9" font-size="11" font-weight="400" fill="#333333" text-anchor="start">região</text>
+<path d="M230.0 878.2 H340.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="238.0" y="871.2" font-size="11" font-weight="400" fill="#333333" text-anchor="start">padrões</text>
+<path d="M350.0 892.2 H240.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="238.0" y="908.2" font-size="11" font-weight="400" fill="#333333" text-anchor="start">registo</text>
+<path d="M600.0 885.2 H720.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="608.0" y="878.2" font-size="11" font-weight="400" fill="#333333" text-anchor="start">região e rótulos</text>
+<path d="M730.0 519.9 H610.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="608.0" y="512.9" font-size="11" font-weight="400" fill="#333333" text-anchor="start">pedido: analisar já</text>
+<path d="M930.0 1052.6 H1050.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="938.0" y="1045.6" font-size="11" font-weight="400" fill="#333333" text-anchor="start">regiões e rótulos</text>
+<path d="M1060.0 1066.6 H940.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="938.0" y="1082.6" font-size="11" font-weight="400" fill="#333333" text-anchor="start">pedidos</text>
+<path d="M1188.0 949.2 V995.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1197.0" y="981.1" font-size="11" font-weight="400" fill="#333333" text-anchor="start">pedidos às casas</text>
+<path d="M1172.0 1005.2 V959.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1163.0" y="981.1" font-size="11" font-weight="400" fill="#333333" text-anchor="end">regiões</text>
+<path d="M1180.0 821.1 V775.1" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1189.0" y="796.9" font-size="11" font-weight="400" fill="#333333" text-anchor="start">regiões</text>
+<path d="M1180.0 638.9 V592.9" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1189.0" y="614.8" font-size="11" font-weight="400" fill="#333333" text-anchor="start">caixas</text>
+<path d="M1180.0 456.8 V410.8" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1189.0" y="432.6" font-size="11" font-weight="400" fill="#333333" text-anchor="start">caixas e vetores</text>
+<path d="M1300.0 346.5 H1420.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1308.0" y="339.5" font-size="11" font-weight="400" fill="#333333" text-anchor="start">por ordem</text>
+<path d="M1560.0 400.8 V446.8" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1569.0" y="425.5" font-size="11" font-weight="400" fill="#333333" text-anchor="start">objetos reconhecidos,</text>
+<text x="1569.0" y="439.8" font-size="11" font-weight="400" fill="#333333" text-anchor="start">pessoas e rótulos</text>
+<path d="M1560.0 582.9 V628.9" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1569.0" y="614.8" font-size="11" font-weight="400" fill="#333333" text-anchor="start">pessoas e rostos</text>
+<path d="M1560.0 765.1 V811.1" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1569.0" y="796.9" font-size="11" font-weight="400" fill="#333333" text-anchor="start">estado da casa</text>
+<path d="M1560.0 949.2 V995.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1569.0" y="981.1" font-size="11" font-weight="400" fill="#333333" text-anchor="start">regra cumprida</text>
+<path d="M1430.0 885.2 H1310.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1308.0" y="863.9" font-size="11" font-weight="400" fill="#333333" text-anchor="start">verificação ativa,</text>
+<text x="1308.0" y="878.2" font-size="11" font-weight="400" fill="#333333" text-anchor="start">atualização, juiz</text>
+<path d="M1180.0 236.2 V282.1" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1189.0" y="268.0" font-size="11" font-weight="400" fill="#333333" text-anchor="start">veredicto</text>
+<path d="M1800.0 346.5 H1700.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1698.0" y="339.5" font-size="11" font-weight="400" fill="#333333" text-anchor="start">assinaturas</text>
+<path d="M1690.0 519.9 H1790.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1698.0" y="498.6" font-size="11" font-weight="400" fill="#333333" text-anchor="start">observações,</text>
+<text x="1698.0" y="512.9" font-size="11" font-weight="400" fill="#333333" text-anchor="start">quando algo muda</text>
+<path d="M1800.0 702.0 H1700.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1698.0" y="695.0" font-size="11" font-weight="400" fill="#333333" text-anchor="start">porta, Wi-Fi</text>
+<path d="M1690.0 878.2 H1790.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1698.0" y="871.2" font-size="11" font-weight="400" fill="#333333" text-anchor="start">estado</text>
+<path d="M1800.0 892.2 H1700.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1698.0" y="908.2" font-size="11" font-weight="400" fill="#333333" text-anchor="start">temporizadores</text>
+<path d="M1690.0 1052.6 H1790.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1698.0" y="1045.6" font-size="11" font-weight="400" fill="#333333" text-anchor="start">aviso</text>
+<path d="M1800.0 1066.6 H1700.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1698.0" y="1082.6" font-size="11" font-weight="400" fill="#333333" text-anchor="start">“Sim”</text>
+<path d="M1690.0 1215.5 H1790.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1698.0" y="1208.5" font-size="11" font-weight="400" fill="#333333" text-anchor="start">ação após “Sim”</text>
+<text x="40.0" y="1319.0" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Notação C4, nível 3. Cada componente diz o que decide e com que limiar. Valores do filtro de movimento: os do protótipo.</text></svg>

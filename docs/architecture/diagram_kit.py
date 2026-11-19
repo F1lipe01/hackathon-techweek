@@ -373,3 +373,96 @@ def sequence(lang, name, title, cols, rows, legend, colw=215):
     cv.para(20, leg_y + 12, legend, W - 40, 12, fill=MUTED)
     cv.save(name, round(H))
     return cv
+
+
+# ---------------------------------------------------------------------- grids of cards with straight arrows
+class Grid:
+    """Cards on a grid of columns and rows. A row is as tall as its tallest single-row card; a card may span rows.
+    Arrows join two cards with one straight segment, in the middle of their overlap, and assert that they can."""
+
+    def __init__(self, cv, xs, ws, y0, row_gap=60):
+        self.cv, self.xs, self.ws, self.y0, self.gap = cv, xs, ws, y0, row_gap
+        self.r = {}
+
+    def place(self, cells, min_row=0):
+        """cells: {key: (col, row, span, box_kwargs)}; col may be a (first, last) tuple to span columns."""
+        cv = self.cv
+        nrows = max(r + s for c, r, s, k in cells.values())
+        hs = [min_row] * nrows
+
+        def cw(c):
+            return (self.xs[c[1]] + self.ws[c[1]] - self.xs[c[0]]) if isinstance(c, tuple) else self.ws[c]
+
+        def cx(c):
+            return self.xs[c[0]] if isinstance(c, tuple) else self.xs[c]
+
+        for key, (c, r, s, k) in cells.items():
+            if s == 1:
+                kk = {a: b for a, b in k.items() if a in ("pad", "title_size", "body_size", "sub", "gap", "sub_bold")}
+                hs[r] = max(hs[r], cv.box_h(cw(c), k["title"], k.get("body", ()), **kk))
+        ys = [self.y0]
+        for h in hs[:-1]:
+            ys.append(ys[-1] + h + self.gap)
+        self.ys, self.hs = ys, hs
+        for key, (c, r, s, k) in cells.items():
+            h = ys[r + s - 1] + hs[r + s - 1] - ys[r]
+            x = cx(c)
+            cv.box(x, ys[r], cw(c), h=h, **k)
+            self.r[key] = (x, ys[r], x + cw(c), ys[r] + h)
+        return ys[-1] + hs[-1]
+
+    def _h(self, a, b, dy, color, sw, at=None):
+        A, B = self.r[a], self.r[b]
+        lo, hi = max(A[1], B[1]) + 16, min(A[3], B[3]) - 16
+        assert hi >= lo, f"{a} and {b} do not overlap vertically"
+        y = ((lo + hi) / 2 if at is None else at) + dy
+        assert lo - 10 <= y <= hi + 10, f"{a} -> {b}: y {y:.0f} outside the overlap"
+        if A[2] <= B[0]:
+            self.cv.arrow(A[2], y, B[0], y, color, sw)
+            return y, A[2], B[0]
+        self.cv.arrow(A[0], y, B[2], y, color, sw)
+        return y, B[2], A[0]
+
+    def _v(self, a, b, dx, color, sw):
+        A, B = self.r[a], self.r[b]
+        lo, hi = max(A[0], B[0]) + 16, min(A[2], B[2]) - 16
+        assert hi >= lo, f"{a} and {b} do not overlap horizontally"
+        x = (lo + hi) / 2 + dx
+        if A[3] <= B[1]:
+            self.cv.arrow(x, A[3], x, B[1], color, sw)
+            return x, A[3], B[1]
+        self.cv.arrow(x, A[1], x, B[3], color, sw)
+        return x, B[3], A[1]
+
+    lpad = 8                                   # label inset from the card's edge; larger where a boundary line runs
+
+    def h(self, a, b, label=None, dy=0, color=BODY, sw=1.6, below=False, lcolor=None, size=11.5, at=None):
+        """One horizontal arrow from card a to card b; the label above it (or below), wrapped to the gap."""
+        y, x0, x1 = self._h(a, b, dy, color, sw, at)
+        if label:
+            ly = y + 16 if below else y - 7
+            self.cv.label(x0 + self.lpad, ly, label, x1 - x0 - 2 * self.lpad, size=size, fill=lcolor or color, below=below)
+        return y
+
+    def v(self, a, b, label=None, dx=0, color=BODY, sw=1.6, side="right", lcolor=None, size=11.5, lw=None):
+        """One vertical arrow from card a to card b; the label beside it, vertically centred."""
+        x, y0, y1 = self._v(a, b, dx, color, sw)
+        if label:
+            w = lw or 150
+            n = len(wrap(label, w, size))
+            ly = (y0 + y1) / 2 - (n - 1) * size * 1.3 / 2 + size * 0.35
+            if side == "right":
+                self.cv.label(x + 9, ly, label, w, size=size, fill=lcolor or color, below=True)
+            else:
+                self.cv.label(x - 9, ly, label, w, size=size, fill=lcolor or color, below=True, anchor="end")
+        return x
+
+    def h2(self, a, b, ab, ba, color=BODY, lcolor=None, size=11.5, gap=7):
+        """Two arrows between a (left) and b (right): a->b labelled above, b->a labelled below."""
+        self.h(a, b, ab, dy=-gap, color=color, lcolor=lcolor, size=size)
+        self.h(b, a, ba, dy=gap, color=color, lcolor=lcolor, size=size, below=True)
+
+    def v2(self, a, b, ab, ba, color=BODY, lcolor=None, size=11.5, gap=8, lw=None, lw2=None):
+        """Two arrows between a (above) and b (below): a->b on the right with its label, b->a on the left."""
+        self.v(a, b, ab, dx=gap, color=color, lcolor=lcolor, size=size, side="right", lw=lw)
+        self.v(b, a, ba, dx=-gap, color=color, lcolor=lcolor, size=size, side="left", lw=lw2 or lw)

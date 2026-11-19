@@ -36,9 +36,10 @@
 <text x="58.0" y="449.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Faces (opt-in, with consent): YuNet finds, SFace compares;</text>
 <text x="58.0" y="466.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">similarity ≥ 0.363 gives a name</text>
 <text x="58.0" y="490.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Face templates encrypted, kept only here</text>
-<text x="58.0" y="513.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Outbox: keeps events while offline; without internet there is no</text>
-<text x="58.0" y="531.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">image analysis</text>
-<text x="58.0" y="554.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi: the router knows which Family phones are connected</text>
+<text x="58.0" y="513.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Keeps the last 3 s in memory only, for the judge</text>
+<text x="58.0" y="537.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Outbox: keeps events while offline; without internet there is no</text>
+<text x="58.0" y="554.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">image analysis</text>
+<text x="58.0" y="578.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi: the router knows which Family phones are connected</text>
 <rect x="44.0" y="631.9" width="402.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="58.0" y="659.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Security hub and door contact sensor</tspan></text>
 <text x="58.0" y="683.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">MS-WES1AS (LTE) and MS-D3D; they report to the Altice platform,</text>
@@ -51,44 +52,46 @@
 <text x="648.0" y="650.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Asked of Altice: door and Wi-Fi events,</text>
 <text x="648.0" y="668.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">the Wi-Fi presence tool and the Things</text>
 <text x="648.0" y="685.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">tools</text>
-<rect x="906.0" y="108.0" width="254.0" height="196.7" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="2"/>
+<rect x="906.0" y="108.0" width="254.0" height="255.2" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="2"/>
 <text x="920.0" y="135.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">ThingTracker service</tspan></text>
 <text x="920.0" y="157.3" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N stateless instances, in containers</tspan></text>
 <text x="920.0" y="180.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">App API and MCP host</text>
 <text x="920.0" y="204.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Presence engine and rules engine: per</text>
 <text x="920.0" y="221.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">home, on every event and every timer</text>
-<text x="920.0" y="245.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Tracking of boxes between analyses</text>
-<text x="920.0" y="268.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Calls the language model only for</text>
-<text x="920.0" y="286.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">sentences, questions and unclear cases</text>
-<rect x="906.0" y="322.6" width="254.0" height="157.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="920.0" y="350.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Queues and event stream</tspan></text>
-<text x="920.0" y="373.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Urgent vision: rule checks</text>
-<text x="920.0" y="397.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Batch vision: the rest, in quiet hours</text>
-<text x="920.0" y="420.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Each home’s events, in order</text>
-<text x="920.0" y="438.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(partitioned by home)</text>
-<text x="920.0" y="461.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Language-model requests</text>
-<rect x="906.0" y="498.3" width="254.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="920.0" y="526.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Cache (Redis)</tspan></text>
-<text x="920.0" y="549.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Each home’s live state: presence,</text>
-<text x="920.0" y="567.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">tracks, counters and timers</text>
-<rect x="1178.0" y="108.0" width="254.0" height="208.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="920.0" y="245.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Matches the vectors with the</text>
+<text x="920.0" y="262.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">fingerprints (pgvector): similarity ≥ 0.62</text>
+<text x="920.0" y="280.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">means yours</text>
+<text x="920.0" y="303.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Tracking of boxes between analyses</text>
+<text x="920.0" y="327.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Calls the models only for sentences,</text>
+<text x="920.0" y="344.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">questions and, rarely, the judge</text>
+<rect x="906.0" y="381.1" width="254.0" height="157.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="920.0" y="408.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Queues and event stream</tspan></text>
+<text x="920.0" y="432.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Urgent vision: rule checks</text>
+<text x="920.0" y="455.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Batch vision: the rest, in quiet hours</text>
+<text x="920.0" y="479.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Each home’s events, in order</text>
+<text x="920.0" y="496.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(partitioned by home)</text>
+<text x="920.0" y="520.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Language-model requests</text>
+<rect x="906.0" y="556.8" width="254.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="920.0" y="584.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Cache (Redis)</tspan></text>
+<text x="920.0" y="608.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Each home’s live state: presence,</text>
+<text x="920.0" y="625.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">tracks, counters and timers</text>
+<rect x="1178.0" y="108.0" width="254.0" height="190.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="1192.0" y="135.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Vision workers</tspan></text>
 <text x="1192.0" y="157.3" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">NVIDIA L4 GPUs</tspan></text>
 <text x="1192.0" y="180.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">OWLv2: finds things, people and</text>
 <text x="1192.0" y="198.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">surfaces in the region</text>
-<text x="1192.0" y="221.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">DINOv2: compares each candidate with</text>
-<text x="1192.0" y="239.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">the thing’s 8 views; similarity ≥ 0.62</text>
-<text x="1192.0" y="256.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">means yours</text>
-<text x="1192.0" y="280.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Stateless: read the queues, return</text>
-<text x="1192.0" y="297.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">detections</text>
-<rect x="1178.0" y="334.1" width="254.0" height="108.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="1192.0" y="361.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL with pgvector</tspan></text>
-<text x="1192.0" y="383.4" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">primary and replica</tspan></text>
-<text x="1192.0" y="406.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Per customer: things, fingerprints, rules,</text>
-<text x="1192.0" y="424.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">events, sightings and presence</text>
-<rect x="1178.0" y="460.8" width="254.0" height="69.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="1192.0" y="488.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Object storage</tspan></text>
-<text x="1192.0" y="512.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Sighting thumbnails, 30 days (proposal)</text>
+<text x="1192.0" y="221.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">DINOv2: computes each candidate’s</text>
+<text x="1192.0" y="239.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">vector</text>
+<text x="1192.0" y="262.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Stateless: read the queues, return boxes</text>
+<text x="1192.0" y="280.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">and vectors</text>
+<rect x="1178.0" y="316.6" width="254.0" height="108.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="1192.0" y="344.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL with pgvector</tspan></text>
+<text x="1192.0" y="365.9" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">primary and replica</tspan></text>
+<text x="1192.0" y="389.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Per customer: things, fingerprints, rules,</text>
+<text x="1192.0" y="406.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">events, sightings and presence</text>
+<rect x="1178.0" y="443.3" width="254.0" height="69.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="1192.0" y="471.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Object storage</tspan></text>
+<text x="1192.0" y="494.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Sighting thumbnails, 30 days (proposal)</text>
 <rect x="1450.0" y="108.0" width="254.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="1464.0" y="135.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Load balancer (app)</tspan></text>
 <text x="1464.0" y="159.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The app’s HTTPS to the service</text>
@@ -96,22 +99,24 @@
 <rect x="1450.0" y="213.2" width="254.0" height="69.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="1464.0" y="240.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Notifications (existing)</tspan></text>
 <text x="1464.0" y="264.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The service the Altice app already uses</text>
-<rect x="1450.0" y="300.8" width="254.0" height="149.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="1464.0" y="328.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Language model</tspan></text>
-<text x="1464.0" y="350.1" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">GPU servers, behind a queue</tspan></text>
-<text x="1464.0" y="373.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">An open-weight model hosted by Altice,</text>
-<text x="1464.0" y="391.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">or a provider under contract in the EU</text>
-<text x="1464.0" y="414.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Receives text; rarely, one crop of a thing</text>
-<text x="1464.0" y="432.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">in an unclear case (open decision)</text>
-<rect x="1450.0" y="468.5" width="254.0" height="250.6" rx="12" fill="#F7F9FD" stroke="#C9D2E3" stroke-width="1.0"/>
-<text x="1464.0" y="496.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">At 500,000 homes (estimates)</tspan></text>
-<text x="1464.0" y="519.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Vision: ≈ €0.49 per home a month with 1</text>
-<text x="1464.0" y="537.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">camera; 1,427 L4 cards (document 17)</text>
-<text x="1464.0" y="560.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Language model: ≈ €0.43 per home a</text>
-<text x="1464.0" y="578.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">month (document 16)</text>
-<text x="1464.0" y="601.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Assumptions: 2 h of motion a day, 1</text>
-<text x="1464.0" y="619.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">frame a second, GPUs at 25 % of their</text>
-<text x="1464.0" y="636.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">peak</text>
+<rect x="1450.0" y="300.8" width="254.0" height="187.4" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="1464.0" y="328.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Language and vision-language</tspan></text>
+<text x="1464.0" y="348.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">models</tspan></text>
+<text x="1464.0" y="370.4" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">GPU servers, behind a queue</tspan></text>
+<text x="1464.0" y="393.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Text: sentences into rules, and answers</text>
+<text x="1464.0" y="411.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(hosted by Altice, or a provider under</text>
+<text x="1464.0" y="428.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">contract in the EU)</text>
+<text x="1464.0" y="452.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Judge, at Altice: rarely, 2 to 3 s of the</text>
+<text x="1464.0" y="469.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">region at an ambiguous moment</text>
+<rect x="1450.0" y="506.2" width="254.0" height="212.8" rx="12" fill="#F7F9FD" stroke="#C9D2E3" stroke-width="1.0"/>
+<text x="1464.0" y="534.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">At 500,000 homes (estimates)</tspan></text>
+<text x="1464.0" y="557.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Vision: ≈ €0.49 per home a month with 1</text>
+<text x="1464.0" y="575.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">camera; 1,427 L4 cards (document 17)</text>
+<text x="1464.0" y="598.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Language model: ≈ €0.43 per home a</text>
+<text x="1464.0" y="616.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">month (document 16)</text>
+<text x="1464.0" y="639.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Assumptions: 2 h of motion a day, 1</text>
+<text x="1464.0" y="657.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">frame a second, GPUs at 25 % of their</text>
+<text x="1464.0" y="674.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">peak</text>
 <rect x="1820.0" y="108.0" width="180.0" height="174.8" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="1834.0" y="135.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice app</tspan></text>
 <text x="1834.0" y="159.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Things tab and assistant</text>
@@ -121,7 +126,7 @@
 <path d="M446.0 322.6 H624.0" fill="none" stroke="#0084D6" stroke-width="2" marker-end="url(#m0084D6)"/>
 <text x="456.0" y="284.6" font-size="11.5" font-weight="700" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1 outbound mTLS connection:</tspan></text>
 <text x="456.0" y="299.6" font-size="11.5" font-weight="700" fill="#0084D6" text-anchor="start"><tspan font-weight="700">regions and face labels; never</tspan></text>
-<text x="456.0" y="314.6" font-size="11.5" font-weight="700" fill="#0084D6" text-anchor="start"><tspan font-weight="700">video</tspan></text>
+<text x="456.0" y="314.6" font-size="11.5" font-weight="700" fill="#0084D6" text-anchor="start"><tspan font-weight="700">continuous video</tspan></text>
 <path d="M634.0 361.8 H456.0" fill="none" stroke="#0084D6" stroke-width="2" marker-end="url(#m0084D6)"/>
 <text x="456.0" y="378.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">requests: active check, refresh</text>
 <path d="M446.0 572.9 H624.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>

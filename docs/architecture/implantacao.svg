@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2040 927" width="2040" height="927" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Implantação do ThingTracker"><title>Implantação do ThingTracker</title><defs><marker id="m0084D6" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#0084D6"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2040" height="927" fill="#FFFFFF"/><rect x="20.0" y="20.0" width="450.0" height="725.1" rx="18" fill="#F4F4F4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2040 939" width="2040" height="939" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Implantação do ThingTracker"><title>Implantação do ThingTracker</title><defs><marker id="m0084D6" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#0084D6"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2040" height="939" fill="#FFFFFF"/><rect x="20.0" y="20.0" width="450.0" height="736.7" rx="18" fill="#F4F4F4"/>
 <text x="40.0" y="50.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Em casa</tspan></text>
 <text x="40.0" y="70.0" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Equipamento que já lá está: movimento, regiões e rostos</text>
-<rect x="610.0" y="20.0" width="1120.0" height="725.1" rx="18" fill="#EEF3FB"/>
+<rect x="610.0" y="20.0" width="1120.0" height="736.7" rx="18" fill="#EEF3FB"/>
 <text x="630.0" y="50.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice · centro de dados</tspan></text>
 <text x="630.0" y="70.0" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Visão, presença, regras e os dados de cada cliente</text>
-<rect x="1800.0" y="20.0" width="220.0" height="725.1" rx="18" fill="#FFF6EA"/>
+<rect x="1800.0" y="20.0" width="220.0" height="736.7" rx="18" fill="#FFF6EA"/>
 <text x="1820.0" y="50.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Telemóvel</tspan></text>
 <rect x="44.0" y="108.0" width="402.0" height="110.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="58.0" y="135.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Câmaras do kit</tspan></text>
@@ -37,9 +37,10 @@
 <text x="58.0" y="449.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Rostos (opcional, com consentimento):<tspan font-style="italic"> YuNet</tspan> encontra,<tspan font-style="italic"> SFace</tspan></text>
 <text x="58.0" y="466.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">compara; semelhança ≥ 0,363 dá um nome</text>
 <text x="58.0" y="490.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Padrões faciais cifrados, guardados só aqui</text>
-<text x="58.0" y="513.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Fila de saída: guarda os eventos enquanto não há internet; sem</text>
-<text x="58.0" y="531.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">internet, não há análise de imagem</text>
-<text x="58.0" y="554.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi: o<tspan font-style="italic"> router</tspan> sabe que telemóveis da Família estão ligados</text>
+<text x="58.0" y="513.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Guarda só em memória os últimos 3 s, para o juiz</text>
+<text x="58.0" y="537.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Fila de saída: guarda os eventos enquanto não há internet; sem</text>
+<text x="58.0" y="554.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">internet, não há análise de imagem</text>
+<text x="58.0" y="578.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi: o<tspan font-style="italic"> router</tspan> sabe que telemóveis da Família estão ligados</text>
 <rect x="44.0" y="631.9" width="402.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="58.0" y="659.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Central de segurança e sensor da porta</tspan></text>
 <text x="58.0" y="683.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">MS-WES1AS</tspan> (LTE) e<tspan font-style="italic"> MS-D3D</tspan>; comunicam com a plataforma</text>
@@ -52,7 +53,7 @@
 <text x="648.0" y="650.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Pedidos à Altice: eventos da porta e do</text>
 <text x="648.0" y="668.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi, a ferramenta de presença no</text>
 <text x="648.0" y="685.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi e as ferramentas<tspan font-style="italic"> Things</tspan></text>
-<rect x="906.0" y="108.0" width="254.0" height="231.7" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="2"/>
+<rect x="906.0" y="108.0" width="254.0" height="290.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="2"/>
 <text x="920.0" y="135.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Serviço</tspan><tspan font-weight="700" font-style="italic"> ThingTracker</tspan></text>
 <text x="920.0" y="157.3" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N instâncias sem estado, em</tspan></text>
 <text x="920.0" y="174.8" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">contentores</tspan></text>
@@ -60,40 +61,42 @@
 <text x="920.0" y="221.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Motor de presença e motor de regras:</text>
 <text x="920.0" y="239.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">por casa, a cada evento e a cada</text>
 <text x="920.0" y="256.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">temporizador</text>
-<text x="920.0" y="280.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Seguimento das caixas entre análises</text>
-<text x="920.0" y="303.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Chama o modelo de linguagem só para</text>
-<text x="920.0" y="321.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">frases, perguntas e casos duvidosos</text>
-<rect x="906.0" y="357.6" width="254.0" height="157.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="920.0" y="385.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Filas e fluxo de eventos</tspan></text>
-<text x="920.0" y="408.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Visão urgente: verificações das regras</text>
-<text x="920.0" y="432.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Visão em lote: o resto, nas horas calmas</text>
-<text x="920.0" y="455.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Eventos de cada casa, por ordem</text>
-<text x="920.0" y="473.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(partição por casa)</text>
-<text x="920.0" y="496.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Pedidos ao modelo de linguagem</text>
-<rect x="906.0" y="533.3" width="254.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="920.0" y="561.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">Cache</tspan><tspan font-weight="700"> (</tspan><tspan font-weight="700" font-style="italic">Redis</tspan><tspan font-weight="700">)</tspan></text>
-<text x="920.0" y="584.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Estado de cada casa em uso: presença,</text>
-<text x="920.0" y="602.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">trajetos, contadores e temporizadores</text>
-<rect x="1178.0" y="108.0" width="254.0" height="208.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="920.0" y="280.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Compara os vetores com as assinaturas</text>
+<text x="920.0" y="297.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">visuais (<tspan font-style="italic">pgvector</tspan>): semelhança ≥ 0,62 é</text>
+<text x="920.0" y="315.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">o seu</text>
+<text x="920.0" y="338.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Seguimento das caixas entre análises</text>
+<text x="920.0" y="362.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Chama os modelos só para frases,</text>
+<text x="920.0" y="379.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">perguntas e, raramente, o juiz</text>
+<rect x="906.0" y="416.1" width="254.0" height="157.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="920.0" y="443.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Filas e fluxo de eventos</tspan></text>
+<text x="920.0" y="467.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Visão urgente: verificações das regras</text>
+<text x="920.0" y="490.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Visão em lote: o resto, nas horas calmas</text>
+<text x="920.0" y="514.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Eventos de cada casa, por ordem</text>
+<text x="920.0" y="531.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(partição por casa)</text>
+<text x="920.0" y="555.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Pedidos ao modelo de linguagem</text>
+<rect x="906.0" y="591.8" width="254.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="920.0" y="619.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">Cache</tspan><tspan font-weight="700"> (</tspan><tspan font-weight="700" font-style="italic">Redis</tspan><tspan font-weight="700">)</tspan></text>
+<text x="920.0" y="643.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Estado de cada casa em uso: presença,</text>
+<text x="920.0" y="660.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">trajetos, contadores e temporizadores</text>
+<rect x="1178.0" y="108.0" width="254.0" height="190.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="1192.0" y="135.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Servidores de visão</tspan></text>
 <text x="1192.0" y="157.3" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">GPU NVIDIA L4</tspan></text>
 <text x="1192.0" y="180.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">OWLv2</tspan>: encontra objetos, pessoas e</text>
 <text x="1192.0" y="198.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">superfícies na região</text>
-<text x="1192.0" y="221.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">DINOv2</tspan>: compara cada candidato com</text>
-<text x="1192.0" y="239.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">as 8 vistas do objeto; semelhança ≥</text>
-<text x="1192.0" y="256.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">0,62 é o seu</text>
-<text x="1192.0" y="280.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Sem estado: leem as filas e devolvem</text>
-<text x="1192.0" y="297.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">deteções</text>
-<rect x="1178.0" y="334.1" width="254.0" height="126.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="1192.0" y="361.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL com</tspan><tspan font-weight="700" font-style="italic"> pgvector</tspan></text>
-<text x="1192.0" y="383.4" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">primário e réplica</tspan></text>
-<text x="1192.0" y="406.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Por cliente: objetos, assinaturas visuais,</text>
-<text x="1192.0" y="424.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">regras, eventos, observações e</text>
-<text x="1192.0" y="441.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">presença</text>
-<rect x="1178.0" y="478.3" width="254.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="1192.0" y="506.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Armazenamento de objetos</tspan></text>
-<text x="1192.0" y="529.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Miniaturas das observações, 30 dias</text>
-<text x="1192.0" y="547.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(proposta)</text>
+<text x="1192.0" y="221.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">DINOv2</tspan>: calcula o vetor de cada</text>
+<text x="1192.0" y="239.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">candidato</text>
+<text x="1192.0" y="262.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Sem estado: leem as filas e devolvem</text>
+<text x="1192.0" y="280.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">caixas e vetores</text>
+<rect x="1178.0" y="316.6" width="254.0" height="126.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="1192.0" y="344.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL com</tspan><tspan font-weight="700" font-style="italic"> pgvector</tspan></text>
+<text x="1192.0" y="365.9" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">primário e réplica</tspan></text>
+<text x="1192.0" y="389.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Por cliente: objetos, assinaturas visuais,</text>
+<text x="1192.0" y="406.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">regras, eventos, observações e</text>
+<text x="1192.0" y="424.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">presença</text>
+<rect x="1178.0" y="460.8" width="254.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="1192.0" y="488.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Armazenamento de objetos</tspan></text>
+<text x="1192.0" y="512.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Miniaturas das observações, 30 dias</text>
+<text x="1192.0" y="529.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(proposta)</text>
 <rect x="1450.0" y="108.0" width="254.0" height="107.4" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="1464.0" y="135.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Balanceador de carga</tspan></text>
 <text x="1464.0" y="156.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">(aplicação)</tspan></text>
@@ -102,24 +105,25 @@
 <rect x="1450.0" y="233.4" width="254.0" height="69.7" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="1464.0" y="261.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Notificações (existente)</tspan></text>
 <text x="1464.0" y="284.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">O serviço que a aplicação Altice já usa</text>
-<rect x="1450.0" y="321.1" width="254.0" height="167.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
-<text x="1464.0" y="348.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Modelo de linguagem</tspan></text>
-<text x="1464.0" y="370.4" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">servidores GPU, atrás de uma fila</tspan></text>
-<text x="1464.0" y="393.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Modelo<tspan font-style="italic"> open-weight</tspan> alojado pela Altice,</text>
-<text x="1464.0" y="411.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">ou um fornecedor sob contrato na UE</text>
-<text x="1464.0" y="434.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Recebe texto; raramente, o recorte de</text>
-<text x="1464.0" y="452.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">um objeto num caso duvidoso (decisão</text>
-<text x="1464.0" y="469.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">em aberto)</text>
-<rect x="1450.0" y="506.2" width="254.0" height="212.8" rx="12" fill="#F7F9FD" stroke="#C9D2E3" stroke-width="1.0"/>
-<text x="1464.0" y="534.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">A 500 000 casas (estimativas)</tspan></text>
-<text x="1464.0" y="557.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Visão: ≈ 0,49 € por casa e por mês com</text>
-<text x="1464.0" y="575.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">1 câmara; 1 427 placas L4 (documento</text>
-<text x="1464.0" y="592.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">17)</text>
-<text x="1464.0" y="616.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Modelo de linguagem: ≈ 0,43 € por casa</text>
-<text x="1464.0" y="633.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">e por mês (documento 16)</text>
-<text x="1464.0" y="657.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Pressupostos: 2 h de movimento por</text>
-<text x="1464.0" y="674.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">dia, 1 imagem por segundo, GPU a</text>
-<text x="1464.0" y="692.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">25 % do seu pico</text>
+<rect x="1450.0" y="321.1" width="254.0" height="187.4" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
+<text x="1464.0" y="348.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Modelos de linguagem e de</tspan></text>
+<text x="1464.0" y="369.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">visão-linguagem</tspan></text>
+<text x="1464.0" y="390.7" font-size="12.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">servidores GPU, atrás de uma fila</tspan></text>
+<text x="1464.0" y="414.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Texto: frases em regras e respostas</text>
+<text x="1464.0" y="431.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(alojado pela Altice ou fornecedor sob</text>
+<text x="1464.0" y="449.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">contrato na UE)</text>
+<text x="1464.0" y="472.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Juiz, na Altice: raramente, 2 a 3 s da</text>
+<text x="1464.0" y="490.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">região num momento duvidoso</text>
+<rect x="1450.0" y="526.5" width="254.0" height="204.2" rx="12" fill="#F7F9FD" stroke="#C9D2E3" stroke-width="1.0"/>
+<text x="1464.0" y="554.3" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">A 500 000 casas (estimativas)</tspan></text>
+<text x="1464.0" y="577.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Visão: ≈ 0,49 € por casa e por mês com</text>
+<text x="1464.0" y="595.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">1 câmara; 1 427 placas L4 (documento</text>
+<text x="1464.0" y="612.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">17)</text>
+<text x="1464.0" y="636.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Modelo de linguagem: ≈ 0,43 € por casa</text>
+<text x="1464.0" y="653.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">e por mês (documento 16)</text>
+<text x="1464.0" y="677.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Pressupostos: 2 h de movimento por</text>
+<text x="1464.0" y="694.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">dia, 1 imagem por segundo, GPU a</text>
+<text x="1464.0" y="712.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">25 % do seu pico</text>
 <rect x="1820.0" y="108.0" width="180.0" height="195.1" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="1834.0" y="135.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Aplicação Altice</tspan></text>
 <text x="1834.0" y="159.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Separador<tspan font-style="italic"> Things</tspan> e</text>
@@ -131,7 +135,7 @@
 <path d="M446.0 322.6 H624.0" fill="none" stroke="#0084D6" stroke-width="2" marker-end="url(#m0084D6)"/>
 <text x="456.0" y="284.6" font-size="11.5" font-weight="700" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1 ligação de saída mTLS:</tspan></text>
 <text x="456.0" y="299.6" font-size="11.5" font-weight="700" fill="#0084D6" text-anchor="start"><tspan font-weight="700">regiões e rótulos de rostos;</tspan></text>
-<text x="456.0" y="314.6" font-size="11.5" font-weight="700" fill="#0084D6" text-anchor="start"><tspan font-weight="700">nunca vídeo</tspan></text>
+<text x="456.0" y="314.6" font-size="11.5" font-weight="700" fill="#0084D6" text-anchor="start"><tspan font-weight="700">nunca vídeo contínuo</tspan></text>
 <path d="M634.0 361.8 H456.0" fill="none" stroke="#0084D6" stroke-width="2" marker-end="url(#m0084D6)"/>
 <text x="456.0" y="378.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">pedidos: verificação ativa,</text>
 <text x="456.0" y="393.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">atualização</text>
@@ -148,20 +152,20 @@
 <text x="1712.0" y="153.7" font-size="11" font-weight="400" fill="#333333" text-anchor="start">“Sim”</text>
 <path d="M1704.0 268.3 H1810.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="1712.0" y="260.3" font-size="11" font-weight="400" fill="#333333" text-anchor="start">avisos (<tspan font-style="italic">push</tspan>)</text>
-<rect x="20.0" y="775.1" width="650.7" height="132.2" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.5"/>
-<text x="36.0" y="804.9" font-size="14.5" font-weight="400" fill="#003399" text-anchor="start"><tspan font-weight="700">Evolução prevista (A1 no documento 17)</tspan></text>
-<text x="36.0" y="828.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Se os<tspan font-style="italic"> routers</tspan> ou as câmaras da Altice tiverem uma NPU capaz de correr um detetor, a visão passa para casa</text>
-<text x="36.0" y="845.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">e só saem eventos, miniaturas e assinaturas visuais.</text>
-<text x="36.0" y="869.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">≈ 0,36 € por casa e por mês (prémio de 15 € no<tspan font-style="italic"> router</tspan>, um pressuposto). É a primeira pergunta para a Altice.</text>
-<rect x="694.7" y="775.1" width="650.7" height="132.2" rx="12" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.5"/>
-<text x="710.7" y="804.9" font-size="14.5" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Rejeitada: uma caixa em cada casa, com o modelo de linguagem</tspan></text>
-<text x="710.7" y="828.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">Raspberry Pi 5</tspan> com<tspan font-style="italic"> AI HAT+</tspan> (200 €) ou<tspan font-style="italic"> Jetson Orin Nano Super</tspan> (269 €): 6,55 a 8,64 € por casa e por mês, e</text>
-<text x="710.7" y="845.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">107,5 a 142,0 M€ de equipamento para 500 000 casas (documento 17).</text>
-<text x="710.7" y="869.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">O modelo de linguagem exige ainda mais memória (cerca de 1 GB o do protótipo, 2,1 GB o de 4B testado,</text>
-<text x="710.7" y="886.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">três vezes mais lento) e cada atualização chega a 500 000 caixas.</text>
-<rect x="1369.3" y="775.1" width="650.7" height="132.2" rx="12" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.5"/>
-<text x="1385.3" y="804.9" font-size="14.5" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Rejeitada: vídeo ou imagens completas para a nuvem</tspan></text>
-<text x="1385.3" y="828.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Vídeo contínuo a 2 Mbps (pressuposto): 657 GB por câmara e por mês e 1 000 Gbps no pico com 500 000</text>
-<text x="1385.3" y="845.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">câmaras. Imagens completas durante o movimento: 2,41 € por casa e por mês nos servidores da Altice e 3,93</text>
-<text x="1385.3" y="863.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">a 4,26 € em GPU de<tspan font-style="italic"> hyperscalers</tspan>, a pedido (documento 17).</text>
-<text x="1385.3" y="886.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Toda a imagem da casa sairia de casa.</text></svg>
+<rect x="20.0" y="786.7" width="650.7" height="132.2" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.5"/>
+<text x="36.0" y="816.5" font-size="14.5" font-weight="400" fill="#003399" text-anchor="start"><tspan font-weight="700">Evolução prevista (A1 no documento 17)</tspan></text>
+<text x="36.0" y="840.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Se os<tspan font-style="italic"> routers</tspan> ou as câmaras da Altice tiverem uma NPU capaz de correr um detetor, a visão passa para casa</text>
+<text x="36.0" y="857.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">e só saem eventos, miniaturas e assinaturas visuais.</text>
+<text x="36.0" y="881.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">≈ 0,36 € por casa e por mês (prémio de 15 € no<tspan font-style="italic"> router</tspan>, um pressuposto). É a primeira pergunta para a Altice.</text>
+<rect x="694.7" y="786.7" width="650.7" height="132.2" rx="12" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.5"/>
+<text x="710.7" y="816.5" font-size="14.5" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Rejeitada: uma caixa em cada casa, com o modelo de linguagem</tspan></text>
+<text x="710.7" y="840.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">Raspberry Pi 5</tspan> com<tspan font-style="italic"> AI HAT+</tspan> (200 €) ou<tspan font-style="italic"> Jetson Orin Nano Super</tspan> (269 €): 6,55 a 8,64 € por casa e por mês, e</text>
+<text x="710.7" y="857.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">107,5 a 142,0 M€ de equipamento para 500 000 casas (documento 17).</text>
+<text x="710.7" y="881.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">O modelo de linguagem exige ainda mais memória (cerca de 1 GB o do protótipo, 2,1 GB o de 4B testado,</text>
+<text x="710.7" y="898.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">três vezes mais lento) e cada atualização chega a 500 000 caixas.</text>
+<rect x="1369.3" y="786.7" width="650.7" height="132.2" rx="12" fill="#FFFFFF" stroke="#C2410C" stroke-width="1.5"/>
+<text x="1385.3" y="816.5" font-size="14.5" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Rejeitada: vídeo ou imagens completas para a nuvem</tspan></text>
+<text x="1385.3" y="840.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Vídeo contínuo a 2 Mbps (pressuposto): 657 GB por câmara e por mês e 1 000 Gbps no pico com 500 000</text>
+<text x="1385.3" y="857.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">câmaras. Imagens completas durante o movimento: 2,41 € por casa e por mês nos servidores da Altice e 3,93</text>
+<text x="1385.3" y="875.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">a 4,26 € em GPU de<tspan font-style="italic"> hyperscalers</tspan>, a pedido (documento 17).</text>
+<text x="1385.3" y="898.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Toda a imagem da casa sairia de casa.</text></svg>

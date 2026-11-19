@@ -1,0 +1,313 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1852 1041" width="1852" height="1041" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Data model: platform"><title>Data model: platform</title><defs><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1852" height="1041" fill="#FFFFFF"/><rect x="40.0" y="30.0" width="262.0" height="105.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="40.0" y="30.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="40.0" y="54.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="52.0" y="51.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">customer</tspan></text>
+<text x="50.0" y="78.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="78.0" y="78.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="292.0" y="78.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="78.0" y="99.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">plan</tspan></text>
+<text x="292.0" y="99.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="78.0" y="120.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">created_at</tspan></text>
+<text x="292.0" y="120.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">timestamptz</text>
+<rect x="644.0" y="30.0" width="262.0" height="126.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="644.0" y="30.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="644.0" y="54.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="656.0" y="51.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">home</tspan></text>
+<text x="654.0" y="78.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="682.0" y="78.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="896.0" y="78.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="654.0" y="99.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="682.0" y="99.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">customer_id</tspan></text>
+<text x="896.0" y="99.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ customer</text>
+<text x="682.0" y="120.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">altice_home_id</tspan></text>
+<text x="896.0" y="120.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="682.0" y="141.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">name</tspan></text>
+<text x="896.0" y="141.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<line x1="302.0" y1="90.0" x2="644.0" y2="90.0" stroke="#333333" stroke-width="1.4"/>
+<text x="310.0" y="84.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<text x="636.0" y="84.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="end"><tspan font-weight="700">N</tspan></text>
+<rect x="40.0" y="246.0" width="262.0" height="189.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="40.0" y="246.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="40.0" y="270.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="52.0" y="267.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">member</tspan></text>
+<text x="50.0" y="294.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="78.0" y="294.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="292.0" y="294.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="50.0" y="315.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="78.0" y="315.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">home_id</tspan></text>
+<text x="292.0" y="315.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ home</text>
+<text x="78.0" y="336.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">name</tspan></text>
+<text x="292.0" y="336.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="78.0" y="357.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">role</tspan></text>
+<text x="292.0" y="357.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">family, guest…</text>
+<text x="78.0" y="378.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">recognition_on</tspan></text>
+<text x="292.0" y="378.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">bool</text>
+<text x="78.0" y="399.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">consent_at</tspan></text>
+<text x="292.0" y="399.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">timestamptz</text>
+<text x="78.0" y="420.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">consent_text</tspan></text>
+<text x="292.0" y="420.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">version</text>
+<rect x="342.0" y="246.0" width="262.0" height="147.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="342.0" y="246.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="342.0" y="270.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="354.0" y="267.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">camera</tspan></text>
+<text x="352.0" y="294.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="380.0" y="294.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="594.0" y="294.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="352.0" y="315.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="380.0" y="315.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">home_id</tspan></text>
+<text x="594.0" y="315.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ home</text>
+<text x="380.0" y="336.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">altice_device_id</tspan></text>
+<text x="594.0" y="336.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="380.0" y="357.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">place</tspan></text>
+<text x="594.0" y="357.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">“Living room 1”</text>
+<text x="380.0" y="378.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">masks</tspan></text>
+<text x="594.0" y="378.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">jsonb</text>
+<rect x="644.0" y="246.0" width="262.0" height="168.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="644.0" y="246.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="644.0" y="270.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="656.0" y="267.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">thing</tspan></text>
+<text x="654.0" y="294.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="682.0" y="294.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="896.0" y="294.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="654.0" y="315.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="682.0" y="315.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">home_id</tspan></text>
+<text x="896.0" y="315.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ home</text>
+<text x="682.0" y="336.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">name</tspan></text>
+<text x="896.0" y="336.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="682.0" y="357.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">query</tspan></text>
+<text x="896.0" y="357.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">detector word</text>
+<text x="682.0" y="378.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">photo_key</tspan></text>
+<text x="896.0" y="378.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="654.0" y="399.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="682.0" y="399.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">usual_camera</tspan></text>
+<text x="896.0" y="399.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ camera</text>
+<rect x="946.0" y="246.0" width="262.0" height="231.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="946.0" y="246.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="946.0" y="270.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="958.0" y="267.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">sighting</tspan></text>
+<text x="956.0" y="294.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="984.0" y="294.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="1198.0" y="294.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="956.0" y="315.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="984.0" y="315.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">thing_id</tspan></text>
+<text x="1198.0" y="315.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ thing</text>
+<text x="956.0" y="336.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="984.0" y="336.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">camera_id</tspan></text>
+<text x="1198.0" y="336.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ camera</text>
+<text x="984.0" y="357.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">ts</tspan></text>
+<text x="1198.0" y="357.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">timestamptz</text>
+<text x="984.0" y="378.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">surface</tspan></text>
+<text x="1198.0" y="378.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">desk…</text>
+<text x="984.0" y="399.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">state</tspan></text>
+<text x="1198.0" y="399.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">placed, in hand…</text>
+<text x="956.0" y="420.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="984.0" y="420.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">member_id</tspan></text>
+<text x="1198.0" y="420.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ member</text>
+<text x="984.0" y="441.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">match</tspan></text>
+<text x="1198.0" y="441.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">real</text>
+<text x="984.0" y="462.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">thumb_key</tspan></text>
+<text x="1198.0" y="462.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<rect x="1248.0" y="246.0" width="262.0" height="210.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="1248.0" y="246.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="1248.0" y="270.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="1260.0" y="267.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">rule</tspan></text>
+<text x="1258.0" y="294.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="1286.0" y="294.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="1500.0" y="294.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="1258.0" y="315.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="1286.0" y="315.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">home_id</tspan></text>
+<text x="1500.0" y="315.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ home</text>
+<text x="1286.0" y="336.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">sentence</tspan></text>
+<text x="1500.0" y="336.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1286.0" y="357.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">compiled</tspan></text>
+<text x="1500.0" y="357.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">jsonb</text>
+<text x="1258.0" y="378.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="1286.0" y="378.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">owner_id</tspan></text>
+<text x="1500.0" y="378.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ member</text>
+<text x="1286.0" y="399.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">active</tspan></text>
+<text x="1500.0" y="399.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">bool</text>
+<text x="1286.0" y="420.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">siren</tspan></text>
+<text x="1500.0" y="420.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">ask, at once</text>
+<text x="1286.0" y="441.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">scenario_id</tspan></text>
+<text x="1500.0" y="441.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<rect x="1550.0" y="246.0" width="262.0" height="147.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="1550.0" y="246.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="1550.0" y="270.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="1562.0" y="267.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">presence</tspan></text>
+<text x="1560.0" y="294.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="1588.0" y="294.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">home_id</tspan></text>
+<text x="1802.0" y="294.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ home</text>
+<text x="1588.0" y="315.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">state</tspan></text>
+<text x="1802.0" y="315.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">OCCUPIED…</text>
+<text x="1588.0" y="336.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">since</tspan></text>
+<text x="1802.0" y="336.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">timestamptz</text>
+<text x="1588.0" y="357.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">members_home</tspan></text>
+<text x="1802.0" y="357.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">jsonb</text>
+<text x="1588.0" y="378.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">reason</tspan></text>
+<text x="1802.0" y="378.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<line x1="775.0" y1="156" x2="775.0" y2="202" stroke="#333333" stroke-width="1.4"/>
+<text x="781.0" y="172.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<line x1="171.0" y1="202" x2="1681.0" y2="202" stroke="#333333" stroke-width="1.4"/>
+<line x1="171.0" y1="202" x2="171.0" y2="246" stroke="#333333" stroke-width="1.4"/>
+<text x="177.0" y="238.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<line x1="473.0" y1="202" x2="473.0" y2="246" stroke="#333333" stroke-width="1.4"/>
+<text x="479.0" y="238.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<line x1="775.0" y1="202" x2="775.0" y2="246" stroke="#333333" stroke-width="1.4"/>
+<text x="781.0" y="238.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<line x1="1379.0" y1="202" x2="1379.0" y2="246" stroke="#333333" stroke-width="1.4"/>
+<text x="1385.0" y="238.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<line x1="1681.0" y1="202" x2="1681.0" y2="246" stroke="#333333" stroke-width="1.4"/>
+<text x="1687.0" y="238.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<line x1="906.0" y1="306.0" x2="946.0" y2="306.0" stroke="#333333" stroke-width="1.4"/>
+<text x="914.0" y="300.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<text x="938.0" y="300.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="end"><tspan font-weight="700">N</tspan></text>
+<rect x="40.0" y="537.0" width="262.0" height="126.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="40.0" y="537.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="40.0" y="561.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="52.0" y="558.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">phone</tspan></text>
+<text x="50.0" y="585.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="78.0" y="585.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="292.0" y="585.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="50.0" y="606.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="78.0" y="606.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">member_id</tspan></text>
+<text x="292.0" y="606.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ member</text>
+<text x="78.0" y="627.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">router_device</tspan></text>
+<text x="292.0" y="627.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="78.0" y="648.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">label</tspan></text>
+<text x="292.0" y="648.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<rect x="342.0" y="537.0" width="262.0" height="147.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="342.0" y="537.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="342.0" y="561.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="354.0" y="558.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">person_seen</tspan></text>
+<text x="352.0" y="585.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="380.0" y="585.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="594.0" y="585.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="352.0" y="606.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="380.0" y="606.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">camera_id</tspan></text>
+<text x="594.0" y="606.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ camera</text>
+<text x="380.0" y="627.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">ts</tspan></text>
+<text x="594.0" y="627.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">timestamptz</text>
+<text x="380.0" y="648.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">label</tspan></text>
+<text x="594.0" y="648.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">member, unknown…</text>
+<text x="352.0" y="669.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="380.0" y="669.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">member_id</tspan></text>
+<text x="594.0" y="669.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ member</text>
+<rect x="644.0" y="537.0" width="262.0" height="147.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="644.0" y="537.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="644.0" y="561.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="656.0" y="558.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">fingerprint</tspan></text>
+<text x="654.0" y="585.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="682.0" y="585.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="896.0" y="585.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="654.0" y="606.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="682.0" y="606.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">thing_id</tspan></text>
+<text x="896.0" y="606.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ thing</text>
+<text x="682.0" y="627.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">view_no</tspan></text>
+<text x="896.0" y="627.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">1–8</text>
+<text x="682.0" y="648.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">embedding</tspan></text>
+<text x="896.0" y="648.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">vector(384)</text>
+<text x="682.0" y="669.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">model</tspan></text>
+<text x="896.0" y="669.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<rect x="946.0" y="537.0" width="262.0" height="168.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="946.0" y="537.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="946.0" y="561.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="958.0" y="558.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">llm_call</tspan></text>
+<text x="956.0" y="585.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="984.0" y="585.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="1198.0" y="585.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="956.0" y="606.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="984.0" y="606.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">home_id</tspan></text>
+<text x="1198.0" y="606.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ home</text>
+<text x="984.0" y="627.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">purpose</tspan></text>
+<text x="1198.0" y="627.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="984.0" y="648.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">model</tspan></text>
+<text x="1198.0" y="648.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="984.0" y="669.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">tokens</tspan></text>
+<text x="1198.0" y="669.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">int</text>
+<text x="984.0" y="690.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">cost_eur</tspan></text>
+<text x="1198.0" y="690.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">real</text>
+<rect x="1248.0" y="537.0" width="262.0" height="252.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="1248.0" y="537.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="1248.0" y="561.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="1260.0" y="558.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">alert</tspan></text>
+<text x="1258.0" y="585.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="1286.0" y="585.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="1500.0" y="585.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="1258.0" y="606.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="1286.0" y="606.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">rule_id</tspan></text>
+<text x="1500.0" y="606.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ rule</text>
+<text x="1286.0" y="627.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">ts</tspan></text>
+<text x="1500.0" y="627.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">timestamptz</text>
+<text x="1286.0" y="648.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">level</tspan></text>
+<text x="1500.0" y="648.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1286.0" y="669.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">title</tspan></text>
+<text x="1500.0" y="669.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1286.0" y="690.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">message</tspan></text>
+<text x="1500.0" y="690.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1286.0" y="711.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">thumb_key</tspan></text>
+<text x="1500.0" y="711.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1286.0" y="732.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">actions</tspan></text>
+<text x="1500.0" y="732.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">jsonb</text>
+<text x="1286.0" y="753.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">answer</tspan></text>
+<text x="1500.0" y="753.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1258.0" y="774.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="1286.0" y="774.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">answered_by</tspan></text>
+<text x="1500.0" y="774.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ member</text>
+<rect x="1550.0" y="537.0" width="262.0" height="168.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="1550.0" y="537.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="1550.0" y="561.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="1562.0" y="558.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">presence_change</tspan></text>
+<text x="1560.0" y="585.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="1588.0" y="585.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="1802.0" y="585.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="1560.0" y="606.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="1588.0" y="606.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">home_id</tspan></text>
+<text x="1802.0" y="606.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ presence</text>
+<text x="1588.0" y="627.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">ts</tspan></text>
+<text x="1802.0" y="627.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">timestamptz</text>
+<text x="1588.0" y="648.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">from_state</tspan></text>
+<text x="1802.0" y="648.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1588.0" y="669.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">to_state</tspan></text>
+<text x="1802.0" y="669.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1588.0" y="690.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">reason</tspan></text>
+<text x="1802.0" y="690.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<line x1="171.0" y1="435.0" x2="171.0" y2="537.0" stroke="#333333" stroke-width="1.4"/>
+<text x="177.0" y="453.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<text x="177.0" y="533.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<line x1="473.0" y1="393.0" x2="473.0" y2="537.0" stroke="#333333" stroke-width="1.4"/>
+<text x="479.0" y="411.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<text x="479.0" y="533.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<line x1="775.0" y1="414.0" x2="775.0" y2="537.0" stroke="#333333" stroke-width="1.4"/>
+<text x="781.0" y="432.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<text x="781.0" y="533.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<line x1="1379.0" y1="456.0" x2="1379.0" y2="537.0" stroke="#333333" stroke-width="1.4"/>
+<text x="1385.0" y="474.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<text x="1385.0" y="533.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<line x1="1681.0" y1="393.0" x2="1681.0" y2="537.0" stroke="#333333" stroke-width="1.4"/>
+<text x="1687.0" y="411.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<text x="1687.0" y="533.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<rect x="1248.0" y="849.0" width="262.0" height="168.0" rx="8" fill="#FFFFFF" stroke="#9DB7D5" stroke-width="1.3"/>
+<rect x="1248.0" y="849.0" width="262.0" height="32.0" rx="8" fill="#E6F0FA"/>
+<rect x="1248.0" y="873.0" width="262.0" height="8.0" rx="0" fill="#E6F0FA"/>
+<text x="1260.0" y="870.0" font-size="15" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="13.5">action_log</tspan></text>
+<text x="1258.0" y="897.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">PK</tspan></text>
+<text x="1286.0" y="897.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">id</tspan></text>
+<text x="1500.0" y="897.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">uuid</text>
+<text x="1258.0" y="918.0" font-size="9.5" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">FK</tspan></text>
+<text x="1286.0" y="918.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">alert_id</tspan></text>
+<text x="1500.0" y="918.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">→ alert</text>
+<text x="1286.0" y="939.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">mcp_tool</tspan></text>
+<text x="1500.0" y="939.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1286.0" y="960.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">args</tspan></text>
+<text x="1500.0" y="960.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">jsonb</text>
+<text x="1286.0" y="981.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">result</tspan></text>
+<text x="1500.0" y="981.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">text</text>
+<text x="1286.0" y="1002.0" font-size="12.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-family="Menlo, monospace" font-size="11.2">ts</tspan></text>
+<text x="1500.0" y="1002.0" font-size="11" font-weight="400" fill="#555555" text-anchor="end">timestamptz</text>
+<line x1="1379.0" y1="789.0" x2="1379.0" y2="849.0" stroke="#333333" stroke-width="1.4"/>
+<text x="1385.0" y="807.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">1</tspan></text>
+<text x="1385.0" y="845.0" font-size="11" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">N</tspan></text>
+<text x="40.0" y="879.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">One PostgreSQL database with pgvector; every row belongs to one customer, with row-level security.</text>
+<text x="40.0" y="902.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">No table holds biometric data: <tspan font-family="Menlo, monospace" font-size="11.2">member</tspan> has the name, the role and the consent record; face templates exist only in the home.</text>
+<text x="40.0" y="926.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Proposed retention: sightings, people seen and thumbnails, 30 days; alerts and actions, 90 days.</text>
+<text x="40.0" y="949.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Lines: 1 and N say how many records on each side. Foreign keys without a line are written in the field (→ table).</text></svg>

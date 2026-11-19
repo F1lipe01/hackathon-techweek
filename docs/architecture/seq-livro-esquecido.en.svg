@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 1067" width="1380" height="1067" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequence: the book left behind"><title>Sequence: the book left behind</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1380" height="1067" fill="#FFFFFF"/><line x1="120.0" y1="102.77499999999999" x2="120.0" y2="1013.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="315.0" y1="102.77499999999999" x2="315.0" y2="1013.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="515.0" y1="102.77499999999999" x2="515.0" y2="1013.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="720.0" y1="102.77499999999999" x2="720.0" y2="1013.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="945.0" y1="102.77499999999999" x2="945.0" y2="1013.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="1215.0" y1="102.77499999999999" x2="1215.0" y2="1013.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 1202" width="1380" height="1202" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequence: the book left behind"><title>Sequence: the book left behind</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1380" height="1202" fill="#FFFFFF"/><line x1="120.0" y1="102.77499999999999" x2="120.0" y2="1147.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="315.0" y1="102.77499999999999" x2="315.0" y2="1147.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="515.0" y1="102.77499999999999" x2="515.0" y2="1147.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="720.0" y1="102.77499999999999" x2="720.0" y2="1147.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="945.0" y1="102.77499999999999" x2="945.0" y2="1147.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="1215.0" y1="102.77499999999999" x2="1215.0" y2="1147.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
 <rect x="32.0" y="20.0" width="176.0" height="82.8" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
 <text x="44.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Door sensor and</tspan></text>
 <text x="44.0" y="64.9" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">router</tspan></text>
@@ -73,17 +73,17 @@
 <path d="M327.0 706.0 H706.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
 <circle cx="315.0" cy="705.9749999999999" r="11" fill="#0084D6"/>
 <text x="315.0" y="710.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">8</tspan></text>
-<rect x="751.6" y="732.5" width="161.9" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="832.5" y="745.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">book seen in 3 of 3 frames,</text>
-<rect x="738.6" y="749.5" width="187.7" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="832.5" y="762.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">similarity 0.70 ≥ 0.62, thumbnail</text>
+<rect x="749.9" y="732.5" width="165.1" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="832.5" y="745.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">3 results: “book” boxes and</text>
+<rect x="783.3" y="749.5" width="98.4" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="832.5" y="762.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">DINOv2 vectors</text>
 <path d="M732.0 771.0 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
 <circle cx="720.0" cy="770.9749999999999" r="11" fill="#0084D6"/>
 <text x="720.0" y="775.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">9</tspan></text>
 <rect x="795.0" y="815.0" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="834.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Rule “tell me if I leave without my book”: met,</text>
-<text x="945.0" y="851.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">because the book was seen in at least 2 of the 3</text>
-<text x="945.0" y="868.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">frames</text>
+<text x="945.0" y="834.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Matched with the book’s 8 views (pgvector): 0.70</text>
+<text x="945.0" y="851.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">≥ 0.62 in 3 of 3 frames. Rule “tell me if I leave</text>
+<text x="945.0" y="868.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">without my book” met, since 2 of 3 are enough</text>
 <rect x="965.7" y="888.5" width="228.5" height="17.0" rx="2" fill="#FFFFFF"/>
 <text x="1080.0" y="901.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">alert: “Your book stayed at home”, with</text>
 <rect x="958.6" y="905.5" width="242.8" height="17.0" rx="2" fill="#FFFFFF"/>
@@ -91,6 +91,11 @@
 <path d="M957.0 927.0 H1201.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
 <circle cx="945.0" cy="926.9749999999999" r="11" fill="#0084D6"/>
 <text x="945.0" y="931.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">10</tspan></text>
-<rect x="12.0" y="971.0" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="690.0" y="990.0" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">If the book is not seen in at least 2 of the 3 frames, the result is “unsure”: no alert, only a log entry. An arrival (the door opens and closes and a phone joins the Wi-Fi) does not start the check.</text>
-<text x="20.0" y="1039.2" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Grey: in the home. Blue: Altice. Orange: the phone. Production timings are proposals, to tune in a pilot.</text></svg>
+<rect x="12.0" y="971.0" width="1356.0" height="50.4" rx="8" fill="#EEF1F6"/>
+<text x="690.0" y="990.0" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">If the book is seen in fewer than 2 of the 3 frames (half hidden, say), the rules engine may call the judge: a vision-language model at Altice looks at 2 to 3 s of the region and answers yes, no or unsure, with a sentence. “Yes”</text>
+<text x="690.0" y="1008.2" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">gives the alert; “no” does not; “unsure” makes the app ask the family, with no alarm.</text>
+<rect x="12.0" y="1047.4" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
+<text x="690.0" y="1066.4" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">An arrival (the door opens and closes and a phone joins the Wi-Fi) does not start the check.</text>
+<rect x="12.0" y="1105.6" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
+<text x="690.0" y="1124.6" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Without a door sensor, the same check starts when a Family phone leaves the Wi-Fi (after T_phone, so later) or when a camera that sees the exit door sees someone leave through it.</text>
+<text x="20.0" y="1173.8" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Grey: in the home. Blue: Altice. Orange: the phone. Production timings are proposals, to tune in a pilot.</text></svg>

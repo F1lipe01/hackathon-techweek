@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1880 709" width="1880" height="709" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Flows in the app"><title>Flows in the app</title><defs><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1880" height="709" fill="#FFFFFF"/><rect x="40.0" y="30.0" width="180.0" height="107.4" rx="12" fill="#EEF1F6"/>
+<text x="54.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Add a thing</tspan></text>
+<rect x="266.0" y="30.0" width="224.0" height="107.4" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="280.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Things tab</tspan></text>
+<text x="280.0" y="81.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(+) “Add thing”</text>
+<rect x="536.0" y="30.0" width="224.0" height="107.4" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="550.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Looking through the</tspan></text>
+<text x="550.0" y="78.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">cameras</tspan></text>
+<text x="550.0" y="101.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Proposals of what the cameras</text>
+<text x="550.0" y="119.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">see, or a typed name</text>
+<rect x="806.0" y="30.0" width="224.0" height="107.4" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="820.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Photos or camera</tspan></text>
+<text x="820.0" y="81.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">6 to 8 photos with the phone, or</text>
+<text x="820.0" y="98.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">show it to a camera (8 different</text>
+<text x="820.0" y="116.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">views)</text>
+<rect x="1076.0" y="30.0" width="224.0" height="107.4" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="1090.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">New thing</tspan></text>
+<text x="1090.0" y="81.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The learnt views and the name;</text>
+<text x="1090.0" y="98.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">“Save”</text>
+<rect x="1346.0" y="30.0" width="224.0" height="107.4" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="1360.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Create a scenario?</tspan></text>
+<text x="1360.0" y="81.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Offers a rule for the thing: “tell me</text>
+<text x="1360.0" y="98.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">if I leave without it”</text>
+<rect x="40.0" y="171.4" width="180.0" height="104.7" rx="12" fill="#EEF1F6"/>
+<text x="54.0" y="199.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Add a person</tspan></text>
+<rect x="266.0" y="171.4" width="224.0" height="104.7" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="280.0" y="199.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Things tab</tspan></text>
+<text x="280.0" y="222.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">(+) “A person”</text>
+<rect x="536.0" y="171.4" width="224.0" height="104.7" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="550.0" y="199.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Who is it?</tspan></text>
+<text x="550.0" y="222.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Family or Guest; the name</text>
+<rect x="806.0" y="171.4" width="224.0" height="104.7" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="820.0" y="199.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Consent</tspan></text>
+<text x="820.0" y="222.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The person themselves agrees to</text>
+<text x="820.0" y="240.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">be recognised; nothing is</text>
+<text x="820.0" y="257.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">pre-selected</text>
+<rect x="1076.0" y="171.4" width="224.0" height="104.7" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="1090.0" y="199.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Face video</tspan></text>
+<text x="1090.0" y="222.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">A short video with the phone; in</text>
+<text x="1090.0" y="240.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">the home, YuNet and SFace make</text>
+<text x="1090.0" y="257.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">up to 8 templates</text>
+<rect x="1346.0" y="171.4" width="224.0" height="104.7" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="1360.0" y="199.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Person added</tspan></text>
+<text x="1360.0" y="222.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The templates stay in the home;</text>
+<text x="1360.0" y="240.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">the app shows the name</text>
+<rect x="1616.0" y="171.4" width="224.0" height="104.7" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="1630.0" y="199.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Suggestion</tspan></text>
+<text x="1630.0" y="222.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">“Sound the alarm when someone</text>
+<text x="1630.0" y="240.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">who isn’t Family comes in?”</text>
+<rect x="40.0" y="310.1" width="180.0" height="87.1" rx="12" fill="#EEF1F6"/>
+<text x="54.0" y="337.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">A scenario from a</tspan></text>
+<text x="54.0" y="358.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">sentence</tspan></text>
+<rect x="266.0" y="310.1" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="280.0" y="337.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Assistant button</tspan></text>
+<text x="280.0" y="361.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">On any tab</text>
+<rect x="536.0" y="310.1" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="550.0" y="337.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">The sentence</tspan></text>
+<text x="550.0" y="361.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">“Tell me if I leave home without my</text>
+<text x="550.0" y="378.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">book”</text>
+<rect x="806.0" y="310.1" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="820.0" y="337.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">The rule in plain words</tspan></text>
+<text x="820.0" y="361.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">What it watches, when it alerts,</text>
+<text x="820.0" y="378.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">what it does, and the siren choice</text>
+<rect x="1076.0" y="310.1" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="1090.0" y="337.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">“Save”</tspan></text>
+<text x="1090.0" y="361.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The rule now runs at Altice, on</text>
+<text x="1090.0" y="378.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">every event</text>
+<rect x="1346.0" y="310.1" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="1360.0" y="337.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Scenarios</tspan></text>
+<text x="1360.0" y="361.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Appears next to the existing</text>
+<text x="1360.0" y="378.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">scenarios</text>
+<rect x="40.0" y="431.2" width="180.0" height="87.1" rx="12" fill="#EEF1F6"/>
+<text x="54.0" y="459.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">A suggested scenario</tspan></text>
+<rect x="266.0" y="431.2" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="280.0" y="459.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Suggestion</tspan></text>
+<text x="280.0" y="482.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">After adding a person, or from the</text>
+<text x="280.0" y="500.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">home’s profile (child, dog, cat)</text>
+<rect x="536.0" y="431.2" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="550.0" y="459.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">The proposed rule</tspan></text>
+<text x="550.0" y="482.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">In plain words, already compiled</text>
+<rect x="806.0" y="431.2" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="820.0" y="459.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">One tap</tspan></text>
+<text x="820.0" y="482.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">“Turn on”</text>
+<rect x="1076.0" y="431.2" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="1090.0" y="459.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Scenarios</tspan></text>
+<text x="1090.0" y="482.5" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Appears with the other scenarios</text>
+<rect x="40.0" y="552.4" width="180.0" height="104.6" rx="12" fill="#EEF1F6"/>
+<text x="54.0" y="580.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">An alert with actions</tspan></text>
+<rect x="266.0" y="552.4" width="224.0" height="104.6" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="280.0" y="580.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Notification</tspan></text>
+<text x="280.0" y="603.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Through the app’s notification</text>
+<text x="280.0" y="621.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">service</text>
+<rect x="536.0" y="552.4" width="224.0" height="104.6" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="550.0" y="580.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Alert</tspan></text>
+<text x="550.0" y="603.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Title, message, thumbnail and</text>
+<text x="550.0" y="621.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">what caused it; the door banner,</text>
+<text x="550.0" y="638.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">when relevant</text>
+<rect x="806.0" y="552.4" width="224.0" height="104.6" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="820.0" y="580.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Action cards</tspan></text>
+<text x="820.0" y="603.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">One “Yes” per action: turn off the</text>
+<text x="820.0" y="621.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">lights, turn off the air conditioner,</text>
+<text x="820.0" y="638.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">sound the siren</text>
+<rect x="1076.0" y="552.4" width="224.0" height="104.6" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
+<text x="1090.0" y="580.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Action done</tspan></text>
+<text x="1090.0" y="603.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The “Yes” becomes an MCP call;</text>
+<text x="1090.0" y="621.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">the alert shows the result</text>
+<rect x="1346.0" y="552.4" width="224.0" height="104.6" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="1360.0" y="580.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Unknown person</tspan></text>
+<text x="1360.0" y="603.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Also “Call the police (112)”: it</text>
+<text x="1360.0" y="621.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">opens the call, and the person</text>
+<text x="1360.0" y="638.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">places it</text>
+<path d="M490.0 83.7 H526.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M760.0 83.7 H796.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M1030.0 83.7 H1066.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M1300.0 83.7 H1336.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M490.0 223.8 H526.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M760.0 223.8 H796.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M1030.0 223.8 H1066.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M1300.0 223.8 H1336.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M1570.0 223.8 H1606.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M490.0 353.7 H526.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M760.0 353.7 H796.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M1030.0 353.7 H1066.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M1300.0 353.7 H1336.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M490.0 474.8 H526.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M760.0 474.8 H796.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M1030.0 474.8 H1066.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M490.0 604.7 H526.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M760.0 604.7 H796.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<path d="M1030.0 604.7 H1066.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="40.0" y="691.0" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Each box is a screen or a step in the Altice app, with the Things tab and the assistant. Dashed: a variant of the previous step.</text></svg>

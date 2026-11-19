@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2010 1421" width="2010" height="1421" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Data flow and trust boundaries"><title>Data flow and trust boundaries</title><defs><marker id="m0084D6" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#0084D6"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2010" height="1421" fill="#FFFFFF"/><rect x="28.0" y="56.0" width="274.0" height="648.2" rx="14" fill="#F4F4F4" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
+<text x="42.0" y="82.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Boundary: home</tspan></text>
+<rect x="468.0" y="56.0" width="1074.0" height="774.2" rx="14" fill="#EEF3FB" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
+<text x="482.0" y="82.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Boundary: Altice</tspan></text>
+<rect x="1688.0" y="56.0" width="294.0" height="129.7" rx="14" fill="#F3EFFA" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
+<text x="1702.0" y="82.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Boundary: model provider*</tspan></text>
+<rect x="1688.0" y="445.0" width="294.0" height="514.9" rx="14" fill="#FFF6EA" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
+<text x="1702.0" y="471.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Boundary: phone</tspan></text>
+<rect x="40.0" y="100.0" width="250.0" height="67.7" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="54.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Cameras</tspan></text>
+<text x="54.0" y="149.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[external entity]</text>
+<rect x="40.0" y="229.7" width="250.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
+<text x="54.0" y="257.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Home agent</tspan></text>
+<text x="54.0" y="278.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[process, on the router]</text>
+<rect x="40.0" y="359.3" width="250.0" height="67.7" rx="0" fill="#FAFBFC"/>
+<text x="54.0" y="387.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Face templates</tspan></text>
+<text x="54.0" y="408.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[store, encrypted]</text>
+<rect x="40.0" y="489.0" width="250.0" height="67.6" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="54.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Wi-Fi router</tspan></text>
+<text x="54.0" y="538.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[external entity]</text>
+<rect x="40.0" y="618.6" width="250.0" height="67.6" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="54.0" y="646.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Door sensor and actuators</tspan></text>
+<text x="54.0" y="667.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[external entities]</text>
+<rect x="480.0" y="100.0" width="250.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
+<text x="494.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Vision workers</tspan></text>
+<text x="494.0" y="149.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[process]</text>
+<rect x="480.0" y="229.7" width="250.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
+<text x="494.0" y="257.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Broker and queues</tspan></text>
+<text x="494.0" y="278.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[process]</text>
+<rect x="480.0" y="359.3" width="250.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
+<text x="494.0" y="387.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Judge</tspan></text>
+<text x="494.0" y="408.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[process, vision-language]</text>
+<rect x="480.0" y="489.0" width="250.0" height="197.3" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
+<text x="494.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Connected Home platform</tspan></text>
+<text x="494.0" y="538.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[existing process]</text>
+<text x="494.0" y="561.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">MCP server, events, devices</text>
+<rect x="880.0" y="100.0" width="270.0" height="712.2" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
+<text x="894.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">ThingTracker service</tspan></text>
+<text x="894.0" y="149.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[process]</text>
+<text x="894.0" y="172.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Matching, tracking, presence, rules and</text>
+<text x="894.0" y="190.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">alerts, per home</text>
+<rect x="1300.0" y="229.7" width="230.0" height="67.7" rx="0" fill="#FAFBFC"/>
+<text x="1314.0" y="257.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL</tspan></text>
+<text x="1314.0" y="278.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[store]</text>
+<rect x="1300.0" y="359.3" width="230.0" height="67.7" rx="0" fill="#FAFBFC"/>
+<text x="1314.0" y="387.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Thumbnails</tspan></text>
+<text x="1314.0" y="408.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[object store]</text>
+<rect x="1300.0" y="489.0" width="230.0" height="67.6" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
+<text x="1314.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Notifications</tspan></text>
+<text x="1314.0" y="538.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[existing process]</text>
+<rect x="1700.0" y="100.0" width="270.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
+<text x="1714.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Language model</tspan></text>
+<text x="1714.0" y="149.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[process]</text>
+<rect x="1700.0" y="489.0" width="270.0" height="323.3" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
+<text x="1714.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice app</tspan></text>
+<text x="1714.0" y="538.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[existing process]</text>
+<rect x="1700.0" y="874.2" width="270.0" height="67.6" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="1714.0" y="902.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Family</tspan></text>
+<text x="1714.0" y="923.5" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[external entity]</text>
+<line x1="40" y1="359.3" x2="290" y2="359.3" stroke="#333333" stroke-width="1.6"/>
+<line x1="40" y1="427.0" x2="290" y2="427.0" stroke="#333333" stroke-width="1.6"/>
+<line x1="1300" y1="229.7" x2="1530" y2="229.7" stroke="#333333" stroke-width="1.6"/>
+<line x1="1300" y1="297.3" x2="1530" y2="297.3" stroke="#333333" stroke-width="1.6"/>
+<line x1="1300" y1="359.3" x2="1530" y2="359.3" stroke="#333333" stroke-width="1.6"/>
+<line x1="1300" y1="427.0" x2="1530" y2="427.0" stroke="#333333" stroke-width="1.6"/>
+<path d="M165.0 167.7 V219.7" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="174.0" y="202.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">video, home network</text>
+<path d="M173.0 297.3 V349.3" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="182.0" y="332.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">stores</text>
+<path d="M157.0 359.3 V307.3" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="148.0" y="332.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">compares</text>
+<path d="M290.0 256.5 H470.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="314.0" y="249.5" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F1 regions and labels</text>
+<path d="M480.0 270.5 H300.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="314.0" y="286.5" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F2 requests, face video</text>
+<path d="M605.0 229.7 V177.7" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="614.0" y="202.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">regions</text>
+<path d="M730.0 133.8 H870.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="754.0" y="126.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">boxes and vectors</text>
+<path d="M880.0 263.5 H740.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="754.0" y="279.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">requests to homes,</text>
+<text x="754.0" y="294.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">photos to analyse</text>
+<path d="M290.0 522.8 H470.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="314.0" y="515.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F3 phones on the Wi-Fi</text>
+<path d="M290.0 645.4 H470.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="314.0" y="638.4" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F4 door</text>
+<path d="M480.0 659.4 H300.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="314.0" y="675.4" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F5 commands</text>
+<path d="M730.0 580.6 H870.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="754.0" y="573.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">events: door, Wi-Fi</text>
+<path d="M880.0 594.6 H740.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="754.0" y="610.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">MCP calls</text>
+<path d="M1150.0 256.5 H1290.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1174.0" y="249.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">writes</text>
+<path d="M1300.0 270.5 H1160.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1174.0" y="286.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">reads, matches</text>
+<path d="M730.0 386.1 H870.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="754.0" y="379.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">verdict</text>
+<path d="M880.0 400.1 H740.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="754.0" y="416.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">2 to 3 s clip</text>
+<path d="M1150.0 393.1 H1290.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1174.0" y="386.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">thumbnails</text>
+<path d="M1150.0 522.8 H1290.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1174.0" y="515.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">alerts</text>
+<path d="M1150.0 126.8 H1690.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="1174.0" y="119.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F6 text</text>
+<path d="M1700.0 140.8 H1160.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="1174.0" y="156.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F7 rule, answer</text>
+<path d="M1530.0 522.8 H1690.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="1554.0" y="515.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F9 alerts</text>
+<path d="M1700.0 652.4 H1160.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="1174.0" y="645.4" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F8 sentences, questions, photos, face video, “Yes”</text>
+<path d="M1150.0 780.2 H1690.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="1174.0" y="773.2" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F10 answers, thumbnails</text>
+<path d="M1843.0 812.2 V864.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1852.0" y="847.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">shows</text>
+<path d="M1827.0 874.2 V822.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1818.0" y="847.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">uses</text>
+<text x="40.0" y="987.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">* Only if the language model is not hosted by Altice. Blue: flows that cross a trust boundary, described in the table.</text>
+<rect x="40.0" y="1023.4" width="1930.0" height="28.8" rx="4" fill="#EEF1F6"/>
+<text x="48.0" y="1042.2" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Flow</tspan></text>
+<text x="118.0" y="1042.2" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">From → to</tspan></text>
+<text x="498.0" y="1042.2" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">What it carries</tspan></text>
+<text x="1598.0" y="1042.2" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Protection</tspan></text>
+<line x1="40" y1="1052.2" x2="1970" y2="1052.2" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1071.0" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F1</tspan></text>
+<text x="118.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">home agent → broker (home → Altice)</text>
+<text x="498.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">The changed region (at most 640 × 640, about 1 a second during motion) or the one asked for in a check; rarely, 2 to 3 s of the region for the judge; the face labels (“Filipe”, “unknown face”) with their</text>
+<text x="498.0" y="1087.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">boxes. Never continuous video or face templates</text>
+<text x="1598.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">mTLS, one certificate per home</text>
+<line x1="40" y1="1097.8" x2="1970" y2="1097.8" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1116.6" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F2</tspan></text>
+<text x="118.0" y="1116.6" font-size="12" font-weight="400" fill="#333333" text-anchor="start">broker → home agent (Altice → home)</text>
+<text x="498.0" y="1116.6" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Active-check and refresh requests; the face video when a person is registered, relayed without being stored; masks; orders to delete templates</text>
+<text x="1598.0" y="1116.6" font-size="12" font-weight="400" fill="#333333" text-anchor="start">mTLS</text>
+<line x1="40" y1="1126.6" x2="1970" y2="1126.6" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1145.4" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F3</tspan></text>
+<text x="118.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">router → platform (home → Altice)</text>
+<text x="498.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Which Family phones are on the Wi-Fi, and when they join or leave (proposed MCP tool)</text>
+<text x="1598.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Altice’s router management channel (to confirm)</text>
+<line x1="40" y1="1155.4" x2="1970" y2="1155.4" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1174.2" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F4</tspan></text>
+<text x="118.0" y="1174.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">door sensor → platform (home → Altice)</text>
+<text x="498.0" y="1174.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Door open or closed, as today</text>
+<text x="1598.0" y="1174.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">The hub’s channel (LTE), as today</text>
+<line x1="40" y1="1184.2" x2="1970" y2="1184.2" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1203.0" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F5</tspan></text>
+<text x="118.0" y="1203.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">platform → actuators (Altice → home)</text>
+<text x="498.0" y="1203.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Commands after a “Yes”: light, plug, siren</text>
+<text x="1598.0" y="1203.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">As today</text>
+<line x1="40" y1="1213.0" x2="1970" y2="1213.0" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1231.8" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F6</tspan></text>
+<text x="118.0" y="1231.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">service → language model</text>
+<text x="498.0" y="1231.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Text only: the sentence or question, the names of things, places and devices, memory lines. The judge’s clips stay at Altice</text>
+<text x="1598.0" y="1231.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">TLS; a contract with no training on the data, a DPA and EU</text>
+<text x="1598.0" y="1248.6" font-size="12" font-weight="400" fill="#333333" text-anchor="start">processing</text>
+<line x1="40" y1="1258.6" x2="1970" y2="1258.6" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1277.4" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F7</tspan></text>
+<text x="118.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">language model → service</text>
+<text x="498.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">The structured rule, the answer or the verdict</text>
+<text x="1598.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">TLS</text>
+<line x1="40" y1="1287.4" x2="1970" y2="1287.4" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1306.2" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F8</tspan></text>
+<text x="118.0" y="1306.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">app → service (phone → Altice)</text>
+<text x="498.0" y="1306.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Sentences, questions, photos of things, the face video, “Yes”</text>
+<text x="1598.0" y="1306.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">HTTPS, with the Altice app’s session</text>
+<line x1="40" y1="1316.2" x2="1970" y2="1316.2" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1335.0" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F9</tspan></text>
+<text x="118.0" y="1335.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">notifications → app (Altice → phone)</text>
+<text x="498.0" y="1335.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Alerts: title, message, action cards, link to the thumbnail</text>
+<text x="1598.0" y="1335.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">The app’s notification service</text>
+<line x1="40" y1="1345.0" x2="1970" y2="1345.0" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1363.8" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F10</tspan></text>
+<text x="118.0" y="1363.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">service → app (Altice → phone)</text>
+<text x="498.0" y="1363.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Answers and thumbnails, through short-lived signed links</text>
+<text x="1598.0" y="1363.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">HTTPS</text>
+<line x1="40" y1="1373.8" x2="1970" y2="1373.8" stroke="#E1E4E8" stroke-width="1"/>
+<text x="40.0" y="1403.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Never cross the home boundary: continuous video and face templates. Method: a data-flow diagram with trust boundaries, as in the Microsoft SDL and OWASP threat modelling.</text></svg>

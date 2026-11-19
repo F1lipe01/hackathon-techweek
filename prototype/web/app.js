@@ -194,6 +194,27 @@ function thingCard(t, act = 'thing') {
   return `<li><button type="button" class="card" data-act="${act}" data-id="${esc(t.id)}">${ic}
     <span><span class="nm">${esc(t.name)}</span><span class="st ${cls}">${esc(st)}</span></span><span></span></button></li>`;
 }
+// People are things whose description starts with "person" ("person · family" when the app saved who they are).
+const isPerson = (t) => /^person\b/.test(t?.description || '');
+const relationOf = (t) => { const r = (t?.description || '').split('·')[1]?.trim(); return r ? r[0].toUpperCase() + r.slice(1) : ''; };
+/** The scenarios that use a thing or a person: by thing_id, and for people every rule about someone unknown (it
+ *  depends on who the camera knows). Counted from the real rules only. */
+const rulesFor = (t) => state.rules.filter((r) => (r.unknown ? isPerson(t) : r.thing_id === t.id));
+const addedOn = (ts) => {
+  if (!ts) return '';
+  const d = new Date(ts * 1000), now = new Date();
+  return d.toDateString() === now.toDateString() ? 'Added today' : `since ${d.getDate()} ${d.toLocaleString('en-GB', { month: 'short' })}`;
+};
+function itemCard(t) {
+  const p = thingPhoto(t), person = isPerson(t), n = rulesFor(t).length;
+  const kind = person ? 'Person' : 'Thing';   // the group above says who they are (Family, Guests)
+  const meta = [kind, addedOn(t.created), n ? `${n} scenario${n === 1 ? '' : 's'}` : 'No scenarios'].join(' · ');
+  const l = t.last_seen;
+  const ic = p ? `<span class="ic photo${person ? ' round' : ''}"><img src="${crop(p)}" alt=""></span>` : `<span class="ic">${person ? I.user : I.book}</span>`;
+  return `<li><button type="button" class="card" data-act="thing" data-id="${esc(t.id)}">${ic}
+    <span><span class="nm">${esc(t.name)}</span><span class="st meta">${esc(meta)}</span>${l ? `<span class="st seen">On the ${esc(l.zone_name)} · ${hm(l.ts)}</span>` : ''}</span><span></span></button></li>`;
+}
+const watches = (r) => (r.unknown ? 'anyone not in Family' : state.things.find((t) => t.id === r.thing_id)?.name || (r.who ? r.who : 'the home'));
 const homeName = () => state.home?.name || 'Hack 3';
 
 // ------------------------------------------------------------------ tabs
@@ -258,19 +279,18 @@ function renderThings() {
       <button type="button" class="btn-p" data-act="add-thing">Add things</button></div>`;
     return;
   }
-  const groups = new Map();
-  for (const t of things) {
-    const k = t.last_seen?.room || (t.fingerprint ? 'Not seen yet' : 'Not registered yet');
-    if (!groups.has(k)) groups.set(k, []);
-    groups.get(k).push(t);
-  }
+  const people = things.filter(isPerson), objects = things.filter((t) => !isPerson(t));
   let html = '';
-  for (const [k, ts] of groups) html += sec('th-' + k, k, ts.length) + `<ul class="cards">${ts.map((t) => thingCard(t)).join('')}</ul>`;
+  for (const [rel, label] of [['Family', 'Family'], ['Guest', 'Guests'], ['', 'People']]) {
+    const g = people.filter((t) => relationOf(t) === rel);
+    if (g.length) html += sec('th-' + (rel || 'people'), label, g.length) + `<ul class="cards">${g.map(itemCard).join('')}</ul>`;
+  }
+  if (objects.length) html += sec('th-things', 'Things', objects.length) + `<ul class="cards">${objects.map(itemCard).join('')}</ul>`;
   const sugg = state.events.filter((e) => e.kind === 'suggest' && !state.rules.some((r) => r.sentence === e.sentence)).slice(0, 3);
   if (sugg.length) html += sec('sugg', 'Suggested for your home', sugg.length) + `<ul class="cards">${sugg.map((e) => `<li><button type="button" class="card" data-act="suggest" data-id="${esc(e.id)}">
     <span class="ic">${I.sensor}</span><span><span class="nm">${esc(e.title)}</span><span class="st">Add: “${esc(e.sentence)}”</span></span><span></span></button></li>`).join('')}</ul>`;
-  if (state.rules.length) html += sec('sensors', 'Sensors', state.rules.length) + `<ul class="cards">${state.rules.map((r) => `<li><button type="button" class="card" data-act="sensor" data-id="${esc(r.id)}">
-    <span class="ic">${I.sensor}</span><span><span class="nm">${esc(r.title)}</span><span class="st ${r.active ? '' : 'grey'}">${r.active ? 'Active' : 'Paused'}</span></span><span></span></button></li>`).join('')}</ul>`;
+  if (state.rules.length) html += sec('sensors', 'Scenarios', state.rules.length) + `<ul class="cards">${state.rules.map((r) => `<li><button type="button" class="card" data-act="sensor" data-id="${esc(r.id)}">
+    <span class="ic">${I.sensor}</span><span><span class="nm">${esc(r.title)}</span><span class="st meta"><b class="${r.active ? 'on' : 'off'}">${r.active ? 'Active' : 'Paused'}</b> · Watches: ${esc(watches(r))}</span></span><span></span></button></li>`).join('')}</ul>`;
   tb.innerHTML = html;
 }
 function renderFavorites() {
@@ -436,7 +456,7 @@ async function loadPhotos(files) {
   }
   if (!out.length) return;
   pending.photos = out;
-  if (pending.kind === 'person') personPage(); else photosPage();
+  photosPage();
 }
 function photosPage() {
   push(() => `${phead('', '')}<div class="ptitle">New thing</div><p class="psub">${pending.photos.length} photos · from different sides</p>
@@ -470,49 +490,80 @@ function addedPage(id) {
 }
 // ------------------------------------------------------------------ adding a person: views of the face from a short video
 const ICON_FACE = '<svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#1a2233" stroke-width="1.6" stroke-linecap="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10.2" r="3" stroke="#2abe9e" stroke-width="1.8"/><path d="M7.6 17.2a5.2 5.2 0 0 1 8.8 0" stroke="#2abe9e" stroke-width="1.8"/></svg>';
-function personMethodPage(name) {
-  Object.assign(pending, { name, q: 'person', photos: [], kind: 'person' });
-  push(() => `<div class="step"><button type="button" class="ibtn x" data-act="back" aria-label="Close">${I.x}</button>
-      <div class="method-art">${ICON_FACE}</div><h3>Add a person</h3>
-      <p>Record a short video of their face, turning slowly from one side to the other. Only the people you add are known to the camera.</p></div>
-    <input type="file" id="facein" accept="video/*,image/*" multiple hidden>
-    <div class="bottom-bar col"><button type="button" class="btn-p" data-act="record-face">Record their face</button>
-      <button type="button" class="btn-s" data-act="back">Not now</button></div>`,
-  { mount: (el) => el.querySelector('#facein').addEventListener('change', (e) => loadPhotos(e.target.files)) });
-}
-function personPage() {
-  push(() => `${phead('', '')}<div class="ptitle">New person</div><p class="psub">${pending.photos.length} views of the face</p>
-    <div class="single"><div class="views-grid faces">${pending.photos.map((u) => `<img src="${u}" alt="">`).join('')}</div></div>
+function personMethodPage() {
+  Object.assign(pending, { name: '', q: 'person', photos: [], kind: 'person' });
+  push(() => `${phead('', '')}<div class="ptitle">New person</div><p class="psub">Record a short video of their face, turning slowly from one side to the other.</p>
     <p class="lbl">Name</p><div class="fwrap"><input class="field" id="pname" placeholder="For example: Ana" maxlength="40" autocomplete="off"></div>
-    <p class="lbl">Who is it?</p><div class="chips-row"><span class="chip on">Family</span><span class="chip">Guest</span></div>
-    <div class="bottom-bar"><button type="button" class="btn-p" data-act="save-person" disabled>Save</button></div>`,
-  { mount: (el) => { const n = el.querySelector('#pname'); n.addEventListener('input', () => { el.querySelector('[data-act="save-person"]').disabled = !n.value.trim(); }); } });
+    <p class="lbl">Who is it?</p><div class="chips-row"><button type="button" class="chip on" data-act="rel" data-rel="family">Family</button><button type="button" class="chip" data-act="rel" data-rel="guest">Guest</button></div>
+    <input type="file" id="facein" accept="video/*" hidden>
+    <div class="bottom-bar"><button type="button" class="btn-p" data-act="record-face" disabled>Record their face</button></div>`,
+  { mount: (el) => {
+    const n = el.querySelector('#pname');
+    n.addEventListener('input', () => { el.querySelector('[data-act="record-face"]').disabled = !n.value.trim(); });
+    el.querySelector('#facein').addEventListener('change', (e) => { if (e.target.files[0]) savePersonVideo(e.target.files[0]); });
+  } });
 }
-async function savePerson(btn) {
-  const name = $('pname').value.trim();
+/** The face video goes to the server as it came; the screen follows the real upload and the server's work. */
+async function savePersonVideo(file) {
+  const name = $('pname').value.trim(), rel = document.querySelector('section.page:last-of-type .chip.on[data-rel]')?.dataset.rel || 'family';
   if (!name) return;
-  btn.disabled = true; btn.textContent = 'Saving…';
+  const thumb = (await framesFromVideo(file, 1).catch(() => []))[0] || '';
+  const prog = { p: 0, target: 0, step: 'Uploading the video' };
+  const el = push(() => `<div class="step saving"><div class="ring-wrap"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" class="track"/><circle cx="60" cy="60" r="54" class="bar" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>
+      ${thumb ? `<img src="${thumb}" alt="">` : ''}</div><h3>Saving ${esc(name)}'s face…</h3><p class="saving-step">Uploading the video</p></div>`);
+  const bar = el.querySelector('.bar'), stepEl = el.querySelector('.saving-step'), t0 = performance.now();
+  let raf;
+  const tick = () => { prog.p += (prog.target - prog.p) * 0.12; bar.style.strokeDashoffset = String(100 - prog.p * 100); stepEl.textContent = prog.step; raf = requestAnimationFrame(tick); };
+  tick();
   try {
-    const { id } = await api('/api/things', { method: 'POST', body: JSON.stringify({ name, description: 'person' }) });
-    await api(`/api/things/${encodeURIComponent(id)}/photos`, { method: 'POST', body: JSON.stringify({ photos_b64: pending.photos }) });
+    const { id } = await api('/api/things', { method: 'POST', body: JSON.stringify({ name, description: `person · ${rel}` }) });
+    const b64 = await new Promise((ok) => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(file); });
+    const res = await new Promise((ok, no) => {
+      const x = new XMLHttpRequest();
+      x.open('POST', `/api/things/${encodeURIComponent(id)}/face-video`); x.setRequestHeader('Content-Type', 'application/json');
+      x.upload.onprogress = (e) => { if (e.lengthComputable) prog.target = 0.6 * (e.loaded / e.total); };
+      x.upload.onload = () => { prog.target = 0.65; prog.step = 'Finding the face in 8 views'; };
+      x.onload = () => (x.status < 300 ? ok(JSON.parse(x.responseText)) : no(new Error(`Error ${x.status}`)));
+      x.onerror = () => no(new Error('Network error'));
+      x.send(JSON.stringify({ video_b64: b64 }));
+    });
+    prog.target = 1; prog.step = `${res.n} views from a ${Math.round(res.duration)} s video`;
+    await new Promise((ok) => setTimeout(ok, Math.max(700, 2600 - (performance.now() - t0))));   // long enough to read; the work itself is real
+    cancelAnimationFrame(raf);
     await refresh();
-    personAddedPage(id);
-  } catch (e) { btn.disabled = false; btn.textContent = 'Save'; dialog('Could not save', e.message, [['OK', 'btn-p', null]]); }
+    personAddedPage(id, res);
+  } catch (e) { cancelAnimationFrame(raf); pop(); dialog('Could not save', e.message, [['OK', 'btn-p', null]]); }
 }
-function personAddedPage(id) {
+const ICON_SHIELD = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1d8f74" stroke-width="2" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6Z"/><path d="m8.8 12.2 2.3 2.3 4.3-4.6" stroke-linecap="round"/></svg>';
+const familyOf = () => state.things.filter((t) => isPerson(t) && relationOf(t) === 'Family');
+function personAddedPage(id, res) {
   push(() => {
-    const t = state.things.find((x) => x.id === id), fp = t?.fingerprint;
-    return `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
-      <div class="views-grid faces" style="width:100%;margin-bottom:22px">${(fp?.crops || []).slice(0, 8).map((c) => `<img src="${crop(c)}" alt="">`).join('')}</div>
-      <h3>${esc(t?.name || 'Person')} added</h3><p>${esc(t?.name || 'They')} is now one of the people the camera knows. Now tell the app what to do about anyone else.</p></div>
-    <div class="bottom-bar col"><button type="button" class="btn-p" data-act="new-scenario" data-id="${esc(id)}">Create a scenario</button>
-      <button type="button" class="btn-s" data-act="finish">Not now</button></div>`;
+    const t = state.things.find((x) => x.id === id), fp = t?.fingerprint, face = fp?.crops?.[0];
+    const hasSecurity = state.rules.some((r) => r.unknown);
+    const fam = familyOf();
+    return `<div class="step added-person"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
+      <div class="face-big">${face ? `<img src="${crop(face)}" alt="">` : ''}<span class="ok">${ICON_CHECK}</span></div>
+      <h3>${esc(t?.name || 'Person')} added</h3><p>${esc(relationOf(t) || 'Person')} · ${fp?.n || res?.n || 0} views from a ${Math.round(fp?.duration || res?.duration || 0)} s video</p></div>
+      ${hasSecurity ? '' : `<div class="reco-card"><div class="reco-head">${ICON_SHIELD}<b>Home security</b></div>
+        <p>Sound the alarm when someone who isn't Family comes in?</p>
+        <div class="fam-row">${fam.map((p) => `<span class="fam"><img src="${crop(p.fingerprint?.crops?.[0] || '')}" alt=""><small>${esc(p.name)}</small></span>`).join('')}</div>
+        <div class="reco-acts"><button type="button" class="btn-p" data-act="security-on">Turn on</button><button type="button" class="btn-s" data-act="finish">Not now</button></div></div>`}
+      ${hasSecurity ? '<div class="bottom-bar"><button type="button" class="btn-p" data-act="finish">Done</button></div>' : ''}`;
   });
+}
+/** The app's own suggestion: one sentence, compiled as any other into a rule, with its own title. */
+async function securityOn(btn) {
+  btn.disabled = true; btn.textContent = 'Turning on…';
+  try {
+    const r = await api('/api/rules', { method: 'POST', body: JSON.stringify({ sentence: "Sound the alarm when someone who isn't Family comes in", title: 'Home Security' }) });
+    await refresh();
+    savedPage(r);
+  } catch (e) { btn.disabled = false; btn.textContent = 'Turn on'; dialog('Could not turn it on', e.message, [['OK', 'btn-p', null]]); }
 }
 function scenarioPage(id) {
   const t = state.things.find((x) => x.id === id), photo = t?.fingerprint?.crops?.[0];
   push(() => `${phead('', '')}<div class="ptitle">New scenario</div><p class="psub">Say what should happen, in one sentence.</p>
-    <div class="scen-thing">${photo ? `<img src="${crop(photo)}" alt="">` : ''}<span><b>${esc(t?.name || '')}</b><small>${(t?.description || t?.query) === 'person' ? 'Family' : 'Work Room'}</small></span></div>
+    <div class="scen-thing">${photo ? `<img src="${crop(photo)}" alt="">` : ''}<span><b>${esc(t?.name || '')}</b><small>${isPerson(t) ? relationOf(t) || 'Person' : 'Work Room'}</small></span></div>
     <div class="fwrap"><textarea class="field" id="scentext" rows="1" placeholder="For example: tell me if I leave without it" maxlength="300"></textarea></div>
     <div class="bottom-bar"><button type="button" class="btn-p" data-act="save-scenario" disabled>Save</button></div>`,
   { mount: (el) => {
@@ -533,9 +584,9 @@ async function saveScenario(btn) {
 }
 function savedPage(r) {
   const t = state.things.find((x) => x.id === r.thing_id);
-  const then = ['Send you a message', r.alarm ? 'Sound the alarm' : '', /^light_/.test(r.action || '') ? `Turn the light ${r.action.slice(6)}` : '',
+  const then = r.unknown ? ['Sound the alarm', 'Send you a message'] : ['Send you a message', r.alarm ? 'Sound the alarm' : '', /^light_/.test(r.action || '') ? `Turn the light ${r.action.slice(6)}` : '',
     r.action === 'plug_off' ? 'Switch the plug off' : ''].filter(Boolean);
-  const when = r.unknown ? 'Someone the camera does not know comes in' : r.kind === 'leave_without' ? `You leave home and the ${(t?.name || 'thing').toLowerCase()} stays` : r.sentence;
+  const when = r.unknown ? 'Someone not in Family is seen at home' : r.kind === 'leave_without' ? `You leave home and the ${(t?.name || 'thing').toLowerCase()} stays` : r.sentence;
   push(() => `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
       <div class="saved-ok">${ICON_CHECK}</div><h3>Scenario saved</h3><p>It is on from now. You can change it in Menu › Scenarios.</p></div>
     <div class="scen-card"><div class="scen-title">${I.sensor}<b>${esc(r.title)}</b><span class="on">Active</span></div>
@@ -782,9 +833,10 @@ device.addEventListener('click', async (e) => {
     case 'ask-about': { const t = state.things.find((x) => x.id === id); ask(whereIs(t ? t.name.toLowerCase() : 'thing')); break; }
     case 'sightings': sightingsPage(topId()); break;
     case 'add-thing': addThingPage(); break;
-    case 'pick-thing': if (el.dataset.q === 'person') personMethodPage(el.dataset.name); else methodPage(el.dataset.name, el.dataset.q); break;
+    case 'pick-thing': if (el.dataset.q === 'person') personMethodPage(); else methodPage(el.dataset.name, el.dataset.q); break;
+    case 'security-on': securityOn(el); break;
     case 'record-face': $('facein')?.click(); break;
-    case 'save-person': savePerson(el); break;
+    case 'rel': el.parentElement.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c === el)); break;
     // the prototype never dials: it only asks, as a real phone would before a call
     case 'call-police': dialog('Call 112?', 'The phone would call the emergency number. The prototype does not dial.', [['Cancel', 'btn-s', null], ['Call', 'btn-p police', null]]); break;
     case 'take-photos': $('photoin')?.click(); break;

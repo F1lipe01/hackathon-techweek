@@ -368,6 +368,39 @@ def thing_photos(tid: str, payload: dict = Body(...)):
     return {"ok": True, "n": len(names)}
 
 
+@app.post("/api/things/{tid}/face-video")
+def thing_face_video(tid: str, payload: dict = Body(...)):
+    """A person registered from a short video of their face: the video is kept as it came; the server cuts 8 views
+    spread through it (a square around the face's usual place, ffmpeg) as the person's views. The edge service, which
+    has the vision models, would compute the vectors from them; it has no face model yet."""
+    t = next((t for t in store.things() if t["id"] == tid), None)
+    if not t:
+        raise HTTPException(404, "unknown thing")
+    data = str(payload.get("video_b64", ""))
+    if not data:
+        raise HTTPException(400, "video_b64 is required")
+    faces = CROPS.parent / "faces"
+    faces.mkdir(exist_ok=True)
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    video = faces / f"{stamp}-{tid}.mp4"
+    video.write_bytes(base64.b64decode(data.split(",", 1)[-1]))
+    probe = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(video)], capture_output=True, text=True)
+    try:
+        dur = float(probe.stdout.strip())
+    except ValueError:
+        raise HTTPException(400, "not a video")
+    names = []
+    for i in range(ENROL_VIEWS):
+        name = f"{stamp}-{tid}-view{i}.jpg"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{dur * (i + 0.5) / ENROL_VIEWS:.3f}", "-i", str(video), "-frames:v", "1",
+                        "-vf", "crop=iw:iw:0:max(0\\,min(ih-iw\\,ih*0.47-iw/2)),scale=480:480", "-q:v", "3", str(CROPS / name)], check=True)
+        names.append(name)
+    store.set_fingerprint(tid, {"n": len(names), "crops": names, "created": time.time(), "source": "video", "video": video.name,
+                                "duration": round(dur, 1), "model": ""})
+    store.add_event("thing", f"{t['name']} added from a {dur:.0f} s video of their face: {len(names)} views.", thing_id=tid, crop=names[0])
+    return {"ok": True, "n": len(names), "duration": round(dur, 1)}
+
+
 @app.get("/api/edge/fingerprints")
 def edge_fingerprints():
     """Lets the home device restore its fingerprints from the platform copy."""
@@ -866,10 +899,14 @@ def add_rule(payload: dict = Body(...)):
     compiled = (dict(suggestion["rule"]) if suggestion and suggestion.get("rule")
                 else _llm(brain.compile_local, sentence, store.things(), store.camera_places()))
     low = sentence.lower()
-    if any(w in low for w in ("don't know", "do not know", "dont know", "stranger", "unknown", "não conheço", "nao conheco", "desconhecid")):
+    if any(w in low for w in ("don't know", "do not know", "dont know", "stranger", "unknown", "não conheço", "nao conheco", "desconhecid",
+                              "isn't family", "is not family", "not in family", "not family", "não é da família")):
         compiled["unknown"] = True      # someone who is not one of the people added in the app (the edge has no face model yet)
+        compiled["thing_id"] = ""       # about anyone unknown, not about one registered person
         if not any(w in str(compiled.get("title", "")).lower() for w in ("unknown", "stranger")):
             compiled["title"] = "Unknown person at home"
+    if str(payload.get("title", "")).strip():
+        compiled["title"] = str(payload["title"]).strip()[:40]   # a suggestion the app makes comes with its own title
     if any(w in sentence.lower() for w in ("alarm", "siren", "alarme", "sirene")):
         compiled["alarm"] = True        # simulated: the alert says the alarm is on; the platform's alarm is never called
     compiled.update(engine="local", zone_id="", created_at=time.time(),

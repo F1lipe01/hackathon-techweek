@@ -384,12 +384,13 @@ const TAKES = {
       await hideFinger();
       await pause(2200);
     }); },
-  // scene 2, the start, all real: Things (the book is there) › + › Person › Record their face (8 views of the team
-  // member's face, cut from his selfie videos) › the name › Save › Create a scenario › the sentence › Save › Done.
+  // scene 2, the start, all real: Things (the book; João and Alice, Family) › + › Person › the name › Family ›
+  // "Record their face" (the film shows the scan here) › the clip uploaded for real; the server cuts 8 views ›
+  // "Filipe added" › the app's Home security suggestion › Turn on (a real rule through /api/rules) › saved › Done.
   'add-person': () => { Object.assign(C, { on: false });
     return take('add-person', '16:21', async ({ page, tap, hideFinger, mark }) => {
       const typeIn = async (sel, text) => {
-        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); f.scrollTop = f.scrollHeight; }, [sel, ch]); await pause(55 + Math.random() * 35); }
+        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); }, [sel, ch]); await pause(55 + Math.random() * 35); }
       };
       await pause(1300);
       mark('things');
@@ -397,37 +398,25 @@ const TAKES = {
       mark('add');
       await pause(1100);
       await tap('[data-act="pick-thing"][data-name="Person"]');
-      mark('method');
-      await pause(1300);
+      mark('new-person');
+      await pause(1100);
+      await tap('#pname'); await hideFinger();
+      await typeIn('#pname', 'Filipe');
+      mark('named');
+      await pause(700);
       const chooser = page.waitForEvent('filechooser');
       await tap('[data-act="record-face"]');
       mark('record-face');
       await hideFinger();
       const fc = await chooser;
-      await pause(600);
-      await fc.setFiles(Array.from({ length: 8 }, (_, i) => join(IMG, `person/face-view-${i + 1}.jpg`)));
-      await page.waitForSelector('#pname', { state: 'visible' });
-      mark('faces');
-      await pause(1500);
-      await tap('#pname'); await hideFinger();
-      await typeIn('#pname', 'Filipe');
-      await pause(500);
-      await tap('[data-act="save-person"]');
-      mark('save-person');
-      await hideFinger();
-      await page.waitForSelector('[data-act="new-scenario"]', { state: 'visible', timeout: 15000 });
+      await pause(1500);                                    // the film shows the face scan here
+      mark('upload');
+      await fc.setFiles(join(IMG, 'person/face-scan.mp4'));
+      await page.waitForSelector('.added-person', { state: 'visible', timeout: 30000 });
       mark('added');
-      await pause(1800);
-      await tap('[data-act="new-scenario"]');
-      mark('scenario');
-      await pause(1000);
-      await tap('#scentext'); await hideFinger();
-      mark('type');
-      await typeIn('#scentext', "Sound the alarm if someone I don't know comes in");
-      mark('typed');
-      await pause(500);
-      await tap('[data-act="save-scenario"]');
-      mark('save-scenario');
+      await pause(2400);
+      await tap('[data-act="security-on"]');
+      mark('security-on');
       await hideFinger();
       await page.waitForSelector('.saved-ok', { state: 'visible', timeout: 30000 });
       mark('saved');
@@ -445,7 +434,7 @@ const TAKES = {
       const rule = st.rules.find((r) => r.unknown);
       await pause(1200);
       conceptEvent({ kind: 'alert', ts: today(16, 26), title: rule?.title || 'Unknown person at home', rule_id: rule?.id,
-        text: 'Someone the camera does not know came in. The alarm is on.', unknown: true, crop: 'concept-stranger-face.jpg',
+        text: "Someone who isn't Family came in. The alarm is on.", unknown: true, crop: 'concept-stranger-face.jpg',
         snapshot: 'concept-stranger.jpg', alarm: 'The lab siren is sounding.', place: 'Work Room camera' });
       await refresh();
       mark('alert');

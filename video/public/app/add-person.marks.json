@@ -9,104 +9,74 @@
  },
  {
   "name": "tap .ahead [data-act=\"add-thing\"], header [data-act=\"add-thing\"], [data-act=\"add-thing\"]",
-  "s": 2.402,
+  "s": 2.413,
   "x": 249,
   "y": 90
  },
  {
   "name": "add",
-  "s": 2.581
+  "s": 2.596
  },
  {
   "name": "tap [data-act=\"pick-thing\"][data-name=\"Person\"]",
-  "s": 4.383,
+  "s": 4.417,
   "x": 201,
   "y": 525.6
  },
  {
-  "name": "method",
-  "s": 4.588
- },
- {
-  "name": "tap [data-act=\"record-face\"]",
-  "s": 6.572,
-  "x": 201,
-  "y": 455.3
- },
- {
-  "name": "record-face",
-  "s": 6.762
- },
- {
-  "name": "faces",
-  "s": 7.497
+  "name": "new-person",
+  "s": 4.616
  },
  {
   "name": "tap #pname",
-  "s": 9.685,
+  "s": 6.404,
   "x": 201,
-  "y": 463.8
+  "y": 306.8
  },
  {
-  "name": "tap [data-act=\"save-person\"]",
-  "s": 11.587,
-  "x": 201,
-  "y": 662.5
+  "name": "named",
+  "s": 7.042
  },
  {
-  "name": "save-person",
-  "s": 11.799
+  "name": "tap [data-act=\"record-face\"]",
+  "s": 8.428,
+  "x": 201,
+  "y": 507
+ },
+ {
+  "name": "record-face",
+  "s": 8.639
+ },
+ {
+  "name": "upload",
+  "s": 10.141
  },
  {
   "name": "added",
-  "s": 11.805
+  "s": 13.089
  },
  {
-  "name": "tap [data-act=\"new-scenario\"]",
-  "s": 14.302,
-  "x": 201,
-  "y": 537.3
+  "name": "tap [data-act=\"security-on\"]",
+  "s": 16.166,
+  "x": 116,
+  "y": 577.7
  },
  {
-  "name": "scenario",
-  "s": 14.493
- },
- {
-  "name": "tap #scentext",
-  "s": 16.172,
-  "x": 201,
-  "y": 320
- },
- {
-  "name": "type",
-  "s": 16.362
- },
- {
-  "name": "typed",
-  "s": 20.02
- },
- {
-  "name": "tap [data-act=\"save-scenario\"]",
-  "s": 21.204,
-  "x": 201,
-  "y": 436
- },
- {
-  "name": "save-scenario",
-  "s": 21.401
+  "name": "security-on",
+  "s": 16.361
  },
  {
   "name": "saved",
-  "s": 24.826
+  "s": 19.186
  },
  {
   "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
-  "s": 28.114,
+  "s": 22.483,
   "x": 201,
   "y": 607.7
  },
  {
   "name": "done",
-  "s": 28.319
+  "s": 22.678
  }
 ]

@@ -6,3 +6,6 @@ public/real/fonts/
 public/audio/
 public/stock/
 public/app/*.mp4
+
+# Raw takes from the shoot (people in them: AGENTS.md rule 6) and tracking data made from them
+public/takes/

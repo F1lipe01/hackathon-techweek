@@ -185,7 +185,7 @@ export const Recording: React.FC<{ name: string; segs: RecSeg[]; freezeAt?: numb
 /** A camera state on an app screen: px per pt (0 = the footage as filmed), the app point looked at, where it sits. */
 export type CamKey = { at: number; ppt: number; fx: number; fy: number; cx?: number; cy?: number };
 
-const camAt = (keys: CamKey[], frame: number) => {
+export const camAt = (keys: CamKey[], frame: number) => {
   let i = 0;
   while (i < keys.length - 2 && frame >= keys[i + 1].at) i++;
   const a = keys[i], b = keys[Math.min(i + 1, keys.length - 1)];

@@ -5,12 +5,15 @@ import { Composition } from "remotion";
 import { theme } from "./theme";
 import { Presentation, DURATION as PRESENTATION_FRAMES } from "./presentation/Presentation";
 import { RealExample, DURATION as REAL_FRAMES } from "./real/RealExample";
+import { TrackTest, TRACK_TEST_FRAMES } from "./proof/TrackTest";
 
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition id="Presentation" component={Presentation} durationInFrames={PRESENTATION_FRAMES}
       fps={theme.fps} width={theme.width} height={theme.height} />
     <Composition id="RealExample" component={RealExample} durationInFrames={REAL_FRAMES}
+      fps={theme.fps} width={theme.width} height={theme.height} />
+    <Composition id="TrackTest" component={TrackTest} durationInFrames={TRACK_TEST_FRAMES}
       fps={theme.fps} width={theme.width} height={theme.height} />
   </>
 );

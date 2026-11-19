@@ -12,7 +12,7 @@ Everything received or discussed so far is filed here: organiser material, kick-
 - **Pitch:** an 18-slide deck ([deliverables/deck/](deliverables/deck/)) and the run of show for 3 and 5 minutes ([docs/pt/21-pitch.md](docs/pt/21-pitch.md)).
 - **Videos:**
   - video 2, the real lab example, is in review;
-  - video 1, the presentation, is being rebuilt from the approved storyboard ([video/storyboard/](video/storyboard/)) and the research ([video/research/](video/research/)).
+  - video 1, the presentation: v5.1 was rejected, so it is being rebuilt from new research on compositing, pace and sound ([video/research/](video/research/)). Real takes are filmed on 19 Nov ([video/shoot/](video/shoot/)), and two 5 s proofs go to the team before the film is rebuilt.
 - **Next:**
   - Thursday: the lab test and filming;
   - Friday 17:30: the executive summary, the deck and the repo link; then the pitches.
@@ -58,7 +58,8 @@ No extensions (late = possible disqualification), pitch time cut strictly. Full 
 | [deliverables/deck/](deliverables/deck/) | **The pitch deck:** link to the presentation and a copy of its source, with its version history |
 | [video/](video/) | **The two videos** in Remotion: the presentation (video 1) and the real lab example (video 2); tools for stock boxes, audio and safe rendering |
 | [video/storyboard/](video/storyboard/) | **Video 1 storyboard:** every shot with its real frame, timing, text, motion and sound, approved before rendering |
-| [video/research/](video/research/) | **Research playbooks** with sources: craft skills, how launch films and home-camera brands present products, how to run the pitch |
+| [video/research/](video/research/) | **Research playbooks** with sources: craft skills, how launch films and home-camera brands present products, how to run the pitch, and (19 Nov) how to fake real actions, replace a phone's screen, pace a film and give every event its sound |
+| [video/shoot/](video/shoot/) | **The 19 Nov shoot sheet** (published for the team) and the marker screens shown on the held iPhone, so the app can be tracked into the takes |
 | [JOURNAL.md](JOURNAL.md) | **How the project moved, day by day:** versions, verdicts, lessons and decisions |
 | [DELIVERABLES.md](DELIVERABLES.md) | **What we hand in and when:** the official deliverables and deadlines, the pitches, the supporting material, Thursday's plan, the Drive folders |
 | [AGENTS.md](AGENTS.md) | **Read first:** the project, where things live, how to run the prototype, conventions, the rules that must not be broken, key decisions |

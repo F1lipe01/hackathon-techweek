@@ -120,6 +120,17 @@ Status markers:
   - **diagram:** `seq-livro-esquecido.png`.
 - **[prototype before 19 Nov]:** the door opening plus the book's last sighting. That was weaker, and the reason for the change.
 
+**B4a. So the book case needs the door as a device?**
+- **Short answer:** "It needs a 'someone just left' signal. The best one is the door sensor Altice already sells in the kit; we only read it."
+- **Detail:**
+  - the door contact sensor (MS-D3D, with the MS-WES1AS hub) is part of the Altice kit and already connected to the platform;
+  - ThingTracker reads its open and close events through MCP, read-only, with no new hardware;
+  - **[prototype]:** the lab door's sensor is the kit's own, polled through MCP every 4 s.
+- **Without a door sensor, two fallbacks trigger the same check:**
+  - **a family phone leaves the home Wi-Fi.** The router sees it. It is slower (it waits about 10 min in production, so a short Wi-Fi drop doesn't count), so the alert arrives late, as "you left your book at home";
+  - **a camera that sees the exit door:** a person leaving through the door's area counts.
+- The minimum is one "someone left" signal plus the camera's active check of the thing. The family marks which contact sensor is the entrance door.
+
 **B5. How do faces work? Isn't that biometric data?**
 - **Short answer:** "Yes, so it is opt-in, with consent, and the face templates never leave the home."
 - **Detail:**

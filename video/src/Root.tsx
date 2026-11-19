@@ -10,6 +10,7 @@ import { ProofCamera, PROOF_FRAMES } from "./proof/ProofCamera";
 import { FilmV7, FILM_FRAMES } from "./film/FilmV7";
 import { Scene1Book, SCENE1_FRAMES } from "./film/Scene1Book";
 import { Scene2Face, SCENE2_FRAMES } from "./film/Scene2Face";
+import { Scene3Lab, SCENE3_LAB_FRAMES } from "./film/Scene3People";
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -26,6 +27,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Scene1Book" component={Scene1Book} durationInFrames={SCENE1_FRAMES}
       fps={theme.fps} width={theme.width} height={theme.height} />
     <Composition id="Scene2Face" component={Scene2Face} durationInFrames={SCENE2_FRAMES}
+      fps={theme.fps} width={theme.width} height={theme.height} />
+    <Composition id="Scene3Lab" component={Scene3Lab} durationInFrames={SCENE3_LAB_FRAMES}
       fps={theme.fps} width={theme.width} height={theme.height} />
   </>
 );

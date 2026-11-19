@@ -8,7 +8,7 @@
 // (stage1.boxes.json, OWLv2 every 0,5 s). The lights, the AC and the alarm sound are as filmed; their switching from the
 // app, the alarm and the notifications are simulated (AGENTS.md rule 1).
 import React from "react";
-import { AbsoluteFill, Audio, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { loadFont as loadMono } from "@remotion/google-fonts/RobotoMono";
 import "../presentation/fonts";
 import { theme } from "../theme";
@@ -31,6 +31,8 @@ const SEGS: Seg[] = [
   { clip: "C", from: 34.0, to: 44.0 },     // the AC goes off: its vane closes (about 38-42 s)
   { clip: "D", from: 18.5, to: 27.0 },     // the door: one of them comes back and closes it (about 20,5-24 s)
 ];
+// each clip's first frame on the camera's (rewritten) clock, in seconds after stage1's first frame (17:31:20)
+const CAM0 = { S: 0, L: 70, C: 42, D: 84 };
 const FRAMES = SEGS.map((s) => Math.round((s.to - s.from) * 30));
 const STARTS = FRAMES.map((_, i) => FRAMES.slice(0, i).reduce((a, b) => a + b, 0));
 export const SCENE3_LAB_FRAMES = FRAMES.reduce((a, b) => a + b, 0) + 60;
@@ -60,7 +62,7 @@ const doorOpen = (f: number) => {
 
 /* ------------------------------------------------------------------ boxes */
 const AC_BOX = [0.268, 0.150, 0.392, 0.222];          // the AC unit (wall, top left)
-const LIGHTS_BOX = [0.80, 0.02, 0.995, 0.125];        // the ceiling's light tubes (top right)
+const LIGHTS_BOX = [0.778, 0.085, 0.87, 0.166];       // the ceiling's light tube by the projector, its lit end (clear of the REC readout)
 const DOOR: [number, number][] = [[0.339, 0.268], [0.435, 0.289], [0.414, 0.651], [0.321, 0.637]];
 const KIND = { person: "#FFFFFF", device: "#8B7CF6", on: "#F2A541", alarm: "#E5322D", door: "#C9D1DB", open: "#E8710A", ok: "#1FA37F" };
 type Det = { frames: { t: number; boxes: { label: string; score: number; box: number[] }[] }[] };
@@ -96,28 +98,33 @@ export const Scene3Lab: React.FC = () => {
   const ringing = f >= ALARM_ON && f < DOOR_SHUT;
   const beep = ringing ? beepAt((f - ALARM_ON) / 30) : 0;
   const open = doorOpen(f);
-  const dip = f >= LIGHTS_OFF && f < LIGHTS_OFF + 4 ? 1 : 0;        // the camera's own drop to black when the lights go off
+  const half = f === LIGHTS_OFF - 1;                                 // the lights die: one frame half dark,
+  const black = f >= LIGHTS_OFF && f < LIGHTS_OFF + 5;              // then the sensor's near-black with the camera's own clock, then night vision
   let persons: number[][] = [];
   if (det && seg.clip === "S") {
     const near = det.frames.reduce((best, x) => (Math.abs(x.t - t) < Math.abs(best.t - t) ? x : best), det.frames[0]);
     if (Math.abs(near.t - t) <= 0.5) persons = near.boxes.filter((b) => b.label === "a person" && b.score >= 0.17).map((b) => b.box).slice(0, 3);
   }
   const doorColor = open ? (ringing ? KIND.alarm : KIND.open) : KIND.door;
+  const rec = CAM0[seg.clip] + t;                                   // the recording's time follows the camera's clock across the cuts
   return (
     <AbsoluteFill style={{ width: 1920, height: 1080, background: "#000" }}>
       {SEGS.map((s, k) => k === i ? (
         <Sequence key={k} from={STARTS[k]} durationInFrames={FRAMES[k]} layout="none">
           <OffthreadVideo src={staticFile(SRC[s.clip])} muted trimBefore={Math.round(s.from * 30)} style={{ position: "absolute", width: 1920, height: 1080 }} />
         </Sequence>) : null)}
-      {dip ? <AbsoluteFill style={{ background: "#000" }} /> : null}
+      {half ? <AbsoluteFill style={{ background: "rgba(0,0,0,0.55)" }} /> : null}
+      {black ? <Img src={staticFile("takes/scene3/lights-off-black.png")} style={{ position: "absolute", width: 1920, height: 1080 }} /> : null}
+      {black ? null : <>
       <AbsoluteFill style={{ background: "rgba(229,50,45,0.035)", opacity: beep }} />
       <svg width={1920} height={1080} style={{ position: "absolute", inset: 0 }}>
-        <polygon points={DOOR.map(([x, y]) => `${x * 1920},${y * 1080}`).join(" ")} fill={open ? "rgba(232,113,10,0.08)" : "none"} stroke={doorColor} strokeWidth={3} strokeLinejoin="round" opacity={0.9} />
+        <polygon points={DOOR.map(([x, y]) => `${x * 1920},${y * 1080}`).join(" ")} fill="none" stroke={doorColor} strokeWidth={3} strokeLinejoin="round" opacity={0.9} />
       </svg>
       <Label x={DOOR[3][0] * 1920 + 8} y={DOOR[3][1] * 1080 - 14} kind="door" text={open ? (ringing ? "aberta · alarme" : "aberta") : "fechada"} color={doorColor} dark={!open} />
       {persons.map((b, k) => <Box key={k} b={b} kind="person" color={KIND.person} dark />)}
       <Box b={AC_BOX} kind="device" text={acOn ? "ar condicionado · ligado" : "ar condicionado"} color={acOn ? KIND.on : KIND.device} brackets={false} below />
       <Box b={LIGHTS_BOX} kind="device" text={lightsOn ? "luzes · ligadas" : "luzes"} color={lightsOn ? KIND.on : KIND.device} brackets={false} below />
+      </>}
       {/* the counter: people at home, from the door crossings */}
       <div style={{ position: "absolute", left: 36, bottom: 32, display: "flex", gap: 12, fontFamily: SANS, fontSize: 24 }}>
         <span style={{ padding: "10px 18px", borderRadius: 999, background: n === 0 && f >= NOBODY ? KIND.alarm : "rgba(255,255,255,0.94)", color: n === 0 && f >= NOBODY ? "#fff" : INK,
@@ -128,7 +135,7 @@ export const Scene3Lab: React.FC = () => {
       </div>
       <div style={{ position: "absolute", right: 36, top: 30, display: "flex", alignItems: "center", gap: 14, padding: "9px 16px", borderRadius: 10, background: "rgba(10,12,16,0.72)",
         fontFamily: MONO, fontWeight: 500, fontSize: 24, color: "#fff" }}>
-        <span style={{ width: 12, height: 12, borderRadius: 6, background: "#ff3b30", opacity: Math.floor(f / 15) % 2 ? 1 : 0.35 }} />REC {`${String(Math.floor((25.5 + f / 30) / 60)).padStart(2, "0")}:${String(Math.floor((25.5 + f / 30) % 60)).padStart(2, "0")}`}
+        <span style={{ width: 12, height: 12, borderRadius: 6, background: "#ff3b30", opacity: Math.floor(f / 15) % 2 ? 1 : 0.35 }} />REC {`${String(Math.floor(rec / 60)).padStart(2, "0")}:${String(Math.floor(rec % 60)).padStart(2, "0")}`}
       </div>
       <Sequence from={ALARM_ON} durationInFrames={DOOR_SHUT - ALARM_ON + 4} layout="none"><Audio src={staticFile("audio/sfx/scene1/alarm-beep.wav")} loop
         volume={(v) => 0.45 * (1 - ez(ALARM_ON + v, DOOR_SHUT, DOOR_SHUT + 4))} /></Sequence>

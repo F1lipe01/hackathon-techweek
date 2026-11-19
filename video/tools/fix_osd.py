@@ -59,24 +59,34 @@ def main():
     hh, mm, ss = (int(x) for x in a.start.split(":"))
     t0 = hh * 3600 + mm * 60 + ss
 
-    # pass 1: the camera's ticks (the seconds' ones cell changes) and one clean sample of each digit 0-9
-    ticks, glyph, prev, clock = [], {}, None, t0
+    # pass 1: the camera's tick rhythm and one clean sample of each digit 0-9. Only steady frames from --sample-from on
+    # count (a light switching on or off floods or blacks out the clock band and would fake a tick); the camera ticks
+    # once a second, so the rhythm found there gives every frame's clock, including the unsteady ones.
+    samples, prev, ticks_t, n = [], None, [], 0
     for i, fr in enumerate(frames(a.src, w, h)):
-        m = strokes(fr[box(CELLS["s2"])], 1) > 0
-        if prev is not None and (m ^ prev).sum() > 0.25 * max(1, m.sum()):
-            clock += 1; ticks.append(i)
-        prev = m
-        d = clock % 10
-        if d not in glyph and i / a.fps >= a.sample_from and (not ticks or i - ticks[-1] >= 3):
-            glyph[d] = fr[box(CELLS["s2"])].copy()
-    times = []                                         # the camera's clock on every frame
-    clock, k = t0, 0
-    n = i + 1
-    for j in range(n):
-        while k < len(ticks) and ticks[k] <= j:
-            clock += 1; k += 1
-        times.append(clock)
-    print(f"{n} frames, {len(ticks)} ticks, clock {hms(t0)} -> {hms(times[-1])}, digits sampled: {sorted(glyph)}")
+        n = i + 1
+        cellp = fr[box(CELLS["s2"])]
+        g = cv2.cvtColor(cellp, cv2.COLOR_BGR2GRAY)
+        white = (g > 200).mean()
+        steady = 0.04 < white < 0.45 and i / a.fps >= a.sample_from
+        m = strokes(cellp, 1) > 0
+        if steady and prev is not None and (m ^ prev).sum() > 0.25 * max(1, m.sum()):
+            ticks_t.append(i / a.fps)
+        prev = m if steady else None
+        if steady:
+            samples.append((i / a.fps, cellp.copy()))
+    if len(ticks_t) < 3:
+        raise SystemExit("too few steady ticks to find the clock's rhythm")
+    phase = float(np.median([t % 1.0 for t in ticks_t]))          # where in each second the camera ticks
+    first = phase if phase > 0 else 1.0                              # the first tick after the clip's first frame
+    clock_at = lambda t: t0 + (0 if t < first - 1e-6 else int(np.floor(t - first + 1e-6)) + 1)
+    times = [clock_at(j / a.fps) for j in range(n)]
+    glyph = {}
+    for t, cellp in samples:                                         # a sample well inside its second, not at a tick
+        if (t - first) % 1.0 < 0.15 or (t - first) % 1.0 > 0.85:
+            continue
+        glyph.setdefault(clock_at(t) % 10, cellp)
+    print(f"{n} frames, {len(ticks_t)} steady ticks, tick phase {phase:.2f} s, clock {hms(t0)} -> {hms(times[-1])}, digits sampled: {sorted(glyph)}")
     missing = [d for d in range(10) if d not in glyph]
     if missing:
         raise SystemExit(f"digits never seen in the seconds place: {missing}; use a longer clip")

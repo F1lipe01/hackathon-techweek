@@ -241,11 +241,26 @@ Status markers:
 **E1a. How did you connect the door to your app without access to our backend, app or database?**
 - **Short answer:** "We didn't need your backend. You gave the teams the Connected Home MCP server, the official interface to the platform. The door sensor belongs to our test home on your platform, like any customer's device, and we read it through that interface."
 - **Detail:**
-  - **the sensor:** the kit's contact sensor in our test home ("Hack 3"), set up through the kit and the Altice app like any customer's device;
+  - **the sensor:** the kit's contact sensor (MS-D3D) in our test home ("Hack 3"). Altice provisioned all seven kit devices and linked them to the team account; we added no device ([04-kit-and-access.md](04-kit-and-access.md)). We stuck the sensor and its magnet on the lab door ([19-teste-real.md](19-teste-real.md));
   - **the access:** our own MCP client (`mcp/client/chmcp.py`) signs in with the team account through Altice's Keycloak (OAuth) and sends the API key on every request (`chmcp.py:170-171`), MCP protocol 2025-06-18;
   - **reading the door:** every 4 s the server calls the read-only tool `get_home_devices`, finds the `contactSensor` and reads `sensorState`, where "alarm" means open (`server.py:894-921`). Real door events are in the prototype's database from 19 Nov;
   - **never touched:** Altice's backend, app or database. The app in the films is our copy of the Altice app's screens, running our prototype; in production Altice adds the *Things* tab to its own app.
 - **The honest limit, and the request:** the MCP server has no push events, so we poll, which is part of the prototype's ~10 s door alert. In production ThingTracker runs inside Altice's platform and receives sensor events directly, or through an event subscription. We never call the write tools: actions are dry runs by our own rule.
+
+**E1b. How does the door sensor work, and did you add devices?**
+- **Short answer:** "It's the kit's magnetic contact sensor, talking by radio to the kit's security hub. We added no device: Altice provisioned the kit, and a family adds devices the usual way, in the Altice app."
+- **The sensor:**
+  - two pieces, a sensor body on the frame and a magnet on the door; opening the door moves the magnet away and the state flips to "open";
+  - it sends that over Zigbee or 868 MHz to the security hub (MS-WES1AS), which reaches Altice's cloud over ethernet or LTE;
+  - the app shows "Contact sensor: Open / Closed"; MCP returns `sensorState` "normal" or "alarm".
+- **The kit:** security hub, contact sensor, smoke sensor, temperature sensor, camera, smart plug and bulb. **It has no motion sensor.** The camera, plug and bulb use Wi-Fi from an access point the team set up; the sensors use the hub's radio ([04-kit-and-access.md](04-kit-and-access.md)).
+- **Adding a device, in production:** in the Altice app's "Add device" flow:
+  - radio sensors pair with the hub;
+  - Wi-Fi devices join the home Wi-Fi and register through the app.
+- **The limit:** the MCP server cannot add devices. It reads and controls them, and handles scenarios, timers and security. We have not tried adding a device.
+- **Be honest about film 3:**
+  - the air conditioner is not a real device: it exists only in the prototype, simulated, and "connected to the app directly" is a proposal;
+  - the plug is a real kit device, but "the plug powers the lights" is ThingTracker's own data, and turning it off was a dry run.
 
 **E2. Notifications?**
 - **Short answer:** "Through the notification service the Altice app already uses."

@@ -45,6 +45,7 @@ const RAW_CSS = `
     background: rgb(26 34 51 / 0.12); border: 1.5px solid rgb(255 255 255 / 0.8); box-shadow: 0 2px 8px rgb(0 0 0 / 0.12); opacity: 0; pointer-events: none;
     transition: left 480ms cubic-bezier(0.65, 0, 0.35, 1), top 480ms cubic-bezier(0.65, 0, 0.35, 1), opacity 200ms ease-out, transform 120ms ease-out; }
   .rec-finger.show { opacity: 1; } .rec-finger.press { transform: scale(0.86); background: rgb(42 190 158 / 0.28); }
+  .rec-finger { display: none !important; }  /* the film draws one touch that glides between the taps (marks.json x, y) */
 `;
 
 // Concept takes (act 6, marked "conceito" in the film): the same real app, but /api/state and /api/assistant are
@@ -96,7 +97,7 @@ async function take(name, clock, script) {
     await cdp.send('Page.screencastFrameAck', { sessionId }).catch(() => {});
   });
   const marks = [];
-  const mark = (n) => marks.push({ name: n, t: Date.now() / 1000 });
+  const mark = (n, extra = {}) => marks.push({ name: n, t: Date.now() / 1000, ...extra });
   await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 94, maxWidth: W * DSF, maxHeight: H * DSF, everyNthFrame: 1 });
   // keep frames coming while nothing changes, so the timing stays exact
   const keepAlive = setInterval(() => page.evaluate(() => { document.body.style.outlineColor = document.body.style.outlineColor === 'red' ? 'blue' : 'red'; }).catch(() => {}), 100);
@@ -117,7 +118,7 @@ async function take(name, clock, script) {
     await pause(560);
     await page.evaluate(() => document.getElementById('recfinger').classList.add('press'));
     await pause(110);
-    mark('tap ' + sel);
+    mark('tap ' + sel, { x: xy[0], y: xy[1] });   // where the tap lands, in the app's points: the film draws its own touch
     await el.click();
     await pause(150);
     await page.evaluate(() => document.getElementById('recfinger').classList.remove('press'));
@@ -141,7 +142,8 @@ async function take(name, clock, script) {
   const out = join(OUT, `${name}.mp4`);
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', join(frames, 'list.txt'),
     '-vf', 'fps=30,format=yuv420p', '-c:v', 'libx264', '-preset', 'slow', '-crf', '14', '-g', '15', '-movflags', '+faststart', out], { stdio: 'inherit' });
-  writeFileSync(join(OUT, `${name}.marks.json`), JSON.stringify(marks.map((m) => ({ name: m.name, s: +(m.t - t0).toFixed(3) })), null, 1));
+  writeFileSync(join(OUT, `${name}.marks.json`), JSON.stringify(marks.map((m) => ({ name: m.name, s: +(m.t - t0).toFixed(3),
+    ...(m.x !== undefined ? { x: +m.x.toFixed(1), y: +m.y.toFixed(1) } : {}) })), null, 1));
   rmSync(frames, { recursive: true, force: true });
   console.log(`${name}: ${shots.length} frames, ${(shots.at(-1).t - t0).toFixed(1)} s → ${out}`);
 }

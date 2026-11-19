@@ -1,98 +1,118 @@
 [
  {
   "name": "start",
-  "s": 0.402
+  "s": 0.399
  },
  {
   "name": "things",
-  "s": 1.704
+  "s": 1.701
  },
  {
   "name": "tap .btn-p[data-act=\"add-thing\"]",
-  "s": 2.407
+  "s": 2.41,
+  "x": 201,
+  "y": 440
  },
  {
   "name": "add",
-  "s": 2.598
+  "s": 2.622
  },
  {
   "name": "tap [data-act=\"pick-thing\"][data-name=\"Book\"]",
-  "s": 4.375
+  "s": 4.407,
+  "x": 201,
+  "y": 525.6
  },
  {
   "name": "method",
-  "s": 4.557
+  "s": 4.601
  },
  {
   "name": "tap [data-act=\"take-photos\"]",
-  "s": 6.542
+  "s": 6.586,
+  "x": 201,
+  "y": 455.3
  },
  {
   "name": "take-photos",
-  "s": 6.738
+  "s": 6.764
  },
  {
   "name": "photos",
-  "s": 7.451
+  "s": 7.421
  },
  {
   "name": "tap #tname",
-  "s": 9.628
+  "s": 9.608,
+  "x": 201,
+  "y": 463.8
  },
  {
   "name": "tap #tdesc",
-  "s": 11.215
+  "s": 11.175,
+  "x": 201,
+  "y": 573.5
  },
  {
   "name": "tap [data-act=\"save-thing\"]",
-  "s": 13.416
+  "s": 13.306,
+  "x": 201,
+  "y": 772.3
  },
  {
   "name": "save-thing",
-  "s": 13.607
+  "s": 13.501
  },
  {
   "name": "added",
-  "s": 13.611
+  "s": 13.509
  },
  {
   "name": "tap [data-act=\"new-scenario\"]",
-  "s": 16.099
+  "s": 16.007,
+  "x": 201,
+  "y": 515.7
  },
  {
   "name": "scenario",
-  "s": 16.29
+  "s": 16.201
  },
  {
   "name": "tap #scentext",
-  "s": 17.969
+  "s": 17.885,
+  "x": 201,
+  "y": 320
  },
  {
   "name": "type",
-  "s": 18.154
+  "s": 18.065
  },
  {
   "name": "typed",
-  "s": 23.687
+  "s": 23.496
  },
  {
   "name": "tap [data-act=\"save-scenario\"]",
-  "s": 24.868
+  "s": 24.686,
+  "x": 201,
+  "y": 436
  },
  {
   "name": "save-scenario",
-  "s": 25.057
+  "s": 24.884
  },
  {
   "name": "saved",
-  "s": 27.853
+  "s": 27.737
  },
  {
   "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
-  "s": 31.131
+  "s": 31.022,
+  "x": 201,
+  "y": 607.7
  },
  {
   "name": "done",
-  "s": 31.324
+  "s": 31.222
  }
 ]

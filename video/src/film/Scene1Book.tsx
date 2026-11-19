@@ -1,4 +1,4 @@
-// Real example 1, the book left behind (19 Nov, the lab), v4 after the team's notes on v3, edited in the manner of the
+// Real example 1, the book left behind (19 Nov, the lab), v5 after the team's notes on v4 (v4's were on v3), edited in the manner of the
 // two product films the team picked (research/claude-videos-study.md): a light page, a phone that glides while the
 // lines stream in beside it, the camera always drifting and diving into the one thing that matters, real screens only.
 //   1  the phone, centred, glides right; the Altice app opens with its real loading (screen recording of the team's
@@ -19,6 +19,7 @@ import "../presentation/fonts";
 import { theme } from "../theme";
 import { useJson } from "../presentation/assets";
 import { Brackets, Phone, SCREEN, clamp, phoneWidth } from "../presentation/ui";
+import { EndorsementLine } from "../presentation/brand";
 
 const { fontFamily: SERIF } = loadFont("normal", { weights: ["400"], subsets: ["latin", "latin-ext"] });
 const { fontFamily: ROBOTO } = loadRoboto("normal", { weights: ["400", "500", "700"], subsets: ["latin"] });
@@ -36,9 +37,9 @@ const T = {
   cam: 246,                                        // the colleague's viewfinder, 8 shutter presses
   s3: 380,                                         // add-book from 7.44 s at 1.4×: the photos, the name
   s4: 514,                                         // add-book from 13.70 s at 1.5×: added, the scenario, saved, Done
-  test: 866, lab: 935,                             // "Vamos testar?"; the lab opens out of the page
-  phoneIn: 1200, notice: 1236, tap: 1300, aside: 1320, cut: 1450,
-  success: 1816, end: 1940,
+  test: 866, lab: 896,                             // "Vamos testar?"; the lab opens out of the page
+  phoneIn: 1282, notice: 1310, tap: 1374, aside: 1394, cut: 1520,
+  success: 1886, end: 2010,
 };
 export const SCENE1_FRAMES = T.end + 66;
 const at = (s0: number, f0: number, rate: number, t: number) => f0 + ((t - s0) / rate) * 30;
@@ -50,10 +51,10 @@ const A0 = 5.5, B0 = 27.8;                               // take seconds at T.la
 const takeT = (f: number) => (f < T.cut ? A0 + (f - T.lab) / 30 : B0 + (f - T.cut) / 30);
 const DOOR_OPEN: [number, number][] = [[10.4, 11.9], [28.2, 31.3], [38.8, 39.9]];
 const CLOSE = T.lab + Math.round((11.9 - A0) * 30);     // the door shuts behind him, the book on the desk
-const ALARM_ON = CLOSE + 6;
+const ALARM_ON = CLOSE + 150;                            // the rule waits 5 s after the door shuts
 const GRAB = 34.3;                                        // he lifts the book (take seconds)
-const ALERT_OPEN = 3.24;                                  // alert-book-open: the alert page is up
-const ALARM_OFF_T = 6.64;                                 // alert-book-open: "Turn off the alarm" pressed
+const ALERT_OPEN = 3.23;                                  // alert-book-open: the alert page is up
+const ALARM_OFF_T = 6.53;                                 // alert-book-open: "Turn off the alarm" pressed
 const ALARM_OFF = T.tap + 2 + Math.round((ALARM_OFF_T - ALERT_OPEN) * 30);
 
 /* ------------------------------------------------------------------ the page, the drifting camera, the phone */
@@ -65,18 +66,17 @@ type CK = { at: number; s: number; x: number; y: number };
 const H0 = { s: 1, x: 960, y: 540 };
 const BTN = scr(CX.right, 603, 1366), FIELDS = scr(CX.right, 603, 1560), TXT = scr(CX.right, 603, 1000), NOTE = scr(CX.cRight, 603, 210);
 const CAM: CK[] = [
-  { at: 0, ...H0 }, { at: 196, ...H0 }, { at: 222, s: 2.0, ...BTN }, { at: 244, s: 2.06, ...BTN }, { at: 272, ...H0 },
-  { at: 414, ...H0 }, { at: 434, s: 1.9, ...FIELDS }, { at: 486, s: 1.95, ...FIELDS }, { at: 506, ...H0 },
-  { at: 586, ...H0 }, { at: 608, s: 2.4, ...TXT }, { at: 718, s: 2.46, ...TXT }, { at: 740, ...H0 },
-  { at: 1238, ...H0 }, { at: 1260, s: 1.7, ...NOTE }, { at: 1292, s: 1.74, ...NOTE }, { at: 1314, ...H0 },
+  { at: 0, ...H0 }, { at: 196, ...H0 }, { at: 222, s: 2.0, ...BTN }, { at: 246, s: 2.0, ...BTN }, { at: 270, ...H0 },
+  { at: 414, ...H0 }, { at: 434, s: 1.9, ...FIELDS }, { at: 484, s: 1.9, ...FIELDS }, { at: 502, ...H0 },
+  { at: 586, ...H0 }, { at: 606, s: 2.4, ...TXT }, { at: 712, s: 2.4, ...TXT }, { at: 730, ...H0 },
+  { at: 1312, ...H0 }, { at: 1334, s: 1.7, ...NOTE }, { at: 1364, s: 1.7, ...NOTE }, { at: 1386, ...H0 },
 ];
-/** The camera: eased moves between keys, and under them a slow drift so it never comes to rest. */
+/** The camera: eased moves between keys that come to rest (the team: the phone and the text stay still between moves). */
 const camAt = (f: number) => {
   let i = 0;
   while (i < CAM.length - 2 && f >= CAM[i + 1].at) i++;
   const a = CAM[i], b = CAM[i + 1], u = ez(f, a.at, b.at);
-  const drift = 1 + 0.012 * Math.sin((2 * Math.PI * f) / 520);
-  return { s: Math.exp(lerp(Math.log(a.s), Math.log(b.s), u)) * drift, x: lerp(a.x, b.x, u) + 6 * Math.sin((2 * Math.PI * f) / 700), y: lerp(a.y, b.y, u) };
+  return { s: Math.exp(lerp(Math.log(a.s), Math.log(b.s), u)), x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u) };
 };
 const camCss = (f: number) => { const c = camAt(f); return `translate(960px,540px) scale(${c.s}) translate(${-c.x}px,${-c.y}px)`; };
 const Grain: React.FC = () => (
@@ -85,12 +85,11 @@ const Grain: React.FC = () => (
     <rect width="100%" height="100%" filter="url(#paper)" />
   </svg>
 );
-/** The phone at a centre x, its screen drawn in the app's pixels (1206 × 2622), floating a little. */
+/** The phone at a centre x, its screen drawn in the app's pixels (1206 × 2622); still unless it is moved. */
 const PhoneAt: React.FC<{ cx: number; shadow?: number; children: React.ReactNode }> = ({ cx, shadow = 0, children }) => {
-  const f = useCurrentFrame();
   const { x, y } = phoneBox(cx);
   return (
-    <div style={{ position: "absolute", left: x, top: y + 5 * Math.sin((2 * Math.PI * f) / 260), filter: shadow ? `drop-shadow(0 ${40 * shadow}px ${70 * shadow}px rgba(0,0,0,${0.45 * shadow}))` : undefined }}>
+    <div style={{ position: "absolute", left: x, top: y, filter: shadow ? `drop-shadow(0 ${40 * shadow}px ${70 * shadow}px rgba(0,0,0,${0.45 * shadow}))` : undefined }}>
       <Phone height={PH}><div style={{ position: "absolute", left: 0, top: 0, width: 1206, height: 2622, transform: `scale(${KS})`, transformOrigin: "0 0", overflow: "hidden" }}>{children}</div></Phone>
     </div>
   );
@@ -123,14 +122,28 @@ const Clock: React.FC<{ time: string; bg: string; color: string }> = ({ time, bg
   </div>
 );
 const Home: React.FC<{ time: string }> = ({ time }) => (<><PhoneImg src="phone/home.jpg" /><Clock time={time} bg="#010101" color="#E6E6E6" /></>);
-/** A light touch: a small soft ring that presses in. */
-const Touch: React.FC<{ x: number; y: number; at: number }> = ({ x, y, at: a }) => {
+/** One touch mark that glides between the taps like a pointer: it eases into each tap (slowing almost to a stop),
+ *  presses, and moves on; between moves it keeps a slight drift so it never quite stops. `hide` lists frame ranges. */
+type Way = { f: number; x: number; y: number; press?: boolean };
+const Cursor: React.FC<{ ways: Way[]; hide?: [number, number][]; show?: [number, number] }> = ({ ways, hide = [], show }) => {
   const f = useCurrentFrame();
-  if (f < a - 8 || f > a + 8) return null;
-  const o = Math.min(ez(f, a - 8, a - 3), 1 - ez(f, a + 2, a + 8));
-  return <div style={{ position: "absolute", left: x - 45, top: y - 45, width: 90, height: 90, borderRadius: 45, background: "rgba(255,255,255,0.22)",
-    border: "3px solid rgba(255,255,255,0.8)", opacity: o, transform: `scale(${f >= a ? 0.86 : 1})` }} />;
+  if (show && (f < show[0] || f > show[1])) return null;
+  const fade = Math.min(1, ...hide.map(([a, b]) => (f < a - 6 || f > b + 6 ? 1 : f < a ? (a - f) / 6 : f > b ? (f - b) / 6 : 0)),
+    show ? Math.min(ez(f, show[0], show[0] + 8), 1 - ez(f, show[1] - 8, show[1])) : 1);
+  if (fade <= 0) return null;
+  let i = 0;
+  while (i < ways.length - 2 && f >= ways[i + 1].f) i++;
+  const a = ways[i], b = ways[Math.min(i + 1, ways.length - 1)];
+  const u = b.f > a.f ? ez(f, a.f + 3, b.f) : 1;
+  const x = lerp(a.x, b.x, u) + 7 * Math.sin(f / 19), y = lerp(a.y, b.y, u) + 5 * Math.cos(f / 23);
+  const pressAt = ways.filter((w) => w.press).map((w) => w.f).find((p) => Math.abs(f - p) <= 5);
+  const press = pressAt === undefined ? 0 : 1 - Math.abs(f - pressAt) / 5;
+  return <div style={{ position: "absolute", left: x - 34, top: y - 34, width: 68, height: 68, borderRadius: 34, background: `rgba(20,24,30,${0.16 + 0.12 * press})`,
+    border: "3px solid rgba(255,255,255,0.88)", boxShadow: "0 4px 14px rgb(0 0 0 / 0.18)", opacity: fade, transform: `scale(${1 - 0.18 * press})` }} />;
 };
+const ADD_TAPS = { add: [2.41, 201, 440], pick: [4.407, 201, 525.6], photos: [6.586, 201, 455.3], name: [9.608, 201, 463.8], what: [11.175, 201, 573.5],
+  save: [13.306, 201, 772.3], scen: [16.007, 201, 515.7], text: [17.885, 201, 320], saveScen: [24.686, 201, 436], done: [31.022, 201, 607.7] } as const;
+const ALERT_TAP_OFF = [6.528, 201, 596] as const;
 /** The system's opening: the app's window grows out of what was tapped; inside, the Altice app's real loading, then the app. */
 const Grow: React.FC<{ at: number; from: [number, number, number, number]; r0: number; splash?: boolean; appAt?: number; children?: React.ReactNode }> = ({ at: a, from, r0, splash = true, appAt = 34, children }) => {
   const f = useCurrentFrame();
@@ -162,10 +175,12 @@ const Notice: React.FC<{ at: number }> = ({ at: a }) => {
     <div style={{ position: "absolute", left: x0, top: y0 + dy, width: w, height: h, borderRadius: px(40), background: "#F3F3F3", boxShadow: "0 18px 60px rgb(0 0 0 / 0.35)", fontFamily: ROBOTO }}>
       <div style={{ position: "absolute", left: px(22), top: px(27), width: px(46), height: px(46), borderRadius: "50%", overflow: "hidden", background: "#000" }}>
         <Img src={staticFile("phone/app-icon.png")} style={{ width: "100%", height: "100%" }} /></div>
-      <div style={{ position: "absolute", left: px(86), right: px(100), top: px(30) }}>
+      <div style={{ position: "absolute", left: px(86), right: px(196), top: px(30) }}>
         <div style={{ fontSize: px(23), fontWeight: 500, color: "#1F1F1F", whiteSpace: "nowrap" }}>Book left at home <span style={{ color: "#5F6368", fontWeight: 400 }}>• agora</span></div>
         <div style={{ fontSize: px(22), color: "#444746", marginTop: px(8), whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>The door closed and your book is still on the desk. The alarm is on.</div>
       </div>
+      {/* the picture: Android shows a notification's large icon as a rounded square at the right */}
+      <Img src={staticFile("phone/photos/final-1.jpg")} style={{ position: "absolute", right: px(80), top: px(22), width: px(100), height: px(100), borderRadius: px(16), objectFit: "cover" }} />
       <div style={{ position: "absolute", right: px(20), top: px(27), width: px(46), height: px(46), borderRadius: "50%", background: "#D3E3D8", display: "grid", placeItems: "center" }}>
         <svg width={px(22)} height={px(22)} viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="#1F1F1F" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" /></svg></div>
     </div>
@@ -175,13 +190,22 @@ const Notice: React.FC<{ at: number }> = ({ at: a }) => {
 /* ------------------------------------------------------------------ 1: the app, the photos */
 const SHOT = [1.3, 7.83, 11.17, 16.2, 23.03, 27.27, 31.8, 36.1];   // the colleague's 8 shutter presses
 const SEG = 16, BEFORE = 0.35, PRESS = Math.round(BEFORE * 30);
-const S4_END = T.s4 + Math.floor(((31.5 - 13.7) / 1.5) * 30) - 2;   // add-book ends at 31.5 s
+const S4_END = T.s4 + Math.floor(((36.4 - 13.7) / 1.5) * 30) - 2;   // add-book ends at 36.4 s
+const tapF = (s0: number, f0: number, rate: number, t: readonly [number, number, number]) => ({ f: Math.round(at(s0, f0, rate, t[0])), x: t[1] * 3, y: t[2] * 3, press: true });
+const A1 = (t: readonly [number, number, number]) => tapF(1.38, T.s1, 1.25, t), A3 = (t: readonly [number, number, number]) => tapF(7.44, T.s3, 1.4, t), A4 = (t: readonly [number, number, number]) => tapF(13.7, T.s4, 1.5, t);
+const rest = (w: Way, df: number, dx: number, dy: number): Way => ({ f: w.f + df, x: w.x + dx, y: w.y + dy });   // aside, off the text being typed
+const WAYS_A: Way[] = (() => {
+  const name = A3(ADD_TAPS.name), what = A3(ADD_TAPS.what), text = A4(ADD_TAPS.text);
+  return [{ f: 54, x: 860, y: 2050 }, { f: T.tapIcon, x: ICON[0] + ICON[2] / 2, y: ICON[1] + ICON[3] / 2, press: true }, { f: T.s1 + 10, x: 700, y: 1700 },
+    A1(ADD_TAPS.add), A1(ADD_TAPS.pick), A1(ADD_TAPS.photos), { f: T.s3 + 16, x: 760, y: 2000 },
+    name, rest(name, 16, 170, 300), what, rest(what, 16, 170, 300), A3(ADD_TAPS.save),
+    A4(ADD_TAPS.scen), text, rest(text, 20, 220, 520), A4(ADD_TAPS.saveScen), A4(ADD_TAPS.done), { f: T.test + 20, x: 760, y: 2100 }];
+})();
 const ScreenA: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: "#000" }}>
       {f < T.s1 + 12 ? <Home time="15:52" /> : null}
-      <Touch x={ICON[0] + ICON[2] / 2} y={ICON[1] + ICON[3] / 2} at={T.tapIcon} />
       {f < T.cam + 2 ? <Grow at={T.grow} from={ICON} r0={40}><Sequence from={T.s1} layout="none"><Rec src="app/add-book.mp4" from={1.38} rate={1.25} /></Sequence></Grow> : null}
       {f >= T.cam && f < T.s3 ? SHOT.map((t, i) => (
         <Sequence key={i} from={T.cam + i * SEG} durationInFrames={i === SHOT.length - 1 ? T.s3 - T.cam - i * SEG : SEG} layout="none">
@@ -190,6 +214,7 @@ const ScreenA: React.FC = () => {
       {f >= T.s3 && f < T.s4 ? <Sequence from={T.s3} layout="none"><Rec src="app/add-book.mp4" from={7.44} rate={1.4} /></Sequence> : null}
       {f >= T.s4 && f < S4_END ? <Sequence from={T.s4} layout="none"><Rec src="app/add-book.mp4" from={13.7} rate={1.5} /></Sequence> : null}
       {f >= S4_END ? <Img src={staticFile("phone/add-book-last.png")} style={{ position: "absolute", inset: 0, width: 1206, height: 2622 }} /> : null}
+      <Cursor ways={WAYS_A} show={[54, T.test + 4]} hide={[[T.grow - 2, T.s1 + 10], [T.cam - 1, T.s3 + 16]]} />
     </AbsoluteFill>
   );
 };
@@ -275,7 +300,7 @@ const LabLayer: React.FC = () => {
   const doorColor = open ? KIND.open : KIND.door;
   const ax = (ALARM[0] + ALARM[2]) / 2 * 1920, ay = (ALARM[1] + ALARM[3]) / 2 * 1080;
   const xfade = ez(f, T.cut - 3, T.cut + 5);              // the cut to his return, softened over 8 frames
-  const chip = f >= ALARM_OFF && !taken ? ["Alarme desligado na app", "rgba(255,255,255,0.94)", INK] : taken ? ["Saiu com o livro", KIND.ok, "#fff"]
+  const chip = f >= ALARM_OFF && !taken ? ["Alarme desligado na app", "rgba(255,255,255,0.94)", INK] : taken ? ["Saiu com o livro · o alarme não tocou", KIND.ok, "#fff"]
     : left && f >= CLOSE ? ["A porta fechou e o livro ficou · alarme e mensagem", KIND.alarm, "#fff"] : ["Cenário ativo · Book left at home", "rgba(255,255,255,0.94)", INK];
   return (
     <AbsoluteFill style={{ width: 1920, height: 1080, background: "#000" }}>
@@ -306,7 +331,7 @@ const LabLayer: React.FC = () => {
 const LabFrame: React.FC = () => {
   const f = useCurrentFrame();
   if (f < T.lab || f > T.success + 30) return null;
-  const u = ez(f, T.lab, T.lab + 34);
+  const u = ez(f, T.lab, T.lab + 22);
   const small: Rect = { x: 960 - 320, y: 610, w: 640, h: 360 }, full: Rect = { x: 0, y: 0, w: 1920, h: 1080 };
   const r = lerpRect(small, full, u);
   const blur = ez(f, T.phoneIn, T.phoneIn + 20) * (1 - ez(f, T.aside, T.aside + 26));
@@ -321,7 +346,7 @@ const LabFrame: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ 3: the phone over the lab */
-const ALERT_END = T.tap + 2 + Math.floor((7.0 - ALERT_OPEN) * 30) - 2;
+const ALERT_END = T.tap + 2 + Math.floor((13.06 - ALERT_OPEN) * 30) - 2;
 const AlertRec: React.FC = () => {
   const f = useCurrentFrame();
   return f < ALERT_END ? <Sequence from={T.tap + 2} layout="none"><Rec src="app/alert-book-open.mp4" from={ALERT_OPEN} /></Sequence>
@@ -331,8 +356,10 @@ const ScreenC: React.FC = () => (
   <AbsoluteFill style={{ background: "#000" }}>
     <Home time="16:00" />
     <Notice at={T.notice} />
-    <Touch x={CARD[0] + CARD[2] * 0.45} y={CARD[1] + CARD[3] / 2} at={T.tap - 2} />
     <Grow at={T.tap} from={CARD} r0={px(40)} splash={false}><AlertRec /></Grow>
+    <Cursor show={[T.notice + 10, T.cut + 20]} hide={[[T.tap + 4, T.tap + 30]]} ways={[{ f: T.notice + 10, x: 820, y: 1500 },
+      { f: T.tap, x: CARD[0] + CARD[2] * 0.42, y: CARD[1] + CARD[3] / 2, press: true }, { f: T.tap + 34, x: 760, y: 1500 },
+      { f: ALARM_OFF, x: ALERT_TAP_OFF[1] * 3, y: ALERT_TAP_OFF[2] * 3, press: true }, { f: T.cut + 20, x: 820, y: 2100 }]} />
   </AbsoluteFill>
 );
 
@@ -340,7 +367,7 @@ const ScreenC: React.FC = () => (
 export const Scene1Book: React.FC = () => {
   const f = useCurrentFrame();
   // the phone: centred, glides right; leaves for the test; comes in over the lab; moves aside; goes
-  const cxA = lerp(CX.centre, CX.right, ez(f, T.glide, T.glide + 36)) + 900 * ez(f, T.test, T.test + 26, theme.ease.in);
+  const cxA = lerp(CX.centre, CX.right, ez(f, T.glide, T.glide + 36)) + 1100 * ez(f, T.test - 2, T.test + 16, theme.ease.in);
   const cxC = lerp(CX.cRight + 900, CX.cRight, ez(f, T.phoneIn, T.phoneIn + 26, theme.ease.out));
   const cxC2 = lerp(cxC, CX.left, ez(f, T.aside, T.aside + 30)) - 1300 * ez(f, T.cut - 10, T.cut + 18, theme.ease.in);
   const succ = ez(f, T.success, T.success + 26);
@@ -356,7 +383,7 @@ export const Scene1Book: React.FC = () => {
         <PhotoCard />
         <Line text="Dá-se-lhe um nome." from={T.s3 + 4} to={T.s4} />
         <Line text="E uma frase cria o cenário." from={T.s4 + 40} to={T.test + 6} />
-        <Line text="Vamos testar?" from={T.test + 12} to={T.lab + 22} top={360} left={0} width={1920} align="center" size={104} />
+        <Line text="Vamos testar?" from={T.test + 10} to={T.lab + 14} top={360} left={0} width={1920} align="center" size={104} />
       </AbsoluteFill>
       <LabFrame />
       <AbsoluteFill style={{ transform: camCss(f), transformOrigin: "0 0" }}>
@@ -369,28 +396,36 @@ export const Scene1Book: React.FC = () => {
             <circle cx={75} cy={75} r={66} fill="none" stroke="rgba(255,255,255,0.95)" strokeWidth={6} strokeDasharray={415} strokeDashoffset={415 * (1 - ez(f, T.success + 18, T.success + 40))} transform="rotate(-90 75 75)" />
             <path d="M46 78 L66 98 L106 55" fill="none" stroke="#fff" strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={90} strokeDashoffset={90 * (1 - ez(f, T.success + 34, T.success + 50))} />
           </svg>
-          <Line text="Desta vez, o livro saiu com ele." from={T.success + 30} to={T.end + 4} top={470} left={0} width={1920} align="center" size={80} color="#FFFFFF" />
+          <Line text="Desta vez, o alarme não tocou." from={T.success + 28} to={T.end + 4} top={455} left={0} width={1920} align="center" size={80} color="#FFFFFF" />
+          <Line text="O livro saiu com ele." from={T.success + 52} to={T.end + 4} top={565} left={0} width={1920} align="center" size={54} color="#FFFFFF" />
         </AbsoluteFill>) : null}
       {f >= T.end - 10 ? (
-        <AbsoluteFill style={{ opacity: endIn, alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
-          <Img src={staticFile("phone/app-icon.png")} style={{ width: 104, height: 104, borderRadius: 24, marginBottom: 30, boxShadow: "0 18px 40px -16px rgba(70,50,25,0.45)" }} />
-          <div style={{ fontFamily: SERIF, fontSize: 84, color: INK, letterSpacing: "-0.015em" }}>
-            {"ThingTracker".split("").map((ch, i) => <span key={i} style={{ opacity: ez(f, T.end + 4 + 2 * i, T.end + 10 + 2 * i) }}>{ch}</span>)}</div>
+        <AbsoluteFill style={{ opacity: endIn }}>
+          {/* our lockup (public/brand/thingtracker-light.svg) and "by Altice Labs", as on the deck's end card */}
+          <Img src={staticFile("brand/thingtracker-light.svg")} style={{ position: "absolute", left: 960 - 380, top: 440 - 66 + 10 * (1 - ez(f, T.end, T.end + 24, theme.ease.out)), width: 760,
+            opacity: ez(f, T.end, T.end + 18) }} />
+          <EndorsementLine cx={960} top={575} width={290} style={{ opacity: ez(f, T.end + 14, T.end + 30) }} />
         </AbsoluteFill>) : null}
       <Grain />
-      {/* sound: a bed for the app and the close (none under the lab footage); a soft swish under each glide; light taps on
-          the frame each button reacts; the shutters; the team's alarm recording until it is turned off; the buzz */}
-      <Audio src={staticFile("audio/music/bed-real.wav")} volume={(v) => 0.12 * interpolate(v, [0, 20, T.lab - 30, T.lab, T.success - 6, T.success + 20, SCENE1_FRAMES - 30, SCENE1_FRAMES],
-        [0, 1, 1, 0, 0, 1.2, 1.2, 0], clamp)} />
-      {[T.glide, T.test, T.phoneIn, T.aside].map((a, i) => <Sequence key={`w${i}`} from={a} layout="none"><Audio src={staticFile("audio/sfx/v4/slide-card.wav")} volume={0.2} /></Sequence>)}
-      {[T.tapIcon, tap(1.38, T.s1, 1.25, 2.411), tap(1.38, T.s1, 1.25, 4.389), tap(1.38, T.s1, 1.25, 6.563), tap(7.44, T.s3, 1.4, 9.625), tap(7.44, T.s3, 1.4, 11.207),
-        tap(7.44, T.s3, 1.4, 13.413), tap(13.7, T.s4, 1.5, 16.09), tap(13.7, T.s4, 1.5, 17.959), tap(13.7, T.s4, 1.5, 24.868), tap(13.7, T.s4, 1.5, 31.131), T.tap, ALARM_OFF].map((a, i) => (
-        <Sequence key={`t${i}`} from={a} layout="none"><Audio src={staticFile("audio/sfx/v4/tap-1.wav")} volume={0.15} /></Sequence>))}
-      {SHOT.map((_, i) => <Sequence key={`s${i}`} from={T.cam + i * SEG + PRESS} layout="none"><Audio src={staticFile(`audio/sfx/v4/shutter-${i % 2 ? 3 : 2}.wav`)} volume={0.28} /></Sequence>)}
+      {/* sound: the song throughout, lower under the lab and under the alarm; light taps on each press; the shutters; the
+          alarm (from 5 s after the door shuts until it is turned off); the buzz; the team's whooshes, one kind per moment,
+          each placed so its peak lands on the fastest frame of its move (peaks measured: slow-gentle 0,28 s, zoom-soft
+          0,37 s, throw 0,07 s, fast 0,15 s, riser-soft 0,43 s, bass-slow 1,12 s) */}
+      <Audio src={staticFile("audio/music/bed-real.wav")} volume={(v) => 0.12 * interpolate(v, [0, 20, T.lab, T.lab + 30, ALARM_ON - 10, ALARM_ON, ALARM_OFF, ALARM_OFF + 20, T.success - 10, T.success + 20, SCENE1_FRAMES - 30, SCENE1_FRAMES],
+        [0, 1, 1, 0.75, 0.75, 0.3, 0.3, 0.75, 0.75, 1.15, 1.15, 0], clamp)} />
+      {[[T.glide + 18, "slow-gentle", 0.5], [T.test + 10, "slow-gentle", 0.5], [T.phoneIn + 4, "slow-gentle", 0.5], [T.aside + 15, "slow-gentle", 0.5], [T.cut + 4, "slow-gentle", 0.45],
+        [209, "zoom-soft", 0.9], [424, "zoom-soft", 0.9], [596, "zoom-soft", 0.9], [1323, "zoom-soft", 0.9],
+        [T.s3 + 9, "fast", 0.14], [T.lab + 11, "riser-soft", 0.22], [T.success + 13, "bass-slow", 0.2],
+        ...SHOT.map((_, i) => [T.cam + i * SEG + PRESS + 1 + 4, "throw", 0.07] as const)].map(([peak, n, vol], i) => {
+        const PEAK: Record<string, number> = { "slow-gentle": 0.28, "zoom-soft": 0.37, throw: 0.07, fast: 0.15, "riser-soft": 0.43, "bass-slow": 1.12 };
+        return <Sequence key={`w${i}`} from={Math.round((peak as number) - PEAK[n as string] * 30)} layout="none"><Audio src={staticFile(`audio/sfx/whoosh/${n}.wav`)} volume={vol as number} /></Sequence>;
+      })}
+      {WAYS_A.filter((w) => w.press).map((w) => w.f).concat([T.tap, ALARM_OFF]).map((a, i) => (
+        <Sequence key={`t${i}`} from={a} layout="none"><Audio src={staticFile("audio/sfx/v4/tap-1.wav")} volume={0.13} /></Sequence>))}
+      {SHOT.map((_, i) => <Sequence key={`s${i}`} from={T.cam + i * SEG + PRESS} layout="none"><Audio src={staticFile(`audio/sfx/v4/shutter-${i % 2 ? 3 : 2}.wav`)} volume={0.26} /></Sequence>)}
       <Sequence from={ALARM_ON} durationInFrames={ALARM_OFF - ALARM_ON + 4} layout="none"><Audio src={staticFile("audio/sfx/scene1/alarm-beep.wav")} loop
         volume={(v) => { const g = ALARM_ON + v; return (g < T.phoneIn ? 0.5 : g < T.aside ? 0.22 : 0.4) * (1 - ez(g, ALARM_OFF, ALARM_OFF + 4)); }} /></Sequence>
       <Sequence from={T.notice} layout="none"><Audio src={staticFile("audio/sfx/scene1/buzz.wav")} volume={0.5} /></Sequence>
-      <Sequence from={T.success - 105} layout="none"><Audio src={staticFile("audio/sfx/v4/riser-air.wav")} volume={0.14} /></Sequence>
     </AbsoluteFill>
   );
 };

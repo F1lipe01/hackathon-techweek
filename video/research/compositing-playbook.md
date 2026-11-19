@@ -6,7 +6,7 @@ Why: the team rejected v5.1. The pace and effects were slow, the opening didn't 
 - long holds.
 
 Companions:
-- [pacing.md](pacing.md): measured shot lengths of reference films.
+- [pacing.md](pacing.md): measured shot lengths of six reference films (19 Nov).
 - [../shoot/index.html](../shoot/index.html): the shoot sheet, published for the team.
 - Tools: `video/tools/make_markers.py`, `track_markers.py`, `synth_plate.py`.
 
@@ -194,18 +194,39 @@ Measured in [pacing.md](pacing.md). What the research already fixed:
 - **Shortest event.** The minimum for a 1–2-word event is 20 frames at 24 fps (0,83 s), which is 25 frames at 30 fps [33].
 - **UI motion** takes 150–250 ms [34][35]: 5–8 frames at 30 fps.
 
-Working targets at 30 fps and 120 BPM (a beat is 15 f, a bar 60 f), until pacing.md confirms or changes them:
+Targets at 30 fps and 120 BPM (a beat is 15 f, a bar 60 f). These are **measured** on six official films (Pixel "Fixed on Pixel", Apple Find My, Anthropic "Keep thinking", Linear Asks, Ring "Search Party", Nest Cam); see [pacing.md](pacing.md) for each film's numbers.
 
-| Element | Frames |
-|---|---|
-| Average shot | 36–54 (1,2–1,8 s) |
-| Hook shots (bars 1–2) | 8–15; picture and sound from frame 0 |
-| Establishing | 30–45, at most 60 |
-| Action | 15–30, cut mid-action |
-| UI insert | 45–75 (characters ÷ 20 + the entrance) |
-| A 2–3-word card | 30: in 6–8, hold 18–20, out 4 or a hard cut |
-| The alert "Saíste sem a carteira" | 60 |
-| Transitions | about 85 % hard cuts; whips 6; others 8–14; never longer than a beat |
+| Element | Frames | Measured in |
+|---|---|---|
+| Average shot, whole film | 36–54 (a 75 s film: about 50 shots) | Pixel 52, Apple 50; Anthropic is faster at 27 |
+| Hook montage | 12–18 per shot, 15 (one beat) as the base; the first shot 24–30; at most 1 in 8 shorter than 12 | Anthropic's 36-shot opening, median 16 |
+| Rest after the hook | 30–60 of black or near-black, once | Pixel 29, Anthropic 71 |
+| Establishing (a place) | 30–60 | Anthropic 37, Pixel 31, Apple 60 |
+| Action inside a montage | 20–30 | Anthropic and Apple medians 28–29 |
+| **Action that carries the story** (the wallet left, the door) | **45–60**, cut mid-action | Pixel median 49, Ring 63 |
+| A single UI insert (one screen, one idea) | 30–45 | Pixel median 42 |
+| A UI step in a multi-step flow | 45–60 per step, animated moves of 15–20 between steps; 75 only for a full sentence | Ring |
+| Typed text in the UI | about 1–1,5 per character | Ring |
+| Text entrance | 6–8 | Nest, Pixel |
+| A 2–3-word card in a rhythmic series | 20–25 in all, cut in and cut out | Pixel's "Little / Big / Huge mistakes" |
+| **A standalone line** | **hold 45–60 after the entrance** | Nest 50, Anthropic "Keep thinking." 55, Apple 59 |
+| A word-by-word build | one word every 30 | Pixel "Fixed / on / Pixel." |
+| Text exit | a cut with the shot, or a 4–6 morph or fade | most films |
+| Hard cuts | 90–100 % | Pixel 88 %, Ring 93 %, the rest 100 % |
+| Whip pan | 8–10, once | the only whip measured (Pixel, 9) |
+| Transitions inside a sequence | 15 or less | none longer than 9 in any fast section |
+| A section change (time passing, the end) | a dip or fade of 30–90, the one exception | Ring, Pixel |
+| End card | 90–150 | Anthropic 104, Ring 140, Apple 150 |
+| The alert "Saíste sem a carteira" | 55–60 | Ring's alert 55 |
+
+How to read this:
+- **Speed comes from the hook, montage shots and short single UI inserts**, not from shortening the actions and lines the viewer must understand.
+- **No film speeds up towards the end.** They are fastest at the start or in the middle, and they end on a held card.
+- **Only Pixel cuts on sound hits** (67 % of its cuts land on an onset, against 30–41 % by chance). Cut on hits (beats and accents), not on every beat.
+- **Why v5.1 felt slow, measured against this:**
+  - Its opening held four shots of 60 f each, four times the hook's 15 f.
+  - Its story scenes ran 120–240 f as single shots, where these films cut each action in 45–60 f.
+  - On top of that came slow effects and silence.
 
 Text rules:
 - springs with damping 14 and stiffness 160;

@@ -473,11 +473,11 @@ export const Scene1Book: React.FC = () => {
     <AbsoluteFill style={{ background: PAPER }}>
       <AbsoluteFill style={{ transform: f < T.lab ? camCss(f) : camCss(f), transformOrigin: "0 0" }}>
         {f < T.test + 30 ? <PhoneAt cx={cxA} bars={{ time: "15:52", mode: f < T.grow + 10 ? "home" : f < T.s1 ? "splash" : f >= T.cam && f < T.s3 ? "none" : "app" }}><ScreenA /></PhoneAt> : null}
-        <Line text="Abre-se a app." from={44} to={150} />
-        <Line text="Adiciona-se o livro." from={150} to={T.cam} />
+        <Line text="Abre-se a app." from={44} to={150} size={87} />
+        <Line text="Adiciona-se o livro." from={150} to={T.cam} size={87} />
         <Line text="Fotografa-se de vários lados." from={T.cam} to={T.s3 + 4} top={190} />
         <PhotoCard />
-        <Line text="Dá-se-lhe um nome." from={T.s3 + 30} to={T.s4} />
+        <Line text="Dá-se-lhe um nome." from={T.s3 + 30} to={T.s4} size={87} />
         <Line text="E uma frase cria o cenário." from={T.s4 + 40} to={T.test + 6} />
         <Line text="Vamos testar?" from={T.test + 10} to={T.lab + 14} top={360} left={0} width={1920} align="center" size={104} />
       </AbsoluteFill>

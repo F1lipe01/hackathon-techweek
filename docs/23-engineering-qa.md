@@ -262,9 +262,27 @@ Status markers:
   - the air conditioner is not a real device: it exists only in the prototype, simulated, and "connected to the app directly" is a proposal;
   - the plug is a real kit device, but "the plug powers the lights" is ThingTracker's own data, and turning it off was a dry run.
 
-**E2. Notifications?**
-- **Short answer:** "Through the notification service the Altice app already uses."
-- In the prototype, alerts show inside the app [to confirm: from the rules, not injected].
+**E2. Notifications? Why didn't the alert reach the real Altice app?**
+- **Short answer:** "Your app already notifies the phone when the door opens. ThingTracker turns that into 'you left your book', through the same notification service. The MCP doesn't expose notifications yet, so in our demo the alert appears in our copy of your app."
+- **Detail:**
+  - the Altice platform already notifies the Altice app for device events (contact sensor opened or closed, motion, smoke, alarm state), set per device in the app's "Notifications" section ([09-platform-capabilities.md](09-platform-capabilities.md), [08-app-and-apk.md](08-app-and-apk.md));
+  - only Altice can send into the Altice app;
+  - the MCP server has no notification tool ([10-mcp-in-practice.md](10-mcp-in-practice.md));
+  - in production, ThingTracker runs inside Altice's platform and uses that notification service directly. It is one of the few things we would ask Altice to add.
+- **[prototype]:** alerts appear inside our copy of the app [to confirm: fired by the rules, not injected]. The phone notification in the films was composited.
+- **If the kit is set up for the demo:** open the door and the real Altice app notifies the phone. That part is Altice's existing feature.
+
+**E3. Did ThingTracker really turn off the lights and the AC in film 3? Why not say a smart plug cut the lab's power?**
+- **Short answer:** "In the lab they aren't connected to anything, so we switched them by hand at the moment of the tap, to show the effect. ThingTracker made the decision and sent the command; in a home, that command goes to whatever the family has connected."
+- **Why not "a smart plug cut the power":**
+  - a smart plug sits in one socket and powers only what is plugged into it, one appliance up to about 3 600 W;
+  - the lab's lights and AC are wired into the building's circuits, not a socket;
+  - cutting a room's circuit needs a smart relay or breaker in the electrical panel, which is not in the kit and is not what was done.
+- **In a home:**
+  - lights through the kit's smart bulb or a lamp on its smart plug;
+  - the AC through its own Wi-Fi app or an infrared hub;
+  - ThingTracker sends the command through the platform either way.
+- **[prototype]:** the plug's off command is a dry run (a real kit device, never switched without the team's approval). The AC is simulated.
 
 ## F. Costs and models
 

@@ -372,7 +372,7 @@ async function sightingsPage(id) {
     ${list.length ? list.slice().reverse().map((o) => `<div class="nrow read"><span>${I.eventsC}</span><span><b>On the ${esc(o.zone_name)}${o.room ? ` · ${esc(o.room)}` : ''}</b><small>${hm(o.ts)} · ${ago(o.ts)}${o.where ? ` · ${esc(o.where)}` : ''}</small>${o.crop ? `<img class="crop" src="${crop(o.crop)}" alt="">` : ''}</span><span></span></div>`).join('')
       : '<div class="empty"><p>Not seen yet. The camera looks for it whenever something moves.</p></div>'}`);
 }
-const COMMON = [['Book', 'book', I.book], ['Keys', 'keys', '<img src="/web/icons/fluent/key.svg" alt="">'], ['Wallet', 'wallet', '<img src="/web/icons/fluent/purse.svg" alt="">'],
+const COMMON = [['Person', 'person', I.user], ['Book', 'book', I.book], ['Keys', 'keys', '<img src="/web/icons/fluent/key.svg" alt="">'], ['Wallet', 'wallet', '<img src="/web/icons/fluent/purse.svg" alt="">'],
   ['Glasses', 'glasses', '<img src="/web/icons/fluent/glasses.svg" alt="">'], ['Phone', 'smartphone', '<img src="/web/icons/fluent/mobile_phone.svg" alt="">'],
   ['Mug', 'coffee mug', '<img src="/web/icons/fluent/hot_beverage.svg" alt="">'], ['Laptop', 'laptop', '<img src="/web/icons/fluent/laptop.svg" alt="">'],
   ['TV remote', 'tv remote control', '<img src="/web/icons/remote.svg" alt="">']];
@@ -399,7 +399,7 @@ const pending = { name: '', q: '', photos: [] };
 const ICON_CAMERA = '<svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="#1a2233" stroke-width="1.6" stroke-linejoin="round"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"/><circle cx="12" cy="12.5" r="3.6" stroke="#2abe9e" stroke-width="1.8"/></svg>';
 const ICON_CHECK = '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5.5 12.5 4.2 4.2 8.8-9.4"/></svg>';
 function methodPage(name, q) {
-  Object.assign(pending, { name, q, photos: [] });
+  Object.assign(pending, { name, q, photos: [], kind: 'thing' });
   push(() => `<div class="step"><button type="button" class="ibtn x" data-act="back" aria-label="Close">${I.x}</button>
       <div class="method-art">${ICON_CAMERA}</div><h3>Add the ${esc(name.toLowerCase())}</h3>
       <p>Take 6 to 8 photos of it with your phone, from the front, the back and the sides. A short video works too.</p></div>
@@ -408,9 +408,27 @@ function methodPage(name, q) {
       <button type="button" class="btn-s" data-act="pick-camera">Show it to a home camera</button></div>`,
   { mount: (el) => el.querySelector('#photoin').addEventListener('change', (e) => loadPhotos(e.target.files)) });
 }
+/** Eight frames spread through a short video (a face turning, a thing turned round), as photos. */
+async function framesFromVideo(file, n = 8) {
+  const v = Object.assign(document.createElement('video'), { muted: true, playsInline: true, src: URL.createObjectURL(file) });
+  await new Promise((ok, no) => { v.onloadedmetadata = ok; v.onerror = no; });
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    v.currentTime = (v.duration * (i + 0.5)) / n;
+    await new Promise((ok) => { v.onseeked = ok; });
+    const k = Math.min(1, 720 / Math.max(v.videoWidth, v.videoHeight));
+    const c = Object.assign(document.createElement('canvas'), { width: Math.round(v.videoWidth * k), height: Math.round(v.videoHeight * k) });
+    c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+    out.push(c.toDataURL('image/jpeg', 0.9));
+  }
+  URL.revokeObjectURL(v.src);
+  return out;
+}
 async function loadPhotos(files) {
   const out = [];
-  for (const f of [...files].filter((x) => x.type.startsWith('image/')).slice(0, 8)) {
+  const video = [...files].find((x) => x.type.startsWith('video/'));
+  if (video) out.push(...await framesFromVideo(video));
+  for (const f of [...files].filter((x) => x.type.startsWith('image/')).slice(0, 8 - out.length)) {
     const bmp = await createImageBitmap(f), k = Math.min(1, 720 / Math.max(bmp.width, bmp.height));
     const c = Object.assign(document.createElement('canvas'), { width: Math.round(bmp.width * k), height: Math.round(bmp.height * k) });
     c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
@@ -418,7 +436,7 @@ async function loadPhotos(files) {
   }
   if (!out.length) return;
   pending.photos = out;
-  photosPage();
+  if (pending.kind === 'person') personPage(); else photosPage();
 }
 function photosPage() {
   push(() => `${phead('', '')}<div class="ptitle">New thing</div><p class="psub">${pending.photos.length} photos · from different sides</p>
@@ -450,10 +468,51 @@ function addedPage(id) {
       <button type="button" class="btn-s" data-act="finish">Not now</button></div>`;
   });
 }
+// ------------------------------------------------------------------ adding a person: views of the face from a short video
+const ICON_FACE = '<svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#1a2233" stroke-width="1.6" stroke-linecap="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10.2" r="3" stroke="#2abe9e" stroke-width="1.8"/><path d="M7.6 17.2a5.2 5.2 0 0 1 8.8 0" stroke="#2abe9e" stroke-width="1.8"/></svg>';
+function personMethodPage(name) {
+  Object.assign(pending, { name, q: 'person', photos: [], kind: 'person' });
+  push(() => `<div class="step"><button type="button" class="ibtn x" data-act="back" aria-label="Close">${I.x}</button>
+      <div class="method-art">${ICON_FACE}</div><h3>Add a person</h3>
+      <p>Record a short video of their face, turning slowly from one side to the other. Only the people you add are known to the camera.</p></div>
+    <input type="file" id="facein" accept="video/*,image/*" multiple hidden>
+    <div class="bottom-bar col"><button type="button" class="btn-p" data-act="record-face">Record their face</button>
+      <button type="button" class="btn-s" data-act="back">Not now</button></div>`,
+  { mount: (el) => el.querySelector('#facein').addEventListener('change', (e) => loadPhotos(e.target.files)) });
+}
+function personPage() {
+  push(() => `${phead('', '')}<div class="ptitle">New person</div><p class="psub">${pending.photos.length} views of the face</p>
+    <div class="single"><div class="views-grid faces">${pending.photos.map((u) => `<img src="${u}" alt="">`).join('')}</div></div>
+    <p class="lbl">Name</p><div class="fwrap"><input class="field" id="pname" placeholder="For example: Ana" maxlength="40" autocomplete="off"></div>
+    <p class="lbl">Who is it?</p><div class="chips-row"><span class="chip on">Family</span><span class="chip">Guest</span></div>
+    <div class="bottom-bar"><button type="button" class="btn-p" data-act="save-person" disabled>Save</button></div>`,
+  { mount: (el) => { const n = el.querySelector('#pname'); n.addEventListener('input', () => { el.querySelector('[data-act="save-person"]').disabled = !n.value.trim(); }); } });
+}
+async function savePerson(btn) {
+  const name = $('pname').value.trim();
+  if (!name) return;
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const { id } = await api('/api/things', { method: 'POST', body: JSON.stringify({ name, description: 'person' }) });
+    await api(`/api/things/${encodeURIComponent(id)}/photos`, { method: 'POST', body: JSON.stringify({ photos_b64: pending.photos }) });
+    await refresh();
+    personAddedPage(id);
+  } catch (e) { btn.disabled = false; btn.textContent = 'Save'; dialog('Could not save', e.message, [['OK', 'btn-p', null]]); }
+}
+function personAddedPage(id) {
+  push(() => {
+    const t = state.things.find((x) => x.id === id), fp = t?.fingerprint;
+    return `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
+      <div class="views-grid faces" style="width:100%;margin-bottom:22px">${(fp?.crops || []).slice(0, 8).map((c) => `<img src="${crop(c)}" alt="">`).join('')}</div>
+      <h3>${esc(t?.name || 'Person')} added</h3><p>${esc(t?.name || 'They')} is now one of the people the camera knows. Now tell the app what to do about anyone else.</p></div>
+    <div class="bottom-bar col"><button type="button" class="btn-p" data-act="new-scenario" data-id="${esc(id)}">Create a scenario</button>
+      <button type="button" class="btn-s" data-act="finish">Not now</button></div>`;
+  });
+}
 function scenarioPage(id) {
   const t = state.things.find((x) => x.id === id), photo = t?.fingerprint?.crops?.[0];
   push(() => `${phead('', '')}<div class="ptitle">New scenario</div><p class="psub">Say what should happen, in one sentence.</p>
-    <div class="scen-thing">${photo ? `<img src="${crop(photo)}" alt="">` : ''}<span><b>${esc(t?.name || '')}</b><small>Work Room</small></span></div>
+    <div class="scen-thing">${photo ? `<img src="${crop(photo)}" alt="">` : ''}<span><b>${esc(t?.name || '')}</b><small>${(t?.description || t?.query) === 'person' ? 'Family' : 'Work Room'}</small></span></div>
     <div class="fwrap"><textarea class="field" id="scentext" rows="1" placeholder="For example: tell me if I leave without it" maxlength="300"></textarea></div>
     <div class="bottom-bar"><button type="button" class="btn-p" data-act="save-scenario" disabled>Save</button></div>`,
   { mount: (el) => {
@@ -476,7 +535,7 @@ function savedPage(r) {
   const t = state.things.find((x) => x.id === r.thing_id);
   const then = ['Send you a message', r.alarm ? 'Sound the alarm' : '', /^light_/.test(r.action || '') ? `Turn the light ${r.action.slice(6)}` : '',
     r.action === 'plug_off' ? 'Switch the plug off' : ''].filter(Boolean);
-  const when = r.kind === 'leave_without' ? `You leave home and the ${(t?.name || 'thing').toLowerCase()} stays` : r.sentence;
+  const when = r.unknown ? 'Someone the camera does not know comes in' : r.kind === 'leave_without' ? `You leave home and the ${(t?.name || 'thing').toLowerCase()} stays` : r.sentence;
   push(() => `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
       <div class="saved-ok">${ICON_CHECK}</div><h3>Scenario saved</h3><p>It is on from now. You can change it in Menu › Scenarios.</p></div>
     <div class="scen-card"><div class="scen-title">${I.sensor}<b>${esc(r.title)}</b><span class="on">Active</span></div>
@@ -720,7 +779,9 @@ device.addEventListener('click', async (e) => {
     case 'ask-about': { const t = state.things.find((x) => x.id === id); ask(whereIs(t ? t.name.toLowerCase() : 'thing')); break; }
     case 'sightings': sightingsPage(topId()); break;
     case 'add-thing': addThingPage(); break;
-    case 'pick-thing': methodPage(el.dataset.name, el.dataset.q); break;
+    case 'pick-thing': if (el.dataset.q === 'person') personMethodPage(el.dataset.name); else methodPage(el.dataset.name, el.dataset.q); break;
+    case 'record-face': $('facein')?.click(); break;
+    case 'save-person': savePerson(el); break;
     case 'take-photos': $('photoin')?.click(); break;
     case 'pick-camera': pop(); startRegister(pending.name, pending.q); break;
     case 'save-thing': saveThing(el); break;

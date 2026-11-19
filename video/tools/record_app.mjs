@@ -384,6 +384,76 @@ const TAKES = {
       await hideFinger();
       await pause(2200);
     }); },
+  // scene 2, the start, all real: Things (the book is there) › + › Person › Record their face (8 views of the team
+  // member's face, cut from his selfie videos) › the name › Save › Create a scenario › the sentence › Save › Done.
+  'add-person': () => { Object.assign(C, { on: false });
+    return take('add-person', '16:21', async ({ page, tap, hideFinger, mark }) => {
+      const typeIn = async (sel, text) => {
+        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); f.scrollTop = f.scrollHeight; }, [sel, ch]); await pause(55 + Math.random() * 35); }
+      };
+      await pause(1300);
+      mark('things');
+      await tap('.ahead [data-act="add-thing"], header [data-act="add-thing"], [data-act="add-thing"]');
+      mark('add');
+      await pause(1100);
+      await tap('[data-act="pick-thing"][data-name="Person"]');
+      mark('method');
+      await pause(1300);
+      const chooser = page.waitForEvent('filechooser');
+      await tap('[data-act="record-face"]');
+      mark('record-face');
+      await hideFinger();
+      const fc = await chooser;
+      await pause(600);
+      await fc.setFiles(Array.from({ length: 8 }, (_, i) => join(IMG, `person/face-view-${i + 1}.jpg`)));
+      await page.waitForSelector('#pname', { state: 'visible' });
+      mark('faces');
+      await pause(1500);
+      await tap('#pname'); await hideFinger();
+      await typeIn('#pname', 'Filipe');
+      await pause(500);
+      await tap('[data-act="save-person"]');
+      mark('save-person');
+      await hideFinger();
+      await page.waitForSelector('[data-act="new-scenario"]', { state: 'visible', timeout: 15000 });
+      mark('added');
+      await pause(1800);
+      await tap('[data-act="new-scenario"]');
+      mark('scenario');
+      await pause(1000);
+      await tap('#scentext'); await hideFinger();
+      mark('type');
+      await typeIn('#scentext', "Sound the alarm if someone I don't know comes in");
+      mark('typed');
+      await pause(500);
+      await tap('[data-act="save-scenario"]');
+      mark('save-scenario');
+      await hideFinger();
+      await page.waitForSelector('.saved-ok', { state: 'visible', timeout: 30000 });
+      mark('saved');
+      await pause(2600);
+      await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+      mark('done');
+      await hideFinger();
+      await pause(2200);
+    }); },
+  // scene 2, the end: the app's real state (the person and the scenario, made in add-person); only the alert of the take
+  // is added (the take was filmed before the scenario existed). Its picture is the lab camera's frame of the stranger.
+  'alert-person-open': () => { Object.assign(C, { on: true, onlyRules: false, events: [], things: [], rules: [], reply: null, nowAt: today(16, 26) * 1000 + 35000 });
+    return take('alert-person-open', '16:26', async ({ page, refresh, mark }) => {
+      const st = await (await fetch(BASE + '/api/state')).json();
+      const rule = st.rules.find((r) => r.unknown);
+      await pause(1200);
+      conceptEvent({ kind: 'alert', ts: today(16, 26), title: rule?.title || 'Unknown person at home', rule_id: rule?.id,
+        text: 'Someone the camera does not know came in. The alarm is on.', crop: 'concept-stranger-face.jpg',
+        snapshot: 'concept-stranger.jpg', alarm: 'The lab siren is sounding.', place: 'Work Room camera' });
+      await refresh();
+      mark('alert');
+      await pause(1600);
+      await page.evaluate(() => document.getElementById('toast').click());
+      mark('open');
+      await pause(3500);
+    }); },
   // scene 1, the end: the alert arrives; tapping it opens the camera's picture, large
   // the app's real state (the book and its rule, made in the add-book take); only the alert of 14:10 is added, because the
   // lab take was filmed before the rule existed. Its title is the real rule's, its picture the lab camera's frame.

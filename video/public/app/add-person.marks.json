@@ -1,0 +1,112 @@
+[
+ {
+  "name": "start",
+  "s": 0.4
+ },
+ {
+  "name": "things",
+  "s": 1.702
+ },
+ {
+  "name": "tap .ahead [data-act=\"add-thing\"], header [data-act=\"add-thing\"], [data-act=\"add-thing\"]",
+  "s": 2.398,
+  "x": 249,
+  "y": 90
+ },
+ {
+  "name": "add",
+  "s": 2.576
+ },
+ {
+  "name": "tap [data-act=\"pick-thing\"][data-name=\"Person\"]",
+  "s": 4.367,
+  "x": 201,
+  "y": 525.6
+ },
+ {
+  "name": "method",
+  "s": 4.551
+ },
+ {
+  "name": "tap [data-act=\"record-face\"]",
+  "s": 6.531,
+  "x": 201,
+  "y": 455.3
+ },
+ {
+  "name": "record-face",
+  "s": 6.721
+ },
+ {
+  "name": "faces",
+  "s": 7.438
+ },
+ {
+  "name": "tap #pname",
+  "s": 9.623,
+  "x": 201,
+  "y": 463.8
+ },
+ {
+  "name": "tap [data-act=\"save-person\"]",
+  "s": 11.517,
+  "x": 201,
+  "y": 662.5
+ },
+ {
+  "name": "save-person",
+  "s": 11.807
+ },
+ {
+  "name": "added",
+  "s": 11.817
+ },
+ {
+  "name": "tap [data-act=\"new-scenario\"]",
+  "s": 14.336,
+  "x": 201,
+  "y": 537.3
+ },
+ {
+  "name": "scenario",
+  "s": 14.521
+ },
+ {
+  "name": "tap #scentext",
+  "s": 16.205,
+  "x": 201,
+  "y": 320
+ },
+ {
+  "name": "type",
+  "s": 16.4
+ },
+ {
+  "name": "typed",
+  "s": 20.173
+ },
+ {
+  "name": "tap [data-act=\"save-scenario\"]",
+  "s": 21.357,
+  "x": 201,
+  "y": 436
+ },
+ {
+  "name": "save-scenario",
+  "s": 21.556
+ },
+ {
+  "name": "saved",
+  "s": 27.376
+ },
+ {
+  "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
+  "s": 30.661,
+  "x": 201,
+  "y": 607.7
+ },
+ {
+  "name": "done",
+  "s": 30.852
+ }
+]

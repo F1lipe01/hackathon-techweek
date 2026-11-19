@@ -865,6 +865,11 @@ def add_rule(payload: dict = Body(...)):
     suggestion = store.find_suggestion(sentence)    # a suggested sensor comes with its rule ready-made
     compiled = (dict(suggestion["rule"]) if suggestion and suggestion.get("rule")
                 else _llm(brain.compile_local, sentence, store.things(), store.camera_places()))
+    low = sentence.lower()
+    if any(w in low for w in ("don't know", "do not know", "dont know", "stranger", "unknown", "não conheço", "nao conheco", "desconhecid")):
+        compiled["unknown"] = True      # someone who is not one of the people added in the app (the edge has no face model yet)
+        if not any(w in str(compiled.get("title", "")).lower() for w in ("unknown", "stranger")):
+            compiled["title"] = "Unknown person at home"
     if any(w in sentence.lower() for w in ("alarm", "siren", "alarme", "sirene")):
         compiled["alarm"] = True        # simulated: the alert says the alarm is on; the platform's alarm is never called
     compiled.update(engine="local", zone_id="", created_at=time.time(),

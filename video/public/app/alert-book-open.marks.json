@@ -5,10 +5,18 @@
  },
  {
   "name": "alert",
-  "s": 1.625
+  "s": 1.63
  },
  {
   "name": "open",
-  "s": 3.231
+  "s": 3.239
+ },
+ {
+  "name": "tap [data-act=\"alarm-off\"]",
+  "s": 6.546
+ },
+ {
+  "name": "alarm-off",
+  "s": 6.742
  }
 ]

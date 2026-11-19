@@ -565,11 +565,12 @@ function notificationsPage() {
 /** An alert, opened from its notification: the camera's picture, large, what happened and when, and the alarm's state. */
 function alertPage(e) {
   document.body.classList.add('alert-open');
-  push(() => `${phead('', '')}<div class="ptitle">${esc(e.title || 'Alert')}</div>
+  const page = push(() => `${phead('', '')}<div class="ptitle">${esc(e.title || 'Alert')}</div>
     <div class="alert-shot">${e.snapshot || e.crop ? `<img src="${crop(e.snapshot || e.crop)}" alt="What the camera saw">` : ''}<span class="when">${hm(e.ts)} · ${esc(e.place || 'Camera')}</span></div>
     <p class="alert-text">${esc(e.text || '')}</p>
-    ${e.alarm ? `<div class="alert-alarm"><span class="dot"></span><b>Alarm on</b><small>${esc(e.alarm)}</small></div>` : ''}
-    <div class="bottom-bar alert-actions">${e.alarm ? '<button type="button" class="btn-p danger" data-act="stub" data-title="Turn off the alarm">Turn off the alarm</button>' : ''}<button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`);
+    ${e.alarm ? (e.alarmOff ? `<div class="alert-alarm off"><span class="dot"></span><b>Alarm off</b><small>Turned off from the app at ${hm(e.alarmOff)}.</small></div>` : `<div class="alert-alarm"><span class="dot"></span><b>Alarm on</b><small>${esc(e.alarm)}</small></div>`) : ''}
+    <div class="bottom-bar alert-actions">${e.alarm && !e.alarmOff ? '<button type="button" class="btn-p danger" data-act="alarm-off">Turn off the alarm</button>' : ''}<button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`);
+  page._alert = e;
 }
 function settingsPage() {
   push(() => `${phead('', '')}<div class="ptitle">Settings</div><h3 class="gtitle">Notifications</h3><div class="group">${row(I.bell, 'Type of notifications', 'stub')}</div>
@@ -725,6 +726,8 @@ device.addEventListener('click', async (e) => {
     case 'save-thing': saveThing(el); break;
     case 'new-scenario': scenarioPage(el.dataset.id); break;
     case 'save-scenario': saveScenario(el); break;
+    // simulated: the alert shows the alarm turned off; the platform's alarm is never called (AGENTS.md rule 1)
+    case 'alarm-off': { const pg = el.closest('section.page'); if (pg?._alert) { pg._alert.alarmOff = Date.now() / 1000; pg.innerHTML = pg._render(); } break; }
     case 'other-thing': otherThingPage(); break;
     case 'other-next': { const n = $('othername').value.trim(); if (n) { pop(); methodPage(n.charAt(0).toUpperCase() + n.slice(1), n.toLowerCase()); } break; }
     case 'reregister': case 'retry-register': {

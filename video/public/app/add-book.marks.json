@@ -9,90 +9,90 @@
  },
  {
   "name": "tap .btn-p[data-act=\"add-thing\"]",
-  "s": 2.411
+  "s": 2.407
  },
  {
   "name": "add",
-  "s": 2.605
+  "s": 2.598
  },
  {
   "name": "tap [data-act=\"pick-thing\"][data-name=\"Book\"]",
-  "s": 4.389
+  "s": 4.375
  },
  {
   "name": "method",
-  "s": 4.585
+  "s": 4.557
  },
  {
   "name": "tap [data-act=\"take-photos\"]",
-  "s": 6.563
+  "s": 6.542
  },
  {
   "name": "take-photos",
-  "s": 6.749
+  "s": 6.738
  },
  {
   "name": "photos",
-  "s": 7.443
+  "s": 7.451
  },
  {
   "name": "tap #tname",
-  "s": 9.625
+  "s": 9.628
  },
  {
   "name": "tap #tdesc",
-  "s": 11.207
+  "s": 11.215
  },
  {
   "name": "tap [data-act=\"save-thing\"]",
-  "s": 13.413
+  "s": 13.416
  },
  {
   "name": "save-thing",
-  "s": 13.6
+  "s": 13.607
  },
  {
   "name": "added",
-  "s": 13.605
+  "s": 13.611
  },
  {
   "name": "tap [data-act=\"new-scenario\"]",
-  "s": 16.09
+  "s": 16.099
  },
  {
   "name": "scenario",
-  "s": 16.282
+  "s": 16.29
  },
  {
   "name": "tap #scentext",
-  "s": 17.959
+  "s": 17.969
  },
  {
   "name": "type",
-  "s": 18.15
+  "s": 18.154
  },
  {
   "name": "typed",
-  "s": 23.718
+  "s": 23.687
  },
  {
   "name": "tap [data-act=\"save-scenario\"]",
-  "s": 24.899
+  "s": 24.868
  },
  {
   "name": "save-scenario",
-  "s": 25.08
+  "s": 25.057
  },
  {
   "name": "saved",
-  "s": 27.375
+  "s": 27.853
  },
  {
   "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
-  "s": 30.655
+  "s": 31.131
  },
  {
   "name": "done",
-  "s": 30.852
+  "s": 31.324
  }
 ]

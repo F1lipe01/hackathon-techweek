@@ -41,10 +41,10 @@ const RAW_CSS = `
   .phone .frame, .activity, .main { visibility: hidden !important; }
   #screenwrap, #screenwrap * { visibility: visible; }
   .device.pushed .fab, .device.pushed .fab *, .device.pushed .tabs, .device.pushed .tabs * { visibility: hidden !important; }  /* as the app itself: no robot or tabs on pushed screens */
-  .rec-finger { position: absolute; z-index: 9999; left: 0; top: 0; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%;
-    background: rgb(26 34 51 / 0.22); border: 2px solid rgb(255 255 255 / 0.9); box-shadow: 0 4px 14px rgb(0 0 0 / 0.18); opacity: 0; pointer-events: none;
+  .rec-finger { position: absolute; z-index: 9999; left: 0; top: 0; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%;
+    background: rgb(26 34 51 / 0.12); border: 1.5px solid rgb(255 255 255 / 0.8); box-shadow: 0 2px 8px rgb(0 0 0 / 0.12); opacity: 0; pointer-events: none;
     transition: left 480ms cubic-bezier(0.65, 0, 0.35, 1), top 480ms cubic-bezier(0.65, 0, 0.35, 1), opacity 200ms ease-out, transform 120ms ease-out; }
-  .rec-finger.show { opacity: 1; } .rec-finger.press { transform: scale(0.8); background: rgb(42 190 158 / 0.45); }
+  .rec-finger.show { opacity: 1; } .rec-finger.press { transform: scale(0.86); background: rgb(42 190 158 / 0.28); }
 `;
 
 // Concept takes (act 6, marked "conceito" in the film): the same real app, but /api/state and /api/assistant are
@@ -81,6 +81,8 @@ async function take(name, clock, script) {
   }
   // the phone's clock in the status bar reads the story's time
   await page.addInitScript((t) => { setInterval(() => { const e = document.getElementById('iostime'); if (e && e.textContent !== t) e.textContent = t; }, 50); }, clock);
+  // a take can also set the page's own clock to the story's time (times the app writes, e.g. "turned off at 16:00")
+  if (C.nowAt) { await page.addInitScript((target) => { const real = Date.now.bind(Date), off = target - real(); Date.now = () => real() + off; }, C.nowAt); C.nowAt = undefined; }
   await page.goto(`${BASE}/#things`, { waitUntil: 'networkidle' });
   await page.addStyleTag({ content: RAW_CSS });
   await page.evaluate(() => { const f = document.createElement('div'); f.className = 'rec-finger'; f.id = 'recfinger'; document.getElementById('device').appendChild(f); });
@@ -326,7 +328,7 @@ const TAKES = {
   // scene 1, the start, all real: an empty Things tab, Add › Book › Take photos (the colleague's 8 photos of the book) ›
   // name it › Save › Create a scenario › the sentence › Save (compiled by the local model). Nothing is injected.
   'add-book': () => { Object.assign(C, { on: false });
-    return take('add-book', '14:02', async ({ page, tap, hideFinger, mark }) => {
+    return take('add-book', '15:52', async ({ page, tap, hideFinger, mark }) => {
       const typeIn = async (sel, text) => {
         for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); f.scrollTop = f.scrollHeight; }, [sel, ch]); await pause(55 + Math.random() * 35); }
       };
@@ -382,12 +384,12 @@ const TAKES = {
   // scene 1, the end: the alert arrives; tapping it opens the camera's picture, large
   // the app's real state (the book and its rule, made in the add-book take); only the alert of 14:10 is added, because the
   // lab take was filmed before the rule existed. Its title is the real rule's, its picture the lab camera's frame.
-  'alert-book-open': () => { Object.assign(C, { on: true, onlyRules: false, events: [], things: [], rules: [], reply: null });
-    return take('alert-book-open', '14:11', async ({ page, refresh, mark, tap, hideFinger }) => {
+  'alert-book-open': () => { Object.assign(C, { on: true, onlyRules: false, events: [], things: [], rules: [], reply: null, nowAt: today(16, 0) * 1000 + 20000 });
+    return take('alert-book-open', '16:00', async ({ page, refresh, mark, tap, hideFinger }) => {
       const st = await (await fetch(BASE + '/api/state')).json();
       const rule = st.rules.find((r) => r.thing_id === 'book'), book = st.things.find((t) => t.id === 'book');
       await pause(1200);
-      conceptEvent({ kind: 'alert', ts: today(14, 10), title: rule?.title || 'Book left at home', rule_id: rule?.id, thing_id: 'book',
+      conceptEvent({ kind: 'alert', ts: today(16, 0), title: rule?.title || 'Book left at home', rule_id: rule?.id, thing_id: 'book',
         text: 'The door closed and your book is still on the desk. The alarm is on.', crop: book?.fingerprint?.crops?.[0],
         snapshot: 'concept-snapshot.jpg', alarm: 'The lab siren is sounding.', place: 'Work Room camera' });
       await refresh();
@@ -395,7 +397,11 @@ const TAKES = {
       await pause(1600);
       await page.evaluate(() => document.getElementById('toast').click());  // the film draws its own tap on the notification
       mark('open');
-      await pause(4500);
+      await pause(2600);
+      await tap('[data-act="alarm-off"]');
+      mark('alarm-off');
+      await hideFinger();
+      await pause(2800);
     }); },
   // video 1 v7, the dog: "Has the dog eaten today?", answered with its picture at the bowl
   dog: () => { Object.assign(C, { on: true, events: [], rules: [], delay: 900,

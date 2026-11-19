@@ -214,7 +214,7 @@ function itemCard(t) {
   return `<li><button type="button" class="card" data-act="thing" data-id="${esc(t.id)}">${ic}
     <span><span class="nm">${esc(t.name)}</span><span class="st meta">${esc(meta)}</span>${l ? `<span class="st seen">On the ${esc(l.zone_name)} · ${hm(l.ts)}</span>` : ''}</span><span></span></button></li>`;
 }
-const watches = (r) => (r.unknown ? 'anyone not in Family' : state.things.find((t) => t.id === r.thing_id)?.name || (r.who ? r.who : 'the home'));
+const watches = (r) => (r.kind === 'nobody_devices_on' ? 'the empty home, lights and AC' : r.kind === 'door_open_nobody' ? 'the door, the empty home' : r.unknown ? 'anyone not in Family' : state.things.find((t) => t.id === r.thing_id)?.name || (r.who ? r.who : 'the home'));
 const homeName = () => state.home?.name || 'Hack 3';
 
 // ------------------------------------------------------------------ tabs
@@ -265,6 +265,9 @@ function renderDevices() {
     const ds = list.filter((d) => d.room_id === r.id);
     if (ds.length) html += sec('room-' + r.id, r.name, ds.length) + `<ul class="cards">${ds.map(deviceCard).join('')}</ul>`;
   }
+  const sims = state.sim_devices || [];
+  if (sims.length) html += sec('room-sim', 'Work Room · outside the Altice kit', sims.length) + `<ul class="cards">${sims.map((d) => `<li><button type="button" class="card" data-act="sim-device" data-id="${esc(d.id)}">
+    <span class="ic">${d.type === 'ac' ? ICON_AC : ICON_LIGHT}</span><span><span class="nm">${esc(d.name)}</span><span class="st ${d.on ? '' : 'grey'}">${d.on ? 'On' : 'Off'} · simulated</span></span><span></span></button></li>`).join('')}</ul>`;
   const none = list.filter((d) => !d.room_id);
   if (none.length) html += sec('room-none', 'Without room', none.length) + `<ul class="cards">${none.map(deviceCard).join('')}</ul>`;
   tb.innerHTML = html || '<div class="empty"><p>No devices match.</p></div>';
@@ -289,8 +292,9 @@ function renderThings() {
   const sugg = state.events.filter((e) => e.kind === 'suggest' && !state.rules.some((r) => r.sentence === e.sentence)).slice(0, 3);
   if (sugg.length) html += sec('sugg', 'Suggested for your home', sugg.length) + `<ul class="cards">${sugg.map((e) => `<li><button type="button" class="card" data-act="suggest" data-id="${esc(e.id)}">
     <span class="ic">${I.sensor}</span><span><span class="nm">${esc(e.title)}</span><span class="st">Add: “${esc(e.sentence)}”</span></span><span></span></button></li>`).join('')}</ul>`;
-  if (state.rules.length) html += sec('sensors', 'Scenarios', state.rules.length) + `<ul class="cards">${state.rules.map((r) => `<li><button type="button" class="card" data-act="sensor" data-id="${esc(r.id)}">
-    <span class="ic">${I.sensor}</span><span><span class="nm">${esc(r.title)}</span><span class="st meta"><b class="${r.active ? 'on' : 'off'}">${r.active ? 'Active' : 'Paused'}</b> · Watches: ${esc(watches(r))}</span></span><span></span></button></li>`).join('')}</ul>`;
+  html += sec('sensors', 'Scenarios', state.rules.length) + `<ul class="cards">${state.rules.map((r) => `<li><button type="button" class="card" data-act="sensor" data-id="${esc(r.id)}">
+    <span class="ic">${I.sensor}</span><span><span class="nm">${esc(r.title)}</span><span class="st meta"><b class="${r.active ? 'on' : 'off'}">${r.active ? 'Active' : 'Paused'}</b> · Watches: ${esc(watches(r))}</span></span><span></span></button></li>`).join('')}
+    <li><button type="button" class="card new-scen" data-act="new-scenario"><span class="ic">${I.plus}</span><span><span class="nm">New scenario</span><span class="st meta">One sentence: when, and what to do</span></span><span></span></button></li></ul>`;
   tb.innerHTML = html;
 }
 function renderFavorites() {
@@ -562,15 +566,17 @@ async function securityOn(btn) {
 }
 function scenarioPage(id) {
   const t = state.things.find((x) => x.id === id), photo = t?.fingerprint?.crops?.[0];
-  push(() => `${phead('', '')}<div class="ptitle">New scenario</div><p class="psub">Say what should happen, in one sentence.</p>
-    <div class="scen-thing">${photo ? `<img src="${crop(photo)}" alt="">` : ''}<span><b>${esc(t?.name || '')}</b><small>${isPerson(t) ? relationOf(t) || 'Person' : 'Work Room'}</small></span></div>
-    <div class="fwrap"><textarea class="field" id="scentext" rows="1" placeholder="For example: tell me if I leave without it" maxlength="300"></textarea></div>
+  const back = t ? 0 : stack.length;   // a scenario without a thing (Menu › Scenarios): Done returns to that list
+  const page = push(() => `${phead('', '')}<div class="ptitle">New scenario</div><p class="psub">Say what should happen, in one sentence.</p>
+    ${t ? `<div class="scen-thing">${photo ? `<img src="${crop(photo)}" alt="">` : ''}<span><b>${esc(t.name)}</b><small>${isPerson(t) ? relationOf(t) || 'Person' : 'Work Room'}</small></span></div>` : ''}
+    <div class="fwrap"><textarea class="field" id="scentext" rows="1" placeholder="${t ? 'For example: tell me if I leave without it' : 'For example: if nobody is home, tell me'}" maxlength="300"></textarea></div>
     <div class="bottom-bar"><button type="button" class="btn-p" data-act="save-scenario" disabled>Save</button></div>`,
   { mount: (el) => {
     const f = el.querySelector('#scentext'), b = el.querySelector('[data-act="save-scenario"]');
     const grow = () => { f.style.height = 'auto'; f.style.height = `${Math.min(f.scrollHeight, 170)}px`; b.disabled = !f.value.trim(); };
     f.addEventListener('input', grow); grow();
   } });
+  page._back = back;
 }
 async function saveScenario(btn) {
   const text = $('scentext').value.trim();
@@ -578,17 +584,18 @@ async function saveScenario(btn) {
   btn.disabled = true; btn.textContent = 'Saving…';
   try {
     const r = await api('/api/rules', { method: 'POST', body: JSON.stringify({ sentence: text }) });
+    ui.scenBack = stack[stack.length - 1]?._back || 0;
     await refresh();
     savedPage(r);
   } catch (e) { btn.disabled = false; btn.textContent = 'Save'; dialog('Could not save', e.message, [['OK', 'btn-p', null]]); }
 }
 function savedPage(r) {
   const t = state.things.find((x) => x.id === r.thing_id);
-  const then = r.unknown ? ['Sound the alarm', 'Send you a message'] : ['Send you a message', r.alarm ? 'Sound the alarm' : '', /^light_/.test(r.action || '') ? `Turn the light ${r.action.slice(6)}` : '',
+  const then = r.kind === 'nobody_devices_on' ? ['Ask you to turn them off'] : r.unknown || r.kind === 'door_open_nobody' ? [r.alarm ? 'Sound the alarm' : '', 'Send you a message'].filter(Boolean) : ['Send you a message', r.alarm ? 'Sound the alarm' : '', /^light_/.test(r.action || '') ? `Turn the light ${r.action.slice(6)}` : '',
     r.action === 'plug_off' ? 'Switch the plug off' : ''].filter(Boolean);
-  const when = r.unknown ? 'Someone not in Family is seen at home' : r.kind === 'leave_without' ? `You leave home and the ${(t?.name || 'thing').toLowerCase()} stays` : r.sentence;
+  const when = r.kind === 'nobody_devices_on' ? 'Nobody is home and something is still on' : r.kind === 'door_open_nobody' ? 'The door is left open and nobody is home' : r.unknown ? 'Someone not in Family is seen at home' : r.kind === 'leave_without' ? `You leave home and the ${(t?.name || 'thing').toLowerCase()} stays` : r.sentence;
   push(() => `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
-      <div class="saved-ok">${ICON_CHECK}</div><h3>Scenario saved</h3><p>It is on from now. You can change it in Menu › Scenarios.</p></div>
+      <div class="saved-ok">${ICON_CHECK}</div><h3>Scenario saved</h3><p>It is on from now. You can change it in Menu&nbsp;›&nbsp;Scenarios.</p></div>
     <div class="scen-card"><div class="scen-title">${I.sensor}<b>${esc(r.title)}</b><span class="on">Active</span></div>
       <div class="scen-row"><small>When</small><span>${esc(when)}</span></div>
       <div class="scen-row"><small>Then</small><span>${then.map(esc).join('<br>')}</span></div></div>
@@ -654,7 +661,7 @@ function scenariosPage() {
     <div class="ptitle">Scenarios</div>
     ${state.rules.map((r) => `<div class="scard">${I.sensor}<span><div class="nm">${esc(r.title)}</div><div class="st ${r.active ? '' : 'grey'}">${r.active ? 'Active' : 'Paused'} · ThingTracker</div></span><span class="play">${I.play}</span></div>`).join('')}
     ${REAL_SCENARIOS.map((n) => `<div class="scard">${I.wandC}<span><div class="nm">${esc(n)}</div><div class="st">Active</div></span><span class="play">${I.play}</span></div>`).join('')}
-    <div class="bottom-bar"><button type="button" class="btn-p" data-act="assistant">Add scenario</button></div>`, { live: true });
+    <div class="bottom-bar"><button type="button" class="btn-p" data-act="new-scenario">Add scenario</button></div>`, { live: true });
 }
 function roomsPage() {
   push(() => `${phead('', '', `<button type="button" class="ibtn" data-act="stub" data-title="Sort" aria-label="Sort">${I.sort}</button><button type="button" class="ibtn" data-act="stub" data-title="Search" aria-label="Search">${I.search}</button>`)}
@@ -675,7 +682,20 @@ function notificationsPage() {
 /** An alert, opened from its notification: the camera's picture, large, what happened and when, and the alarm's state. */
 /** A small beacon (blue and red halves on a dark base, light rays): an original drawing, no force's badge or logo. */
 const ICON_BEACON = '<svg viewBox="0 0 40 40" width="40" height="40"><path d="M11 28V19a9 9 0 0 1 18 0v9Z" fill="#2563EB"/><path d="M20 10a9 9 0 0 1 9 9v9h-9Z" fill="#DC2626"/><rect x="8" y="28" width="24" height="5" rx="2" fill="#1a2233"/><path d="M20 3.5v3M7.5 8.5l2 2M32.5 8.5l-2 2M3.5 19h3M33.5 19h3" stroke="#1a2233" stroke-width="2.2" stroke-linecap="round"/></svg>';
+const ICON_LIGHT = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#b7791f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3Z" fill="#fde68a"/></svg>';
+const ICON_AC = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="8" rx="2" fill="#dbeafe"/><path d="M7 10h10M8 16l-1 3M12 16v3M16 16l1 3"/></svg>';
+const SIM_ASK = { 'sim-lights': ['Turn off the lights?', ICON_LIGHT], 'sim-ac': ['Turn off the AC?', ICON_AC] };
+function powerCards(e) {
+  return (e.devices || []).map((id) => {
+    const d = (state.sim_devices || []).find((x) => x.id === id) || { name: id, on: true };
+    const [ask, icon] = SIM_ASK[id] || [`Turn off ${d.name}?`, ICON_LIGHT];
+    const off = !d.on;
+    return `<div class="dev-ask${off ? ' done' : ''}"><span class="dic">${icon}</span><span><b>${esc(ask)}</b><small>${esc(d.name)} · ${off ? 'Off' : 'On'}</small></span>
+      ${off ? '<span class="dev-off">Off ✓</span>' : `<button type="button" class="btn-p" data-act="sim-off" data-id="${esc(id)}">Yes</button>`}</div>`;
+  }).join('');
+}
 function alertPage(e) {
+  if (e.devices) return powerAlertPage(e);
   document.body.classList.add('alert-open');
   const page = push(() => `${phead('', '')}<div class="ptitle">${esc(e.title || 'Alert')}</div>
     <div class="alert-shot">${e.snapshot || e.crop ? `<img src="${crop(e.snapshot || e.crop)}" alt="What the camera saw">` : ''}<span class="when">${hm(e.ts)} · ${esc(e.place || 'Camera')}</span></div>
@@ -684,6 +704,25 @@ function alertPage(e) {
     ${e.unknown ? `<div class="alert-reco"><span class="beacon">${ICON_BEACON}</span><span><b>Possible intrusion</b><small>An unknown person came in and took something. We recommend calling the police.</small></span></div>` : ''}
     <div class="bottom-bar alert-actions${e.unknown ? ' three' : ''}">${e.unknown ? '<button type="button" class="btn-p police" data-act="call-police">Call the police (112)</button>' : ''}${e.alarm && !e.alarmOff ? `<button type="button" class="${e.unknown ? 'btn-s' : 'btn-p danger'}" data-act="alarm-off">Turn off the alarm</button>` : ''}<button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`);
   page._alert = e;
+}
+function powerAlertPage(e) {
+  document.body.classList.add('alert-open');
+  const page = push(() => `${phead('', '')}<div class="ptitle">${esc(e.title || 'Nobody is home')}</div>
+    <div class="alert-shot">${e.snapshot || e.crop ? `<img src="${crop(e.snapshot || e.crop)}" alt="What the camera saw">` : ''}<span class="when">${hm(e.ts)} · ${esc(e.place || 'Camera')}</span></div>
+    <p class="alert-text">${esc(e.text || '')}</p>
+    <div class="dev-asks">${powerCards(e)}</div>
+    ${e.doorAlarm ? (e.alarmOff ? `<div class="alert-alarm off"><span class="dot"></span><b>Door open · Alarm off</b><small>Turned off from the app at ${hm(e.alarmOff)}.</small></div>`
+      : `<div class="alert-alarm door"><span class="dot"></span><b>Door open · Alarm on</b><small>The door is open and nobody is home.</small><button type="button" class="btn-s small" data-act="alarm-off">Turn off the alarm</button></div>`) : ''}
+    <div class="bottom-bar alert-actions"><button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`, { live: true });
+  page._alert = e;
+}
+function simDevicePage(id) {
+  push(() => {
+    const d = (state.sim_devices || []).find((x) => x.id === id) || {};
+    return `${phead(d.name || 'Device', d.room || 'Work Room')}<div class="hero sim"><span class="sim-ic">${d.type === 'ac' ? ICON_AC : ICON_LIGHT}</span><span class="st ${d.on ? '' : 'grey'}">${d.on ? 'On' : 'Off'}</span></div>
+      <p class="sim-note">Connected outside the Altice kit. In this prototype it is simulated: the app keeps its state and sends nothing to the device.</p>
+      <div class="bottom-bar"><button type="button" class="btn-p" data-act="sim-toggle" data-id="${esc(d.id)}">${d.on ? 'Turn off' : 'Turn on'}</button></div>`;
+  }, { live: true });
 }
 function settingsPage() {
   push(() => `${phead('', '')}<div class="ptitle">Settings</div><h3 class="gtitle">Notifications</h3><div class="group">${row(I.bell, 'Type of notifications', 'stub')}</div>
@@ -844,6 +883,10 @@ device.addEventListener('click', async (e) => {
     case 'save-thing': saveThing(el); break;
     case 'new-scenario': scenarioPage(el.dataset.id); break;
     case 'save-scenario': saveScenario(el); break;
+    // simulated: the lights and the AC are not Altice devices; their state lives in the prototype only (server.py, sim_devices)
+    case 'sim-off': el.blur(); api(`/api/sim-devices/${encodeURIComponent(el.dataset.id)}`, { method: 'POST', body: JSON.stringify({ on: false }) }).then(refresh).then(refreshPage); break;
+    case 'sim-device': simDevicePage(el.dataset.id); break;
+    case 'sim-toggle': { el.blur(); const d = (state.sim_devices || []).find((x) => x.id === el.dataset.id); if (d) api(`/api/sim-devices/${encodeURIComponent(d.id)}`, { method: 'POST', body: JSON.stringify({ on: !d.on }) }).then(refresh).then(refreshPage); break; }
     // simulated: the alert shows the alarm turned off; the platform's alarm is never called (AGENTS.md rule 1)
     case 'alarm-off': { const pg = el.closest('section.page'); if (pg?._alert) { pg._alert.alarmOff = Date.now() / 1000; pg.innerHTML = pg._render(); } break; }
     case 'other-thing': otherThingPage(); break;
@@ -860,7 +903,7 @@ device.addEventListener('click', async (e) => {
         ['Yes, cancel', 'btn-p', async () => { await api(`/api/things/${encodeURIComponent(tid)}`, { method: 'DELETE' }).catch(() => {}); pop(2); refresh(); }]]);
       break;
     }
-    case 'finish': pop(stack.length); setTab('things'); break;
+    case 'finish': if (ui.scenBack) { pop(stack.length - ui.scenBack); ui.scenBack = 0; refreshPage(); } else { pop(stack.length); setTab('things'); } break;
     case 'remove-thing': {
       const tid = topId();
       dialog('Remove this thing?', 'Its visual fingerprint and sightings are deleted, at home and in the Altice database.', [['Cancel', 'btn-s', null],

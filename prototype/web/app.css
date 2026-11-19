@@ -444,6 +444,18 @@
   .fam-row { display: flex; gap: 14px; margin-bottom: 16px; }
   .fam { display: grid; justify-items: center; gap: 4px; } .fam img { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; } .fam small { font-size: 11.5px; color: var(--app-muted); }
   .reco-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .reco-acts button { height: 46px; }
+  .dev-asks { display: grid; gap: 10px; margin: 0 16px 12px; }
+  .dev-ask { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; background: #fff; box-shadow: 0 1px 0 rgb(0 0 0 / 0.04), 0 8px 20px -14px rgb(26 34 51 / 0.35); }
+  .dev-ask .dic { width: 44px; height: 44px; border-radius: 12px; background: #f4f6fa; display: grid; place-items: center; }
+  .dev-ask b { display: block; font-size: 0.95rem; } .dev-ask small { display: block; font-size: 0.8rem; color: var(--app-muted); margin-top: 2px; }
+  .dev-ask .btn-p { height: 38px; padding: 0 22px; }
+  .dev-ask .dev-off { font-size: 0.9rem; font-weight: 600; color: #1d8f74; padding: 0 8px; }
+  .dev-ask.done { background: #eef8f4; }
+  .alert-alarm.door { grid-template-columns: 14px 1fr; row-gap: 2px; } .alert-alarm.door .dot { grid-row: 1; } .alert-alarm.door b { white-space: nowrap; } .alert-alarm.door small { grid-column: 2; }
+  .alert-alarm.door .btn-s.small { grid-column: 2; justify-self: start; margin-top: 8px; height: 34px; padding: 0 16px; font-size: 13px; background: #fff; color: #b42318; box-shadow: inset 0 0 0 1px #f4b4ac; }
+  .card.new-scen .ic svg { stroke: #1d8f74; } .card.new-scen .nm { color: #1d8f74; }
+  .hero.sim { display: grid; justify-items: center; gap: 10px; padding: 30px 0 10px; } .hero.sim .sim-ic { width: 96px; height: 96px; border-radius: 28px; background: #fff; display: grid; place-items: center; }
+  .hero.sim .sim-ic svg { width: 56px; height: 56px; } .sim-note { margin: 18px 22px; font-size: 13.5px; line-height: 1.5; color: var(--app-muted); }
   .card .ic.photo.round { border-radius: 50%; } .card .ic.photo.round img { border-radius: 50%; }
   .sfoot .field { background: var(--app-card); }
   .send { flex: none; width: 52px; height: 52px; border-radius: 50%; border: 0; background: var(--app-teal); display: grid; place-items: center; cursor: pointer; }

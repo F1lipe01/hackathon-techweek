@@ -411,7 +411,8 @@ class Brain:
 
 
     # ------------------------------------------------------------------ a sentence -> a local rule (the camera era)
-    LOCAL_KINDS = ("left_for", "nobody_for", "someone_arrives", "seen_in", "leave_without", "not_by", "nobody_by")
+    LOCAL_KINDS = ("left_for", "nobody_for", "someone_arrives", "seen_in", "leave_without", "not_by", "nobody_by",
+                   "nobody_devices_on", "door_open_nobody")
     NEW_KINDS = ("leave_without", "not_by", "nobody_by")
     EXTRA_KEYS = ("who", "by", "from", "within_s", "grace_s", "min_s")
 
@@ -419,6 +420,10 @@ class Brain:
         """Compile a sentence once into a rule that the rules engine evaluates locally, at no cost per check.
         places: the places the home's cameras stand for ("Work Room", "Kitchen 1")."""
         mode = self.text_mode()
+        fixed = self._presence_template(sentence)
+        if fixed:   # the two presence kinds are compiled by these templates, not by a model
+            fixed["lang"] = _lang(sentence)
+            return fixed
         if mode == "local":
             rule = (self._local_compile_local(sentence, things, places)
                     or self._sim_compile_local(sentence, things, places))
@@ -430,6 +435,26 @@ class Brain:
         if rule["lang"] == "pt":
             rule["title"], rule["message"] = pt_pt(rule["title"]), pt_pt(rule["message"])
         return rule
+
+    @staticmethod
+    def _presence_template(sentence):
+        """Two kinds about the home being empty, recognised from their words (English and Portuguese):
+        nobody_devices_on: nobody is home (no person seen by the camera for grace_s seconds) while a device is still on;
+        the app asks to turn them off. door_open_nobody: the door's contact sensor says open and nobody has been seen for
+        grace_s seconds since it opened."""
+        low = _plain(sentence)
+        nobody = any(w in low for w in ("nobody", "no one", "noone", "ninguem", "everyone left", "todos sairem", "toda a gente sair"))
+        if not nobody:
+            return None
+        base = {"thing_id": "", "place": "", "action": "notify", "cooldown_s": 600, "who": "", "by": "", "from": "",
+                "within_s": 0, "grace_s": 0, "min_s": 0}
+        if any(w in low for w in ("door", "porta")) and any(w in low for w in ("open", "abert")):
+            return {**base, "kind": "door_open_nobody", "title": "Door left open", "minutes": 0, "grace_s": 5,
+                    "message": "The door is open and nobody is home."}
+        if any(w in low for w in (" on", "ligad", "aces")) and any(w in low for w in ("turn", "off", "deslig", "apag")):
+            return {**base, "kind": "nobody_devices_on", "title": "Power saving", "minutes": 0, "grace_s": 10,
+                    "message": "Nobody is home and some things are still on. Turn them off?"}
+        return None
 
     def _claude_compile_local(self, sentence, things, places):
         system = (

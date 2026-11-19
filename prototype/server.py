@@ -12,6 +12,7 @@
 Reads ANTHROPIC_API_KEY and CAMERA_RTSP_URL from the repo's .env; neither is ever sent to the browser.
 """
 import base64
+import json
 import os
 import re
 import subprocess
@@ -74,6 +75,29 @@ def _llm(fn, *args):
         raise HTTPException(502, f"Claude API error {e.status_code}: {e.message}"[:300])
     except anthropic.APIConnectionError:
         raise HTTPException(502, "No connection to the Claude API")
+
+
+# Two devices the app can switch that are not Altice devices: the lab's ceiling lights and air conditioner, connected
+# outside the Altice kit. Simulated in this prototype: their on/off state lives here and nothing is sent anywhere.
+SIM_FILE = Path(__file__).resolve().parent / "data" / "sim_devices.json"
+SIM_DEFAULT = [{"id": "sim-lights", "name": "Ceiling lights", "type": "light", "room": "Work Room", "on": True},
+               {"id": "sim-ac", "name": "Air conditioner", "type": "ac", "room": "Work Room", "on": True}]
+
+
+def sim_devices():
+    try:
+        return json.loads(SIM_FILE.read_text())
+    except (OSError, ValueError):
+        return [dict(d) for d in SIM_DEFAULT]
+
+
+def sim_set(did, on):
+    devs = sim_devices()
+    for d in devs:
+        if d["id"] == did:
+            d["on"] = bool(on)
+    SIM_FILE.write_text(json.dumps(devs))
+    return devs
 
 
 def fire(rule, crop=None, evidence="", text=None, **extra):
@@ -401,6 +425,17 @@ def thing_face_video(tid: str, payload: dict = Body(...)):
     return {"ok": True, "n": len(names), "duration": round(dur, 1)}
 
 
+@app.post("/api/sim-devices/{did}")
+def set_sim_device(did: str, payload: dict = Body(...)):
+    """Switch a device connected outside the Altice kit (simulated: nothing is sent to any device)."""
+    devs = sim_set(did, payload.get("on"))
+    d = next((x for x in devs if x["id"] == did), None)
+    if not d:
+        raise HTTPException(404, "unknown device")
+    store.add_event("device", f"{d['name']} turned {'on' if d['on'] else 'off'} from the app (simulated, outside the Altice kit).")
+    return {"ok": True, "devices": devs}
+
+
 @app.get("/api/edge/fingerprints")
 def edge_fingerprints():
     """Lets the home device restore its fingerprints from the platform copy."""
@@ -688,6 +723,21 @@ def rules_engine():
                         store.update_rule(r["id"], seen_person=lp)
                     elif lp > r.get("seen_person", 0):
                         store.update_rule(r["id"], seen_person=lp)
+                elif kind == "nobody_devices_on" and edge_online():
+                    # nobody seen by the camera for grace_s seconds, and something is still on: ask once per empty spell
+                    lp = EDGE["last_person"]
+                    on = [d for d in sim_devices() if d["on"]]
+                    if on and lp and now_ - lp >= (r.get("grace_s") or mins * 60 or 10) and r.get("asked_after", 0) < lp:
+                        store.update_rule(r["id"], asked_after=lp)
+                        fire(r, text=f"Everyone left, and {len(on)} thing{'s are' if len(on) > 1 else ' is'} still on.",
+                             evidence=f"No one seen since {hm(lp)}; on: " + ", ".join(d["name"] for d in on) + ".",
+                             devices=[d["id"] for d in on], ask_off=True)
+                elif kind == "door_open_nobody" and edge_online():
+                    # the contact sensor says open, and nobody has been seen for grace_s seconds since it opened
+                    if DOOR["open"] and now_ - max(DOOR["changed"], EDGE["last_person"]) >= (r.get("grace_s") or mins * 60 or 5) \
+                            and r.get("door_seen", 0) < DOOR["changed"]:
+                        store.update_rule(r["id"], door_seen=DOOR["changed"])
+                        fire(r, evidence=f"Door open since {hm(DOOR['changed'])}; nobody seen since.", door=True)
                 elif kind == "seen_in":
                     last = store.last_seen(r.get("thing_id"))
                     if last and now_ - last["ts"] < 10 and (not r.get("place") or last["zone_name"] == r["place"]):
@@ -708,6 +758,7 @@ def state():
                      "kit_camera": bool(os.environ.get("CAMERA_RTSP_URL"))}
     s["edge"] = {k: v for k, v in EDGE.items() if k != "boxes"} | {"online": edge_online()}
     s["enrol"] = dict(ENROL) or None
+    s["sim_devices"] = sim_devices()
     s["door"] = dict(DOOR)
     return s
 

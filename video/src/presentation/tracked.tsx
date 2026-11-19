@@ -60,14 +60,14 @@ export const TrackedScreen: React.FC<{
   take: string; track: string; keyed?: string;
   /** Seconds into the take where this shot starts. */
   from: number;
-  rec?: string; segs?: RecSeg[]; freezeRec?: number; screen?: React.ReactNode;
+  rec?: string; segs?: RecSeg[]; freezeRec?: number; rate?: number; screen?: React.ReactNode;
   /** Drawn over the recording in its own pixels (1206 x 2622), so it moves with the screen: e.g. a live view. */
   overlay?: React.ReactNode;
   keys: CamKey[]; look?: Partial<ScreenLook>; shutter?: number; screenRadius?: number;
   /** Layers to leave out, for checks: "blur" (one copy only), "key", "glow", "grain". */
   off?: string[];
   children?: (map: (ptx: number, pty: number) => Pt, lock: number) => React.ReactNode;
-}> = ({ take, track, keyed, from, rec, segs, freezeRec, screen, overlay, keys, look: lookIn, shutter = 0.6, screenRadius: radiusIn, off = [], children }) => {
+}> = ({ take, track, keyed, from, rec, segs, freezeRec, rate, screen, overlay, keys, look: lookIn, shutter = 0.6, screenRadius: radiusIn, off = [], children }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const look = { ...LOOK, ...lookIn };
@@ -108,7 +108,7 @@ export const TrackedScreen: React.FC<{
   const n = off.includes("blur") ? 1 : Math.max(1, Math.min(6, Math.ceil(streak / 2)));
   const content = (
     <div style={{ position: "absolute", left: 0, top: 0, width: SW, height: SH, borderRadius: screenRadius, overflow: "hidden", background: "#000" }}>
-      {screen ?? <Recording name={rec!} segs={segs!} freezeAt={freezeRec} radius={screenRadius} />}
+      {screen ?? <Recording name={rec!} segs={segs!} freezeAt={freezeRec} radius={screenRadius} rate={rate} />}
       {overlay}
     </div>
   );

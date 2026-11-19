@@ -319,6 +319,7 @@ function pop(n = 1) {
     el.classList.add('leave');
     setTimeout(() => el.remove(), 300);
   }
+  document.body.classList.remove('alert-open');
   if (!stack.length) { device.classList.remove('pushed'); renderTab(ui.tab); }
 }
 function refreshPage() {
@@ -377,7 +378,7 @@ const COMMON = [['Book', 'book', I.book], ['Keys', 'keys', '<img src="/web/icons
   ['TV remote', 'tv remote control', '<img src="/web/icons/remote.svg" alt="">']];
 function addThingPage() {
   push(() => `${phead('', '')}<div class="ptitle">Add thing</div><p class="psub">Select the thing you want to track.</p>
-    <div class="looking"><b><span class="pulse"></span>Looking through your cameras…</b><p>When you choose a thing, hold it in front of a camera for a few seconds. ThingTracker learns what it looks like.</p></div>
+    <div class="looking"><b><span class="pulse"></span>Looking through your cameras…</b><p>Choose a thing, then take a few photos of it with your phone, or show it to a camera. ThingTracker learns what it looks like.</p></div>
     <p class="lbl">Works with:</p><span class="chip"><img src="/web/icons/app/camera.png" alt="" style="width:20px">Work Room camera</span>
     <p class="lbl">Available things (${COMMON.length + 1})</p>
     <ul class="alist">${COMMON.map(([n, q, ic]) => `<li><button type="button" class="aitem" data-act="pick-thing" data-name="${esc(n)}" data-q="${esc(q)}">${ic}<span>${esc(n)}</span><span></span></button></li>`).join('')}
@@ -390,6 +391,98 @@ function otherThingPage() {
       <input class="field" id="othername" placeholder="Insert the name" maxlength="40" autocomplete="off"></div>
       <div class="bottom-bar"><button type="button" class="btn-p" data-act="other-next" disabled>Next</button></div>`,
   { mount: (el) => { const i = el.querySelector('#othername'); i.addEventListener('input', () => { el.querySelector('[data-act="other-next"]').disabled = !i.value.trim(); }); i.focus(); } });
+}
+// ------------------------------------------------------------------ adding a thing from photos taken with the phone
+// Things › Add › a thing › Take photos (the phone's camera, or photos and video frames from the gallery) › name it ›
+// Save › Create a scenario › Save. The photos become the thing's views; the edge service makes the fingerprint.
+const pending = { name: '', q: '', photos: [] };
+const ICON_CAMERA = '<svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="#1a2233" stroke-width="1.6" stroke-linejoin="round"><path d="M3 8.5A2.5 2.5 0 0 1 5.5 6h2l1.5-2h6l1.5 2h2A2.5 2.5 0 0 1 21 8.5v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"/><circle cx="12" cy="12.5" r="3.6" stroke="#2abe9e" stroke-width="1.8"/></svg>';
+const ICON_CHECK = '<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5.5 12.5 4.2 4.2 8.8-9.4"/></svg>';
+function methodPage(name, q) {
+  Object.assign(pending, { name, q, photos: [] });
+  push(() => `<div class="step"><button type="button" class="ibtn x" data-act="back" aria-label="Close">${I.x}</button>
+      <div class="method-art">${ICON_CAMERA}</div><h3>Add the ${esc(name.toLowerCase())}</h3>
+      <p>Take 6 to 8 photos of it with your phone, from the front, the back and the sides. A short video works too.</p></div>
+    <input type="file" id="photoin" accept="image/*,video/*" multiple hidden>
+    <div class="bottom-bar col"><button type="button" class="btn-p" data-act="take-photos">Take photos</button>
+      <button type="button" class="btn-s" data-act="pick-camera">Show it to a home camera</button></div>`,
+  { mount: (el) => el.querySelector('#photoin').addEventListener('change', (e) => loadPhotos(e.target.files)) });
+}
+async function loadPhotos(files) {
+  const out = [];
+  for (const f of [...files].filter((x) => x.type.startsWith('image/')).slice(0, 8)) {
+    const bmp = await createImageBitmap(f), k = Math.min(1, 720 / Math.max(bmp.width, bmp.height));
+    const c = Object.assign(document.createElement('canvas'), { width: Math.round(bmp.width * k), height: Math.round(bmp.height * k) });
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    out.push(c.toDataURL('image/jpeg', 0.9));
+  }
+  if (!out.length) return;
+  pending.photos = out;
+  photosPage();
+}
+function photosPage() {
+  push(() => `${phead('', '')}<div class="ptitle">New thing</div><p class="psub">${pending.photos.length} photos · from different sides</p>
+    <div class="single"><div class="views-grid">${pending.photos.map((u) => `<img src="${u}" alt="">`).join('')}</div></div>
+    <p class="lbl">Name</p><div class="fwrap"><input class="field" id="tname" placeholder="For example: Book" maxlength="40" autocomplete="off"></div>
+    <p class="lbl">What is it?</p><div class="fwrap"><input class="field" id="tdesc" placeholder="A few words, for example: yellow book" maxlength="60" autocomplete="off"></div>
+    <p class="lbl">Room</p><span class="chip"><img src="/web/icons/app/camera.png" alt="" style="width:20px">Work Room</span>
+    <div class="bottom-bar"><button type="button" class="btn-p" data-act="save-thing" disabled>Save</button></div>`,
+  { mount: (el) => { const n = el.querySelector('#tname'); n.addEventListener('input', () => { el.querySelector('[data-act="save-thing"]').disabled = !n.value.trim(); }); } });
+}
+async function saveThing(btn) {
+  const name = $('tname').value.trim(), q = ($('tdesc').value.trim() || name).toLowerCase();
+  if (!name) return;
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const { id } = await api('/api/things', { method: 'POST', body: JSON.stringify({ name, description: q }) });
+    await api(`/api/things/${encodeURIComponent(id)}/photos`, { method: 'POST', body: JSON.stringify({ photos_b64: pending.photos }) });
+    await refresh();
+    addedPage(id);
+  } catch (e) { btn.disabled = false; btn.textContent = 'Save'; dialog('Could not save', e.message, [['OK', 'btn-p', null]]); }
+}
+function addedPage(id) {
+  push(() => {
+    const t = state.things.find((x) => x.id === id), fp = t?.fingerprint;
+    return `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
+      <div class="views-grid" style="width:100%;margin-bottom:22px">${(fp?.crops || []).slice(0, 8).map((c) => `<img src="${crop(c)}" alt="">`).join('')}</div>
+      <h3>${esc(t?.name || 'Thing')} added</h3><p>The camera looks for it whenever something moves. Now tell the app what to do with it.</p></div>
+    <div class="bottom-bar col"><button type="button" class="btn-p" data-act="new-scenario" data-id="${esc(id)}">Create a scenario</button>
+      <button type="button" class="btn-s" data-act="finish">Not now</button></div>`;
+  });
+}
+function scenarioPage(id) {
+  const t = state.things.find((x) => x.id === id), photo = t?.fingerprint?.crops?.[0];
+  push(() => `${phead('', '')}<div class="ptitle">New scenario</div><p class="psub">Say what should happen, in one sentence.</p>
+    <div class="scen-thing">${photo ? `<img src="${crop(photo)}" alt="">` : ''}<span><b>${esc(t?.name || '')}</b><small>Work Room</small></span></div>
+    <div class="fwrap"><textarea class="field" id="scentext" rows="1" placeholder="For example: tell me if I leave without it" maxlength="300"></textarea></div>
+    <div class="bottom-bar"><button type="button" class="btn-p" data-act="save-scenario" disabled>Save</button></div>`,
+  { mount: (el) => {
+    const f = el.querySelector('#scentext'), b = el.querySelector('[data-act="save-scenario"]');
+    const grow = () => { f.style.height = 'auto'; f.style.height = `${Math.min(f.scrollHeight, 170)}px`; b.disabled = !f.value.trim(); };
+    f.addEventListener('input', grow); grow();
+  } });
+}
+async function saveScenario(btn) {
+  const text = $('scentext').value.trim();
+  if (!text) return;
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const r = await api('/api/rules', { method: 'POST', body: JSON.stringify({ sentence: text }) });
+    await refresh();
+    savedPage(r);
+  } catch (e) { btn.disabled = false; btn.textContent = 'Save'; dialog('Could not save', e.message, [['OK', 'btn-p', null]]); }
+}
+function savedPage(r) {
+  const t = state.things.find((x) => x.id === r.thing_id);
+  const then = ['Send you a message', r.alarm ? 'Sound the alarm' : '', /^light_/.test(r.action || '') ? `Turn the light ${r.action.slice(6)}` : '',
+    r.action === 'plug_off' ? 'Switch the plug off' : ''].filter(Boolean);
+  const when = r.kind === 'leave_without' ? `You leave home and the ${(t?.name || 'thing').toLowerCase()} stays` : r.sentence;
+  push(() => `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
+      <div class="saved-ok">${ICON_CHECK}</div><h3>Scenario saved</h3><p>It is on from now. You can change it in Menu › Scenarios.</p></div>
+    <div class="scen-card"><div class="scen-title">${I.sensor}<b>${esc(r.title)}</b><span class="on">Active</span></div>
+      <div class="scen-row"><small>When</small><span>${esc(when)}</span></div>
+      <div class="scen-row"><small>Then</small><span>${then.map(esc).join('<br>')}</span></div></div>
+    <div class="bottom-bar"><button type="button" class="btn-p" data-act="finish">Done</button></div>`);
 }
 async function startRegister(name, q) {
   try {
@@ -471,6 +564,7 @@ function notificationsPage() {
 }
 /** An alert, opened from its notification: the camera's picture, large, what happened and when, and the alarm's state. */
 function alertPage(e) {
+  document.body.classList.add('alert-open');
   push(() => `${phead('', '')}<div class="ptitle">${esc(e.title || 'Alert')}</div>
     <div class="alert-shot">${e.snapshot || e.crop ? `<img src="${crop(e.snapshot || e.crop)}" alt="What the camera saw">` : ''}<span class="when">${hm(e.ts)} · ${esc(e.place || 'Camera')}</span></div>
     <p class="alert-text">${esc(e.text || '')}</p>
@@ -534,10 +628,12 @@ function openAssistant(prefill = '') {
       html: `<div class="suggest">${[whereIs(n), `Tell me if I leave home without my ${n}`, 'What did the camera see today?'].map((s) => `<button type="button" data-ask="${esc(s)}">${esc(s)}</button>`).join('')}</div>` });
   }
   openSheet({ head: `<div class="shead"><b>Assistant</b><button type="button" class="ibtn" data-act="close-sheet" aria-label="Close">${I.x}</button></div>`, body: chatHtml(),
-    foot: `<input class="field" id="askfield" placeholder="Ask anything" maxlength="300" autocomplete="off" value="${esc(prefill)}"><button type="button" class="send" data-act="send" aria-label="Send">${I.send}</button>` },
+    foot: `<textarea class="field" id="askfield" rows="1" placeholder="Ask anything" maxlength="300" autocomplete="off">${esc(prefill)}</textarea><button type="button" class="send" data-act="send" aria-label="Send">${I.send}</button>` },
   (sh) => {
     const f = sh.querySelector('#askfield');
-    f.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); ask(f.value); } });
+    const grow = () => { f.style.height = 'auto'; f.style.height = `${Math.min(f.scrollHeight, 124)}px`; };
+    f.addEventListener('input', grow); grow();
+    f.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask(f.value); } });
     sh.querySelector('.sbody').addEventListener('click', (e) => { const b = e.target.closest('[data-ask]'); if (b) ask(b.dataset.ask); });
     scrollChat(); setTimeout(() => f.focus(), 340);
   });
@@ -545,7 +641,7 @@ function openAssistant(prefill = '') {
 function scrollChat() { const b = document.querySelector('#sheet .sbody'); if (b) { b.innerHTML = chatHtml(); b.scrollTop = b.scrollHeight; } }
 async function ask(text) {
   text = String(text || '').trim();
-  const f = $('askfield'); if (f) f.value = '';
+  const f = $('askfield'); if (f) { f.value = ''; f.dispatchEvent(new Event('input')); }
   if (!text) return;
   chat.push({ me: true, text }); chat.push({ typing: true }); scrollChat();
   let reply;
@@ -623,9 +719,14 @@ device.addEventListener('click', async (e) => {
     case 'ask-about': { const t = state.things.find((x) => x.id === id); ask(whereIs(t ? t.name.toLowerCase() : 'thing')); break; }
     case 'sightings': sightingsPage(topId()); break;
     case 'add-thing': addThingPage(); break;
-    case 'pick-thing': startRegister(el.dataset.name, el.dataset.q); break;
+    case 'pick-thing': methodPage(el.dataset.name, el.dataset.q); break;
+    case 'take-photos': $('photoin')?.click(); break;
+    case 'pick-camera': pop(); startRegister(pending.name, pending.q); break;
+    case 'save-thing': saveThing(el); break;
+    case 'new-scenario': scenarioPage(el.dataset.id); break;
+    case 'save-scenario': saveScenario(el); break;
     case 'other-thing': otherThingPage(); break;
-    case 'other-next': { const n = $('othername').value.trim(); if (n) { pop(); startRegister(n.charAt(0).toUpperCase() + n.slice(1), n.toLowerCase()); } break; }
+    case 'other-next': { const n = $('othername').value.trim(); if (n) { pop(); methodPage(n.charAt(0).toUpperCase() + n.slice(1), n.toLowerCase()); } break; }
     case 'reregister': case 'retry-register': {
       const tid = topId();
       try { await api(`/api/things/${encodeURIComponent(tid)}/enrol`, { method: 'POST' }); await refresh(); if (act === 'reregister') registerPage(tid); else refreshPage(); }

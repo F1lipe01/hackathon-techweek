@@ -40,6 +40,7 @@ const RAW_CSS = `
   #screenwrap { position: fixed !important; left: 0 !important; top: 0 !important; width: ${W}px !important; height: ${H}px !important; border-radius: 0 !important; z-index: 9998 !important; }
   .phone .frame, .activity, .main { visibility: hidden !important; }
   #screenwrap, #screenwrap * { visibility: visible; }
+  .device.pushed .fab, .device.pushed .fab *, .device.pushed .tabs, .device.pushed .tabs * { visibility: hidden !important; }  /* as the app itself: no robot or tabs on pushed screens */
   .rec-finger { position: absolute; z-index: 9999; left: 0; top: 0; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%;
     background: rgb(26 34 51 / 0.22); border: 2px solid rgb(255 255 255 / 0.9); box-shadow: 0 4px 14px rgb(0 0 0 / 0.18); opacity: 0; pointer-events: none;
     transition: left 480ms cubic-bezier(0.65, 0, 0.35, 1), top 480ms cubic-bezier(0.65, 0, 0.35, 1), opacity 200ms ease-out, transform 120ms ease-out; }
@@ -121,7 +122,7 @@ async function take(name, clock, script) {
   };
   const hideFinger = () => page.evaluate(() => document.getElementById('recfinger').classList.remove('show'));
   const type = async (text) => {
-    for (const ch of text) { await page.evaluate((c) => { const f = document.getElementById('askfield'); f.value += c; f.scrollLeft = f.scrollWidth; }, ch); await pause(55 + Math.random() * 35); }
+    for (const ch of text) { await page.evaluate((c) => { const f = document.getElementById('askfield'); f.value += c; f.dispatchEvent(new Event('input')); f.scrollTop = f.scrollHeight; }, ch); await pause(55 + Math.random() * 35); }
   };
   const refresh = () => page.evaluate(() => window.__ttRefresh?.());
 
@@ -303,9 +304,10 @@ const TAKES = {
       await pause(5000);
     }); },
   // scene 1, the start: the book is registered (Things), and one sentence sets the rule: the alarm and a message
-  'rule-book': () => { Object.assign(C, { on: true, onlyRules: true, events: [], rules: [], delay: 900, things: [BOOK],
-    reply: (text) => { const r = { id: 'concept-book-rule', title: 'Book left behind', sentence: text, active: true }; C.rules = [r]; return { kind: 'sensor', sensor: r }; } });
-    return take('rule-book', '14:05', async ({ tap, hideFinger, type, mark }) => {
+  // real: the app's own state (the book registered with the camera) and the real assistant (local model) make the rule
+  'rule-book': () => { Object.assign(C, { on: false });
+    const now = new Date(), clock = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+    return take('rule-book', clock, async ({ tap, hideFinger, type, mark }) => {
       await pause(1600);
       mark('things');
       await tap('#fab');
@@ -321,19 +323,78 @@ const TAKES = {
       await hideFinger();
       await pause(4500);
     }); },
+  // scene 1, the start, all real: an empty Things tab, Add › Book › Take photos (the colleague's 8 photos of the book) ›
+  // name it › Save › Create a scenario › the sentence › Save (compiled by the local model). Nothing is injected.
+  'add-book': () => { Object.assign(C, { on: false });
+    return take('add-book', '14:02', async ({ page, tap, hideFinger, mark }) => {
+      const typeIn = async (sel, text) => {
+        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); f.scrollTop = f.scrollHeight; }, [sel, ch]); await pause(55 + Math.random() * 35); }
+      };
+      await pause(1300);
+      mark('things');
+      await tap('.btn-p[data-act="add-thing"]');
+      mark('add');
+      await pause(1100);
+      await tap('[data-act="pick-thing"][data-name="Book"]');
+      mark('method');
+      await pause(1300);
+      const chooser = page.waitForEvent('filechooser');
+      await tap('[data-act="take-photos"]');
+      mark('take-photos');
+      await hideFinger();
+      const fc = await chooser;
+      await pause(600);
+      await fc.setFiles(Array.from({ length: 8 }, (_, i) => join(IMG, `photos/final-${i + 1}.jpg`)));
+      await page.waitForSelector('#tname', { state: 'visible' });
+      mark('photos');
+      await pause(1500);
+      await tap('#tname'); await hideFinger();
+      await typeIn('#tname', 'Book');
+      await pause(400);
+      await tap('#tdesc'); await hideFinger();
+      await typeIn('#tdesc', 'yellow book');
+      await pause(500);
+      await tap('[data-act="save-thing"]');
+      mark('save-thing');
+      await hideFinger();
+      await page.waitForSelector('[data-act="new-scenario"]', { state: 'visible', timeout: 15000 });
+      mark('added');
+      await pause(1800);
+      await tap('[data-act="new-scenario"]');
+      mark('scenario');
+      await pause(1000);
+      await tap('#scentext'); await hideFinger();
+      mark('type');
+      await typeIn('#scentext', 'Every time I leave without my book, sound the alarm and send me a message');
+      mark('typed');
+      await pause(500);
+      await tap('[data-act="save-scenario"]');
+      mark('save-scenario');
+      await hideFinger();
+      await page.waitForSelector('.saved-ok', { state: 'visible', timeout: 30000 });
+      mark('saved');
+      await pause(2600);
+      await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+      mark('done');
+      await hideFinger();
+      await pause(2200);
+    }); },
   // scene 1, the end: the alert arrives; tapping it opens the camera's picture, large
-  'alert-book-open': () => { Object.assign(C, { on: true, onlyRules: true, events: [], things: [BOOK],
-    rules: [{ id: 'concept-book-rule', title: 'Book left behind', sentence: 'Every time I leave without my book, sound the alarm and send me a message', active: true }], reply: null });
-    return take('alert-book-open', '14:10', async ({ page, refresh, mark, tap, hideFinger }) => {
+  // the app's real state (the book and its rule, made in the add-book take); only the alert of 14:10 is added, because the
+  // lab take was filmed before the rule existed. Its title is the real rule's, its picture the lab camera's frame.
+  'alert-book-open': () => { Object.assign(C, { on: true, onlyRules: false, events: [], things: [], rules: [], reply: null });
+    return take('alert-book-open', '14:11', async ({ page, refresh, mark, tap, hideFinger }) => {
+      const st = await (await fetch(BASE + '/api/state')).json();
+      const rule = st.rules.find((r) => r.thing_id === 'book'), book = st.things.find((t) => t.id === 'book');
       await pause(1200);
-      conceptEvent({ kind: 'alert', ts: today(14, 10), title: 'Left without the book', text: 'The door closed and your book is still on the desk. The alarm is on.',
-        crop: 'concept-book.jpg', snapshot: 'concept-snapshot.jpg', alarm: 'The lab siren is sounding.', place: 'Work Room camera' });
+      conceptEvent({ kind: 'alert', ts: today(14, 10), title: rule?.title || 'Book left at home', rule_id: rule?.id, thing_id: 'book',
+        text: 'The door closed and your book is still on the desk. The alarm is on.', crop: book?.fingerprint?.crops?.[0],
+        snapshot: 'concept-snapshot.jpg', alarm: 'The lab siren is sounding.', place: 'Work Room camera' });
       await refresh();
       mark('alert');
       await pause(1600);
-      await tap('#toast');
+      await page.evaluate(() => document.getElementById('toast').click());  // the film draws its own tap on the notification
       mark('open');
-      await hideFinger();
       await pause(4500);
     }); },
   // video 1 v7, the dog: "Has the dog eaten today?", answered with its picture at the bowl

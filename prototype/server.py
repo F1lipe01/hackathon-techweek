@@ -78,6 +78,8 @@ def _llm(fn, *args):
 
 def fire(rule, crop=None, evidence="", text=None, **extra):
     result = actions.run(rule["action"])
+    if rule.get("alarm"):
+        extra.setdefault("alarm", "Simulated: the alarm sounds.")
     store.update_rule(rule["id"], last_fired=time.time(), fired_today=True)
     return store.add_event("alert", text or rule["message"], rule_id=rule["id"], title=rule["title"], action=result,
                            crop=crop, evidence=evidence, **extra)
@@ -344,6 +346,26 @@ def edge_enrol(payload: dict = Body(...)):
                     thing_id=tid, crop=names[0] if names else None)
     ENROL.clear()
     return {"ok": True}
+
+
+@app.post("/api/things/{tid}/photos")
+def thing_photos(tid: str, payload: dict = Body(...)):
+    """Registration from photos taken with the phone (or frames picked from a phone video): the photos become the
+    thing's views. The vectors are computed by the edge service, which has the vision model (DINOv2)."""
+    t = next((t for t in store.things() if t["id"] == tid), None)
+    if not t:
+        raise HTTPException(404, "unknown thing")
+    photos = [b for b in payload.get("photos_b64", []) if isinstance(b, str)][:ENROL_VIEWS]
+    if not photos:
+        raise HTTPException(400, "photos_b64 is required")
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    names = []
+    for i, b64 in enumerate(photos):
+        names.append(f"{stamp}-{tid}-photo{i}.jpg")
+        (CROPS / names[-1]).write_bytes(base64.b64decode(b64.split(",", 1)[-1]))
+    store.set_fingerprint(tid, {"n": len(names), "crops": names, "created": time.time(), "source": "photos", "model": ""})
+    store.add_event("thing", f"{t['name']} registered from {len(names)} photos.", thing_id=tid, crop=names[0])
+    return {"ok": True, "n": len(names)}
 
 
 @app.get("/api/edge/fingerprints")
@@ -843,6 +865,8 @@ def add_rule(payload: dict = Body(...)):
     suggestion = store.find_suggestion(sentence)    # a suggested sensor comes with its rule ready-made
     compiled = (dict(suggestion["rule"]) if suggestion and suggestion.get("rule")
                 else _llm(brain.compile_local, sentence, store.things(), store.camera_places()))
+    if any(w in sentence.lower() for w in ("alarm", "siren", "alarme", "sirene")):
+        compiled["alarm"] = True        # simulated: the alert says the alarm is on; the platform's alarm is never called
     compiled.update(engine="local", zone_id="", created_at=time.time(),
                     cooldown_s=max(60, min(3600, int(compiled.get("cooldown_s", 300)))))
     if compiled.get("kind") == "leave_without":

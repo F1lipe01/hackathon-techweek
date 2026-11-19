@@ -166,7 +166,7 @@ const recTime = (segs: RecSeg[], frame: number, fps: number) => {
 };
 
 /** The recording, as a 1206 × 2622 element (its native pixels); place it with a transform. */
-export const Recording: React.FC<{ name: string; segs: RecSeg[]; freezeAt?: number; radius?: number }> = ({ name, segs, freezeAt, radius = 150 }) => {
+export const Recording: React.FC<{ name: string; segs: RecSeg[]; freezeAt?: number; radius?: number; rate?: number }> = ({ name, segs, freezeAt, radius = 150, rate = 1 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const f = freezeAt !== undefined ? Math.min(frame, freezeAt) : frame;
@@ -177,7 +177,7 @@ export const Recording: React.FC<{ name: string; segs: RecSeg[]; freezeAt?: numb
     <div style={{ position: "absolute", left: 0, top: 0, width: APP.w * APP.px, height: APP.h * APP.px, borderRadius: radius, overflow: "hidden", background: "#eef3fb" }}>
       {/* the video's own frame is `local`: the Sequence starts `local` frames ago, also while frozen */}
       <Sequence from={frame - local} layout="none">
-        <OffthreadVideo src={staticFile(`app/${name}.mp4`)} muted trimBefore={startFrame} style={{ position: "absolute", left: 0, top: 0, width: APP.w * APP.px, height: APP.h * APP.px }} />
+        <OffthreadVideo src={staticFile(`app/${name}.mp4`)} muted trimBefore={startFrame} playbackRate={rate} style={{ position: "absolute", left: 0, top: 0, width: APP.w * APP.px, height: APP.h * APP.px }} />
       </Sequence>
     </div>
   );

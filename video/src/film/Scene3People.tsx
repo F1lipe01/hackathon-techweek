@@ -30,7 +30,7 @@ import {
 /* ------------------------------------------------------------------ 1: the app (ex3-scenarios, the phone at 17:28) */
 const S1 = 118;
 // take seconds and rate: quick through the menus, slower where a sentence is typed and saved
-const PARTS: [number, number, number][] = [[0.3, 6.6, 2.0], [6.6, 17.1, 1.35], [17.1, 19.4, 2.0], [19.4, 36.7, 1.35]];
+const PARTS: [number, number, number][] = [[0.3, 6.5, 2.0], [6.5, 17.0, 1.35], [17.0, 19.2, 2.0], [19.2, 33.7, 1.35]];
 type Part = { from: number; to: number; rate: number; at: number };
 const APP: Part[] = PARTS.reduce<Part[]>((acc, [from, to, rate]) => {
   const p = acc[acc.length - 1];
@@ -39,9 +39,9 @@ const APP: Part[] = PARTS.reduce<Part[]>((acc, [from, to, rate]) => {
 const appF = (t: number) => { const p = [...APP].reverse().find((x) => t >= x.from) ?? APP[0]; return p.at + ((t - p.from) / p.rate) * 30; };
 const fOf = (t: number) => Math.round(appF(t));
 type Mark = readonly [number, number, number];
-const M = { menu: [2.419, 357, 808.5], scen: [4.297, 201, 212.3], add1: [6.277, 201, 785], field1: [8.138, 201, 228], save1: [13.464, 201, 344],
-  done1: [16.927, 201, 586.7], add2: [19.086, 201, 785], field2: [20.981, 201, 228], save2: [27.079, 201, 344], done2: [30.544, 201, 607.7] } as const;   // ex3-scenarios.marks.json, app points
-const TYPED1 = 12.072, SAVED1 = 13.637, TYPED2 = 25.693, SAVED2 = 27.252;
+const M = { menu: [2.389, 357, 808.5], scen: [4.251, 201, 212.3], add1: [6.198, 201, 785], field1: [8.066, 201, 228], save1: [13.232, 201, 344],
+  done1: [16.687, 201, 586.7], add2: [18.85, 201, 785], field2: [20.714, 201, 228], save2: [26.698, 201, 344], done2: [30.167, 201, 607.7] } as const;   // ex3-scenarios.marks.json, app points
+const TYPED1 = 11.855, SAVED1 = 13.41, TYPED2 = 25.322, SAVED2 = 26.888;
 const tapAt = (m: Mark): Way => ({ f: fOf(m[0]), x: m[1] * 3, y: m[2] * 3 + REC_Y, press: true });
 const F1 = fOf(M.field1[0]), F2 = fOf(M.field2[0]), SD1 = fOf(SAVED1), SD2 = fOf(SAVED2), DN1 = fOf(M.done1[0]), DN2 = fOf(M.done2[0]);
 const TEST = DN2 + 32, LAB = TEST + 90;
@@ -60,10 +60,10 @@ const ALARM_ON = NOBODY + 150;                     // "Door left open": the door
 const PHONE_IN = NOBODY + 110;
 const NOTICE1 = ALARM_ON, NOTICE2 = NOBODY + 300;  // "Power saving": nobody seen for 10 s while something is on
 const TAP = NOTICE2 + 52;
-const ALERT_OPEN = 3.45, HOLD = 39;                // alert-nobody-open: the page is up at 3,45 s; held still while the camera reads it
+const ALERT_OPEN = 3.5, HOLD = 39;                 // alert-nobody-open: the page is up at 3,5 s; held still while the camera reads it
 const alertF = (t: number) => TAP + 2 + HOLD + Math.round((t - ALERT_OPEN) * 30);
-const YES_L = alertF(6.148), LIGHTS_OFF = alertF(6.325);   // the lights' card turns to "Off"
-const YES_AC = alertF(9.509), AC_OFF_APP = alertF(9.684);
+const YES_L = alertF(6.165), LIGHTS_OFF = alertF(6.352);   // the lights' card turns to "Off"
+const YES_AC = alertF(9.528), AC_OFF_APP = alertF(9.718);
 const DARK_END = LIGHTS_OFF + Math.round(2.75 * 30);       // lights-off: black 0,2 s, then the dim purple low-light, then night vision
 const FLAP0 = 36.2, FLAP = AC_OFF_APP + 2;          // the AC clip: the flap starts closing at 36,2 s, shut by 41,5 s
 const LC = LIGHTS_OFF + 95;                          // night vision: from the lights-off clip to the AC clip (the same still view)
@@ -92,7 +92,7 @@ for (let f = LAB + 1; f < NOBODY + 5; f++) if (people(f) !== people(f - 1)) CROS
 /* ------------------------------------------------------------------ the camera over the page and the phones */
 type CK = { at: number; s: number; x: number; y: number };
 const H0 = { s: 1, x: 960, y: 540 };
-const CXL = 1240;   // the phone over the lab: clear of the AC, the door and the REC readout
+const CXL = 1120;   // the phone over the lab: clear of the AC, the door, the lights' plug and the REC readout
 const TXT = scr(CX.right, 603, 228 * 3 + REC_Y), SAVEDC = scr(CX.right, 603, 1290);
 const NOTE = scr(CXL, 603, SB_H + 14 + px(273) / 2), CARDS = scr(CXL, 603, 1600);
 const CAM: CK[] = [
@@ -190,6 +190,9 @@ const ScreenC: React.FC = () => (
 /* ------------------------------------------------------------------ 3: the lab */
 const AC_BOX = [0.268, 0.150, 0.392, 0.222];          // the AC unit (wall, top left)
 const AC_ZOOM = { s: 1.8, x: 890, y: 300 };            // the dive into the AC: it lands left of centre, clear of the phone
+// the lights' smart plug, as the app has it (the kit's Plug, "powers: Ceiling lights"): put on the white plug at the end of
+// the desk's middle power strip, with a status light, for the film (the kit was packed before it could be filmed)
+const PLUG = [0.7326, 0.742, 0.7448, 0.764];
 const DOOR: [number, number][] = [[0.339, 0.268], [0.435, 0.289], [0.414, 0.651], [0.321, 0.637]];
 const ON = "#F2A541";
 type Tracks = { tracks: { keys: number[][] }[] };
@@ -240,6 +243,9 @@ const LabLayer: React.FC = () => {
         <Label x={DOOR[3][0] * 1920 + 8} y={DOOR[3][1] * 1080 - 14} kind="door" text={open ? (ringing ? "aberta · alarme" : "aberta") : "fechada"} color={doorColor} dark={!open} />
         {persons.map((b, k) => <Box key={k} b={b} kind="person" color={KIND.person} dark />)}
         <Box b={AC_BOX} kind="device" text={acOn ? "ar condicionado · ligado" : "ar condicionado"} color={acOn ? ON : KIND.device} brackets={false} below />
+        <Box b={PLUG} kind="device" text={lightsOn ? "tomada das luzes · ligada" : "tomada das luzes · desligada"} color={lightsOn ? ON : KIND.device} brackets={false} below />
+        {lightsOn ? <div style={{ position: "absolute", left: PLUG[2] * 1920 - 7, top: PLUG[1] * 1080 + 3, width: 5, height: 5, borderRadius: 3, background: "#7CFFB2",
+          boxShadow: "0 0 6px 2px rgba(124,255,178,0.75)" }} /> : null}
       </>}
       {/* the counter: people at home, from the door crossings; then what is still on */}
       <div style={{ position: "absolute", left: 36, bottom: 32, display: "flex", gap: 12, fontFamily: SANS, fontSize: 24 }}>

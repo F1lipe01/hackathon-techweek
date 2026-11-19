@@ -1,0 +1,368 @@
+<title>ThingTracker Shoot Sheet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one phone-first column, a sticky bar with the take count, shot cards that read like slates. */
+:root {
+  --bg: #f2f4f0;
+  --surface: #ffffff;
+  --ink: #15201a;
+  --muted: #56625a;
+  --line: #d8ded7;
+  --accent: #0c401c;      /* the marker screen's dark green */
+  --accent-2: #2f9a50;    /* the marker's light green, darkened for text on light */
+  --chip-green-bg: #0c401c;
+  --chip-green-fg: #9fe7b6;
+  --chip-grey-bg: #333333;
+  --chip-grey-fg: #f2f2f2;
+  --warn: #9a4a00;
+  --warn-bg: #fff3e4;
+  --done: #2f9a50;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1310; --surface: #161d18; --ink: #e6ece7; --muted: #9aa69e; --line: #29332c;
+    --accent: #7fd99b; --accent-2: #5fcf82; --chip-green-bg: #0c401c; --chip-green-fg: #9fe7b6;
+    --chip-grey-bg: #3a3a3a; --chip-grey-fg: #f2f2f2; --warn: #ffb36b; --warn-bg: #2a1f12; --done: #5fcf82;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1310; --surface: #161d18; --ink: #e6ece7; --muted: #9aa69e; --line: #29332c;
+  --accent: #7fd99b; --accent-2: #5fcf82; --chip-green-bg: #0c401c; --chip-green-fg: #9fe7b6;
+  --chip-grey-bg: #3a3a3a; --chip-grey-fg: #f2f2f2; --warn: #ffb36b; --warn-bg: #2a1f12; --done: #5fcf82;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 20px 64px; display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: 30px; font-weight: 800; line-height: 1.1; }
+h2 { font-size: 21px; font-weight: 700; }
+h3 { font-size: 17px; font-weight: 700; }
+p { margin: 0; }
+.lede { color: var(--muted); max-width: 62ch; }
+.mono { font-family: var(--mono); }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-2); }
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
+  border-bottom: 1px solid var(--line); padding-block: 10px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center;
+}
+.bar a { color: var(--ink); text-decoration: none; font-weight: 600; font-size: 14px; }
+.bar a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; border-radius: 4px; }
+.bar .count { margin-left: auto; font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+section { display: grid; gap: 14px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 12px; }
+ul.check { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+ul.check li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; }
+ul.check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--done); }
+ul.plain { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); white-space: nowrap; }
+td.v { font-family: var(--mono); font-size: 13px; white-space: nowrap; }
+.note { background: var(--warn-bg); color: var(--ink); border-radius: 10px; padding: 12px 14px; border: 1px solid var(--line); }
+.note b { color: var(--warn); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--line); color: var(--muted); }
+.chip.green { background: var(--chip-green-bg); color: var(--chip-green-fg); border-color: transparent; }
+.chip.grey { background: var(--chip-grey-bg); color: var(--chip-grey-fg); border-color: transparent; }
+.chip.proof { color: var(--accent-2); border-color: var(--accent-2); }
+.shot { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.shot header { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: baseline; padding: 14px 16px 10px; border-bottom: 1px dashed var(--line); }
+.slate { font-family: var(--mono); font-weight: 700; font-size: 15px; background: var(--ink); color: var(--bg); padding: 2px 8px; border-radius: 5px; }
+.shot header h3 { flex: 1 1 200px; min-width: 0; }
+.shot dl { margin: 0; padding: 12px 16px; display: grid; grid-template-columns: 92px 1fr; gap: 6px 12px; font-size: 14px; }
+.shot dt { color: var(--muted); font-weight: 500; }
+.shot dd { margin: 0; min-width: 0; }
+.takes { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px 14px; align-items: center; }
+.takes span { font-size: 13px; color: var(--muted); margin-right: 4px; }
+.take { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 13px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; user-select: none; }
+.take input { width: 18px; height: 18px; margin: 0; accent-color: var(--done); }
+.take:has(input:checked) { border-color: var(--done); color: var(--done); }
+.place { display: grid; gap: 12px; }
+.place > p { color: var(--muted); }
+.images { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+figure { margin: 0; display: grid; gap: 6px; }
+figure img { width: 100%; max-width: 100%; aspect-ratio: 402 / 874; object-fit: cover; border-radius: 14px; border: 1px solid var(--line); background: #000; }
+figcaption { font-size: 12px; color: var(--muted); }
+figcaption .mono { color: var(--ink); }
+.frames { display: grid; gap: 0; }
+.frames div { display: grid; grid-template-columns: 74px 1fr; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.frames div:last-child { border-bottom: 0; }
+.frames .mono { color: var(--muted); font-size: 13px; }
+@media (max-width: 460px) {
+  h1 { font-size: 26px; }
+  .shot dl { grid-template-columns: 1fr; gap: 2px; }
+  .shot dt { margin-top: 6px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:10px">
+    <p class="eyebrow">Video 1 · shoot · Thursday 19 Nov</p>
+    <h1>ThingTracker shoot sheet</h1>
+    <p class="lede">Every take we need today, set up for screen replacement. The phone in shot shows a marker screen; the app goes in afterwards, tracked to it. Three places, 17 shots plus a hook pack, three takes each. The shots tagged “proof” come first: they feed the two 5-second proofs the team judges before the film is rebuilt.</p>
+    <div class="chips"><span class="chip proof">proof · shoot first</span><span class="chip">film</span><span class="chip">rescue</span><span class="chip green">green markers · a finger touches</span><span class="chip grey">grey markers · nothing touches</span></div>
+  </header>
+
+  <nav class="bar" aria-label="Sections">
+    <a href="#before">Before</a><a href="#camera">Camera phone</a><a href="#held">Held iPhone</a><a href="#lab">Lab</a><a href="#home">Home</a><a href="#street">Street</a><a href="#sound">Sounds</a><a href="#handover">Hand over</a>
+    <span class="count" id="count">0 of 0 takes</span>
+  </nav>
+
+  <section id="before">
+    <h2>Before the first take</h2>
+    <div class="panel">
+      <ul class="check">
+        <li><input type="checkbox" id="pre-disk"><label for="pre-disk">The Mac has at least 30 GB free (4K takes, tracking and renders).</label></li>
+        <li><input type="checkbox" id="pre-app"><label for="pre-app">Blackmagic Camera (free, App Store) is installed on the filming phone.</label></li>
+        <li><input type="checkbox" id="pre-charge"><label for="pre-charge">Both phones charged; lenses wiped; the held iPhone out of any case with a logo.</label></li>
+        <li><input type="checkbox" id="pre-markers"><label for="pre-markers">The marker images are in the held iPhone's Photos, and their screenshots are on the Mac (see Held iPhone).</label></li>
+        <li><input type="checkbox" id="pre-kit"><label for="pre-kit">A white sheet of paper (white balance), a white card or foamboard (fill), dark cloth (to cut light), books or a tripod (locked shots), tape.</label></li>
+        <li><input type="checkbox" id="pre-memo"><label for="pre-memo">Voice Memos set to Lossless (Settings › Apps › Voice Memos › Audio Quality).</label></li>
+        <li><input type="checkbox" id="pre-people"><label for="pre-people">Everyone knows the rule: hands, backs and shoulders only. A face appears only if that person agrees, otherwise we blur it.</label></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="camera">
+    <h2>The filming phone</h2>
+    <p class="lede">Lock everything, so the takes cut together and the tracker sees the same picture from frame to frame. Portugal's mains run at 50 Hz: under room lights a 1/50 shutter is free of flicker, and it keeps the film's 30 fps beat.</p>
+    <div class="panel table-wrap">
+      <table>
+        <tr><th>Setting</th><th>Value</th><th>Why</th></tr>
+        <tr><td>Resolution</td><td class="v">3840 × 2160</td><td>4K, the export size</td></tr>
+        <tr><td>Frame rate</td><td class="v">30 fps</td><td>the film's timeline</td></tr>
+        <tr><td>Shutter</td><td class="v">1/50 s (216°)</td><td>no flicker at 50 Hz; natural motion blur. Outdoors, if it's too bright at the lowest ISO: 1/100, then 1/200</td></tr>
+        <tr><td>ISO</td><td class="v">lowest clean, locked</td><td>less noise to match</td></tr>
+        <tr><td>White balance</td><td class="v">manual, locked</td><td>set it on the white sheet in each room (daylight is about 5600 K)</td></tr>
+        <tr><td>Focus</td><td class="v">manual, locked</td><td>tap on the subject, then lock; no hunting mid-take</td></tr>
+        <tr><td>Lens</td><td class="v">2× · 1× · 0,5×</td><td>2× for hands and the phone (no distortion), 1× for plates, 0,5× only for the high-corner “home camera”. Lock the lens so it never switches</td></tr>
+        <tr><td>Stabilisation</td><td class="v">Standard · Off</td><td>Standard handheld, Off when resting on books or a tripod</td></tr>
+        <tr><td>Codec</td><td class="v">HEVC (H.265)</td><td>ProRes is about 6 GB a minute in 4K: it won't fit</td></tr>
+        <tr><td>Colour</td><td class="v">Rec.709, no HDR, no Log</td><td>no grading time to spare</td></tr>
+        <tr><td>Audio</td><td class="v">on</td><td>the clap lines up the cameras</td></tr>
+      </table>
+      <p style="font-size:14px;color:var(--muted)">Without Blackmagic Camera: Settings › Camera › Record Video: 4K at 30 fps, HDR Video off, Auto FPS off, Enhanced Stabilization off, Lock Camera on, Lock White Balance on; Formats: High Efficiency.</p>
+    </div>
+  </section>
+
+  <section id="held">
+    <h2>The held iPhone</h2>
+    <p class="lede">Its screen shows markers during the take. Afterwards the tracker finds them in every frame and the real app recording is pinned in their place, with the thumb kept on top.</p>
+    <div class="panel">
+      <ul class="check">
+        <li><input type="checkbox" id="h-bright"><label for="h-bright">Settings › Display &amp; Brightness: brightness at maximum, True Tone off, Night Shift off, Auto-Lock: Never.</label></li>
+        <li><input type="checkbox" id="h-auto"><label for="h-auto">Settings › Accessibility › Display &amp; Text Size: Auto-Brightness off.</label></li>
+        <li><input type="checkbox" id="h-dnd"><label for="h-dnd">Do Not Disturb on, so no banner lands mid-take.</label></li>
+        <li><input type="checkbox" id="h-save"><label for="h-save">Save the two marker images for this phone to Photos (AirDrop from the Mac, folder <span class="mono">video/shoot/markers/</span>). iPhone 16 Pro or 17 Pro: the <span class="mono">-pro-402</span> files. iPhone 15 Pro or 16: the <span class="mono">-pro-393</span> files.</label></li>
+        <li><input type="checkbox" id="h-shot"><label for="h-shot">Open each image in Photos, tap once to hide the controls, take a screenshot (side button + volume up) and AirDrop both screenshots to the Mac. They tell the tracker exactly where the markers sit on this screen.</label></li>
+        <li><input type="checkbox" id="h-guided"><label for="h-guided">For each take: open the image, hide the controls, then triple-click the side button for Guided Access with Touch off. Taps then do nothing, and the image can't move.</label></li>
+      </ul>
+      <div class="images">
+        <figure><img src="markers/green-pro-402.png" alt="Dark-green marker screen with five light-green square markers"><figcaption><span class="mono">green</span>: a thumb or finger touches the screen (B1, B2, C1)</figcaption></figure>
+        <figure><img src="markers/grey-pro-402.png" alt="Dark-grey marker screen with five black and white square markers"><figcaption><span class="mono">grey</span>: nothing touches the screen (A1, D2)</figcaption></figure>
+        <figure><img src="markers/reference-app-pro-402.png" alt="The app's registration screen: Show the wallet to the camera, 2 of 8 views"><figcaption><span class="mono">reference</span>: film 5 s of this at the same brightness in A1 and B1, to judge the inserted screen against</figcaption></figure>
+      </div>
+      <p class="note"><b>First-take check.</b> After the first take of A1 and of B1, AirDrop the file to the Mac before going on. Claude runs the tracker on it (about a minute) and answers “go” or what to change: closer, slower, more light, screen angle.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Every take</h2>
+    <div class="panel">
+      <ul class="plain">
+        <li>Say the slate aloud (“B1, take 2”), then clap once where every running camera sees and hears it.</li>
+        <li>Hold still 2 s before the action and 2 s after it.</li>
+        <li>Three takes of each shot. Tick them below as you go; the ticks stay on this phone only.</li>
+        <li>Light: one window from the side as the key; ceiling lights off rather than mixed; white card opposite the window for fill; dark cloth close to the subject to deepen shadows. Angle the held screen away from the window and away from the filming phone.</li>
+        <li>No faces, no brand logos (turn the wallet's logo away), no house numbers, street signs or number plates.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="lab" class="place">
+    <h2>Lab · the kit camera</h2>
+    <p>The real registration: the wallet shown to the home camera while the phone shows the live view. Claude starts the kit camera recording on the Mac (<span class="mono">record.py</span>) before each A1 take.</p>
+    <div id="lab-shots"></div>
+  </section>
+
+  <section id="home" class="place">
+    <h2>Home · hall, sofa, door</h2>
+    <p>The wallet story, and the photo concept for the second proof. The hall table needs the wallet, the keys and the front door in one view from a high corner.</p>
+    <div id="home-shots"></div>
+  </section>
+
+  <section id="street" class="place">
+    <h2>Street · the alert</h2>
+    <p>In shade, the sun behind the person, so the screen isn't washed out. No faces, plates or house numbers.</p>
+    <div id="street-shots"></div>
+  </section>
+
+  <section id="sound">
+    <h2>Sounds to record</h2>
+    <p class="lede">Every action on screen gets its own sound. Record right after the matching shot, in the same room: Voice Memos (Lossless), phone 15–30 cm from small things and 50–100 cm from doors and steps, 3–5 takes each, a second of silence before and after. Hang a duvet behind you if the room echoes.</p>
+    <div class="panel">
+      <ul class="check" id="foley"></ul>
+    </div>
+  </section>
+
+  <section id="handover">
+    <h2>Hand over</h2>
+    <div class="panel">
+      <ul class="plain">
+        <li>AirDrop the originals to the Mac (from Blackmagic Camera: its media list, Share). Don't send them through WhatsApp or anything else that recompresses.</li>
+        <li>Claude files them as <span class="mono">video/public/takes/&lt;shot&gt;-t&lt;n&gt;</span>. That folder is never committed; people in the takes follow the team's footage rule.</li>
+        <li>Name voice memos by the sound (“keys scrape 2”) so they can be matched.</li>
+        <li>Size: about 0,2–0,5 GB per minute of 4K HEVC. Watch the Mac's free space between places.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the proof takes become</h2>
+    <p class="lede">Two 5-second shots, 150 frames at 30 fps, cut on the music's beat (15 frames). Each has a sound for every event.</p>
+    <div class="panel">
+      <h3>A · Show it to the camera</h3>
+      <div class="frames">
+        <div><span class="mono">0–44</span><p>A1: the hand turns the wallet towards the kit camera; the phone's screen carries the app's live view from A2, the box locking on; a short line pops in.</p></div>
+        <div><span class="mono">45–89</span><p>A2 full frame: the camera's own view, brackets lock on, “1 of 8 … 8 of 8” with a tick per view.</p></div>
+        <div><span class="mono">90–149</span><p>Back to A1, pushing into the screen: “Wallet added”; the crops fly into place.</p></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>B · Photograph it with the phone <span class="chip" style="margin-left:6px">conceito</span></h3>
+      <div class="frames">
+        <div><span class="mono">0–44</span><p>B1: the phone rises over the wallet; its screen shows the B3 view under the capture controls; a short line pops in.</p></div>
+        <div><span class="mono">45–59</span><p>B2: the thumb presses (the cut lands on the press); the screen blinks for 2 frames; shutter on the contact frame.</p></div>
+        <div><span class="mono">60–119</span><p>B1: the photo freezes, then shrinks into its slot; photos 2 and 3 on the beat.</p></div>
+        <div><span class="mono">120–149</span><p>Push into the real “Wallet added” screen; the three photos land in its grid.</p></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const SHOTS = {
+  "lab-shots": [
+    { id: "A1", tag: "proof", screen: "grey", title: "Showing the wallet to the camera",
+      action: "One hand holds the wallet about 50 cm from the kit camera and turns it slowly for 8 s: front, angle, back, open. The other hand holds the phone at chest height, screen turned 30–45° towards the filming phone.",
+      angle: "Side, over the shoulder, 2×, 1–1,5 m away", frame: "The wallet, both hands and the phone; the kit camera soft in the background",
+      move: "Handheld, elbow braced", light: "Window from the side; the kit camera must see the wallet clearly", why: "The real way a thing is registered" },
+    { id: "A2", tag: "proof", screen: "none", title: "The kit camera's own view",
+      action: "Recorded on the Mac with the edge service running, during every A1 take (the real registration: boxes and views counted). Clap in view at the start.",
+      angle: "The kit camera, fixed", frame: "As mounted", move: "None", light: "As A1", why: "The live view inside the app, and the full-frame camera shot" },
+    { id: "A3", tag: "proof", screen: "none", title: "A cleaner camera plate",
+      action: "A third phone held against the kit camera, recording the same A1 take. No third phone: repeat A1 once more for it.",
+      angle: "From the kit camera's position and height, 1×", frame: "The wallet and hand, as the kit camera sees them", move: "Locked (taped or on books)", light: "As A1", why: "A 4K version of the camera view if the kit image is too soft" },
+  ],
+  "home-shots": [
+    { id: "B1", tag: "proof", screen: "green", title: "Photographing the wallet",
+      action: "The phone rises over the wallet on the hall table, settles, and the thumb presses the bottom centre of the screen three times, about a second apart, from three framings: front, at an angle, closer.",
+      angle: "Over the right shoulder, 2×, 50–80 cm from the phone", frame: "The phone's screen about a quarter of the frame, the wallet visible below it",
+      move: "Handheld, elbow braced", light: "Window key; the screen angled away from the window", why: "Proof B, the photo concept" },
+    { id: "B2", tag: "proof", screen: "green", title: "The thumb on the shutter",
+      action: "The thumb presses the bottom centre of the screen, three presses.",
+      angle: "Side-on, 2×, tight on the lower half of the phone", frame: "Thumb and lower screen", move: "Locked", light: "Window key, white card fill", why: "The cut lands on the press" },
+    { id: "B3", tag: "proof", screen: "none", title: "What the phone would see",
+      action: "The filming phone takes the held phone's place, 25–35 cm above the wallet, and repeats the rise and the three framings.",
+      angle: "Looking down at the wallet, 1×", frame: "The wallet, as a phone camera would frame it", move: "Natural drift, 10 s", light: "As B1", why: "The viewfinder image inside the phone in B1" },
+    { id: "B4", tag: "rescue", screen: "none", title: "B1 with the phone recording itself",
+      action: "Repeat B1 while the held iPhone records its own video (Camera app, 1×, brightness low). AirDrop both files. Two takes are enough.",
+      angle: "As B1", frame: "As B1", move: "Handheld", light: "As B1", why: "A second way to build the viewfinder, tracked by hand if the markers fail" },
+    { id: "C1", tag: "film", screen: "green", title: "“Where is my wallet?”",
+      action: "On the sofa, the thumb types for 3 s and taps send at the bottom right.",
+      angle: "Over the shoulder from behind, back of the head soft, 2×", frame: "The phone and both hands", move: "Locked, braced", light: "Window or one lamp; other lights off", why: "The question, with the answer inserted" },
+    { id: "C2", tag: "film", screen: "none", title: "Leaving without it",
+      action: "The person (back only) comes to the hall table, takes the keys, leaves the wallet, opens the door, goes out and shuts it. About 20 s.",
+      angle: "High corner, top of a shelf or door frame, 0,5×", frame: "The table and the door in one view", move: "Locked", light: "Room as it is", why: "The home camera's view; the inset shows the wallet left behind" },
+    { id: "C3", tag: "film", screen: "none", title: "Keys taken, wallet left",
+      action: "The hand takes the keys; the wallet stays.", angle: "Top-down, 2×", frame: "The table top", move: "Locked", light: "Window", why: "The insert that cuts on the hand's move" },
+    { id: "C4", tag: "film", screen: "none", title: "The door closes",
+      action: "The door shuts.", angle: "Side-on, 1×", frame: "The door edge and frame", move: "Locked", light: "As it is", why: "The cut to outside" },
+    { id: "H1–H6", tag: "film", screen: "none", title: "Hook pack for the opening",
+      action: "One- to two-second actions, three takes each: H1 patting pockets · H2 lifting sofa cushions · H3 opening a drawer and rummaging · H4 keys grabbed from a bowl · H5 the wallet slipped into a back pocket · H6 a door shut fast.",
+      angle: "Inserts, 2×", frame: "Hands and the object only", move: "Locked or a short handheld move", light: "Window", why: "A fast, real opening; each gets its own recorded sound" },
+  ],
+  "street-shots": [
+    { id: "D1", tag: "film", screen: "none", title: "The buzz in the pocket",
+      action: "Walking; the phone buzzes in the pocket (a timer set to go off); the hand reaches for it.",
+      angle: "Hip height, alongside, 2×", frame: "Pocket and hand", move: "Handheld, following", light: "Daylight", why: "The alert arrives before we see it" },
+    { id: "D2", tag: "film", screen: "grey", title: "Reading the alert",
+      action: "The phone comes out of the pocket and is held still to read for 3 s.",
+      angle: "Over the shoulder, 2×", frame: "The phone about two thirds of the frame height", move: "Handheld, braced on arrival", light: "Shade, sun behind the person", why: "The alert “Saíste sem a carteira” is inserted here" },
+    { id: "D3", tag: "film", screen: "none", title: "Turning back",
+      action: "The feet stop and turn back towards home.", angle: "Low, 1×", frame: "Feet and pavement", move: "Locked", light: "Daylight", why: "The ending of the story" },
+  ],
+};
+const FOLEY = [
+  "Keys: a scrape off the table, then a jingle",
+  "The wallet dropped 2 cm onto the hall table",
+  "The wallet turned in the hand (leather, a little cloth)",
+  "Sofa cushions lifted and dropped",
+  "A drawer opened, rummaged, closed",
+  "The front door: handle, latch, thud",
+  "Footsteps in the hall, walking away",
+  "A phone buzzing on a wooden table",
+  "A fingertip tapping a phone screen",
+  "A jacket pocket patted",
+  "Room tone, 30 s of silence in each place: lab, hall, sofa room, street",
+];
+
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+};
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const screenChip = { green: '<span class="chip green">green markers</span>', grey: '<span class="chip grey">grey markers</span>', none: "" };
+
+for (const [where, list] of Object.entries(SHOTS)) {
+  const host = document.getElementById(where);
+  host.style.display = "grid"; host.style.gap = "12px";
+  host.innerHTML = list.map((s) => {
+    const n = s.tag === "rescue" ? 2 : 3;
+    const takes = Array.from({ length: n }, (_, i) => {
+      const id = `take-${s.id}-${i + 1}`;
+      return `<label class="take" for="${id}"><input type="checkbox" id="${id}" data-take>t${i + 1}</label>`;
+    }).join("");
+    return `<article class="shot">
+      <header><span class="slate">${esc(s.id)}</span><h3>${esc(s.title)}</h3>
+        <span class="chips"><span class="chip ${s.tag === "proof" ? "proof" : ""}">${s.tag}</span>${screenChip[s.screen]}</span></header>
+      <dl>
+        <dt>Action</dt><dd>${esc(s.action)}</dd>
+        <dt>Angle, lens</dt><dd>${esc(s.angle)}</dd>
+        <dt>Framing</dt><dd>${esc(s.frame)}</dd>
+        <dt>Move</dt><dd>${esc(s.move)}</dd>
+        <dt>Light</dt><dd>${esc(s.light)}</dd>
+        <dt>For</dt><dd>${esc(s.why)}</dd>
+      </dl>
+      <div class="takes"><span>Takes</span>${takes}</div>
+    </article>`;
+  }).join("");
+}
+document.getElementById("foley").innerHTML = FOLEY.map((t, i) =>
+  `<li><input type="checkbox" id="foley-${i}"><label for="foley-${i}">${esc(t)}</label></li>`).join("");
+
+const boxes = [...document.querySelectorAll('input[type="checkbox"]')];
+const count = () => {
+  const takes = boxes.filter((b) => b.hasAttribute("data-take"));
+  document.getElementById("count").textContent = `${takes.filter((b) => b.checked).length} of ${takes.length} takes`;
+};
+for (const b of boxes) {
+  b.checked = store.get(`shoot:${b.id}`) === "1";
+  b.addEventListener("change", () => { store.set(`shoot:${b.id}`, b.checked ? "1" : "0"); count(); });
+}
+count();
+</script>

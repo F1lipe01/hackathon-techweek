@@ -7,6 +7,18 @@ small grey picture runs twice a second. Only when something moves does it run th
 on the things the home tracks, the places they live and people. It sends the server what it saw (thing, place,
 time and a small crop of the thing; who is there, a person, a child, a dog or a cat, and where, without any picture of
 them), never the full frame. The rules are evaluated by the server's rules engine.
+
+Besides motion, the server can ask (GET /api/edge/task) for:
+  refresh   an analysis now, without motion: the presence state rests on the cameras alone (someone sitting still)
+  check     an active check of one thing over a few frames (left behind: is the book still on the desk?)
+  photos    a fingerprint from the phone photos: OWLv2 finds the thing in each photo, DINOv2 makes the vectors
+  snapshot  one picture of the room for an alert, sent only when no person is in view
+
+Faces (opt-in, on this device only): when prototype/faces.py and its models are present, each person box is checked
+for a face (YuNet) and the face compared with the family's templates (SFace) in this device's own database
+(data/edge.db, never sent to the server). The server receives only the result: a registered person's id, "unknown"
+(a face that matches nobody; with a crop of that person, which the server keeps only if a security rule fires) or
+"not_visible". A thing whose box sits on a person's box is sent "in_hand", with who holds it when the face is known.
 """
 import argparse
 import base64
@@ -25,6 +37,7 @@ PLACES = {"desk": "a desk", "table": "a table", "shelf": "a shelf", "sofa": "a s
 PERSON = "a person"
 PROFILE = {"child": "a child", "dog": "a dog", "cat": "a cat"}   # who lives here: the app suggests sensors for them
 LOCAL_FP = Path(__file__).resolve().parent / "data" / "edge-fingerprints.json"   # the home device's own copy
+EDGE_DB = Path(__file__).resolve().parent / "data" / "edge.db"   # the home device's face templates (faces.py)
 ENROL_VIEWS = 8
 
 
@@ -151,6 +164,47 @@ def crop_b64(img, box, pad=0.25, size=200):
     return base64.b64encode(buf.getvalue()).decode()
 
 
+def iou(a, b):
+    x0, y0, x1, y1 = max(a[0], b[0]), max(a[1], b[1]), min(a[2], b[2]), min(a[3], b[3])
+    inter = max(0.0, x1 - x0) * max(0.0, y1 - y0)
+    union = (a[2] - a[0]) * (a[3] - a[1]) + (b[2] - b[0]) * (b[3] - b[1]) - inter
+    return inter / union if union > 0 else 0.0
+
+
+def in_hand(thing_box, person_box, min_iou=0.02):
+    """Is the thing held: its centre inside the person's box, or the two boxes overlapping a little (a small IoU)?"""
+    cx, cy = (thing_box[0] + thing_box[2]) / 2, (thing_box[1] + thing_box[3]) / 2
+    inside = person_box[0] <= cx <= person_box[2] and person_box[1] <= cy <= person_box[3]
+    return inside or iou(thing_box, person_box) >= min_iou
+
+
+class FaceID:
+    """The optional face step (prototype/faces.py: YuNet + SFace through OpenCV). Absent models or cv2: every person
+    is "not_visible" and nothing else changes. Templates are re-read from the device's database every 10 s."""
+
+    def __init__(self, db_path):
+        self.ok, self.templates, self.read_at, self.db_path = False, {}, 0.0, db_path
+        try:
+            import faces as F                       # noqa: PLC0415  (optional: needs cv2 and the ONNX models)
+            self.F, self.faces, self.store = F, F.Faces(), F.Templates(db_path)
+            self.threshold = F.MATCH_THRESHOLD     # 0.30: measured on the lab take (faces.THRESHOLD_NOTE)
+            self.ok = True
+        except Exception as e:  # noqa: BLE001
+            print("faces off:", e, flush=True)
+
+    def look(self, img, box):
+        if not self.ok:
+            return {"identity": "not_visible", "score": None, "face_box": None}
+        if time.time() - self.read_at > 10:
+            self.templates, self.read_at = self.store.all(), time.time()
+        bgr = np.asarray(img)[:, :, ::-1].copy()
+        try:
+            return self.faces.look(bgr, box, self.templates, self.threshold)
+        except Exception as e:  # noqa: BLE001 - one bad crop must not stop the analysis
+            print("face step failed:", e, flush=True)
+            return {"identity": "not_visible", "score": None, "face_box": None}
+
+
 def enrol_step(img, task, det, emb, enrol, args):
     """One registration step: find the named object (usually held close to the camera) and keep a new view of it."""
     tid = task["thing_id"]
@@ -174,18 +228,30 @@ def enrol_step(img, task, det, emb, enrol, args):
     if done:
         payload.update(vectors=[v.round(5).tolist() for v in enrol["vecs"]], crops_b64=enrol["crops"], model=Embedder.MODEL)
     post(f"{args.server}/api/edge/enrol", payload)
-    post(f"{args.server}/api/edge/observe", {"people": 0, "sightings": [], "boxes": boxes})
+    post(f"{args.server}/api/edge/observe", {"sightings": [], "boxes": boxes, "enrol": True})
     return np.asarray(enrol["vecs"], dtype=np.float32) if done else None
 
 
-def analyse(img, things, fps, det, emb, args):
-    """Find the tracked things, the places they rest on, people, and who lives here. Returns the payload for the server."""
+def analyse(img, things, fps, det, emb, args, faceid=None):
+    """Find the tracked things, the places they rest on, people (and who each is, when the face is known), and who
+    lives here. Returns the payload for the server."""
     tq = {query_for(t): t for t in things if t["id"] in fps}   # only what the user added and registered
     queries = list(tq) + list(PLACES.values()) + [PERSON] + list(PROFILE.values())
     dets = det(img, queries, threshold=0.1)
     places = [(k, b) for q, s, b in dets for k, v in PLACES.items() if q == v and s >= 0.18]
     people = [(s, b) for q, s, b in dets if q == PERSON and s >= 0.2]
-    boxes = [{"box": norm_box(img, b), "label": "Person", "kind": "person", "score": round(s, 2)} for s, b in people[:6]]
+    names = {t["id"]: t["name"] for t in things}
+    persons, boxes = [], []
+    for s, b in people[:6]:
+        face = faceid.look(img, b) if faceid else {"identity": "not_visible", "score": None}
+        who = face["identity"]
+        p = {"box": norm_box(img, b), "identity": who, "score": face.get("score")}
+        if who == "unknown":                              # only a face that matches nobody: kept if a rule fires
+            p["crop_b64"] = crop_b64(img, b, pad=0.15, size=360)
+        persons.append(p)
+        label = (f"{names.get(who, who)} · face {face['score']:.2f}" if who not in ("unknown", "not_visible")
+                 else f"Unknown face {face['score']:.2f}" if who == "unknown" else "Person")
+        boxes.append({"box": norm_box(img, b), "label": label, "kind": "person", "score": round(s, 2)})
     profile = {k: max((s for q, s, b in dets if q == v), default=0.0) for k, v in PROFILE.items()}
     for k, v in PROFILE.items():
         for q, s, b in dets:
@@ -209,16 +275,101 @@ def analyse(img, things, fps, det, emb, args):
     out = []
     for t, s, b, note, sim in sightings:
         place = place_of(b, places)
-        label = f"{t['name']} · yours {sim:.2f}"
+        holder = next((i for i, (ps, pb) in enumerate(people[:6]) if in_hand(b, pb)), None)
+        label = f"{t['name']} · yours {sim:.2f}" + (" · in hand" if holder is not None else "")
         boxes.append({"box": norm_box(img, b), "label": label, "kind": "thing", "score": round(sim or s, 2)})
-        out.append({"thing_id": t["id"], "score": round(s, 2), "place": place, "crop_b64": crop_b64(img, b), "note": note})
+        o = {"thing_id": t["id"], "score": round(s, 2), "place": place, "crop_b64": crop_b64(img, b), "note": note}
+        if holder is not None:
+            who = persons[holder]["identity"]
+            o.update(in_hand=True, by=who if who not in ("unknown", "not_visible") else None)
+        out.append(o)
     # who is there, and where: at a registered thing it touches (the dog at its bowl), else on the surface under it.
     # No crop: the server keeps who, place and time only.
     seen_things = [(t["name"], b) for t, s, b, note, sim in sightings]
     where = lambda box: next((n for n, tb in seen_things if overlaps(box, tb)), None) or place_of(box, places)
     beings = [{"who": "person", "place": where(b)} for s, b in people[:6]]
     beings += [{"who": k, "place": where(b)} for k, v in PROFILE.items() for q, s, b in dets if q == v and s >= 0.45]
-    return {"people": len(people), "sightings": out, "boxes": boxes, "profile": profile, "beings": beings}
+    return {"people": len(people), "persons": persons, "sightings": out, "boxes": boxes, "profile": profile,
+            "beings": beings}
+
+
+def best_match(img, thing, fp, det, emb, threshold):
+    """The thing in this image: (similarity, box) of the best candidate that is the user's own, else (best, None)."""
+    dets = det(img, [query_for(thing)], threshold=0.08)
+    cands = sorted([(s, b) for q, s, b in dets], key=lambda c: -c[0])[:4]
+    if not cands:
+        return 0.0, None
+    sims = (emb([tight_crop(img, b) for s, b in cands]) @ fp.T).max(axis=1)
+    i = int(np.argmax(sims))
+    return float(sims[i]), (cands[i][1] if sims[i] >= threshold else None)
+
+
+def active_check(server, task, things, fps, det, emb, args, frames=3):
+    """Is the thing still here? A few new frames, whatever the motion; the best sighting wins. Returns the answer
+    for POST /api/edge/check, with a crop of the thing and its surroundings when it is seen."""
+    t = next((x for x in things if x["id"] == task["thing_id"]), None)
+    fp = fps.get(task["thing_id"])
+    if not t or fp is None:
+        return {"id": task["id"], "seen": False, "frames": 0, "note": "no fingerprint on this device"}
+    best = (0.0, None, None)
+    for i in range(int(task.get("frames") or frames)):
+        img = Image.open(io.BytesIO(get(f"{server}/api/kit/frame.jpg"))).convert("RGB")
+        sim, box = best_match(img, t, fp, det, emb, args.match)
+        if box is not None and sim > best[0]:
+            best = (sim, box, img)
+        time.sleep(0.4)
+    sim, box, img = best
+    if box is None:
+        return {"id": task["id"], "seen": False, "frames": frames, "score": round(sim, 2)}
+    dets = det(img, list(PLACES.values()), threshold=0.18)
+    places = [(k, b) for q, s, b in dets for k, v in PLACES.items() if q == v]
+    return {"id": task["id"], "seen": True, "frames": frames, "score": round(sim, 2), "place": place_of(box, places),
+            "crop_b64": crop_b64(img, box, pad=1.2, size=640)}
+
+
+def photo_fingerprint(images, query, det, emb):
+    """Phone photos of a thing -> (vectors, crops): OWLv2 finds it in each photo (its description is the query; the
+    biggest confident box), DINOv2 makes a vector of each crop. A photo where it is not found is used whole (a close-up
+    fills the frame). Returns also how many photos had a box."""
+    vecs, crops, found = [], [], 0
+    for img in images:
+        img = img.convert("RGB")
+        img.thumbnail((1280, 1280))
+        dets = [d for d in det(img, [f"a photo of {query}"], threshold=0.08)]
+        if dets:
+            s, b = max(((s, b) for q, s, b in dets), key=lambda c: c[0] * ((c[1][2] - c[1][0]) * (c[1][3] - c[1][1])) ** 0.25)
+            crop, found = tight_crop(img, b), found + 1
+        else:
+            crop = img
+        vecs.append(emb([crop])[0])
+        buf = io.BytesIO()
+        c = crop.copy()
+        c.thumbnail((240, 240))
+        c.save(buf, "JPEG", quality=85)
+        crops.append(base64.b64encode(buf.getvalue()).decode())
+    return np.asarray(vecs, dtype=np.float32), crops, found
+
+
+def run_photos(server, task, det, emb):
+    imgs = [Image.open(io.BytesIO(get(f"{server}/crops/{urllib.request.quote(f)}"))) for f in task["files"]]
+    vecs, crops, found = photo_fingerprint(imgs, task["query"], det, emb)
+    post(f"{server}/api/edge/enrol", {"thing_id": task["thing_id"], "source": "photos", "done": True, "found": found,
+                                      "vectors": [v.round(5).tolist() for v in vecs], "crops_b64": crops,
+                                      "model": Embedder.MODEL})
+    return vecs
+
+
+def run_snapshot(server, task, img, det):
+    """A picture of the room for an alert, only when the detector sees no person in it."""
+    person = any(s >= 0.2 for q, s, b in det(img, [PERSON], threshold=0.15))
+    payload = {"id": task["id"], "person": person}
+    if not person:
+        c = img.copy()
+        c.thumbnail((960, 960))
+        buf = io.BytesIO()
+        c.save(buf, "JPEG", quality=80)
+        payload["jpeg_b64"] = base64.b64encode(buf.getvalue()).decode()
+    post(f"{server}/api/edge/snapshot", payload)
 
 
 def main():
@@ -228,6 +379,7 @@ def main():
     ap.add_argument("--analyse-every", type=float, default=1.0, help="minimum seconds between two analyses")
     ap.add_argument("--active-for", type=float, default=6.0, help="seconds to keep analysing after the last motion")
     ap.add_argument("--match", type=float, default=0.62, help="cosine similarity to a registered view to count as yours")
+    ap.add_argument("--no-faces", action="store_true", help="never look for faces (every person is 'not_visible')")
     args = ap.parse_args()
 
     print("loading OWLv2 and DINOv2…", flush=True)
@@ -235,7 +387,8 @@ def main():
     emb = Embedder(det.dev)
     fps = load_fingerprints(args.server)
     save_local(fps)
-    print(f"ready on {det.dev}; {len(fps)} registered things", flush=True)
+    faceid = FaceID(EDGE_DB) if not args.no_faces else None
+    print(f"ready on {det.dev}; {len(fps)} registered things; faces {'on' if faceid and faceid.ok else 'off'}", flush=True)
     motion = Motion()
     checked = analysed = 0
     active_until = last_analysis = last_status = last_motion = 0.0
@@ -246,7 +399,8 @@ def main():
         t0 = time.time()
         try:
             img = Image.open(io.BytesIO(get(f"{args.server}/api/kit/frame.jpg"))).convert("RGB")
-            task = json.loads(get(f"{args.server}/api/edge/task"))["enrol"]
+            tasks = json.loads(get(f"{args.server}/api/edge/task"))
+            task = tasks["enrol"]
         except Exception as e:  # camera or server not ready: keep trying, quietly
             print("no frame:", e, flush=True)
             time.sleep(2)
@@ -255,9 +409,23 @@ def main():
         moved, frac = motion.changed(img)
         if moved:
             active_until, last_motion = t0 + args.active_for, t0
-        state = "registering" if task else "active" if t0 < active_until else "idle"
+        forced = bool(tasks.get("refresh")) and not task
+        state = "registering" if task else "active" if t0 < active_until or forced else "idle"
 
         try:
+            if tasks.get("photos") and not task:
+                p = tasks["photos"]
+                fps[p["thing_id"]] = run_photos(args.server, p, det, emb)
+                save_local(fps)
+                print(f"fingerprint of {p['name']} from {len(p['files'])} photos", flush=True)
+            if tasks.get("check") and not task:
+                if t0 - things_at > 10:
+                    things, things_at = json.loads(get(f"{args.server}/api/state"))["things"], t0
+                res = active_check(args.server, tasks["check"], things, fps, det, emb, args)
+                post(f"{args.server}/api/edge/check", res)
+                print(f"active check of {tasks['check']['name']}: {'seen' if res['seen'] else 'not seen'}", flush=True)
+            if tasks.get("snapshot") and not task:
+                run_snapshot(args.server, tasks["snapshot"], img, det)
             if task:
                 done = enrol_step(img, task, det, emb, enrol, args)
                 analysed += 1
@@ -266,7 +434,7 @@ def main():
                     save_local(fps)
                     print(f"registered {task['name']}: {len(done)} views", flush=True)
                     enrol.clear()
-            elif state == "active" and t0 - last_analysis >= args.analyse_every:
+            elif state == "active" and t0 - last_analysis >= args.analyse_every:   # motion, or a refresh asked
                 if t0 - things_at > 10:                   # the things to track can change from the app
                     things = json.loads(get(f"{args.server}/api/state"))["things"]
                     things_at = t0
@@ -275,9 +443,9 @@ def main():
                         if not t.get("fingerprint"):
                             fps.pop(t["id"], None)
                 t1 = time.time()
-                payload = analyse(img, things, fps, det, emb, args)
+                payload = analyse(img, things, fps, det, emb, args, faceid)
                 ms = (time.time() - t1) * 1000
-                payload["ms"] = round(ms)
+                payload["ms"], payload["forced"] = round(ms), forced and not moved
                 analysed += 1
                 last_analysis = t0
                 post(f"{args.server}/api/edge/observe", payload)

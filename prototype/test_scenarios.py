@@ -4,6 +4,10 @@
         starts a private server on :8775 with its own, empty data folder (the same code, the same local text model on
         :8766 if it runs), so the test never writes sensors, alerts or suggestions into the demo's database; stops it
         at the end.
+    prototype/.venv/bin/python prototype/test_scenarios.py --unit
+        only the presence engine, on a fake clock (no server)
+    video/tools/heavy.sh prototype/.venv-vision/bin/python prototype/test_scenarios.py --vision
+        only the models on the lab's footage: faces on the face take, photos -> fingerprint vs the book take
     prototype/.venv/bin/python prototype/test_scenarios.py --server http://127.0.0.1:8765
         uses a server that is already running. It WRITES test things, sensors, sightings and suggestions into that
         server's database: use it only on a throwaway one.
@@ -169,9 +173,11 @@ def main():
     ap.add_argument("--server", help="use this running server instead of a private one (writes into its database)")
     ap.add_argument("--port", type=int, default=8775)
     ap.add_argument("--unit", action="store_true", help="only the presence engine's unit tests (no server)")
+    ap.add_argument("--vision", action="store_true", help="only the models on the lab footage (vision environment; "
+                    "run it through video/tools/heavy.sh)")
     args = ap.parse_args()
-    if args.unit:
-        presence_unit()
+    if args.unit or args.vision:
+        presence_unit() if args.unit else vision()
         failed = [n for n, ok in results if not ok]
         print(f"\n{len(results) - len(failed)} of {len(results)} passed" + (f"; failed: {', '.join(failed)}" if failed else ""))
         sys.exit(1 if failed else 0)
@@ -278,6 +284,79 @@ def presence_unit():
           " | ".join(moves))
     check("P19 production timings are minutes, demo timings seconds", P.TIMINGS["prod"]["leaving_check_s"] >= 60
           and P.TIMINGS["prod"]["face_recent_s"] >= 600 and P.TIMINGS["demo"]["leaving_check_s"] <= 30)
+
+
+def vision():
+    """The models on the lab's own footage, no camera, no network (run with the vision environment, through
+    video/tools/heavy.sh): faces on the face take, the edge's "in hand" test, and a fingerprint made from the phone
+    photos of the book compared with the book on the desk in the book take."""
+    sys.path.insert(0, str(HERE))
+    root, takes = HERE.parent, HERE.parent / "video" / "public"
+    import numpy as np
+    print("\nV1. The edge's “in hand” test (box geometry)")
+    import edge
+    check("a thing's centre inside a person's box -> in hand", edge.in_hand([100, 200, 140, 230], [80, 50, 220, 400]))
+    check("a thing on the desk, away from the person -> not in hand", not edge.in_hand([500, 600, 560, 630], [80, 50, 220, 400]))
+    check("a thing touching the person's box edge a little -> in hand (small IoU)", edge.in_hand([200, 100, 260, 160], [80, 50, 230, 400]))
+
+    print("\nV2. Faces (YuNet + SFace) on the face take: Filipe is Family, the other man is unknown")
+    take, video = takes / "takes" / "scene2" / "face-take.mp4", HERE / "data" / "faces" / "20261119-195701-filipe.mp4"
+    if not (take.exists() and video.exists() and (HERE / "models" / "face_recognition_sface_2021dec.onnx").exists()):
+        print("SKIP  faces: the take, Filipe's face video or the models are not on this machine")
+    else:
+        import faces as F
+        fz, tpl = F.Faces(), F.Templates(Path(tempfile.mkdtemp(prefix="tt-faces-")) / "edge.db")
+        t0 = time.time()
+        vecs, _ = fz.enrol_video(video)
+        tpl.set("filipe", vecs, "video")
+        for who in ("joao", "alice"):
+            v, _ = fz.enrol_image(takes / "phone" / "person" / f"{who}.jpg")
+            tpl.set(who, v, "photo")
+        check("enrolment: 8 diverse templates from Filipe's 7 s video, 1 from each photo", len(vecs) == 8
+              and tpl.people() == {"filipe": 8, "joao": 1, "alice": 1}, f"{tpl.people()} in {time.time() - t0:.1f} s")
+        T = tpl.all()
+        for t, box, want in [(19.0, [831, 390, 1023, 854], "filipe"), (86.5, [1795, 514, 1979, 1000], "filipe"),
+                             (61.0, [833, 398, 1001, 793], "unknown"), (63.0, [1104, 423, 1372, 1016], "unknown"),
+                             (30.0, [1520, 547, 1680, 875], "not_visible")]:
+            r = fz.look(F.frame_at(take, t), box, T)
+            check(f"face take at {t} s -> {want}", r["identity"] == want,
+                  f"{r['identity']}, cosine {r['score']}" + (f", {r.get('why')}" if r.get("why") else ""))
+
+    print("\nV3. Phone photos -> fingerprint (OWLv2 crops, DINOv2 vectors) vs the book on the desk in the book take")
+    photos = [takes / "phone" / "photos" / f"final-{i}.jpg" for i in range(1, 9)]
+    book_take = takes / "takes" / "scene1" / "book-full.mp4"
+    if not (all(p.exists() for p in photos) and book_take.exists()):
+        print("SKIP  photos: the phone photos or the book take are not on this machine")
+        return
+    from PIL import Image
+    det = edge.Detector()
+    emb = edge.Embedder(det.dev)
+    t0 = time.time()
+    vecs, crops, found = edge.photo_fingerprint([Image.open(p) for p in photos], "yellow book", det, emb)
+    check("8 photos -> 8 vectors, the book found by OWLv2 in most", len(vecs) == 8 and found >= 6,
+          f"found in {found} of 8, {time.time() - t0:.1f} s")
+    import cv2
+
+    def frame(video, t):
+        cap = cv2.VideoCapture(str(video))
+        cap.set(cv2.CAP_PROP_POS_MSEC, t * 1000)
+        ok, bgr = cap.read()
+        cap.release()
+        return Image.fromarray(bgr[:, :, ::-1])
+    book = {"name": "Book", "description": "yellow book"}
+    kit = takes / "footage" / "kit-desk.mp4"
+    if kit.exists():
+        sim, box = edge.best_match(frame(kit, 10.0), book, vecs, det, emb, 0.62)
+        check("the book on the desk in the kit camera's frame (kit-desk.mp4, 10 s) matches above 0.62", box is not None
+              and sim >= 0.62, f"cosine {sim:.3f}")
+    # The wide lab take: the book lies flat across the room (about 116 x 40 px of a 2304 x 1296 frame), seen mostly by
+    # its edge, while the photos are close-ups of the cover. DINOv2 does not bridge that: printed, not asserted.
+    for t in (5.5, 33.25):
+        sim, box = edge.best_match(frame(book_take, t), book, vecs, det, emb, 0.62)
+        print(f"INFO  the book flat on the desk in book-full.mp4 at {t} s: cosine {sim:.3f} (below 0.62: too far and "
+              "too flat for a fingerprint made of cover photos)")
+    other = emb([Image.new("RGB", (120, 60), (40, 90, 160))])[0]
+    check("a plain blue patch does not match it", float((vecs @ other).max()) < 0.62, f"{float((vecs @ other).max()):.3f}")
 
 
 def run(private, db):

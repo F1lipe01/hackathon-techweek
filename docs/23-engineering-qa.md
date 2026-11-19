@@ -238,6 +238,15 @@ Status markers:
 - **Short answer:** "A *Things* tab, an assistant button, four MCP tools for things, one for Wi-Fi presence, and the service."
 - **The tools:** `list_things`, `create_thing`, `get_thing_last_seen`, `get_thing_timeline`, plus the proposed Wi-Fi presence tool. Actions use the 18 tools that already exist (docs/14 §3, docs/15).
 
+**E1a. How did you connect the door to your app without access to our backend, app or database?**
+- **Short answer:** "We didn't need your backend. You gave the teams the Connected Home MCP server, the official interface to the platform. The door sensor belongs to our test home on your platform, like any customer's device, and we read it through that interface."
+- **Detail:**
+  - **the sensor:** the kit's contact sensor in our test home ("Hack 3"), set up through the kit and the Altice app like any customer's device;
+  - **the access:** our own MCP client (`mcp/client/chmcp.py`) signs in with the team account through Altice's Keycloak (OAuth) and sends the API key on every request (`chmcp.py:170-171`), MCP protocol 2025-06-18;
+  - **reading the door:** every 4 s the server calls the read-only tool `get_home_devices`, finds the `contactSensor` and reads `sensorState`, where "alarm" means open (`server.py:894-921`). Real door events are in the prototype's database from 19 Nov;
+  - **never touched:** Altice's backend, app or database. The app in the films is our copy of the Altice app's screens, running our prototype; in production Altice adds the *Things* tab to its own app.
+- **The honest limit, and the request:** the MCP server has no push events, so we poll, which is part of the prototype's ~10 s door alert. In production ThingTracker runs inside Altice's platform and receives sensor events directly, or through an event subscription. We never call the write tools: actions are dry runs by our own rule.
+
 **E2. Notifications?**
 - **Short answer:** "Through the notification service the Altice app already uses."
 - In the prototype, alerts show inside the app [to confirm: from the rules, not injected].

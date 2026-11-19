@@ -2,7 +2,7 @@
 // for video 1 (storyboard v5.1, F3): 402 x 874 pt at 3x, one MP4 per take in video/public/app/, with the time of each
 // action next to it (<take>.marks.json, seconds from the first frame).
 //   NODE_PATH=<playwright-core's folder> node video/tools/record_app.mjs <take> [<take> ...]
-// Takes: register (Things tab, add the wallet), ask (Where is my wallet? + the sentence that becomes a sensor),
+// Takes: register (Things tab, add the wallet), register-keys (the same with the keys, eight views), ask (Where is my wallet? + the sentence that becomes a sensor),
 // alert (the door opens, the notification).
 // The server, the database and the language model are the real ones. Only two things stand in for the camera service
 // (edge.py), which stays off: its status and registration progress are posted to the server's own edge API, and the
@@ -174,6 +174,39 @@ const TAKES = {
     mark('done');
     await hideFinger();
     await pause(2200);
+    edgeOff();
+  }),
+  // Things tab → Add things → Keys → eight views, quickly → "Keys added" → Done. No boxes from the stand-in edge: the
+  // film draws the live view (the stock clip of keys shown to the camera) and its box over the recording's live box.
+  'register-keys': () => take('register-keys', '8:05', async ({ page, tap, hideFinger, refresh, mark }) => {
+    edgeOn('idle');
+    await pause(1200);
+    await tap('[data-act="add-thing"].btn-p');
+    await pause(1300);
+    await tap('[data-act="pick-thing"][data-name="Keys"]');
+    edgeOn('registering');
+    await page.waitForSelector('.livebox', { timeout: 8000 });
+    mark('register');
+    await hideFinger();
+    const tid = (await api('/api/state', null, 'GET')).enrol?.thing_id;
+    await api('/api/edge/observe', { boxes: [] });
+    await pause(900);
+    for (let i = 1; i <= 8; i++) {
+      await api('/api/edge/enrol', { thing_id: tid, got: i });
+      await refresh();
+      mark('view-' + i);
+      await pause(420);
+    }
+    const crops = Array.from({ length: 8 }, (_, i) => b64(`view${i + 1}.jpg`));
+    const vec = () => Array.from({ length: 8 }, () => +Math.random().toFixed(4));
+    await api('/api/edge/enrol', { thing_id: tid, got: 8, done: true, crops_b64: crops, vectors: crops.map(vec), model: 'stand-in for edge.py (video recording)' });
+    await refresh();
+    mark('added');
+    await pause(3200);
+    await tap('.bottom-bar [data-act="finish"]');
+    mark('done');
+    await hideFinger();
+    await pause(1500);
     edgeOff();
   }),
   // the assistant: "Where is my wallet?", then "Tell me if I leave home without my wallet"

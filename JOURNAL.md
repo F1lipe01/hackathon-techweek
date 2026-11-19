@@ -33,8 +33,15 @@ How the project moved, day by day: what changed, why, and what the team said. Gi
   - A Remotion layer (`TrackedScreen`) that adds motion blur, defocus, the keyed bezel and thumb, glow and grain.
 - The shoot sheet, published for the team: settings (4K, 30 fps, 1/50 s against 50 Hz flicker, HEVC), 17 shots plus a hook pack, the sounds to record on set, and a first-take tracking check.
 
-**Blocked**
-- The Mac's disk fell to about 3 GB free. Headless Chrome then stopped rendering stills, so the latest `TrackedScreen` changes are not render-checked yet.
+**No shoot; the proof built from stock (later that night)**
+- The team decided video 1 needs no shoot, and the wallet photo used all through v5.1 is out.
+- The proof is built from Pexels clips:
+  - a hand holding an iPhone with a green screen;
+  - keys held out to the camera.
+- The app in it is a new recording of the real prototype registering the keys.
+- New tool: `track_green.py`, a tracker for green screens without markers. It fits each screen edge and ignores the notch and the thumb (2,2 px median error on a synthetic test).
+- Proof A (keys shown to the camera, 5 s) was rendered at 1080p: sound on every event, −14 LUFS.
+- The renders had been failing because Remotion's bundled Chrome broke, not because of disk space. The fix is to render with the installed Chrome.
 
 ## Wed 18 Nov: from an idea to a submitted report, a prototype and a pitch
 

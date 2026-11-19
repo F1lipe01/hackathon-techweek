@@ -17,6 +17,7 @@ export const STOCK: Record<string, { w: number; h: number }> = {
   "parcel-door-1": { w: 3840, h: 2160 }, "phone-alert-1": { w: 1920, h: 1080 }, "phone-alert-2": { w: 2560, h: 1440 },
   "phone-alert-3": { w: 1920, h: 1080 }, "leaving-home-1": { w: 2560, h: 1440 }, "cat-counter-2": { w: 3840, h: 2160 },
   "elderly-reading-1": { w: 3840, h: 2026 }, "older-kitchen-1": { w: 3840, h: 2026 }, "garden-night-2": { w: 1920, h: 1080 },
+  "keys-shown-1": { w: 3840, h: 2160 }, "phone-greenscreen-1": { w: 3840, h: 2160 },
 };
 
 /** Source pixels of a clip → frame pixels (object-fit: cover). */
@@ -183,7 +184,7 @@ export const Recording: React.FC<{ name: string; segs: RecSeg[]; freezeAt?: numb
 };
 
 /** A camera state on an app screen: px per pt (0 = the footage as filmed), the app point looked at, where it sits. */
-export type CamKey = { at: number; ppt: number; fx: number; fy: number; cx?: number; cy?: number };
+export type CamKey = { at: number; ppt: number; fx: number; fy: number; cx?: number; cy?: number; /** false: push without turning the phone upright */ upright?: boolean };
 
 export const camAt = (keys: CamKey[], frame: number) => {
   let i = 0;

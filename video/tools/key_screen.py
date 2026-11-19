@@ -2,10 +2,10 @@
 can sit on top of the inserted app.
     python3 video/tools/key_screen.py <take> <track.json> <out.webm> [--margin 0.03]
 <track.json> comes from track_markers.py. For each tracked frame, inside the screen's quad grown by --margin:
-  - a soft hue key removes the screen's greens (100-170 deg hue, saturation over about 0,35, not near-black); skin, the
-    bezel, the Dynamic Island and reflections that wash the green out stay;
-  - the matte is choked by 1 px and softened by 1 px;
-  - green spill on what stays is removed (G = min(G, max(R, B))).
+  - a soft hue key removes the screen's greens (100-170 deg hue, saturation over about 0,2, value over about 0,4);
+    skin, the bezel and the notch or Dynamic Island (dark, even when tinted green) stay; isolated specks are cleared;
+  - the matte is choked by --choke px (2) and softened by 1 px;
+  - green spill on what stays is removed (G = min(G, max(R, B))) and darkened towards the bezel.
 Everything outside the quad is transparent (the plate underneath shows it anyway).
 Writes <out.webm> (VP9 with alpha, cropped to the area the screen ever covers) and <out.webm>.json:
 {"crop":[x, y, w, h], "first": source frame of the webm's first frame, "fps", "src":[w, h]}."""
@@ -34,6 +34,7 @@ def main():
     ap.add_argument("track")
     ap.add_argument("out")
     ap.add_argument("--margin", type=float, default=0.03)
+    ap.add_argument("--choke", type=int, default=2, help="px the matte is shrunk by")
     a = ap.parse_args()
 
     tr = json.loads(Path(a.track).read_text())
@@ -49,7 +50,7 @@ def main():
     cap = cv2.VideoCapture(a.take)
     fps = cap.get(cv2.CAP_PROP_FPS)
     enc = subprocess.Popen(["ffmpeg", "-loglevel", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgba", "-s", f"{w}x{h}", "-r", f"{fps}",
-                            "-i", "-", "-c:v", "libvpx-vp9", "-pix_fmt", "yuva420p", "-b:v", "0", "-crf", "22", "-row-mt", "1",
+                            "-i", "-", "-c:v", "libvpx-vp9", "-pix_fmt", "yuva420p", "-b:v", "0", "-crf", "8", "-row-mt", "1",
                             "-deadline", "good", "-cpu-used", "4", "-auto-alt-ref", "0", a.out], stdin=subprocess.PIPE)
     k3 = np.ones((3, 3), np.uint8)
     f = -1
@@ -65,17 +66,20 @@ def main():
         crop = frame[y0:y0 + h, x0:x0 + w]
         hsv = cv2.cvtColor(crop, cv2.COLOR_BGR2HSV).astype(np.float32)
         hue, sat, val = hsv[:, :, 0] * 2, hsv[:, :, 1] / 255, hsv[:, :, 2] / 255  # hue in degrees
-        green = smoothstep(92, 104, hue) * (1 - smoothstep(166, 178, hue)) * smoothstep(0.25, 0.45, sat) * smoothstep(0.05, 0.12, val)
+        # pale green (the screen catching the light) keys fully; dark pixels stay (the notch and bezel, even green-tinted)
+        green = smoothstep(92, 104, hue) * (1 - smoothstep(166, 178, hue)) * smoothstep(0.12, 0.25, sat) * smoothstep(0.30, 0.50, val)
         keep = 1 - green
+        keep = cv2.morphologyEx(keep.astype(np.float32), cv2.MORPH_OPEN, k3)  # isolated specks inside the screen go
         inside = np.zeros((h, w), np.uint8)
         cv2.fillConvexPoly(inside, np.round(grown(rows[f], a.margin) - [x0, y0]).astype(np.int32), 255)
         alpha = (keep * 255).astype(np.uint8)
-        alpha = cv2.erode(alpha, k3)                      # choke 1 px
+        alpha = cv2.erode(alpha, k3, iterations=a.choke)  # choke (2 px by default): half-green edge pixels go
         alpha = cv2.GaussianBlur(alpha, (0, 0), 0.8)     # soften 1 px
         alpha = np.minimum(alpha, inside)
-        b, g, r = cv2.split(crop)
+        b, g, r = (c.astype(np.float32) for c in cv2.split(crop))
         g = np.minimum(g, np.maximum(r, b))              # despill
-        rgba = cv2.merge([r, g, b, alpha])
+        dark = 1 - 0.7 * green                           # leftover spill turns towards the bezel's dark, not grey
+        rgba = cv2.merge([np.clip(c * dark, 0, 255).astype(np.uint8) for c in (r, g, b)] + [alpha])
         enc.stdin.write(rgba.tobytes())
     enc.stdin.close()
     enc.wait()

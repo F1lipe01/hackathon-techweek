@@ -61,11 +61,13 @@ export const TrackedScreen: React.FC<{
   /** Seconds into the take where this shot starts. */
   from: number;
   rec?: string; segs?: RecSeg[]; freezeRec?: number; screen?: React.ReactNode;
+  /** Drawn over the recording in its own pixels (1206 x 2622), so it moves with the screen: e.g. a live view. */
+  overlay?: React.ReactNode;
   keys: CamKey[]; look?: Partial<ScreenLook>; shutter?: number; screenRadius?: number;
   /** Layers to leave out, for checks: "blur" (one copy only), "key", "glow", "grain". */
   off?: string[];
   children?: (map: (ptx: number, pty: number) => Pt, lock: number) => React.ReactNode;
-}> = ({ take, track, keyed, from, rec, segs, freezeRec, screen, keys, look: lookIn, shutter = 0.6, screenRadius: radiusIn, off = [], children }) => {
+}> = ({ take, track, keyed, from, rec, segs, freezeRec, screen, overlay, keys, look: lookIn, shutter = 0.6, screenRadius: radiusIn, off = [], children }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const look = { ...LOOK, ...lookIn };
@@ -91,7 +93,9 @@ export const TrackedScreen: React.FC<{
   const state = (key: CamKey) => {
     const F = toQ(key.fx, key.fy);
     if (!key.ppt) return { F, T: F, logS: 0, rot: 0 };
-    return { F, T: { x: key.cx ?? 1300, y: key.cy ?? 540 }, logS: Math.log(key.ppt / ppt0), rot: -theta };
+    // a push that keeps the phone as filmed zooms about the phone itself unless told where to put it: it can't reveal an edge
+    const T = key.cx !== undefined ? { x: key.cx, y: key.cy ?? 540 } : key.upright === false ? F : { x: 1300, y: 540 };
+    return { F, T, logS: Math.log(key.ppt / ppt0), rot: key.upright === false ? 0 : -theta };
   };
   const A = state(a), B = state(b);
   const cam = camera(lerpPt(A.F, B.F, u), lerpPt(A.T, B.T, u), Math.exp(lerp(A.logS, B.logS, u)), lerp(A.rot, B.rot, u));
@@ -102,10 +106,11 @@ export const TrackedScreen: React.FC<{
   const Qa = quadAt(tr, fSrc - shutter / 2, toF), Qb = quadAt(tr, fSrc + shutter / 2, toF);
   const streak = Math.max(...Qa.map((p, i) => Math.hypot(p.x - Qb[i].x, p.y - Qb[i].y))) * 2;
   const n = off.includes("blur") ? 1 : Math.max(1, Math.min(6, Math.ceil(streak / 2)));
-  const content = screen ? (
-    <div style={{ position: "absolute", left: 0, top: 0, width: SW, height: SH, borderRadius: screenRadius, overflow: "hidden", background: "#000" }}>{screen}</div>
-  ) : (
-    <Recording name={rec!} segs={segs!} freezeAt={freezeRec} radius={screenRadius} />
+  const content = (
+    <div style={{ position: "absolute", left: 0, top: 0, width: SW, height: SH, borderRadius: screenRadius, overflow: "hidden", background: "#000" }}>
+      {screen ?? <Recording name={rec!} segs={segs!} freezeAt={freezeRec} radius={screenRadius} />}
+      {overlay}
+    </div>
   );
   const copies = Array.from({ length: n }, (_, j) => {
     const d = n === 1 ? 0 : (j / (n - 1) - 0.5) * shutter;
@@ -133,7 +138,8 @@ export const TrackedScreen: React.FC<{
                 style={{ position: "absolute", left: ox + km.crop[0] * k, top: oy + km.crop[1] * k, width: km.crop[2] * k, height: km.crop[3] * k }} />
             </Sequence>
           ) : null}
-          {off.includes("glow") ? null : <AbsoluteFill style={{ filter: "blur(14px) brightness(1.2)", mixBlendMode: "screen", opacity: look.glow }}>
+          {off.includes("glow") ? null : <AbsoluteFill style={{ filter: "blur(14px) brightness(1.2)", mixBlendMode: "screen", opacity: look.glow,
+            clipPath: `polygon(${grow(Q, 0.02).map((p) => `${p.x.toFixed(1)}px ${p.y.toFixed(1)}px`).join(",")})` }}>
             <div style={{ position: "absolute", left: 0, top: 0, transformOrigin: "0 0", transform: H.css }}>{content}</div>
           </AbsoluteFill>}
         </AbsoluteFill>

@@ -1,5 +1,12 @@
 # ThingTracker film playbook (research, 18 Nov 2026)
 
+> **Partly replaced on 19 Nov** by [compositing-playbook.md](compositing-playbook.md), after the team rejected v5.1 as slow and silent. Three rules here no longer apply:
+> - "≤17 characters per second": 17 is Netflix's limit for children, and the adult cap is 20. It is a subtitle cap, not a hold time.
+> - "Sound effects only for changes of state": now every visual event gets its sound.
+> - Long holds.
+>
+> Pacing now comes from measured films ([pacing.md](pacing.md)).
+
 Apple, Linear, Raycast, Stripe and Anthropic publish little making-of text; their patterns come from trade coverage. [n] = sources.
 
 ## 1. Beat structure

@@ -1,26 +1,27 @@
 # _ThingTracker_ · integração com a plataforma _Cognitive Home_
 
-Versão 2, quarta-feira, 18 de novembro de 2026. Documento destinado aos engenheiros da Altice Labs. Descreve o que o _ThingTracker_ acrescenta à plataforma, o que reutiliza sem alterações e o que precisa da Altice. A visão de conjunto encontra-se no documento de arquitetura.
+Versão 3, quinta-feira, 19 de novembro de 2026. Documento destinado aos engenheiros da Altice Labs, que descreve o que o _ThingTracker_ acrescenta à plataforma, o que reutiliza sem alterações e o que precisa da Altice. A visão de conjunto encontra-se no documento de arquitetura, cujas figuras este documento reutiliza.
 
 ## Em resumo
 
-- O _ThingTracker_ transforma a câmara da casa num sensor configurado por frases: o utilizador regista os seus objetos e escreve regras como “avisa-me se sair de casa sem a carteira”.
-- Acrescenta quatro componentes: um serviço local em cada casa, o Serviço _ThingTracker_ na plataforma, quatro ferramentas MCP (“_Model Context Protocol_”) para objetos e um novo tipo de acionador de cenário.
-- Os comandos aos dispositivos continuam a passar pelas ferramentas MCP que a plataforma já tem. Não se abre nenhum caminho novo até aos dispositivos.
-- Para chegar a produção, faltam sete elementos do lado da Altice, listados na secção 9. O mais importante é uma forma de receber eventos sem consultar o servidor MCP periodicamente.
+- O _ThingTracker_ transforma a câmara da casa num sensor configurado por frases, em que o utilizador regista os seus objetos e escreve regras como “avisa-me se sair de casa sem o livro”.
+- Acrescenta um agente da casa no _router_ Altice (movimento, região que mudou e rostos, opcionalmente), o serviço _ThingTracker_ e os servidores de visão na Altice (onde correm, para cada casa, o motor de presença e o motor de regras), quatro ferramentas MCP (“_Model Context Protocol_”) para objetos, um novo tipo de acionador de cenário e uma ferramenta só de leitura, proposta, para os telemóveis ligados ao Wi-Fi da casa.
+- Os comandos aos dispositivos continuam a passar pelas ferramentas MCP que a plataforma já tem, depois de um “Sim” na aplicação, sem se abrir nenhum caminho novo até aos dispositivos.
+- Para chegar a produção, faltam oito elementos do lado da Altice, listados na secção 9, sendo os mais importantes uma forma de receber os eventos da porta e do Wi-Fi sem consultar periodicamente o servidor MCP e saber se os _routers_ dispõem de uma NPU.
 
 ## 1. Glossário
 
 | Termo | Significado |
 |---|---|
-| Serviço local (_edge_) | Programa que corre em casa, junto da câmara. Fica em repouso até haver movimento ou som e só então analisa imagens com modelos de visão _open-source_ |
-| Registo de objetos | Componente do serviço local que aprende um objeto novo a partir de várias vistas mostradas à câmara |
-| Assinatura visual | Conjunto de 8 vetores numéricos (_embeddings_ do _DINOv2_), um por vista, que distingue um objeto concreto de outros do mesmo tipo |
-| Memória da casa | Registo local de onde e quando cada objeto foi visto, com uma miniatura recortada do objeto |
-| Motor de regras | Componente do serviço local que avalia as regras sobre objetos e pessoas e envia um evento quando uma se cumpre |
-| Serviço _ThingTracker_ | Componente da plataforma que recebe as frases e as perguntas da aplicação. É o único que chama o modelo de linguagem e executa as ferramentas MCP que este pede |
+| Agente da casa | Programa que corre no processador do _router_ Altice, sem acelerador de IA. Aplica as máscaras de privacidade, executa um filtro de movimento de baixo custo, recorta a região que mudou e, se a família o tiver autorizado, reconhece rostos com o _YuNet_ e o _SFace_. Os padrões faciais nunca saem de casa |
+| Servidores de visão | Servidores GPU na Altice (_NVIDIA L4_) que correm o _OWLv2_ (deteção) e o _DINOv2_ (vetores) sobre as regiões enviadas pelas casas, alimentados por uma fila urgente e por uma fila em lote |
+| Serviço _ThingTracker_ | Componente da plataforma, com instâncias sem estado atrás de um balanceador de carga. É o _host_ MCP e o único que chama os modelos de linguagem; compara os vetores com as assinaturas visuais, segue objetos e pessoas e corre o motor de presença e o motor de regras de cada casa |
+| Motor de presença | Parte do serviço que decide, para cada casa, entre OCUPADA, A SAIR, VAZIA ou INCERTA, a partir dos telemóveis da família no Wi-Fi, do sensor da porta e das câmaras |
+| Motor de regras | Parte do serviço que avalia as regras compiladas de cada casa a cada evento e temporizador e envia um aviso quando uma se cumpre |
+| Assinatura visual | Até 8 vetores numéricos (_embeddings_ do _DINOv2_), um por vista, que distinguem um objeto concreto de outros do mesmo tipo; ficam no _PostgreSQL_ com _pgvector_, por cliente |
 | Ferramentas _Things_ | As quatro novas ferramentas MCP, descritas na secção 5 |
-| Acionador `thingTracker` | Novo tipo de acionador de cenário, cuja condição é sobre objetos ou pessoas e é avaliada em casa (secção 7) |
+| Acionador `thingTracker` | Novo tipo de acionador de cenário, cuja condição é sobre objetos ou pessoas e é avaliada pelo motor de regras no serviço _ThingTracker_ (secção 7) |
+| `get_home_wifi_clients` | Ferramenta MCP só de leitura, proposta, que lista os dispositivos ligados ao Wi-Fi da casa (secção 8) |
 
 ## 2. O que é novo e o que se reutiliza
 
@@ -28,80 +29,89 @@ Componentes novos:
 
 | Componente | Onde corre | Função |
 |---|---|---|
-| Serviço local | Em casa: _gateway_ do operador ou pequena caixa _edge_ (na demonstração, um portátil) | Analisa as imagens só quando há movimento ou som, mantém a memória da casa e avalia as regras locais |
-| Serviço _ThingTracker_ | Plataforma Altice | Converte frases em regras e responde a perguntas, com o modelo de linguagem e as ferramentas MCP |
+| Agente da casa | Em casa, no processador do _router_ Altice (no portátil da equipa, na demonstração) | Máscaras, filtro de movimento, região que mudou (no máximo 640 × 640, cerca de uma por segundo durante o movimento) e rostos, opcionalmente; lê uma região a pedido, mesmo sem movimento |
+| Servidores de visão | Altice, em GPU _L4_ | Caixas do _OWLv2_ e vetores do _DINOv2_ para as regiões, as fotografias de registo e as verificações ativas |
+| Serviço _ThingTracker_ | Plataforma Altice | Converte frases em regras e responde a perguntas; comparação, seguimento, motor de presença e motor de regras, para cada casa; avisos e chamadas MCP |
 | Ferramentas _Things_ | Servidor MCP da plataforma | `list_things`, `create_thing`, `get_thing_last_seen` e `get_thing_timeline` |
-| Acionador `thingTracker` | Modelo de cenários da plataforma | Permite que um cenário comece quando uma condição sobre objetos se cumpre |
-| Separador “_Things_” | Aplicação Altice | Objetos registados, por divisão, sensores e sugestões, com os mesmos componentes dos outros quatro separadores |
+| Acionador `thingTracker` | Modelo de cenários da plataforma | Permite iniciar um cenário quando se cumpre uma condição sobre objetos ou pessoas |
+| `get_home_wifi_clients` (proposta) | Servidor MCP da plataforma, a partir do _router_ | Que telemóveis da família estão no Wi-Fi da casa, para a presença |
+| Separador “_Things_” | Aplicação Altice | Objetos e pessoas registados, sensores e sugestões, construído com os mesmos componentes dos outros quatro separadores |
 | Botão do assistente | Aplicação Altice, em todos os separadores | Perguntas (“onde está o livro?”) e sensores descritos numa frase |
 
 Ferramentas MCP existentes, usadas sem alterações:
 
 | Ferramenta | Utilização |
 |---|---|
-| `update_device_capabilities` | Ações sobre a lâmpada e a tomada |
-| `patch_home_security_status` | Ativar o alarme, sempre com confirmação prévia do utilizador |
+| `update_device_capabilities` | Ações sobre a lâmpada, a tomada e a sirene da câmara (`sirenSwitch`), depois de um “Sim” |
+| `patch_home_security_status` | Armar o alarme, sempre depois de o utilizador confirmar |
 | `post_new_scenario`, `get_home_scenarios` | Guardar as regras como cenários e mostrá-las na lista de cenários da aplicação |
-| `get_home_devices`, `get_home_security_status` | Dar ao modelo de linguagem o contexto da casa (dispositivos e estado do alarme) |
+| `get_home_devices` | O estado do sensor de contacto da porta (consultado periodicamente, enquanto não houver um fluxo de eventos) e os dispositivos ligados; contexto para o modelo de linguagem |
+| `get_home_security_status` | O estado do alarme, como contexto |
 
-## 3. Primeiro exemplo: “avisa-me se sair de casa sem a carteira”
+Os avisos chegam ao telemóvel através do serviço de notificações da própria aplicação Altice, uma vez que o servidor MCP não tem nenhuma ferramenta de notificações.
 
-A Figura 1 mostra as mensagens trocadas entre os componentes, desde a frase até à ação.
+## 3. Primeiro exemplo: “avisa-me se sair de casa sem o livro”
 
-![Sequência de mensagens para uma regra](../architecture/sequencia-regra.png){width=100%}
+A Figura 1 mostra as mensagens trocadas quando a regra se cumpre, nomeadamente a porta, o telemóvel, a verificação ativa, o aviso e o juiz opcional.
 
-**Figura 1** – Da frase à ação: mensagens entre a aplicação, a plataforma, o modelo de linguagem e a casa.
+![Sequência: o livro esquecido](../architecture/seq-livro-esquecido.png){width=100%}
 
-1. O utilizador escreve a frase no assistente. A aplicação envia-a ao Serviço _ThingTracker_.
+**Figura 1** – O livro esquecido: mensagens entre o sensor da porta e o _router_, o agente da casa, a plataforma Altice, os servidores de visão, o serviço _ThingTracker_ e a aplicação.
+
+A regra é criada em quatro passos:
+1. O utilizador escreve a frase no assistente, e a aplicação envia-a ao serviço _ThingTracker_.
 2. O serviço envia ao modelo de linguagem a frase, os objetos registados (resultado de `list_things`), os dispositivos da casa (`get_home_devices`) e a lista das ferramentas MCP disponíveis.
-3. O modelo devolve uma regra estruturada: quando o sensor de contacto da porta abrir, se a carteira continuar na secretária 2 minutos depois, a lâmpada fica vermelha e o utilizador recebe um aviso.
-4. O serviço grava a regra como cenário, com `post_new_scenario`. A parte sobre a porta usa o acionador de dispositivo que já existe; a parte sobre a carteira usa o novo acionador `thingTracker` (secção 7). A regra aparece na lista de cenários da aplicação.
-5. A plataforma envia a condição sobre a carteira ao serviço local da casa.
-6. Quando a porta abre, o Motor de regras verifica na memória da casa se a carteira continua na secretária. Se continuar, envia o evento `sensor.fired`.
-7. A plataforma executa as ações do cenário: a lâmpada fica vermelha, com `update_device_capabilities`, e a aplicação mostra o aviso com a miniatura da carteira.
+3. O modelo devolve uma regra estruturada, segundo a qual, quando a porta da entrada fechar depois de ter sido aberta e tiver saído um membro da família, se verifica o lugar habitual do livro e, se o livro continuar lá, se avisa o utilizador.
+4. O serviço grava a regra como cenário, com `post_new_scenario`, usando o novo acionador `thingTracker` (secção 7), e a regra aparece na lista de cenários da aplicação. A regra é avaliada no serviço _ThingTracker_, na Altice, sem que nada seja enviado para casa.
 
-O modelo de linguagem é chamado uma única vez, no passo 2. Daí em diante, a regra é avaliada em casa, sem custo por evento.
+Quando a regra se cumpre (Figura 1), sucede o seguinte:
+5. O sensor da porta comunica “aberta” e depois “fechada” à plataforma (`sensorState: alarm` significa aberta), e o serviço recebe os dois eventos (hoje, por consulta de `get_home_devices` a cada 4 s), passando o motor de presença de OCUPADA para A SAIR.
+6. O telemóvel do Filipe sai do Wi-Fi da casa, o que o serviço fica a saber através do evento proposto `wifi.left` (ou de `get_home_wifi_clients`), e conclui que saiu um membro da família.
+7. O serviço pede ao agente da casa a região do lugar habitual do livro, em 3 imagens com cerca de 1 s de intervalo, independentemente do movimento, e as regiões seguem pela fila urgente para os servidores de visão.
+8. Os servidores de visão devolvem as caixas de “livro” e os respetivos vetores do _DINOv2_, que o serviço compara com as 8 vistas do livro (semelhança ≥ 0,62). Se o livro for visto em pelo menos 2 das 3 imagens, a regra cumpre-se e a aplicação mostra o aviso com a miniatura do livro; com menos, o resultado é “incerto” e não há aviso, ou, se o livro puder estar parcialmente tapado, o motor de regras pode chamar o juiz de visão-linguagem, cuja resposta “incerto” leva a aplicação a perguntar à família.
 
-## 4. Segundo exemplo: “onde está a carteira?”
+O modelo de linguagem é chamado uma única vez, no passo 2. A partir daí, a regra é avaliada por código simples, sem nenhum modelo na decisão, salvo se o juiz for chamado para um momento duvidoso.
 
-1. O utilizador escreve a pergunta no assistente, um botão presente em todos os separadores da aplicação, que a envia ao Serviço _ThingTracker_.
+## 4. Segundo exemplo: “onde está o meu livro?”
+
+1. O utilizador escreve a pergunta no assistente, um botão presente em todos os separadores da aplicação, que a envia ao serviço _ThingTracker_.
 2. O serviço envia-a ao modelo de linguagem, com as ferramentas _Things_ disponíveis.
-3. O modelo chama `list_things`. Se houver mais do que um objeto que corresponda à pergunta (por exemplo, duas carteiras), responde com uma pergunta: “Qual delas?”.
-4. Com o objeto identificado, o modelo chama `get_thing_last_seen`. A plataforma obtém a resposta da memória da casa, através do serviço local.
-5. O modelo responde em linguagem natural (“Na secretária, às 15h02”), e a aplicação mostra a miniatura recortada do objeto.
+3. O modelo chama `list_things` e, se mais do que um objeto corresponder à pergunta (por exemplo, duas carteiras), responde com uma pergunta: “Qual delas?”.
+4. Identificado o objeto, o modelo chama `get_thing_last_seen`, e o serviço responde a partir da última observação guardada no _PostgreSQL_ desse cliente.
+5. O modelo responde em linguagem corrente (“Na secretária, às 15h02”), e a aplicação mostra a miniatura recortada do objeto.
 
 ## 5. As quatro ferramentas _Things_
 
-As novas ferramentas seguem as convenções das existentes: argumentos em JSON, âmbito restrito à casa do utilizador autenticado e resultados em texto JSON. Só a `create_thing` altera dados.
+As novas ferramentas seguem as convenções das existentes, com argumentos em JSON, âmbito limitado à casa do utilizador autenticado e resultados em texto JSON. Só a `create_thing` altera dados.
 
 ### `list_things`
 
-Lista os objetos registados numa casa, com a última deteção de cada um.
+Lista os objetos registados numa casa, com a última observação de cada um.
 
 | Argumento | Tipo | Obrigatório | Notas |
 |---|---|---|---|
-| `homeId` | _string_ | Não | Por omissão, a casa atual do utilizador, como nas restantes ferramentas |
+| `homeId` | texto | Não | Por omissão, a casa atual do utilizador, como nas restantes ferramentas |
 
 Resultado:
 ```json
 { "things": [
-  { "id": "wallet", "name": "Wallet", "photo": "https://…/things/wallet.jpg",
-    "lastSeen": { "place": "desk", "camera": "Living room", "at": "2026-11-18T15:02:10Z" } },
-  { "id": "phone", "name": "Phone", "photo": null, "lastSeen": null }
+  { "id": "book", "name": "Livro", "photo": "https://…/things/book.jpg",
+    "lastSeen": { "place": "Sala 1", "surface": "secretária", "at": "2026-11-19T18:02:10Z" } },
+  { "id": "phone", "name": "Telemóvel", "photo": null, "lastSeen": null }
 ] }
 ```
 
 ### `create_thing`
 
-Regista um objeto novo. Guarda o nome e pede ao serviço local que inicie o registo visual (secção 6).
+Regista um objeto novo, guardando o nome e iniciando o registo das suas vistas (secção 6).
 
 | Argumento | Tipo | Obrigatório | Notas |
 |---|---|---|---|
-| `name` | _string_, de 1 a 40 caracteres | Sim | Nome mostrado na aplicação, por exemplo `"Wallet"` |
-| `category` | _string_ | Não | Nome em inglês usado como pesquisa pelo detetor, por exemplo `"wallet"`. Por omissão, o próprio nome |
-| `enrol` | _enum_: `camera`, `photos` ou `none` | Não | Por omissão, `camera`: a aplicação pede ao utilizador que mostre o objeto à câmara |
+| `name` | texto, de 1 a 40 carateres | Sim | Nome mostrado na aplicação, por exemplo `"Livro"` |
+| `category` | texto | Não | Nome em inglês que o detetor usa como termo de pesquisa, por exemplo `"book"`; por omissão, o próprio nome |
+| `enrol` | enumeração: `photos`, `camera` ou `none` | Não | Por omissão, `photos`, em que a aplicação pede 6 a 8 fotografias; com `camera`, pede para mostrar o objeto a uma câmara |
 
-Resultado: `{ "id": "wallet", "status": "enrolling" }`. Erros: `409` se o nome já existir; `422` se a casa não tiver câmara.
+Resultado: `{ "id": "book", "status": "enrolling" }`. Erros: `409` se o nome já existir; `422` se `enrol` for `camera` e a casa não tiver câmara.
 
 ### `get_thing_last_seen`
 
@@ -109,105 +119,104 @@ Responde à pergunta “onde está X?”.
 
 | Argumento | Tipo | Obrigatório | Notas |
 |---|---|---|---|
-| `thing` | Identificador ou nome | Sim | Se o nome corresponder a vários objetos, devolve a lista para o modelo perguntar qual |
+| `thing` | Identificador ou nome | Sim | Se o nome corresponder a vários objetos, devolve a lista, para que o modelo pergunte qual |
 
 Resultado:
 ```json
-{ "thing": "wallet", "place": "desk", "camera": "Living room",
-  "at": "2026-11-18T15:02:10Z", "match": 0.84,
+{ "thing": "book", "place": "Sala 1", "surface": "secretária",
+  "at": "2026-11-19T18:02:10Z", "match": 0.70,
   "thumbnail": "https://…/sightings/9f2c.jpg" }
 ```
-`match` é a semelhança com a assinatura visual do objeto (de 0 a 1). Se o objeto nunca tiver sido visto, o resultado é `{ "thing": "wallet", "seen": false }`. A miniatura é um recorte que mostra só o objeto, nunca a imagem completa.
+O campo `match` é a semelhança com a assinatura visual do objeto (de 0 a 1). Se o objeto nunca tiver sido visto, o resultado é `{ "thing": "book", "seen": false }`. A miniatura é um recorte que mostra apenas o objeto, nunca a imagem completa, servido por uma ligação assinada de curta duração.
 
 ### `get_thing_timeline`
 
-Indica por onde andou um objeto num período, para perguntas como “quando é que tive os óculos comigo pela última vez?”.
+Mostra por onde andou um objeto num período, para perguntas como “quando é que tive os óculos comigo pela última vez?”.
 
 | Argumento | Tipo | Obrigatório | Notas |
 |---|---|---|---|
 | `thing` | Identificador ou nome | Sim | Como em `get_thing_last_seen` |
 | `from`, `to` | Data e hora ISO 8601 | Não | Por omissão, as últimas 24 h; no máximo, 30 dias |
 
-Resultado: `{ "thing": "glasses", "sightings": [ { "place": "desk", "from": "…", "to": "…" }, … ] }`. As deteções seguidas no mesmo lugar são agregadas numa só.
+Resultado: `{ "thing": "glasses", "sightings": [ { "place": "Sala 1", "from": "…", "to": "…", "state": "placed" }, … ] }`. As observações consecutivas no mesmo lugar são agrupadas numa só, e `state` toma os valores `placed`, `in_hand`, `taken` ou `moved`.
 
-## 6. Registo de um objeto
+## 6. Registar um objeto
 
-O registo segue o padrão que a aplicação já usa para adicionar um dispositivo (gravação de ecrã da versão beta da aplicação Altice, 18 de novembro de 2026): o botão (+), um passo em ecrã inteiro com ilustração, título e um botão principal fixo no fundo, e o diálogo “_Cancel installation_” ao sair.
+O registo segue o padrão que a aplicação já usa para adicionar um dispositivo (gravação do ecrã da versão beta da aplicação Altice, 18 de novembro de 2026), com o botão (+), um passo em ecrã inteiro com uma ilustração, um título e um botão principal fixo em baixo, e a caixa de diálogo “Cancelar instalação” à saída.
 
 | Adicionar um dispositivo (hoje) | Adicionar um objeto (proposta) |
 |---|---|
-| (+) em “_Devices_” | (+) em “_Things_” |
-| Lista de tipos de dispositivo e dispositivos _Matter_ próximos | Nome do objeto, ou uma sugestão da lista de objetos comuns (chaves, carteira, óculos, telemóvel) |
-| Painel “_Choose a security hub_” | Painel “_Choose a camera_”, com as câmaras e o seu estado |
-| Painel “_No smart hub installed_” | Painel “_No camera installed_” (erro `422` da `create_thing`) |
-| Número de série ou “_Scan label_” | “_Show it to the camera_”, com o progresso em tempo real |
-| Passo final | As vistas aprendidas e o nome, seguidos de “_Done_” |
+| (+) em “Dispositivos” | (+) em “_Things_” |
+| Lista de tipos de dispositivo e de dispositivos Matter próximos | O que as câmaras veem (“A procurar nas câmaras…”), ou um nome escrito |
+| Painel “Escolha uma central de segurança” | “Tirar fotografias” ou “Mostrar a uma câmara da casa” |
+| Painel “Nenhuma central inteligente instalada” | Painel “Nenhuma câmara instalada”, quando se mostra o objeto a uma câmara (erro `422` de `create_thing`) |
+| Número de série ou “Ler etiqueta” | As fotografias, ou a câmara com o progresso em direto |
+| Passo final | As vistas aprendidas e o nome, seguidos de “Concluído” |
 
-No passo “_Show it to the camera_”:
+As vistas obtêm-se de uma de duas formas:
+1. Fotografias do telemóvel. A aplicação envia ao serviço _ThingTracker_ 6 a 8 fotografias de lados diferentes (ou imagens de um vídeo curto); os servidores de visão encontram o objeto em cada fotografia com o _OWLv2_, usando o nome em inglês como termo de pesquisa, e o _DINOv2_ calcula o vetor de cada recorte.
+2. Mostrar o objeto a uma câmara. O utilizador segura o objeto a cerca de 50 cm de uma câmara e roda-o devagar durante 10 a 20 segundos; o agente da casa envia as regiões, os servidores de visão encontram o objeto e calculam o vetor de cada recorte, e uma vista só é guardada se for diferente das anteriores (semelhança inferior a 0,97), até haver 8.
 
-1. O utilizador segura o objeto a cerca de 50 cm da câmara e roda-o devagar, durante 10 a 20 segundos.
-2. O serviço local procura o objeto com o detetor _OWLv2_, usando o nome em inglês como pesquisa.
-3. Em cada imagem em que o encontra, recorta-o e calcula um vetor com o _DINOv2_. Só guarda a vista se for diferente das anteriores, até reunir 8.
-4. As 8 vistas formam a assinatura visual, guardada no serviço local (para os modelos locais) e na base de dados da plataforma, associada ao cliente. Assim, um serviço local novo ou reposto recupera-a sem repetir o registo.
-5. A aplicação mostra as vistas aprendidas. A assinatura é apagada quando o objeto é eliminado.
+As vistas formam a assinatura visual, guardada no _PostgreSQL_ com _pgvector_ e associada ao cliente, e o melhor recorte passa a ser a fotografia do objeto. Um _router_ novo ou reposto de fábrica não exige, por isso, novo registo dos objetos. A assinatura visual é apagada quando o objeto é apagado.
 
-Depois do registo, sempre que há movimento, o detetor encontra candidatos do mesmo tipo e o serviço local compara cada um com as 8 vistas. Só um candidato suficientemente semelhante conta como “a sua carteira”; os outros são ignorados.
+Depois do registo, sempre que há movimento, os servidores de visão encontram candidatos do mesmo tipo e o serviço compara cada vetor com as vistas. Só um candidato suficientemente semelhante (semelhança ≥ 0,62) conta como “o seu livro”, sendo os restantes ignorados.
 
 ## 7. Sensores e cenários
 
-Cada frase do utilizador dá origem a uma regra, compilada uma única vez pelo modelo de linguagem.
+Cada frase do utilizador torna-se uma regra, compilada uma única vez pelo modelo de linguagem.
 
 - As condições e as ações sobre dispositivos (contacto da porta, cor da lâmpada, tomada) já têm correspondência no modelo de cenários da plataforma.
-- As condições sobre objetos e pessoas (“carteira na secretária há 2 minutos”, “ninguém na sala há 30 minutos”) não têm equivalente nos acionadores atuais. Propõe-se, por isso, o acionador `thingTracker`, avaliado pelo Motor de regras em casa. Quando a condição se cumpre, o serviço local envia o evento `sensor.fired` e a plataforma executa as ações de início do cenário.
+- As condições sobre objetos e pessoas (“o livro continua na secretária depois de alguém sair”, “ninguém na sala há 30 minutos”) não têm equivalente entre os acionadores atuais. Propõe-se, por isso, o acionador `thingTracker`, avaliado pelo motor de regras no serviço _ThingTracker_. Quando a condição se cumpre, o serviço assinala o acionador como cumprido (`sensor.fired`) e a plataforma executa as ações de início do cenário; uma ação que a família tenha escolhido confirmar aguarda um “Sim” na aplicação.
 
-O cenário do primeiro exemplo, no formato de `post_new_scenario` (os valores de `triggerLogic` e de `operator` aceites pela plataforma estão por confirmar):
+O cenário do primeiro exemplo, no formato de `post_new_scenario` (os valores de `triggerLogic` e de `operator` aceites pela plataforma estão ainda por confirmar), é o seguinte:
 ```json
-{ "name": "Saiu sem a carteira", "isActive": true, "triggerLogic": "AND",
+{ "name": "Saiu sem o livro", "isActive": true, "triggerLogic": "AND",
   "triggers": [
-    { "type": "device", "device": { "id": "<sensor de contacto da porta>" },
-      "capabilities": [ { "name": "sensorState", "operator": "==", "value": "alarm" } ] },
     { "type": "thingTracker",
-      "condition": { "thing": "wallet", "in_place": "desk", "for": "2m" } } ],
+      "condition": { "door": "<sensor de contacto da porta da entrada>", "on": "closed_after_open", "leaver": "family",
+                     "thing": "book", "check": "usual_place", "seen_at_least": "2/3" } } ],
   "startActions": [
-    { "type": "device", "device": { "id": "<lâmpada>" },
-      "capabilities": [ { "type": "color_rgb", "redValue": 255, "greenValue": 0, "blueValue": 0 } ] } ] }
+    { "type": "notification", "message": "O livro ficou em casa." } ] }
 ```
 
-O sensor de contacto da porta comunica a porta aberta como `sensorState` com o valor `alarm`, tal como se observou no kit do desafio.
+A porta faz parte da condição `thingTracker`, porque “fechada depois de ter sido aberta” e “saiu um membro da família” são determinados pelo serviço a partir das comunicações da porta e do motor de presença. O sensor de contacto da porta comunica uma porta aberta como `sensorState` com o valor `alarm`, conforme observado no kit do desafio, e a família indica qual dos sensores de contacto é o da porta da entrada. O aviso é entregue pelo serviço de notificações da aplicação, e não por uma ferramenta MCP, e a existência de um tipo de ação de notificação no modelo de cenários está por confirmar com a Altice.
 
-## 8. Ligação entre o serviço local e a plataforma
+## 8. Ligação entre o agente da casa e a plataforma
 
 | Aspeto | Proposta |
 |---|---|
-| Ligação | O serviço local abre uma única ligação de saída para a plataforma (_WebSocket_ ou MQTT sobre TLS); a casa não precisa de nenhuma porta de entrada aberta |
-| Identidade | Uma credencial por casa, emitida quando a câmara é adicionada na aplicação e revogável a partir dela |
-| Da casa para a plataforma | Eventos (`thing.seen`, `thing.moved`, `sensor.fired`), miniaturas e assinaturas visuais dos objetos, e respostas às ferramentas _Things_ |
-| Da plataforma para a casa | Condições das regras, chamadas às ferramentas _Things_, pedidos de registo de objetos e zonas a ignorar |
-| Sem ligação | O serviço local continua a seguir os objetos e a avaliar as regras; os eventos ficam em fila e seguem quando a ligação volta, mas as ações sobre dispositivos dependem da plataforma |
-| Modelo de linguagem | Chamado só pelo Serviço _ThingTracker_, na plataforma, que escolhe o modelo e a região; nunca pelo serviço local |
+| Ligação | O agente da casa abre uma única ligação de saída para a plataforma (MQTT sobre TLS com autenticação mútua), através de um balanceador de carga, até a um mediador; a casa não precisa de nenhuma porta de entrada aberta |
+| Identidade | Um certificado por casa, emitido quando se adiciona a câmara na aplicação e revogável a partir dela |
+| De casa para a plataforma | A região que mudou (no máximo 640 × 640, cerca de uma por segundo durante o movimento); a região pedida numa verificação ativa ou numa atualização; raramente, um clipe de 2 a 3 s da região para o juiz; os rótulos dos rostos (“Filipe”, “rosto desconhecido”) com as respetivas caixas; eventos. Nunca vídeo contínuo nem padrões faciais |
+| Da plataforma para casa | Pedidos de verificação ativa ou de atualização; o vídeo do rosto no registo de uma pessoa, reencaminhado sem ser guardado; as máscaras de privacidade; ordens para apagar padrões faciais |
+| Porta | Hoje, o serviço consulta `get_home_devices` a cada 4 s; com um fluxo de eventos, os eventos da porta chegariam de imediato |
+| Telemóveis no Wi-Fi | A ferramenta só de leitura proposta, `get_home_wifi_clients` (endereço MAC, nome, banda e hora de ligação de cada cliente), com os eventos `wifi.joined` e `wifi.left`; a família associa uma vez, na aplicação, cada telemóvel a uma pessoa |
+| Sem ligação | Sem internet, não há análise de imagem e as regras (que correm na Altice) não podem disparar; o agente da casa guarda eventos e rótulos numa fila, nunca imagens, e envia-os quando a ligação regressa |
+| Modelos de linguagem | Chamados apenas pelo serviço _ThingTracker_, que escolhe o modelo e a região, e nunca pelo agente da casa |
 
 ## 9. O que se pede à Altice
 
-| N.º | Necessidade | Motivo | Situação atual |
+| N.º | Necessidade | Porquê | Situação atual |
 |---|---|---|---|
-| 1 | Uma API de eventos, de _push_ ou de _webhooks_ | As regras têm de reagir à abertura da porta sem consultas periódicas | O MCP não tem notificações _push_ nem um fluxo geral de eventos; existe apenas o histórico do alarme (`get_home_security_alarm_history`) |
-| 2 | Acesso RTSP local à câmara | O vídeo deve ficar na rede da casa | O vídeo passa por um _relay_ na nuvem (_go2rtc_) |
-| 3 | Capacidade de computação em casa | Os modelos de visão demoram cerca de 0,6 s por imagem na GPU de um portátil, a 1 ou 2 imagens por segundo e só quando há movimento ou som | A central LTE do kit não tem capacidade para correr modelos de visão |
-| 4 | Uma forma de acrescentar ferramentas ao servidor MCP | Para as quatro ferramentas _Things_ | Por apurar |
-| 5 | Uma ferramenta para eliminar cenários | Os utilizadores têm de poder remover sensores | O MCP permite criar cenários, mas não eliminá-los |
-| 6 | Notificações _push_ para a aplicação | Para os avisos das regras | Não se sabe que serviço a aplicação usa |
-| 7 | Contratos para o modelo de linguagem | Exclusão do uso dos dados para treino, acordo de tratamento de dados (DPA) e tratamento na UE | Não se sabe que fornecedores a Altice já usa |
+| 1 | Uma API de eventos, com _push_ ou _webhooks_, para a porta e o Wi-Fi | As regras têm de reagir ao fecho da porta sem consultas periódicas | O MCP não tem notificações _push_ nem um fluxo geral de eventos; existe apenas o histórico do alarme (`get_home_security_alarm_history`) |
+| 2 | Uma ferramenta só de leitura, `get_home_wifi_clients` | A presença precisa dos telemóveis da família, já que nenhuma câmara vê quem saiu | O _router_ vê os clientes, mas nenhuma ferramenta os expõe |
+| 3 | Acesso local ao RTSP da câmara a partir do _router_ | O vídeo deve ficar na rede da casa | O vídeo passa por um _relay_ na nuvem (_go2rtc_) |
+| 4 | Saber se os _routers_ ou as câmaras têm uma NPU | Com uma NPU, a visão passa para casa e custa cerca de 0,36 € por casa e por mês, em vez de 0,49 € (documento 17) | A central LTE do kit não consegue executar modelos de visão |
+| 5 | Uma forma de acrescentar ferramentas ao servidor MCP | Para as quatro ferramentas _Things_ e o acionador `thingTracker` | Por determinar |
+| 6 | Uma ferramenta para apagar cenários | Os utilizadores têm de poder remover sensores | O MCP permite criar cenários, mas não apagá-los |
+| 7 | Notificações _push_ para a aplicação | Para os avisos das regras | O serviço de notificações da aplicação; desconhece-se como o _ThingTracker_ o chamaria |
+| 8 | Contratos ou capacidade de GPU para os modelos | Modelos de texto sem uso dos dados para treino, com DPA e processamento na UE; GPU para os servidores de visão e para o juiz | Desconhece-se que fornecedores ou que capacidade a Altice já tem |
 
 ## 10. Estado do protótipo
 
 | Elemento | No protótipo (pasta `prototype/`) |
 |---|---|
-| Serviço local | Corre num portátil com a câmara do kit: em repouso até haver movimento, depois _OWLv2_ e _DINOv2_ na GPU |
-| Registo de objetos | Implementado: 8 vistas geram a assinatura visual, guardada no serviço local e numa cópia que representa a base de dados da plataforma |
-| Deteção | Só os objetos registados são procurados; a aplicação desenha em direto, sobre a imagem da câmara, um retângulo por objeto, com o nome e a semelhança |
-| Perguntas | Respondidas a partir da memória da casa; se vários objetos corresponderem à pergunta, a aplicação pergunta qual |
-| Sensores | Criados a partir de uma frase e avaliados por um Motor de regras local; as ações sobre dispositivos são simuladas até serem ativadas |
+| Agente da casa e servidores de visão | Um único programa no portátil da equipa (`edge.py`) desempenha os dois papéis, com o filtro de movimento, os rostos com o _YuNet_ e o _SFace_ e o _OWLv2_ e o _DINOv2_ na GPU do portátil, sobre a imagem completa |
+| Registo | A partir de fotografias do telemóvel e de 8 vistas mostradas à câmara; a assinatura visual fica numa cópia que representa a base de dados da plataforma |
+| Motor de presença | `presence.py`, com os quatro estados, a partir dos telemóveis simulados, da porta e das câmaras |
+| Porta | Lida por consulta de `get_home_devices` a cada 4 s quando a sessão MCP está ativa; porta simulada nos restantes casos |
+| Sensores | Criados a partir de uma frase e avaliados pelo motor de regras do servidor (`server.py`), num ciclo a cada 2 s; as ações nos dispositivos são simuladas salvo se forem ativadas, e o alarme é sempre simulado |
 | Ferramentas _Things_ | Disponíveis como _endpoints_ HTTP do servidor da equipa (`/api/state`, `/api/things`, `/api/ask`), com os mesmos dados |
-| Base de dados | SQLite local (`prototype/data/home.db`): uma cópia da casa, das divisões e dos dispositivos da plataforma, no modelo desta, e as tabelas do _ThingTracker_ (objetos, assinaturas visuais, deteções, sensores, eventos) |
-| Aplicação | Cópia fiel da aplicação Altice (ecrãs, medidas, cores e transições captados na versão beta a 18 de novembro de 2026), com o separador “_Things_” e o botão do assistente |
-| Ligação casa ↔ plataforma | Um único servidor local desempenha os dois papéis |
+| Base de dados | _SQLite_ local (`prototype/data/home.db`), no lugar do _PostgreSQL_ |
+| Aplicação | Uma réplica fiel da aplicação Altice (ecrãs, dimensões, cores e transições captados da versão beta a 18 de novembro de 2026), com o separador “_Things_”, o botão do assistente e os avisos |
+| Ligação entre a casa e a plataforma | Um único servidor local desempenha os dois papéis; o _stream_ da câmara chega através do _relay_ da organização |

@@ -337,14 +337,18 @@ function push(render, opts = {}) {
   opts.mount?.(el);
   return el;
 }
+// One screen at a time, never two superimposed: a pushed page is opaque at once and only its content fades in; a pop
+// removes the pages at once and fades in the content of the screen it reveals.
+function reveal(el) {
+  if (!el) return;
+  el.classList.remove('enter'); void el.offsetWidth; el.classList.add('enter');
+  el.addEventListener('animationend', () => el.classList.remove('enter'), { once: true });
+}
 function pop(n = 1) {
-  for (let i = 0; i < n && stack.length; i++) {
-    const el = stack.pop();
-    el.classList.add('leave');
-    setTimeout(() => el.remove(), 300);
-  }
+  for (let i = 0; i < n && stack.length; i++) stack.pop().remove();
   document.body.classList.remove('alert-open');
   if (!stack.length) { device.classList.remove('pushed'); renderTab(ui.tab); }
+  reveal(stack[stack.length - 1] || $('v-' + ui.tab));
 }
 function refreshPage() {
   const el = stack[stack.length - 1];
@@ -514,7 +518,7 @@ async function savePersonVideo(file) {
   const thumb = (await framesFromVideo(file, 1).catch(() => []))[0] || '';
   const prog = { p: 0, target: 0, step: 'Uploading the video' };
   const el = push(() => `<div class="step saving"><div class="ring-wrap"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="54" class="track"/><circle cx="60" cy="60" r="54" class="bar" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>
-      ${thumb ? `<img src="${thumb}" alt="">` : ''}</div><h3>Saving ${esc(name)}'s face…</h3><p class="saving-step">Uploading the video</p></div>`);
+      ${thumb ? `<img src="${thumb}" alt="">` : ''}<span class="ok">${ICON_CHECK}</span></div><h3>Saving ${esc(name)}'s face…</h3><p class="saving-step">Uploading the video</p></div>`);
   const bar = el.querySelector('.bar'), stepEl = el.querySelector('.saving-step'), t0 = performance.now();
   let raf;
   const tick = () => { prog.p += (prog.target - prog.p) * 0.12; bar.style.strokeDashoffset = String(100 - prog.p * 100); stepEl.textContent = prog.step; raf = requestAnimationFrame(tick); };
@@ -533,31 +537,45 @@ async function savePersonVideo(file) {
     });
     prog.target = 1; prog.step = `${res.n} views from a ${Math.round(res.duration)} s video`;
     await new Promise((ok) => setTimeout(ok, Math.max(700, 2600 - (performance.now() - t0))));   // long enough to read; the work itself is real
-    cancelAnimationFrame(raf);
+    await new Promise((ok) => { const w = () => (prog.p > 0.996 ? ok() : requestAnimationFrame(w)); w(); });   // the ring closes
+    cancelAnimationFrame(raf); bar.style.strokeDashoffset = '0';
     await refresh();
-    personAddedPage(id, res);
+    personAdded(el, id, res);
   } catch (e) { cancelAnimationFrame(raf); pop(); dialog('Could not save', e.message, [['OK', 'btn-p', null]]); }
 }
 const ICON_SHIELD = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#1d8f74" stroke-width="2" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.3 7.5 9.5 4.3-1.2 7.5-4.9 7.5-9.5V6Z"/><path d="m8.8 12.2 2.3 2.3 4.3-4.6" stroke-linecap="round"/></svg>';
 const familyOf = () => state.things.filter((t) => isPerson(t) && relationOf(t) === 'Family');
-function personAddedPage(id, res) {
-  push(() => {
-    const t = state.things.find((x) => x.id === id), fp = t?.fingerprint, face = fp?.crops?.[0];
-    const hasSecurity = state.rules.some((r) => r.unknown);
-    const fam = familyOf();
-    return `<div class="step added-person"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
-      <div class="face-big">${face ? `<img src="${crop(face)}" alt="">` : ''}<span class="ok">${ICON_CHECK}</span></div>
-      <h3>${esc(t?.name || 'Person')} added</h3><p>${esc(relationOf(t) || 'Person')} · ${fp?.n || res?.n || 0} views from a ${Math.round(fp?.duration || res?.duration || 0)} s video</p></div>
-      ${hasSecurity ? '' : `<div class="reco-card"><div class="reco-head">${ICON_SHIELD}<b>Home security</b></div>
-        <p>Sound the alarm when someone who isn't Family comes in?</p>
-        <div class="fam-row">${fam.map((p) => `<span class="fam"><img src="${crop(p.fingerprint?.crops?.[0] || '')}" alt=""><small>${esc(p.name)}</small></span>`).join('')}</div>
-        <div class="reco-acts"><button type="button" class="btn-p" data-act="security-on">Turn on</button><button type="button" class="btn-s" data-act="finish">Not now</button></div></div>`}
-      ${hasSecurity ? '<div class="bottom-bar"><button type="button" class="btn-p" data-act="finish">Done</button></div>' : ''}`;
-  });
+/** The saving screen becomes the "added" screen in place: the closed ring stays as the face's border, the check badge
+ * pops in, and each line of text fades out before its new words fade in (never two texts at once). */
+function personAdded(el, id, res) {
+  const t = state.things.find((x) => x.id === id), fp = t?.fingerprint;
+  const step = el.querySelector('.step.saving'), h3 = step.querySelector('h3'), p = step.querySelector('.saving-step');
+  const hasSecurity = state.rules.some((r) => r.unknown);
+  const swap = (node, text) => { node.style.opacity = '0'; setTimeout(() => { node.textContent = text; node.style.opacity = '1'; }, 170); };
+  step.classList.add('done');
+  setTimeout(() => {
+    swap(h3, `${t?.name || 'Person'} added`);
+    swap(p, `${relationOf(t) || 'Person'} · ${fp?.n || res?.n || 0} views from a ${Math.round(fp?.duration || res?.duration || 0)} s video`);
+  }, 140);
+  setTimeout(() => {
+    step.classList.add('added-person');
+    el.insertAdjacentHTML('beforeend', `<div class="bottom-bar fade-in">${hasSecurity ? '<button type="button" class="btn-p" data-act="finish">Done</button>'
+      : '<button type="button" class="btn-p" data-act="person-next">Continue</button>'}</div>`);
+  }, 560);
+}
+/** The app's suggestion after a person is added, on its own page (as New scenario): the family's faces and one rule. */
+function suggestionPage() {
+  const fam = familyOf();
+  push(() => `${phead('', '')}<div class="ptitle">Suggested scenario</div><p class="psub">Based on the people you added.</p>
+    <div class="reco-card sugg"><div class="reco-head">${ICON_SHIELD}<b>Home security</b></div>
+      <p>Sound the alarm when someone who isn't Family comes in?</p>
+      <div class="fam-row">${fam.map((q) => `<span class="fam"><img src="${crop(q.fingerprint?.crops?.[0] || '')}" alt=""><small>${esc(q.name)}</small></span>`).join('')}</div>
+      <div class="reco-acts"><button type="button" class="btn-p" data-act="security-on">Turn on</button><button type="button" class="btn-s" data-act="finish">Not now</button></div></div>`);
 }
 /** The app's own suggestion: one sentence, compiled as any other into a rule, with its own title. */
 async function securityOn(btn) {
   btn.disabled = true; btn.textContent = 'Turning on…';
+  ui.scenBack = 0;   // Done goes back to Things
   try {
     const r = await api('/api/rules', { method: 'POST', body: JSON.stringify({ sentence: "Sound the alarm when someone who isn't Family comes in", title: 'Home Security' }) });
     await refresh();
@@ -873,6 +891,7 @@ device.addEventListener('click', async (e) => {
     case 'sightings': sightingsPage(topId()); break;
     case 'add-thing': addThingPage(); break;
     case 'pick-thing': if (el.dataset.q === 'person') personMethodPage(); else methodPage(el.dataset.name, el.dataset.q); break;
+    case 'person-next': suggestionPage(); break;
     case 'security-on': securityOn(el); break;
     case 'record-face': $('facein')?.click(); break;
     case 'rel': el.parentElement.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c === el)); break;

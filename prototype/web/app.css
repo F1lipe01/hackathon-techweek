@@ -213,10 +213,9 @@
   /* a pushed screen covers the tab bar too */
   .device.pushed { grid-template-rows: 54px minmax(0, 1fr) 0; }
   .device.pushed .tabs, .device.pushed .fab { visibility: hidden; }
-  .view.enter { animation: app-in 280ms var(--app-fade) both; }
-  .view.leave { animation: app-out 300ms var(--app-fade) both; }
-  @keyframes app-in { from { opacity: 0.45; } to { opacity: 1; } }
-  @keyframes app-out { from { opacity: 1; } to { opacity: 0; } }
+  /* one screen at a time: the page is opaque at once, only its content fades in (a pop reveals the screen below the same way) */
+  .view.enter > * { animation: content-in 240ms var(--app-fade) both; }
+  @keyframes content-in { from { opacity: 0; } to { opacity: 1; } }
 
   /* header: home name + icons, as on Devices / Menu / Favorites */
   .ahead { display: flex; align-items: center; justify-content: space-between; height: 72px; padding: 0 37px 0 24px; }
@@ -433,6 +432,13 @@
   .ring-wrap .track { fill: none; stroke: #dbe3ef; stroke-width: 6; } .ring-wrap .bar { fill: none; stroke: #2abe9e; stroke-width: 6; stroke-linecap: round; }
   .ring-wrap img { position: absolute; left: 18px; top: 18px; width: 132px; height: 132px; border-radius: 50%; object-fit: cover; object-position: 50% 42%; }
   .saving-step { margin-top: 10px !important; }
+  .step.saving h3, .step.saving .saving-step { transition: opacity 150ms ease; }
+  .step.saving .track { transition: opacity 220ms ease; } .step.saving.done .track { opacity: 0; }
+  .ring-wrap .ok { position: absolute; right: 12px; bottom: 12px; width: 42px; height: 42px; border-radius: 50%; background: var(--app-teal); display: grid; place-items: center;
+    box-shadow: 0 0 0 3px #fff; transform: scale(0); transition: transform 300ms cubic-bezier(0.3, 1.5, 0.6, 1) 80ms; } .ring-wrap .ok svg { width: 24px; height: 24px; }
+  .step.saving.done .ok { transform: scale(1); }
+  .bottom-bar.fade-in { animation: fade-in 240ms ease-out both; }
+  .reco-card.sugg { margin-top: 6px; }
   .face-big { position: relative; width: 132px; height: 132px; margin: 8px 0 22px; }
   .face-big img { width: 132px; height: 132px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 4px #fff, 0 10px 26px -10px rgb(0 0 0 / 0.35); }
   .face-big .ok { position: absolute; right: -2px; bottom: 2px; width: 40px; height: 40px; border-radius: 50%; background: var(--app-teal); display: grid; place-items: center; box-shadow: 0 0 0 3px #fff; }

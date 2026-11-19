@@ -54,7 +54,10 @@ No extensions (late = possible disqualification), pitch time cut strictly. Full 
 | [docs/18-use-cases.md](docs/18-use-cases.md) | **34 use cases**, 10 finalists scored, 5 for the pitch and the video |
 | [docs/19-teste-real.md](docs/19-teste-real.md) | The lab checklist for the real end-to-end test (PT) |
 | [docs/20-product.md](docs/20-product.md) | **Product spec**, written as the Altice team planning the launch: adding people, pets and things; rules; alerts; four flow diagrams |
-| [docs/pt/21-pitch.md](docs/pt/21-pitch.md) | **The pitch:** run of show for 3 and 5 minutes, who speaks, fixed lines, jury questions |
+| [docs/pt/21-pitch.md](docs/pt/21-pitch.md) | **The pitch (PT, 19 Nov):** the slide list for the 3- and 5-minute versions with the criteria each slide wins, the run of show to the second, who speaks, fixed lines, where each film plays, how to answer "is the video real?", the proof runs and the live demo, jury questions, the checklist |
+| [docs/23-engineering-qa.md](docs/23-engineering-qa.md), [docs/pt/23-perguntas-engenharia.md](docs/pt/23-perguntas-engenharia.md) | **Engineering questions and answers** (EN, and PT for the jury): a short answer to say aloud, then the detail, marked as design, prototype or to confirm |
+| [docs/24-what-is-real.md](docs/24-what-is-real.md) | **What is real in each film:** every moment classified as real, real footage, model output, edited, done by hand or envisioned |
+| [docs/pt/25-cola-pitch.md](docs/pt/25-cola-pitch.md) | **The presenters' one-page cheat sheet (PT):** opening and closing lines, the film line, the architecture in three sentences, five numbers with sources, what is real, ten questions |
 | [deliverables/deck/](deliverables/deck/) | **The pitch deck:** link to the presentation and a copy of its source, with its version history |
 | [video/](video/) | **The two videos** in Remotion: the presentation (video 1) and the real lab example (video 2); tools for stock boxes, audio and safe rendering |
 | [video/storyboard/](video/storyboard/) | **Video 1 storyboard:** every shot with its real frame, timing, text, motion and sound, approved before rendering |

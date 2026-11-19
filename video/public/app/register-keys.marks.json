@@ -1,0 +1,62 @@
+[
+ {
+  "name": "start",
+  "s": 0.401
+ },
+ {
+  "name": "tap [data-act=\"add-thing\"].btn-p",
+  "s": 2.32
+ },
+ {
+  "name": "tap [data-act=\"pick-thing\"][data-name=\"Keys\"]",
+  "s": 4.497
+ },
+ {
+  "name": "register",
+  "s": 4.681
+ },
+ {
+  "name": "view-1",
+  "s": 5.601
+ },
+ {
+  "name": "view-2",
+  "s": 6.029
+ },
+ {
+  "name": "view-3",
+  "s": 6.46
+ },
+ {
+  "name": "view-4",
+  "s": 6.892
+ },
+ {
+  "name": "view-5",
+  "s": 7.324
+ },
+ {
+  "name": "view-6",
+  "s": 7.756
+ },
+ {
+  "name": "view-7",
+  "s": 8.193
+ },
+ {
+  "name": "view-8",
+  "s": 8.625
+ },
+ {
+  "name": "added",
+  "s": 9.063
+ },
+ {
+  "name": "tap .bottom-bar [data-act=\"finish\"]",
+  "s": 12.946
+ },
+ {
+  "name": "done",
+  "s": 13.13
+ }
+]

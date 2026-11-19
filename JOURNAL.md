@@ -42,6 +42,12 @@ How the project moved, day by day: what changed, why, and what the team said. Gi
 - New tool: `track_green.py`, a tracker for green screens without markers. It fits each screen edge and ignores the notch and the thumb (2,2 px median error on a synthetic test).
 - Proof A (keys shown to the camera, 5 s) was rendered at 1080p: sound on every event, −14 LUFS.
 - The renders had been failing because Remotion's bundled Chrome broke, not because of disk space. The fix is to render with the installed Chrome.
+- Proof A was rendered in 4K: clean frames, −14 LUFS. A first 4K attempt was corrupted when the disk ran out mid-render; after space was freed it rendered cleanly at concurrency 1.
+- Proof B (photographing with the phone) was dropped. No stock clip shows a green-screen phone photographing an object, and the app has no such step.
+- Storyboard v6 was published for approval on the same page:
+  - about 44 s, with the keys as the story;
+  - an opening of fast questions over one real moment;
+  - three quick cases and the approved end card with a logo sting.
 
 ## Wed 18 Nov: from an idea to a submitted report, a prototype and a pitch
 

@@ -14,6 +14,10 @@ How the project moved, day by day: what changed, why, and what the team said. Gi
 - **Two findings changed the plan:**
   - Phones in ads are filmed with a blank or marker screen and the app is tracked in afterwards.
   - The prototype registers a thing by showing it to the home camera, not by phone photos. So the proof of the registration shot is built twice: proof A shows the real flow, proof B shows the photo concept and is labelled "conceito".
+- **Six films measured shot by shot** (`video/research/pacing.md`).
+  - v5.1's opening shots were four times too long: 60 f, against a 15 f hook.
+  - Its 4–8 s scenes need cutting into actions of 45–60 f.
+  - None of the films speeds up towards the end.
 - **Rules from 18 Nov that turned out to be misread:**
   - "17 characters per second" was Netflix's limit for children.
   - "Sound only on changes of state" made the cut silent.

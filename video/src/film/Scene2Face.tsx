@@ -410,15 +410,22 @@ const LabLayer: React.FC<{ ov?: number }> = ({ ov = 1 }) => {
   const ax = (ALARM[0] + ALARM[2]) / 2 * 1920, ay = (ALARM[1] + ALARM[3]) / 2 * 1080;
   const chip = ringing ? ["Um desconhecido pegou no livro · alarme e mensagem", KIND.alarm, "#fff"] : known ? ["Filipe é de casa · nada toca", KIND.ok, "#fff"]
     : stranger ? ["Não é ninguém de casa", "rgba(255,255,255,0.94)", "#B42318"] : ["Cenário ativo · Home Security", "rgba(255,255,255,0.94)", INK];
-  const ov2 = hb ? (() => { const ax = ((hb[2] - hb[0]) / 2) * 1920 * 1.12, ay = ((hb[3] - hb[1]) / 2) * 1080 * 1.06;
-    const cx = ((hb[0] + hb[2]) / 2) * 1920, cy = ((hb[1] + hb[3]) / 2) * 1080; return { x: cx - ax * 1.4, y: cy - ay * 1.4, w: ax * 2.8, h: ay * 2.8, ax, ay }; })() : null;
+  // her whole head (hair, ears, jaw) and a margin: the tracked box is face and hair, about 52 x 68 px here
+  const ov2 = hb ? (() => { const ax = ((hb[2] - hb[0]) / 2) * 1920 * 1.75, ay = ((hb[3] - hb[1]) / 2) * 1080 * 1.6;
+    const cx = ((hb[0] + hb[2]) / 2) * 1920, cy = ((hb[1] + hb[3]) / 2) * 1080; return { x: cx - ax * 1.15, y: cy - ay * 1.15, w: ax * 2.3, h: ay * 2.3, ax, ay }; })() : null;
   return (
     <AbsoluteFill style={{ width: 1920, height: 1080, background: "#000" }}>
       <Picture f={f} />
-      {/* the face of the person in the glass cabin, blurred (AGENTS.md rule 6): a soft-edged oval that follows her head */}
-      {ov2 ? <div style={{ position: "absolute", left: ov2.x, top: ov2.y, width: ov2.w, height: ov2.h, overflow: "hidden",
-        WebkitMaskImage: `radial-gradient(ellipse ${ov2.ax}px ${ov2.ay}px at 50% 50%, #000 72%, transparent 100%)`, maskImage: `radial-gradient(ellipse ${ov2.ax}px ${ov2.ay}px at 50% 50%, #000 72%, transparent 100%)` }}>
-        <div style={{ position: "absolute", left: -ov2.x, top: -ov2.y, width: 1920, height: 1080, filter: "blur(9px)" }}><Picture f={f} /></div>
+      {/* the face of the person in the glass cabin, hidden (AGENTS.md rule 6): a soft-edged oval that follows her head,
+          pixelated (9 px blocks), then blurred */}
+      <svg width={0} height={0} style={{ position: "absolute" }}><defs><filter id="cabin-pix" x="0" y="0" width="1" height="1">
+        <feFlood x={4} y={4} width={1} height={1} /><feComposite width={9} height={9} /><feTile result="t" />
+        <feComposite in="SourceGraphic" in2="t" operator="in" /><feMorphology operator="dilate" radius={4.5} /></filter></defs></svg>
+      {ov2 ? <div style={{ position: "absolute", left: ov2.x, top: ov2.y, width: ov2.w, height: ov2.h,
+        WebkitMaskImage: `radial-gradient(ellipse ${ov2.ax}px ${ov2.ay}px at 50% 50%, #000 76%, transparent 100%)`, maskImage: `radial-gradient(ellipse ${ov2.ax}px ${ov2.ay}px at 50% 50%, #000 76%, transparent 100%)` }}>
+        <div style={{ position: "absolute", inset: 0, overflow: "hidden", filter: "url(#cabin-pix) blur(6px)" }}>
+          <div style={{ position: "absolute", left: -ov2.x, top: -ov2.y, width: 1920, height: 1080 }}><Picture f={f} /></div>
+        </div>
       </div> : null}
       <AbsoluteFill style={{ background: "rgba(229,50,45,0.035)", opacity: beep }} />
       <AbsoluteFill style={{ opacity: ov }}>

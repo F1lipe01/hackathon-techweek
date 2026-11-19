@@ -492,16 +492,20 @@ const TAKES = {
     }); },
   // example 3, the end: everyone left with the lights and the AC on and the door open. Only the alert is added (the lab
   // take was filmed before the rules existed); its picture is the lab camera's frame of the empty room (stage1 69 s,
-  // 17:32:29). The two Yes taps switch the prototype's simulated devices (outside the Altice kit) for real.
+  // 17:32:29). The lights hang on the kit's real Plug (the link is ThingTracker's): its Yes runs plug_off through the
+  // Altice MCP as a dry run (TT_LIVE_ACTIONS is never set). The AC is a third-party integration, simulated.
   'alert-nobody-open': () => { Object.assign(C, { on: true, onlyRules: false, events: [], things: [], rules: [], reply: null, nowAt: today(17, 32) * 1000 + 40000 });
     return take('alert-nobody-open', '17:32', async ({ page, tap, hideFinger, refresh, mark }) => {
-      for (const id of ['sim-lights', 'sim-ac']) await fetch(BASE + `/api/sim-devices/${id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ on: true }) });
+      const st0 = await (await fetch(BASE + '/api/state')).json();
+      if (st0.settings?.live_actions) throw new Error('TT_LIVE_ACTIONS is on: this take would switch the real plug');
+      for (const d of st0.tt_devices) await fetch(BASE + `/api/tt-devices/${encodeURIComponent(d.id)}/power`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ on: true }) });
       const st = await (await fetch(BASE + '/api/state')).json();
+      const plug = st.tt_devices.find((d) => d.type === 'plug'), ac = st.tt_devices.find((d) => d.type === 'ac');
       const rule = st.rules.find((r) => r.kind === 'nobody_devices_on');
       await refresh();
       await pause(1200);
       conceptEvent({ kind: 'alert', ts: today(17, 32), title: 'Nobody is home', rule_id: rule?.id, text: 'Everyone left, and 2 things are still on.',
-        devices: ['sim-lights', 'sim-ac'], doorAlarm: true, crop: 'concept-empty-lab.jpg', snapshot: 'concept-empty-lab.jpg', place: 'Work Room camera' });
+        devices: [plug.id, ac.id], doorAlarm: true, crop: 'concept-empty-lab.jpg', snapshot: 'concept-empty-lab.jpg', place: 'Work Room camera' });
       await refresh();
       mark('alert');
       await pause(1600);
@@ -510,11 +514,11 @@ const TAKES = {
       await page.evaluate(() => document.getElementById('toast').click());  // the film draws its own tap on the notification
       mark('open', { x: xy[0], y: xy[1] });
       await pause(2200);
-      await tap('[data-act="sim-off"][data-id="sim-lights"]');
+      await tap(`[data-act="tt-off"][data-id="${plug.id}"]`);
       await page.waitForSelector('.dev-ask.done', { state: 'visible', timeout: 8000 });
       mark('lights-off');
       await pause(2500);
-      await tap('[data-act="sim-off"][data-id="sim-ac"]');
+      await tap(`[data-act="tt-off"][data-id="${ac.id}"]`);
       await page.waitForFunction(() => document.querySelectorAll('.dev-ask.done').length === 2, null, { timeout: 8000 });
       mark('ac-off');
       await hideFinger();

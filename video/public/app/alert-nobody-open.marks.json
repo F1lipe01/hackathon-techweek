@@ -1,36 +1,36 @@
 [
  {
   "name": "start",
-  "s": 0.399
+  "s": 0.401
  },
  {
   "name": "alert",
-  "s": 1.627
+  "s": 1.66
  },
  {
   "name": "open",
-  "s": 3.23,
+  "s": 3.264,
   "x": 201,
   "y": 83.5
  },
  {
-  "name": "tap [data-act=\"sim-off\"][data-id=\"sim-lights\"]",
-  "s": 6.128,
+  "name": "tap [data-act=\"tt-off\"][data-id=\"bc891629-98bc-44f7-99a8-1aa61428a9bf\"]",
+  "s": 6.165,
   "x": 339.4,
   "y": 472.4
  },
  {
   "name": "lights-off",
-  "s": 6.323
+  "s": 6.352
  },
  {
-  "name": "tap [data-act=\"sim-off\"][data-id=\"sim-ac\"]",
-  "s": 9.502,
+  "name": "tap [data-act=\"tt-off\"][data-id=\"ac\"]",
+  "s": 9.528,
   "x": 339.4,
   "y": 546.4
  },
  {
   "name": "ac-off",
-  "s": 9.686
+  "s": 9.718
  }
 ]

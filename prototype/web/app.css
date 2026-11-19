@@ -453,6 +453,9 @@
   .dev-asks { display: grid; gap: 10px; margin: 0 16px 12px; }
   .dev-ask { display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; background: #fff; box-shadow: 0 1px 0 rgb(0 0 0 / 0.04), 0 8px 20px -14px rgb(26 34 51 / 0.35); }
   .dev-ask .dic { width: 44px; height: 44px; border-radius: 12px; background: #f4f6fa; display: grid; place-items: center; }
+  .dev-ask .dic img { width: 32px; height: 32px; object-fit: contain; } .hero.sim .sim-ic img { width: 60px; height: 60px; object-fit: contain; }
+  .group.powers { margin-top: 6px; } .group.powers .row { cursor: default; } .group.powers .val { margin-left: auto; color: var(--app-muted); }
+  .group.powers + .sim-note { margin: 8px 22px 18px; }
   .dev-ask b { display: block; font-size: 0.95rem; } .dev-ask small { display: block; font-size: 0.8rem; color: var(--app-muted); margin-top: 2px; }
   .dev-ask .btn-p { height: 38px; padding: 0 22px; }
   .dev-ask .dev-off { font-size: 0.9rem; font-weight: 600; color: #1d8f74; padding: 0 8px; }

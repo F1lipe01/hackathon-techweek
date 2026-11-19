@@ -77,27 +77,46 @@ def _llm(fn, *args):
         raise HTTPException(502, "No connection to the Claude API")
 
 
-# Two devices the app can switch that are not Altice devices: the lab's ceiling lights and air conditioner, connected
-# outside the Altice kit. Simulated in this prototype: their on/off state lives here and nothing is sent anywhere.
-SIM_FILE = Path(__file__).resolve().parent / "data" / "sim_devices.json"
-SIM_DEFAULT = [{"id": "sim-lights", "name": "Ceiling lights", "type": "light", "room": "Work Room", "on": True},
-               {"id": "sim-ac", "name": "Air conditioner", "type": "ac", "room": "Work Room", "on": True}]
+# The devices the power-saving rule can turn off, as ThingTracker sees them (data/tt_devices.json, ThingTracker's own
+# data, never written to the Altice platform):
+# - the kit's real Plug, with what it powers: in the lab, the ceiling lights hang on it. The link is ThingTracker's.
+#   Switching it goes through actions.run("plug_off"/"plug_on"): a dry run unless TT_LIVE_ACTIONS=1 (never set); the
+#   state the app shows after a dry run is ThingTracker's own.
+# - an Air conditioner connected to the app directly, as a third-party integration: not part of the Altice kit, and
+#   simulated in this prototype (its state lives here; nothing is sent to it).
+TT_FILE = Path(__file__).resolve().parent / "data" / "tt_devices.json"
+TT_DEFAULT = {"powers": {"plug": "Ceiling lights"}, "state": {},
+              "integrations": [{"id": "ac", "name": "Air conditioner", "type": "ac", "room": "Work Room", "on": True,
+                                "via": "Third-party integration"}]}
 
 
-def sim_devices():
+def _tt():
     try:
-        return json.loads(SIM_FILE.read_text())
+        return json.loads(TT_FILE.read_text())
     except (OSError, ValueError):
-        return [dict(d) for d in SIM_DEFAULT]
+        return json.loads(json.dumps(TT_DEFAULT))
 
 
-def sim_set(did, on):
-    devs = sim_devices()
-    for d in devs:
-        if d["id"] == did:
-            d["on"] = bool(on)
-    SIM_FILE.write_text(json.dumps(devs))
-    return devs
+def tt_devices():
+    """The kit's plugs (with what each powers) and the app's integrations, with the on/off state the app shows."""
+    d, out = _tt(), []
+    rooms = {r["id"]: r["name"] for r in store.home().get("rooms", [])}
+    for x in store.home().get("devices", []):
+        if x["type"] != "plug":
+            continue
+        powers = d["powers"].get(x["id"]) or d["powers"].get("plug", "")
+        on = d["state"].get(x["id"], str(x.get("status", "")).strip().lower() not in ("off", "disconnected"))
+        out.append({"id": x["id"], "name": x["name"], "type": "plug", "room": rooms.get(x.get("room_id"), ""), "on": bool(on),
+                    "powers": powers, "kit": True})
+    for x in d["integrations"]:
+        out.append({**x, "on": bool(d["state"].get(x["id"], x["on"])), "kit": False})
+    return out
+
+
+def tt_set(did, on):
+    d = _tt()
+    d["state"][did] = bool(on)
+    TT_FILE.write_text(json.dumps(d))
 
 
 def fire(rule, crop=None, evidence="", text=None, **extra):
@@ -425,15 +444,22 @@ def thing_face_video(tid: str, payload: dict = Body(...)):
     return {"ok": True, "n": len(names), "duration": round(dur, 1)}
 
 
-@app.post("/api/sim-devices/{did}")
-def set_sim_device(did: str, payload: dict = Body(...)):
-    """Switch a device connected outside the Altice kit (simulated: nothing is sent to any device)."""
-    devs = sim_set(did, payload.get("on"))
-    d = next((x for x in devs if x["id"] == did), None)
+@app.post("/api/tt-devices/{did}/power")
+def set_tt_device(did: str, payload: dict = Body(...)):
+    """Turn a device off (or on) from the app. The kit's plug: through the Altice MCP (a dry run unless
+    TT_LIVE_ACTIONS=1). The integration: simulated, nothing is sent."""
+    d = next((x for x in tt_devices() if x["id"] == did), None)
     if not d:
         raise HTTPException(404, "unknown device")
-    store.add_event("device", f"{d['name']} turned {'on' if d['on'] else 'off'} from the app (simulated, outside the Altice kit).")
-    return {"ok": True, "devices": devs}
+    on = bool(payload.get("on"))
+    if d["kit"]:
+        res = actions.run("plug_on" if on else "plug_off")
+        sent = "sent to the platform" if res.get("live") else "not sent (dry run)"
+        store.add_event("device", f"{d['name']} (powers {d['powers']}) turned {'on' if on else 'off'} from the app: {sent}.")
+    else:
+        store.add_event("device", f"{d['name']} turned {'on' if on else 'off'} from the app ({d.get('via', 'integration').lower()}, simulated).")
+    tt_set(did, on)
+    return {"ok": True, "devices": tt_devices()}
 
 
 @app.get("/api/edge/fingerprints")
@@ -726,11 +752,11 @@ def rules_engine():
                 elif kind == "nobody_devices_on" and edge_online():
                     # nobody seen by the camera for grace_s seconds, and something is still on: ask once per empty spell
                     lp = EDGE["last_person"]
-                    on = [d for d in sim_devices() if d["on"]]
+                    on = [d for d in tt_devices() if d["on"]]
                     if on and lp and now_ - lp >= (r.get("grace_s") or mins * 60 or 10) and r.get("asked_after", 0) < lp:
                         store.update_rule(r["id"], asked_after=lp)
                         fire(r, text=f"Everyone left, and {len(on)} thing{'s are' if len(on) > 1 else ' is'} still on.",
-                             evidence=f"No one seen since {hm(lp)}; on: " + ", ".join(d["name"] for d in on) + ".",
+                             evidence=f"No one seen since {hm(lp)}; on: " + ", ".join(d["name"] + (f" ({d['powers']})" if d.get("powers") else "") for d in on) + ".",
                              devices=[d["id"] for d in on], ask_off=True)
                 elif kind == "door_open_nobody" and edge_online():
                     # the contact sensor says open, and nobody has been seen for grace_s seconds since it opened
@@ -758,7 +784,7 @@ def state():
                      "kit_camera": bool(os.environ.get("CAMERA_RTSP_URL"))}
     s["edge"] = {k: v for k, v in EDGE.items() if k != "boxes"} | {"online": edge_online()}
     s["enrol"] = dict(ENROL) or None
-    s["sim_devices"] = sim_devices()
+    s["tt_devices"] = tt_devices()
     s["door"] = dict(DOOR)
     return s
 

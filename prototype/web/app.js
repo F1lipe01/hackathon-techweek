@@ -174,11 +174,13 @@ const phead = (title, sub, right = '') => `<header class="phead"><button type="b
 const sec = (key, title, count) => `<h3 class="sec ${ui.closed.has(key) ? 'closed' : ''}" data-act="sec" data-key="${esc(key)}">${esc(title)} (${count})${I.chevUp}</h3>`;
 const row = (icon, label, act = '', extra = '') => `<button type="button" class="row ${extra}" ${act ? `data-act="${act}" data-title="${esc(label)}"` : ''}>${icon}<span>${esc(label)}</span>${extra.includes('danger') ? '<span></span>' : I.chevR}</button>`;
 const statusCls = (s) => (s === 'Disconnected' ? 'red' : '');
+const ttOf = (id) => (state.tt_devices || []).find((x) => x.id === id);
+const ttStatus = (d) => { const t = ttOf(d.id); return t?.powers ? `${t.on ? 'On' : 'Off'} · powers ${t.powers}` : d.status; };
 function deviceCard(d) {
   const round = d.type === 'plug' ? 'round' : '';
   return `<li><button type="button" class="card ${d.raised ? 'raised' : ''}" data-act="device" data-id="${esc(d.id)}">
     <span class="ic ${round}"><img src="${devImg(d.type)}" alt=""></span>
-    <span><span class="nm">${esc(d.name)}</span><span class="st ${statusCls(d.status)}">${esc(d.status)}</span></span><span></span></button></li>`;
+    <span><span class="nm">${esc(d.name)}</span><span class="st ${statusCls(d.status)}">${esc(ttStatus(d))}</span></span><span></span></button></li>`;
 }
 function thingPhoto(t) { return t.last_seen?.crop || t.fingerprint?.crops?.[0] || null; }
 function thingStatus(t) {
@@ -214,7 +216,7 @@ function itemCard(t) {
   return `<li><button type="button" class="card" data-act="thing" data-id="${esc(t.id)}">${ic}
     <span><span class="nm">${esc(t.name)}</span><span class="st meta">${esc(meta)}</span>${l ? `<span class="st seen">On the ${esc(l.zone_name)} · ${hm(l.ts)}</span>` : ''}</span><span></span></button></li>`;
 }
-const watches = (r) => (r.kind === 'nobody_devices_on' ? 'the empty home, lights and AC' : r.kind === 'door_open_nobody' ? 'the door, the empty home' : r.unknown ? 'anyone not in Family' : state.things.find((t) => t.id === r.thing_id)?.name || (r.who ? r.who : 'the home'));
+const watches = (r) => (r.kind === 'nobody_devices_on' ? `the empty home, ${(state.tt_devices || []).map((d) => d.name).join(', ')}` : r.kind === 'door_open_nobody' ? 'the door, the empty home' : r.unknown ? 'anyone not in Family' : state.things.find((t) => t.id === r.thing_id)?.name || (r.who ? r.who : 'the home'));
 const homeName = () => state.home?.name || 'Hack 3';
 
 // ------------------------------------------------------------------ tabs
@@ -265,9 +267,10 @@ function renderDevices() {
     const ds = list.filter((d) => d.room_id === r.id);
     if (ds.length) html += sec('room-' + r.id, r.name, ds.length) + `<ul class="cards">${ds.map(deviceCard).join('')}</ul>`;
   }
-  const sims = state.sim_devices || [];
-  if (sims.length) html += sec('room-sim', 'Work Room · outside the Altice kit', sims.length) + `<ul class="cards">${sims.map((d) => `<li><button type="button" class="card" data-act="sim-device" data-id="${esc(d.id)}">
-    <span class="ic">${d.type === 'ac' ? ICON_AC : ICON_LIGHT}</span><span><span class="nm">${esc(d.name)}</span><span class="st ${d.on ? '' : 'grey'}">${d.on ? 'On' : 'Off'} · simulated</span></span><span></span></button></li>`).join('')}</ul>`;
+  // devices connected to the app directly (third-party integrations, not part of the Altice kit; simulated here)
+  const apps = (state.tt_devices || []).filter((d) => !d.kit);
+  if (apps.length) html += sec('room-apps', 'Connected to the app', apps.length) + `<ul class="cards">${apps.map((d) => `<li><button type="button" class="card" data-act="tt-device" data-id="${esc(d.id)}">
+    <span class="ic">${ttIcon(d)}</span><span><span class="nm">${esc(d.name)}</span><span class="st ${d.on ? '' : 'grey'}">${d.on ? 'On' : 'Off'} · ${esc(d.room)}</span></span><span></span></button></li>`).join('')}</ul>`;
   const none = list.filter((d) => !d.room_id);
   if (none.length) html += sec('room-none', 'Without room', none.length) + `<ul class="cards">${none.map(deviceCard).join('')}</ul>`;
   tb.innerHTML = html || '<div class="empty"><p>No devices match.</p></div>';
@@ -375,7 +378,10 @@ function devicePage(id) {
       return `${phead(x.name, room(x), right)}<p class="battery">Battery<span>Good</span></p>
         <div class="tiles"><div class="tile">${I.thermo}<small>Temperature</small><b>${esc(t || '')}</b></div><div class="tile">${I.drop}<small>Humidity</small><b>${esc(h || '')}</b></div></div>${rows}`;
     }
-    return `${phead(x.name, room(x), right)}<div class="hero"><img class="dev" src="${devImg(x.type)}" alt=""><span class="st ${statusCls(x.status)}">${esc(x.status)}</span></div>${rows}`;
+    const tt = ttOf(x.id);
+    const powers = tt?.powers ? `<div class="group powers"><div class="row">${ICON_LIGHT}<span>Powers</span><span class="val">${esc(tt.powers)}</span></div></div>
+      <p class="sim-note">What this plug powers is set in ThingTracker and kept with your things, not in the Altice platform.</p>` : '';
+    return `${phead(x.name, room(x), right)}<div class="hero"><img class="dev" src="${devImg(x.type)}" alt=""><span class="st ${statusCls(x.status)}">${esc(tt ? (tt.on ? 'On' : 'Off') : x.status)}</span></div>${powers}${rows}`;
   }, { live: true });
 }
 function thingPage(id) {
@@ -702,14 +708,15 @@ function notificationsPage() {
 const ICON_BEACON = '<svg viewBox="0 0 40 40" width="40" height="40"><path d="M11 28V19a9 9 0 0 1 18 0v9Z" fill="#2563EB"/><path d="M20 10a9 9 0 0 1 9 9v9h-9Z" fill="#DC2626"/><rect x="8" y="28" width="24" height="5" rx="2" fill="#1a2233"/><path d="M20 3.5v3M7.5 8.5l2 2M32.5 8.5l-2 2M3.5 19h3M33.5 19h3" stroke="#1a2233" stroke-width="2.2" stroke-linecap="round"/></svg>';
 const ICON_LIGHT = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#b7791f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3Z" fill="#fde68a"/></svg>';
 const ICON_AC = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="8" rx="2" fill="#dbeafe"/><path d="M7 10h10M8 16l-1 3M12 16v3M16 16l1 3"/></svg>';
-const SIM_ASK = { 'sim-lights': ['Turn off the lights?', ICON_LIGHT], 'sim-ac': ['Turn off the AC?', ICON_AC] };
+// the same icon wherever a device appears: the Altice app's own plug image for the kit's plug, the AC's for the integration
+function ttIcon(d) { return d.type === 'plug' ? `<img src="${devImg('plug')}" alt="">` : ICON_AC; }
+const askFor = (d) => (d.type === 'ac' ? 'Turn off the AC?' : /light/i.test(d.powers || '') ? 'Turn off the lights?' : `Turn off ${d.powers || d.name}?`);
 function powerCards(e) {
   return (e.devices || []).map((id) => {
-    const d = (state.sim_devices || []).find((x) => x.id === id) || { name: id, on: true };
-    const [ask, icon] = SIM_ASK[id] || [`Turn off ${d.name}?`, ICON_LIGHT];
+    const d = ttOf(id) || { id, name: id, on: true };
     const off = !d.on;
-    return `<div class="dev-ask${off ? ' done' : ''}"><span class="dic">${icon}</span><span><b>${esc(ask)}</b><small>${esc(d.name)} · ${off ? 'Off' : 'On'}</small></span>
-      ${off ? '<span class="dev-off">Off ✓</span>' : `<button type="button" class="btn-p" data-act="sim-off" data-id="${esc(id)}">Yes</button>`}</div>`;
+    return `<div class="dev-ask${off ? ' done' : ''}"><span class="dic">${ttIcon(d)}</span><span><b>${esc(askFor(d))}</b><small>${esc(d.name)} · ${off ? 'Off' : 'On'}</small></span>
+      ${off ? '<span class="dev-off">Off ✓</span>' : `<button type="button" class="btn-p" data-act="tt-off" data-id="${esc(id)}">Yes</button>`}</div>`;
   }).join('');
 }
 function alertPage(e) {
@@ -734,12 +741,12 @@ function powerAlertPage(e) {
     <div class="bottom-bar alert-actions"><button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`, { live: true });
   page._alert = e;
 }
-function simDevicePage(id) {
+function integrationPage(id) {
   push(() => {
-    const d = (state.sim_devices || []).find((x) => x.id === id) || {};
-    return `${phead(d.name || 'Device', d.room || 'Work Room')}<div class="hero sim"><span class="sim-ic">${d.type === 'ac' ? ICON_AC : ICON_LIGHT}</span><span class="st ${d.on ? '' : 'grey'}">${d.on ? 'On' : 'Off'}</span></div>
-      <p class="sim-note">Connected outside the Altice kit. In this prototype it is simulated: the app keeps its state and sends nothing to the device.</p>
-      <div class="bottom-bar"><button type="button" class="btn-p" data-act="sim-toggle" data-id="${esc(d.id)}">${d.on ? 'Turn off' : 'Turn on'}</button></div>`;
+    const d = ttOf(id) || {};
+    return `${phead(d.name || 'Device', d.room || '')}<div class="hero sim"><span class="sim-ic">${ttIcon(d)}</span><span class="st ${d.on ? '' : 'grey'}">${d.on ? 'On' : 'Off'}</span></div>
+      <p class="sim-note">Connected to the app directly, as a third-party integration. It is not part of the Altice kit. In this prototype it is simulated: the app keeps its state and sends nothing to the device.</p>
+      <div class="bottom-bar"><button type="button" class="btn-p" data-act="tt-toggle" data-id="${esc(d.id)}">${d.on ? 'Turn off' : 'Turn on'}</button></div>`;
   }, { live: true });
 }
 function settingsPage() {
@@ -902,10 +909,10 @@ device.addEventListener('click', async (e) => {
     case 'save-thing': saveThing(el); break;
     case 'new-scenario': scenarioPage(el.dataset.id); break;
     case 'save-scenario': saveScenario(el); break;
-    // simulated: the lights and the AC are not Altice devices; their state lives in the prototype only (server.py, sim_devices)
-    case 'sim-off': el.blur(); api(`/api/sim-devices/${encodeURIComponent(el.dataset.id)}`, { method: 'POST', body: JSON.stringify({ on: false }) }).then(refresh).then(refreshPage); break;
-    case 'sim-device': simDevicePage(el.dataset.id); break;
-    case 'sim-toggle': { el.blur(); const d = (state.sim_devices || []).find((x) => x.id === el.dataset.id); if (d) api(`/api/sim-devices/${encodeURIComponent(d.id)}`, { method: 'POST', body: JSON.stringify({ on: !d.on }) }).then(refresh).then(refreshPage); break; }
+    // the kit's plug goes through the Altice MCP (a dry run unless TT_LIVE_ACTIONS=1); the integration is simulated (server.py, tt_devices)
+    case 'tt-off': el.blur(); api(`/api/tt-devices/${encodeURIComponent(el.dataset.id)}/power`, { method: 'POST', body: JSON.stringify({ on: false }) }).then(refresh).then(refreshPage); break;
+    case 'tt-device': integrationPage(el.dataset.id); break;
+    case 'tt-toggle': { el.blur(); const d = ttOf(el.dataset.id); if (d) api(`/api/tt-devices/${encodeURIComponent(d.id)}/power`, { method: 'POST', body: JSON.stringify({ on: !d.on }) }).then(refresh).then(refreshPage); break; }
     // simulated: the alert shows the alarm turned off; the platform's alarm is never called (AGENTS.md rule 1)
     case 'alarm-off': { const pg = el.closest('section.page'); if (pg?._alert) { pg._alert.alarmOff = Date.now() / 1000; pg.innerHTML = pg._render(); } break; }
     case 'other-thing': otherThingPage(); break;

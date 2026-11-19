@@ -57,9 +57,9 @@
 <circle cx="720.0" cy="504.97499999999997" r="11" fill="#0084D6"/>
 <text x="720.0" y="509.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">5</tspan></text>
 <rect x="795.0" y="549.0" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="568.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">T_vazia cumprido: A SAIR → VAZIA. Ligados,</text>
-<text x="945.0" y="585.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">segundo <tspan font-family="Menlo, monospace" font-size="11.2">get_home_devices</tspan>: as luzes (na</text>
-<text x="945.0" y="602.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">tomada) e o ar condicionado</text>
+<text x="945.0" y="568.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Passado T_saída, ninguém nas câmaras: A SAIR</text>
+<text x="945.0" y="585.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">→ VAZIA. Ligados, segundo <tspan font-family="Menlo, monospace" font-size="11.2">get_home_devices</tspan>:</text>
+<text x="945.0" y="602.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">as luzes (na tomada) e o ar condicionado</text>
 <rect x="959.2" y="622.5" width="241.6" height="17.0" rx="2" fill="#FFFFFF"/>
 <text x="1080.0" y="635.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso: “Não está ninguém em casa e há 2</text>
 <rect x="971.3" y="639.5" width="217.4" height="17.0" rx="2" fill="#FFFFFF"/>
@@ -102,9 +102,9 @@
 <circle cx="515.0" cy="1024.175" r="11" fill="#0084D6"/>
 <text x="515.0" y="1028.5" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">12</tspan></text>
 <rect x="795.0" y="1068.2" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="1087.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Porta aberta há T_porta (20 s na demonstração,</text>
-<text x="945.0" y="1104.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">2 min em produção), sem movimento nem</text>
-<text x="945.0" y="1121.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">pessoas em nenhuma câmara desde que abriu</text>
+<text x="945.0" y="1087.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Porta aberta há T_porta (5 s na demonstração,</text>
+<text x="945.0" y="1104.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">2 min em produção, proposta), sem ninguém em</text>
+<text x="945.0" y="1121.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">nenhuma câmara desde que abriu</text>
 <rect x="963.8" y="1141.7" width="232.5" height="17.0" rx="2" fill="#FFFFFF"/>
 <text x="1080.0" y="1154.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso: “A porta da entrada está aberta e</text>
 <rect x="959.2" y="1158.7" width="241.5" height="17.0" rx="2" fill="#FFFFFF"/>

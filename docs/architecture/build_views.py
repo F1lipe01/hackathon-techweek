@@ -287,17 +287,17 @@ def presenca_estados(lang):
                 "people on the cameras."),
               L("Se saiu alguém da Família, corre a verificação do objeto esquecido.",
                 "If a Family member left, the left-behind check runs.")]
-    e_body = [L("Todos os telemóveis da Família estão fora, a porta abriu e fechou e nenhuma câmara viu uma pessoa durante "
-                "T_vazia, depois de atualizar os últimos lugares onde havia pessoas.",
-                "All Family phones are away, the door opened and closed, and no camera saw a person for T_empty, after a "
-                "refresh of the last places where people were."),
+    e_body = [L("Todos os telemóveis da Família estão fora, a porta abriu e fechou, nenhum rosto da Família foi visto há menos de "
+                "T_rosto e nenhuma câmara vê uma pessoa, depois de atualizar os últimos lugares onde havia pessoas.",
+                "All Family phones are away, the door opened and closed, no Family face was seen in the last T_face, and no "
+                "camera sees a person, after a refresh of the last places where people were."),
               L("Nas regras: as de “casa vazia” agem (propor desligar o que ficou ligado); uma pessoa vista passa a INCERTA.",
                 "In the rules: “empty home” rules act (offer to turn off what is on); a person seen moves the state to UNSURE.")]
     w3 = O[1] - O[0]
     ho = cv.box_h(w3, "X", o_body, 16, 16, 12.5)
     he = cv.box_h(w3, "X", e_body, 16, 16, 12.5)
     hl = cv.box_h(w3, "X", l_body, 16, 16, 12.5)
-    tall = max(ho, he, hl + 74)
+    tall = max(ho, he, hl + 100)
     cv.box(O[0], ry, w3, L("OCUPADA", "OCCUPIED"), o_body, h=tall, stroke=BLUE, title_color=DEEP, **st)
     cv.box(LV[0], ry, w3, L("A SAIR", "LEAVING"), l_body, h=hl, stroke=BLUE, title_color=DEEP, **st)
     cv.box(E[0], ry, w3, L("VAZIA", "EMPTY"), e_body, h=tall, stroke=BLUE, title_color=DEEP, **st)
@@ -317,10 +317,10 @@ def presenca_estados(lang):
                                           "after T_leave, a Family phone is still home"), below=True)
     y3 = ry + 50
     cv.arrow(LV[1], y3, E[0], y3, INK)
-    side(LV[1] + 12, E[0] - 12, y3 + 18, L("todos os telemóveis fora e nenhuma pessoa durante T_vazia",
-                                          "all phones away and no person for T_empty"), below=True)
+    side(LV[1] + 12, E[0] - 12, y3 + 18, L("passado T_saída, telemóveis fora e ninguém nas câmaras",
+                                          "after T_leave, phones away and nobody on the cameras"), below=True)
     # EMPTY -> OCCUPIED under LEAVING
-    y4 = lb + 42
+    y4 = lb + 70
     assert y4 < ob - 20
     cv.arrow(E[0], y4, O[1], y4, INK)
     cv.label((O[1] + E[0]) / 2, y4 - 8, L("chegada: um telemóvel da Família entra no Wi-Fi, ou um rosto da Família é reconhecido",
@@ -343,35 +343,40 @@ def presenca_estados(lang):
     side(E[0], xe1 - 10, (ub + ry) / 2 - 20, L("uma pessoa vista (rosto desconhecido ou não visível)",
                                                "a person seen (unknown face or face not visible)"), w=xe1 - E[0] - 14)
     cv.arrow(xe2, ub, xe2, ry, INK)
-    side(xe2 + 12, E[1], (ub + ry) / 2 - 20, L("telemóveis fora e nenhuma pessoa durante T_vazia, depois da atualização",
-                                               "phones away and no person for T_empty, after the refresh"), w=E[1] - xe2 - 14)
+    side(xe2 + 12, E[1], (ub + ry) / 2 - 20, L("telemóveis fora e ninguém nas câmaras, depois da atualização",
+                                               "phones away and nobody on the cameras, after the refresh"), w=E[1] - xe2 - 14)
 
     # ---- below: signals, the count and the timings
     by = ob + 40
     bw = (W - 80 - 2 * 24) / 3
-    sig = [L("Telemóveis: o _router_ diz que telemóveis da Família estão no Wi-Fi (ferramenta MCP proposta; simulada no protótipo).",
-             "Phones: the router says which Family phones are on the Wi-Fi (a proposed MCP tool; simulated in the prototype)."),
+    sig = [L("Telemóveis: o _router_ diz que telemóveis da Família estão no Wi-Fi (ferramenta MCP proposta, `get_home_wifi_clients`; "
+             "simulada no protótipo).",
+             "Phones: the router says which Family phones are on the Wi-Fi (a proposed MCP tool, `get_home_wifi_clients`; simulated "
+             "in the prototype)."),
            L("Porta: o sensor de contacto envia “aberta” e “fechada” à plataforma, como hoje.",
              "Door: the contact sensor sends “open” and “closed” to the platform, as today."),
            L("Câmaras: pessoas encontradas pelo _OWLv2_ e, com consentimento, o rótulo do rosto calculado em casa.",
              "Cameras: people found by OWLv2 and, with consent, the face label worked out in the home.")]
-    cnt = [L("Pessoas em casa = pessoas da Família em casa (telemóvel no Wi-Fi ou rosto reconhecido desde a última vez que a "
-             "porta abriu) + pessoas com rosto desconhecido vistas agora.",
-             "People home = Family members home (phone on the Wi-Fi, or face recognised since the door last opened) + people "
-             "with an unknown face seen now."),
-           L("Uma pessoa de rosto não visível conta como alguém da Família, se houver alguém da Família em casa; senão, o "
+    cnt = [L("Pessoas em casa = Família em casa (telemóvel no Wi-Fi, ou rosto visto há menos de T_rosto sem o telemóvel ter saído "
+             "depois) + visitas registadas vistas agora + rostos desconhecidos vistos agora.",
+             "People home = Family home (phone on the Wi-Fi, or face seen in the last T_face with no phone leaving since) + "
+             "registered guests seen now + unknown faces seen now."),
+           L("Uma pessoa sem rosto visível só se soma se não puder ser alguém da Família já contado; com a Família fora, o "
              "estado passa a INCERTA.",
-             "A person whose face is not visible counts as a Family member if one is home; otherwise the state becomes UNSURE."),
+             "A person with no visible face is added only if they cannot be a Family member already counted; with the Family "
+             "away, the state becomes UNSURE."),
            L("Divisão sem câmara: cobrem-na os telemóveis. Pessoa parada: cobrem-na os telemóveis e a atualização periódica.",
              "A room without a camera: the phones cover it. A still person: the phones and the periodic refresh cover them.")]
     h1 = cv.box_h(bw, "X", sig, 16, 14.5, 12.5)
     h2 = cv.box_h(bw, "X", cnt, 16, 14.5, 12.5)
-    rows = [("T_telemóvel", "T_phone", L("telemóvel ausente conta como fora*", "a missing phone counts as away*"), "10 s", "10 min"),
-            ("T_visto", "T_seen", L("uma pessoa vista mantém OCUPADA", "a person seen keeps OCCUPIED"), "30 s", "15 min"),
-            ("T_saída", "T_leave", L("A SAIR espera por quem saiu", "LEAVING waits for a leaver"), "30 s", "5 min"),
-            ("T_vazia", "T_empty", L("ninguém visto antes de VAZIA", "nobody seen before EMPTY"), "20 s", "3 min"),
-            ("T_atualizar", "T_refresh", L("revê onde as pessoas estavam", "re-checks where people were"), "10 s", "2 min"),
-            ("T_parado", "T_stale", L("telemóvel em casa sem sinais", "phone home with no other sign"), "60 s", "180 min")]
+    rows = [("T_visto", "T_seen", L("uma pessoa vista conta como “agora”", "a person seen counts as “now”"), "15 s", "2 min"),
+            ("T_rosto", "T_face", L("um rosto da Família conta em casa", "a Family face counts as home"), "2 min", "30 min"),
+            ("T_saída", "T_leave", L("A SAIR espera por quem saiu", "LEAVING waits for a leaver"), "10 s", "5 min"),
+            ("T_atraso", "T_lag", L("telemóvel sai do Wi-Fi após a porta", "a phone leaves the Wi-Fi after the door"), "30 s", "5 min"),
+            ("T_telemóvel", "T_phone", L("ausência que conta como fora*", "absence that counts as away*"), L("simulado", "simulated"), "10 min"),
+            ("T_atualizar", "T_refresh", L("revê onde as pessoas estavam", "re-checks where people were"), "30 s", "30 s"),
+            ("T_verificar", "T_check", L("espera pela verificação ativa", "waits for the active check"), "15 s", "60 s"),
+            ("T_parado", "T_stale", L("telemóvel em casa sem outros sinais", "phone home with no other sign"), "15 min", "4 h")]
     h3 = 16 + 22 + 24 + len(rows) * 21 + 50
     hb = max(h1, h2, h3)
     cv.box(40, by, bw, L("Sinais", "Signals"), sig, h=hb, pad=16)
@@ -389,8 +394,8 @@ def presenca_estados(lang):
         cv.text(c1, yy, f"{name} · {what}", 12, False, BODY, max_w=c2 - c1 - 8)
         cv.text(c2, yy, demo if lang == "en" else demo, 12, True, INK)
         cv.text(c3, yy, prod, 12, True, INK)
-    cv.para(c1, yy + 26, L("* Em A SAIR, logo que sai do Wi-Fi. Valores de produção propostos, a afinar num piloto.",
-                           "* In LEAVING, as soon as it leaves the Wi-Fi. Production values are proposals, to tune in a pilot."),
+    cv.para(c1, yy + 26, L("* Fora de A SAIR; em A SAIR conta logo. Valores do protótipo (presence.py); os de produção são propostas.",
+                           "* Outside LEAVING; in LEAVING it counts at once. The prototype’s values (presence.py); production ones are proposals."),
             bw - 32, 11.5, fill=MUTED)
     foot = L("Corre no serviço _ThingTracker_, na Altice: um estado por casa, recalculado a cada evento (porta, Wi-Fi, resultado "
              "da visão) e a cada temporizador.",
@@ -424,10 +429,10 @@ def seq_livro_esquecido(lang):
         ("m", 2, 4, L("`door.opened` (hoje: `get_home_devices` a cada 4 s)", "`door.opened` (today: `get_home_devices` every 4 s)")),
         ("m", 0, 2, L("porta fechada, 8 s depois", "door closed, 8 s later")),
         ("m", 2, 4, L("`door.closed`", "`door.closed`")),
-        ("n", 4, 4, L("A porta abriu e fechou: OCUPADA → A SAIR. Espera até T_saída (30 s na demonstração, 5 min em produção) por quem saiu",
-                      "The door opened and closed: OCCUPIED → LEAVING. Waits up to T_leave (30 s in the demo, 5 min in production) for whoever left")),
+        ("n", 4, 4, L("A porta abriu e fechou: OCUPADA → A SAIR. Espera até T_saída (10 s na demonstração, 5 min em produção) por quem saiu",
+                      "The door opened and closed: OCCUPIED → LEAVING. Waits up to T_leave (10 s in the demo, 5 min in production) for whoever left")),
         ("m", 0, 2, L("o telemóvel do Filipe saiu do Wi-Fi", "Filipe’s phone left the Wi-Fi")),
-        ("m", 2, 4, L("`wifi.left`: Filipe (ferramenta proposta)", "`wifi.left`: Filipe (proposed tool)")),
+        ("m", 2, 4, L("`wifi.left`: Filipe (evento proposto)", "`wifi.left`: Filipe (proposed event)")),
         ("n", 4, 4, L("Saiu alguém da Família: verificação ativa do lugar habitual do livro, sem esperar por movimento",
                       "A Family member left: an active check of the book’s usual place, without waiting for motion")),
         ("m", 4, 1, L("envia a região da secretária: 3 imagens, 1 por segundo", "send the desk’s region: 3 frames, 1 a second")),
@@ -519,8 +524,8 @@ def seq_casa_vazia(lang):
         ("m", 4, 1, L("atualização: as regiões onde as pessoas foram vistas por último", "refresh: the regions where people were last seen")),
         ("m", 1, 3, L("regiões (fila urgente)", "regions (urgent queue)")),
         ("m", 3, 4, L("nenhuma pessoa", "no person")),
-        ("n", 4, 4, L("T_vazia cumprido: A SAIR → VAZIA. Ligados, segundo `get_home_devices`: as luzes (na tomada) e o ar condicionado",
-                      "T_empty met: LEAVING → EMPTY. On, according to `get_home_devices`: the lights (on the plug) and the air conditioner")),
+        ("n", 4, 4, L("Passado T_saída, ninguém nas câmaras: A SAIR → VAZIA. Ligados, segundo `get_home_devices`: as luzes (na tomada) e o ar condicionado",
+                      "After T_leave, nobody on the cameras: LEAVING → EMPTY. On, according to `get_home_devices`: the lights (on the plug) and the air conditioner")),
         ("m", 4, 5, L("aviso: “Não está ninguém em casa e há 2 aparelhos ligados”, com dois cartões “Sim”",
                       "alert: “Nobody is home and 2 appliances are on”, with two “Yes” cards")),
         ("m", 5, 4, L("“Sim”: desligar as luzes", "“Yes”: turn off the lights")),
@@ -530,9 +535,9 @@ def seq_casa_vazia(lang):
         ("g", L("Noutro dia, a porta da entrada fica aberta", "Another day, the front door is left open")),
         ("m", 0, 2, L("porta aberta", "door open")),
         ("m", 2, 4, L("`door.opened`", "`door.opened`")),
-        ("n", 4, 4, L("Porta aberta há T_porta (20 s na demonstração, 2 min em produção), sem movimento nem pessoas em nenhuma câmara "
+        ("n", 4, 4, L("Porta aberta há T_porta (5 s na demonstração, 2 min em produção, proposta), sem ninguém em nenhuma câmara "
                       "desde que abriu",
-                      "Door open for T_door (20 s in the demo, 2 min in production), with no motion and no person on any camera "
+                      "Door open for T_door (5 s in the demo, 2 min in production, a proposal), with nobody on any camera "
                       "since it opened")),
         ("m", 4, 5, L("aviso: “A porta da entrada está aberta e não está ninguém por perto”, com a faixa da porta e “Ver em direto”",
                       "alert: “The front door is open and nobody is around”, with the door banner and “See live”")),

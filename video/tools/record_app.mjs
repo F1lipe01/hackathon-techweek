@@ -443,6 +443,74 @@ const TAKES = {
       mark('open');
       await pause(4000);
     }); },
+  // example 3: two scenarios typed in Menu › Scenarios › Add scenario, saved for real through /api/rules (the server
+  // compiles them into the presence kinds nobody_devices_on and door_open_nobody); Done returns to the list
+  'ex3-scenarios': () => { Object.assign(C, { on: false });
+    return take('ex3-scenarios', '17:28', async ({ page, tap, hideFinger, mark }) => {
+      const typeIn = async (sel, text) => {
+        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); }, [sel, ch]); await pause(45 + Math.random() * 30); }
+      };
+      const scenario = async (n, sentence) => {
+        await tap('section.page:last-of-type .bottom-bar [data-act="new-scenario"]');
+        mark('new-' + n);
+        await pause(1000);
+        await tap('#scentext'); await hideFinger();
+        await typeIn('#scentext', sentence);
+        mark('typed-' + n);
+        await pause(700);
+        await tap('[data-act="save-scenario"]');
+        mark('save-' + n);
+        await hideFinger();
+        await page.waitForSelector('.saved-ok', { state: 'visible', timeout: 30000 });
+        mark('saved-' + n);
+        await pause(2600);
+        await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+        mark('done-' + n);
+        await hideFinger();
+        await pause(1300);
+      };
+      await pause(1300);
+      mark('things');
+      await tap('#tabs [data-tab="menu"], [data-tab="menu"]');
+      mark('menu');
+      await pause(1000);
+      await tap('.group [data-act="scenarios"]');
+      mark('scenarios');
+      await pause(1100);
+      await scenario(1, 'If nobody is home and something is on, ask me to turn it off');
+      await scenario(2, 'If the door is left open when nobody is home, sound the alarm and tell me');
+      await pause(1500);
+    }); },
+  // example 3, the end: everyone left with the lights and the AC on and the door open. Only the alert is added (the lab
+  // take was filmed before the rules existed); its picture is the lab camera's frame of the empty room (stage1 69 s,
+  // 17:32:29). The two Yes taps switch the prototype's simulated devices (outside the Altice kit) for real.
+  'alert-nobody-open': () => { Object.assign(C, { on: true, onlyRules: false, events: [], things: [], rules: [], reply: null, nowAt: today(17, 32) * 1000 + 40000 });
+    return take('alert-nobody-open', '17:32', async ({ page, tap, hideFinger, refresh, mark }) => {
+      for (const id of ['sim-lights', 'sim-ac']) await fetch(BASE + `/api/sim-devices/${id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ on: true }) });
+      const st = await (await fetch(BASE + '/api/state')).json();
+      const rule = st.rules.find((r) => r.kind === 'nobody_devices_on');
+      await refresh();
+      await pause(1200);
+      conceptEvent({ kind: 'alert', ts: today(17, 32), title: 'Nobody is home', rule_id: rule?.id, text: 'Everyone left, and 2 things are still on.',
+        devices: ['sim-lights', 'sim-ac'], doorAlarm: true, crop: 'concept-empty-lab.jpg', snapshot: 'concept-empty-lab.jpg', place: 'Work Room camera' });
+      await refresh();
+      mark('alert');
+      await pause(1600);
+      const xy = await page.evaluate(() => { const r = document.getElementById('toast').getBoundingClientRect(), d = document.getElementById('device').getBoundingClientRect();
+        return [r.left + r.width / 2 - d.left, r.top + r.height / 2 - d.top]; });
+      await page.evaluate(() => document.getElementById('toast').click());  // the film draws its own tap on the notification
+      mark('open', { x: xy[0], y: xy[1] });
+      await pause(2200);
+      await tap('[data-act="sim-off"][data-id="sim-lights"]');
+      await page.waitForSelector('.dev-ask.done', { state: 'visible', timeout: 8000 });
+      mark('lights-off');
+      await pause(2500);
+      await tap('[data-act="sim-off"][data-id="sim-ac"]');
+      await page.waitForFunction(() => document.querySelectorAll('.dev-ask.done').length === 2, null, { timeout: 8000 });
+      mark('ac-off');
+      await hideFinger();
+      await pause(3200);
+    }); },
   // scene 1, the end: the alert arrives; tapping it opens the camera's picture, large
   // the app's real state (the book and its rule, made in the add-book take); only the alert of 14:10 is added, because the
   // lab take was filmed before the rule existed. Its title is the real rule's, its picture the lab camera's frame.

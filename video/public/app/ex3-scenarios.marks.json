@@ -1,0 +1,118 @@
+[
+ {
+  "name": "start",
+  "s": 0.402
+ },
+ {
+  "name": "things",
+  "s": 1.705
+ },
+ {
+  "name": "tap #tabs [data-tab=\"menu\"], [data-tab=\"menu\"]",
+  "s": 2.419,
+  "x": 357,
+  "y": 808.5
+ },
+ {
+  "name": "menu",
+  "s": 2.605
+ },
+ {
+  "name": "tap .group [data-act=\"scenarios\"]",
+  "s": 4.297,
+  "x": 201,
+  "y": 212.3
+ },
+ {
+  "name": "scenarios",
+  "s": 4.485
+ },
+ {
+  "name": "tap section.page:last-of-type .bottom-bar [data-act=\"new-scenario\"]",
+  "s": 6.277,
+  "x": 201,
+  "y": 785
+ },
+ {
+  "name": "new-1",
+  "s": 6.452
+ },
+ {
+  "name": "tap #scentext",
+  "s": 8.138,
+  "x": 201,
+  "y": 228
+ },
+ {
+  "name": "typed-1",
+  "s": 12.072
+ },
+ {
+  "name": "tap [data-act=\"save-scenario\"]",
+  "s": 13.464,
+  "x": 201,
+  "y": 344
+ },
+ {
+  "name": "save-1",
+  "s": 13.634
+ },
+ {
+  "name": "saved-1",
+  "s": 13.637
+ },
+ {
+  "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
+  "s": 16.927,
+  "x": 201,
+  "y": 586.7
+ },
+ {
+  "name": "done-1",
+  "s": 17.099
+ },
+ {
+  "name": "tap section.page:last-of-type .bottom-bar [data-act=\"new-scenario\"]",
+  "s": 19.086,
+  "x": 201,
+  "y": 785
+ },
+ {
+  "name": "new-2",
+  "s": 19.289
+ },
+ {
+  "name": "tap #scentext",
+  "s": 20.981,
+  "x": 201,
+  "y": 228
+ },
+ {
+  "name": "typed-2",
+  "s": 25.693
+ },
+ {
+  "name": "tap [data-act=\"save-scenario\"]",
+  "s": 27.079,
+  "x": 201,
+  "y": 344
+ },
+ {
+  "name": "save-2",
+  "s": 27.249
+ },
+ {
+  "name": "saved-2",
+  "s": 27.252
+ },
+ {
+  "name": "tap section.page:last-of-type .bottom-bar [data-act=\"finish\"]",
+  "s": 30.544,
+  "x": 201,
+  "y": 607.7
+ },
+ {
+  "name": "done-2",
+  "s": 30.735
+ }
+]

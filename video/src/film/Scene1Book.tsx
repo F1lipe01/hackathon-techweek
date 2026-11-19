@@ -503,11 +503,13 @@ export const Scene1Book: React.FC = () => {
           alarm (from 5 s after the door shuts until it is turned off); the buzz; the team's whooshes, one kind per moment,
           each placed so its peak lands on the fastest frame of its move (peaks measured: slow-gentle 0,28 s, zoom-soft
           0,37 s, throw 0,07 s, fast 0,15 s, riser-soft 0,43 s, bass-slow 1,12 s) */}
-      <Audio src={staticFile("audio/music/bed-real-long.wav")} volume={(v) => 0.5 * interpolate(v, [0, 20, T.lab, T.lab + 30, ALARM_ON - 10, ALARM_ON, ALARM_OFF, ALARM_OFF + 20, T.success - 10, T.success + 20, SCENE1_FRAMES - 40, SCENE1_FRAMES],
-        [0, 1, 1, 0.85, 0.85, 0.5, 0.5, 0.85, 0.85, 1.1, 1.1, 0], clamp)} />
+      <Audio src={staticFile("audio/music/bed-real-long.wav")} volume={(v) => 0.5 * interpolate(v, [0, 20, T.lab, T.lab + 30, ALARM_ON - 10, ALARM_ON, ALARM_OFF, ALARM_OFF + 20, T.success - 10, T.success + 20, T.end, T.end + 20, SCENE1_FRAMES - 16, SCENE1_FRAMES],
+        [0, 1, 1, 0.85, 0.85, 0.5, 0.5, 0.85, 0.85, 1.1, 1.1, 1.3, 1.3, 0], clamp)} />
       {[[209, "zoom-soft", 0.9], [424, "zoom-soft", 0.9], [596, "zoom-soft", 0.9], [1383, "zoom-soft", 0.9],
         [T.glide + 18, "slow-gentle", 0.32], [T.test + 12, "fast", 0.08], [T.phoneIn + 4, "slow-gentle", 0.32], [T.aside + 15, "slow-gentle", 0.28], [T.cut + 14, "fast", 0.07],
         [T.s3 + 12, "fast", 0.07], [T.lab + 11, "riser-soft", 0.15], [T.success + 13, "riser-soft", 0.13],
+        // the end card's sting: a rise into the mark as it lands, air as the name is carried out, a soft lift for "by Altice Labs"
+        [T.end + 6, "riser-soft", 0.15], [T.end + 23, "slow-gentle", 0.28], [T.end + 68, "zoom-soft", 0.6],
         ...SHOT.map((_, i) => [T.cam + i * SEG + PRESS + 1 + 4, "throw", 0.07] as const)].map(([peak, n, vol], i) => {
         const PEAK: Record<string, number> = { "slow-gentle": 0.28, "zoom-soft": 0.37, throw: 0.07, fast: 0.15, "riser-soft": 0.43, "bass-slow": 1.12 };
         return <Sequence key={`w${i}`} from={Math.round((peak as number) - PEAK[n as string] * 30)} layout="none"><Audio src={staticFile(`audio/sfx/whoosh/${n}.wav`)} volume={vol as number} /></Sequence>;

@@ -481,8 +481,31 @@ def edge_task(camera: str = ""):
                   if v.get("result") is None), None)
     photos = next(iter(photo_tasks().values()), None)
     snap = next(({"id": k, "alert_id": v["alert_id"]} for k, v in SNAPSHOTS.items() if not v.get("done")), None)
+    learn = next(iter(LEARN.values()), None)
     return {"enrol": dict(ENROL) or None, "refresh": presence.wants_refresh(cam), "check": check, "photos": photos,
-            "snapshot": snap}
+            "snapshot": snap, "learn": learn}
+
+
+# "Mark it on the camera picture": the family taps their thing on the live view; the edge learns how it looks from
+# where that camera stands (a few views of the detector's box that overlaps the mark) and adds them to the fingerprint.
+# Phone photos of a cover do not look like a book lying flat across a room; these views do.
+LEARN = {}
+
+
+@app.post("/api/things/{tid}/learn")
+def learn_from_camera(tid: str, payload: dict = Body(...)):
+    """{"box": [x0, y0, x1, y1]} in 0-1 of the camera picture: where the family marked the thing."""
+    t = next((x for x in store.things() if x["id"] == tid), None)
+    box = payload.get("box")
+    if not t or not (isinstance(box, list) and len(box) == 4):
+        raise HTTPException(400, "a thing and its box are required")
+    LEARN[tid] = {"thing_id": tid, "name": t["name"], "query": (t.get("description") or t["name"]).lower(),
+                  "box": [max(0.0, min(1.0, float(v))) for v in box], "views": 3, "replayed": bool(payload.get("replayed"))}
+    src = str(payload.get("from") or "")[:60]
+    store.add_event("thing", ("Replayed: " if payload.get("replayed") else "") + f"{t['name']} marked on the "
+                    f"{store.camera_room()} camera's picture" + (f" (in the family's clip {src})" if src else "")
+                    + ": the camera learns how it looks from there.", thing_id=tid)
+    return LEARN[tid]
 
 
 @app.post("/api/edge/check")
@@ -524,6 +547,24 @@ def edge_enrol(payload: dict = Body(...)):
     """Progress while the edge collects views, then the finished fingerprint (vectors and a few crops). With
     "source": "photos", the fingerprint the edge made from the phone photos of a queued photos task."""
     tid = payload.get("thing_id")
+    if payload.get("source") == "camera":
+        task = LEARN.pop(tid, None)
+        t = next((x for x in store.things() if x["id"] == tid), None)
+        if not task or not t or not payload.get("vectors"):
+            return {"ok": False}
+        old_vecs = store.fingerprints().get(tid, {}).get("vectors", [])
+        stamp = time.strftime("%Y%m%d-%H%M%S")
+        names = []
+        for i, b64 in enumerate(payload.get("crops_b64", [])[:4]):
+            names.append(f"{stamp}-{tid}-camera{i}.jpg")
+            (CROPS / names[-1]).write_bytes(base64.b64decode(b64))
+        info = {**(t.get("fingerprint") or {}), "camera_views": len(payload["vectors"]), "created": time.time()}
+        info["crops"] = (info.get("crops") or []) + names
+        info["n"] = len(old_vecs) + len(payload["vectors"])
+        store.set_fingerprint(tid, info, vectors=old_vecs + payload["vectors"], model=payload.get("model", ""))
+        store.add_event("thing", f"{t['name']}: {len(payload['vectors'])} views learnt from the {store.camera_room()} "
+                        "camera, added to its fingerprint.", thing_id=tid, crop=names[0] if names else None)
+        return {"ok": True}
     if payload.get("source") == "photos":
         tasks = photo_tasks()
         task = tasks.pop(tid, None)
@@ -861,11 +902,12 @@ def door_changed(is_open, source, baseline=False):
             DOOR["opened_at"] = now_
     if baseline or (source == "live" and prev is None):
         return
-    sim = source == "sim"
+    sim = source in ("sim", "replay")
     if sim:
         store.set_device_status("contactSensor", "Open" if is_open else "Closed")
-    store.add_event("door", ("Simulated: the door " if sim else "The door ") + ("opened" if is_open else "closed")
-                    + " (Contact sensor).", sim=sim, open=is_open, device="Contact sensor")
+    label = {"sim": "Simulated: the door ", "replay": "Replayed: the door "}.get(source, "The door ")
+    store.add_event("door", label + ("opened" if is_open else "closed") + " (Contact sensor).", sim=sim,
+                    replayed=source == "replay", open=is_open, device="Contact sensor")
     count_before = presence.s.get("count", 0)
     presence.door(is_open)
     if is_open or not prev:
@@ -975,7 +1017,7 @@ def check_leave_without(r, p, now_):
                            "frames": 3, "asked": now_, "result": None}
             p.update(stage="check", check=cid, who=who, left=left, usual=last["zone_name"], room=last["room"],
                      due=now_ + T["check_timeout_s"])
-            store.add_event("info", f"{r['title']}: {who}. Checking the {last['zone_name']} for {what.lower()}.",
+            store.add_event("info", f"{r['title']}: {who}. Checking the {last['zone_name']} for the {what.lower()}.",
                             rule_id=r["id"], thing_id=tid)
             return False
         if now_ >= p["decide_by"]:
@@ -993,15 +1035,16 @@ def check_leave_without(r, p, now_):
                         f"answer the check of the {p['usual']}: no alert.", rule_id=r["id"], thing_id=tid)
         return True
     if not res["seen"]:
-        store.add_event("unsure", f"{r['title']}: unsure. {what} was not visible on the {p['usual']} after "
+        store.add_event("unsure", f"{r['title']}: unsure. The {what.lower()} was not visible on the {p['usual']} after "
                         f"{p['who'].split(' (')[0]}: maybe it went with them. No alert.", rule_id=r["id"], thing_id=tid)
         return True
     place = res["place"] if res["place"] not in ("", "room") else p["usual"]
-    text = f"The door closed and your {what.lower()} is still on the {place}." + (" The alarm is on." if r.get("alarm") else "")
+    where = f"in the {p['room']}" if place == "room" else f"on the {place}"
+    text = f"The door closed and your {what.lower()} is still {where}." + (" The alarm is on." if r.get("alarm") else "")
     thing_crop = (store.last_seen(tid) or {}).get("crop")
     fire(r, crop=thing_crop or res["crop"], picture=res["crop"] or thing_crop, text=text, thing_id=tid, place=place, room=p["room"],
-         evidence=f"Door opened at {hm(p['opened'])}, closed at {hm(p['closed'])}; {p['who']}; the camera saw "
-                  f"{what.lower()} on the {place} ({res.get('score')}, {res.get('frames')} frames).")
+         evidence=f"Door opened at {hm(p['opened'])}, closed at {hm(p['closed'])}; {p['who']}; the camera saw the "
+                  f"{what.lower()} {where} ({res.get('score')}, {res.get('frames')} frames).")
     return True
 
 
@@ -1134,8 +1177,8 @@ def rules_engine():
                         PENDING.pop(r["id"], None)
                         print("rule error", r.get("id"), e)
                 continue
-            if now_ - r.get("last_fired", 0) < r.get("cooldown_s", 300):
-                continue
+            if now_ - r.get("last_fired", 0) < r.get("cooldown_s", 300) and not r.get("unknown"):
+                continue                                # (the security rule counts its own episodes instead)
             kind, mins = r.get("kind"), float(r.get("minutes") or 0)
             try:
                 if kind == "someone_arrives" and r.get("who") in ("child", "dog", "cat"):
@@ -1193,7 +1236,8 @@ def rules_engine():
 
 
 threading.Thread(target=rules_engine, daemon=True).start()
-threading.Thread(target=device_poller, daemon=True).start()
+if not os.environ.get("TT_REPLAY"):     # in a replay the door is the take's, never the live sensor
+    threading.Thread(target=device_poller, daemon=True).start()
 
 # ---------------------------------------------------------------------- API
 @app.get("/api/state")
@@ -1207,6 +1251,7 @@ def state():
     s["door"] = dict(DOOR)
     s["presence"] = presence.snapshot()
     s["alarm"] = alarm_state()
+    s["replay"] = replayer.status() if replayer else None
     return s
 
 
@@ -1459,6 +1504,61 @@ def reset():
 
 
 kit = KitCamera(os.environ["CAMERA_RTSP_URL"]) if os.environ.get("CAMERA_RTSP_URL") else None
+replayer = None
+
+
+def replay_setup(setup):
+    """The take's starting state, before its first second: the phones, the devices, a rule's tuning."""
+    for mid, home in (setup.get("phones") or {}).items():
+        presence.set_phone(mid, bool(home), source="replay")
+    for did, on in (setup.get("devices") or {}).items():
+        tt_set(did, bool(on))
+    for kind, fields in (setup.get("rules") or {}).items():
+        for r in store.active_rules():
+            if r.get("kind") == kind:
+                store.update_rule(r["id"], **fields)
+    if setup.get("door") in ("open", "closed"):
+        with _door_lock:
+            DOOR.update(open=setup["door"] == "open", source="replay", changed=time.time())
+        presence.s["door"]["open"] = setup["door"] == "open"
+
+
+def replay_event(e):
+    """One input no camera can see, at its moment in the take, labelled "Replayed" in the activity."""
+    if "door" in e:
+        door_changed(e["door"] == "open", "replay")
+    elif "phone" in e:
+        presence.set_phone(e["phone"], bool(e["home"]), source="replay")
+    elif "device" in e:
+        d = next((x for x in tt_devices() if x["id"] == e["device"]), None)
+        tt_set(e["device"], bool(e["on"]))
+        store.add_event("device", f"Replayed: {(d or {}).get('name', e['device'])} switched {'on' if e['on'] else 'off'} "
+                        "by hand in the lab.", replayed=True)
+    elif "mark" in e:
+        learn_from_camera(e["mark"]["thing"], {"box": e["mark"]["box"], "replayed": True})
+
+
+if os.environ.get("TT_REPLAY"):
+    from replay import Replayer, ReplayCamera   # noqa: E402
+    kit = ReplayCamera(os.environ["TT_REPLAY"])
+    replayer = Replayer(kit, {"setup": replay_setup, "event": replay_event})
+    replayer.setup()
+
+
+@app.post("/api/replay/start")
+def replay_start():
+    if not replayer:
+        raise HTTPException(404, "not in replay mode (TT_REPLAY)")
+    started = replayer.start()
+    if started:
+        store.add_event("info", f"Replay started: {kit.video.name} ({kit.duration:.1f} s) stands in for the camera. "
+                        "Only the door, the phones and hand-switched devices are replayed; the rest is computed live.")
+    return replayer.status()
+
+
+@app.get("/api/replay")
+def replay_status():
+    return replayer.status() if replayer else {"replay": False}
 
 
 def _kit():

@@ -14,7 +14,7 @@ import threading
 import time
 
 FPS = float(os.environ.get("TT_KIT_FPS", "5"))
-WIDTH = int(os.environ.get("TT_KIT_WIDTH", "1280"))
+WIDTH = int(os.environ.get("TT_KIT_WIDTH", "2304"))   # the camera's own width: faces are only 40-90 px at it
 IDLE_STOP = 60.0
 SOI, EOI = b"\xff\xd8", b"\xff\xd9"
 

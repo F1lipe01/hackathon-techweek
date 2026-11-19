@@ -149,9 +149,9 @@ class Presence:
             self.store.db.execute("INSERT OR REPLACE INTO phones VALUES (?, ?, ?, ?)",
                                   (member_id, int(bool(home)), self.clock(), source))
         name = self.people().get(member_id, member_id)
-        self.store.add_event("phone", ("Simulated: " if source == "sim" else "") + f"{name}'s phone "
+        self.store.add_event("phone", {"sim": "Simulated: ", "replay": "Replayed: "}.get(source, "") + f"{name}'s phone "
                              + ("joined" if home else "left") + " the home Wi-Fi.", member=member_id, home=bool(home),
-                             sim=source == "sim")
+                             sim=source in ("sim", "replay"), replayed=source == "replay")
         self.evaluate()
         return True
 
@@ -183,16 +183,22 @@ class Presence:
             self.s["faces"][pid] = now
         if persons:
             self.s["last_person"] = now
+        # A security run counts the analyses of one episode that show an unknown face (or a person with no face). Real
+        # footage is patchy: a walking person's face is judgeable in some frames only, so an analysis with no verdict
+        # does not break the run. It ends after seen_now_s without a hit, or at once when a Family face is seen.
         runs = self.s["runs"].setdefault(camera, {"unknown": 0, "unknown_since": 0.0, "no_face": 0, "no_face_since": 0.0})
         fam = {m["id"] for m in self.family()}
+        fam_face = bool(set(known) & fam)
         fam_home = (set(known) | set(self.s.get("home_ids", []))) & fam    # a faceless person may be one of them
         for key, hit in (("unknown", unknown > 0), ("no_face", no_face > 0 and not unknown and not fam_home)):
+            last = runs.get(key + "_last", 0.0)
+            if fam_face or (runs[key] and now - last > self.t["seen_now_s"]) or (key == "no_face" and unknown):
+                runs[key], runs[key + "_since"] = 0, 0.0
             if hit:
                 if not runs[key]:
                     runs[key + "_since"] = now
                 runs[key] += 1
-            else:
-                runs[key], runs[key + "_since"] = 0, 0.0
+                runs[key + "_last"] = now
         self.evaluate()
 
     # ------------------------------------------------------------------ the state

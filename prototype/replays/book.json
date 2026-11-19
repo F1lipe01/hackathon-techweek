@@ -1,0 +1,72 @@
+{
+ "video": "video/public/takes/scene1/book-full.mp4",
+ "note": "Example 1, the book left behind (19 Nov, 15:59:53, the lab). The door times are the take's own: the door at the back of the lab, as video/src/film/Scene1Book.tsx marks them (DOOR_OPEN). Filipe's phone was not logged in the lab: it leaves the Wi-Fi 1 s after he goes out and joins as he comes back in. Before the replay, the edge learns how the book looks from this camera from another take (book-grab.mp4, the book on the same desk), by the registration rule (up to 8 views, each below 0.97 of the others): the phone photos are close-ups of the cover, and the camera sees the book flat across the room (0.23 against them). The book rule's cooldown is set to 10 s, so its second check (he leaves with the book) can run within the take.",
+ "setup": {
+  "phones": {
+   "filipe": true,
+   "joao": false,
+   "alice": false
+  },
+  "devices": {
+   "bc891629-98bc-44f7-99a8-1aa61428a9bf": false,
+   "ac": false
+  },
+  "rules": {
+   "leave_without": {
+    "cooldown_s": 10
+   }
+  }
+ },
+ "events": [
+  {
+   "t": 10.4,
+   "door": "open"
+  },
+  {
+   "t": 11.9,
+   "door": "closed"
+  },
+  {
+   "t": 12.9,
+   "phone": "filipe",
+   "home": false
+  },
+  {
+   "t": 28.2,
+   "door": "open"
+  },
+  {
+   "t": 28.6,
+   "phone": "filipe",
+   "home": true
+  },
+  {
+   "t": 31.3,
+   "door": "closed"
+  },
+  {
+   "t": 38.8,
+   "door": "open"
+  },
+  {
+   "t": 39.9,
+   "door": "closed"
+  },
+  {
+   "t": 40.9,
+   "phone": "filipe",
+   "home": false
+  }
+ ],
+ "learn": {
+  "video": "video/public/takes/scene1/book-grab.mp4",
+  "thing": "book",
+  "box": [
+   0.628,
+   0.7238,
+   0.6727,
+   0.7438
+  ],
+  "every": 0.5
+ }
+}

@@ -979,7 +979,7 @@ device.addEventListener('input', (e) => {
 async function refresh() {
   try { state = await api('/api/state'); } catch { $('status').textContent = 'Server not reachable'; return; }
   $('status').textContent = '';
-  renderEdge(state.edge); renderLog(); renderDoor(state.door); renderSim(state.presence);
+  renderEdge(state.edge); renderLog(); renderDoor(state.door); renderSim(state.presence); renderReplay(state.replay);
   // re-render the app only when its data changed, so a tap is never lost to a redraw
   const sig = JSON.stringify([state.home, state.things, state.rules, state.enrol, state.events.length, state.events[0]?.id]);
   if (sig !== lastSig) { lastSig = sig; renderTabs(); if (!stack.length) renderTab(ui.tab); else refreshPage(); }
@@ -1020,6 +1020,24 @@ simHold.addEventListener('click', async () => {
   simHold.disabled = false;
   refresh();
 });
+// Replay mode (server.py: TT_REPLAY): a recorded lab take stands in for the camera. The pill says which take, its second
+// and the real clock; only the door, the phones and hand-switched devices are replayed, the rest is computed live.
+let replayAt = null;
+function renderReplay(r) {
+  const el = $('replay');
+  if (!r || !r.replay) { el.hidden = true; replayAt = null; return; }
+  replayAt = { t: r.t, at: performance.now(), on: r.started && !r.ended, d: r.duration, v: r.video };
+  el.hidden = false;
+  $('place').textContent = 'Work Room · Kit camera · replayed take';
+  tickReplay();
+}
+function tickReplay() {
+  if (!replayAt) return;
+  const t = Math.min(replayAt.d, replayAt.t + (replayAt.on ? (performance.now() - replayAt.at) / 1000 : 0));
+  const clock = new Date().toLocaleTimeString('en-GB');
+  $('replay').innerHTML = `<b>REPLAY</b><span>${esc(replayAt.v)} · t ${t.toFixed(1)} / ${replayAt.d.toFixed(1)} s</span><span>now ${clock}</span>`;
+}
+setInterval(tickReplay, 100);
 // The presence engine's state, and one toggle per Family member: their phone on the home Wi-Fi or not (simulated:
 // the Altice router sees the phones, but no MCP tool exposes them yet).
 function renderSim(p) {

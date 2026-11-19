@@ -1,0 +1,15 @@
+{
+  "video": "video/public/takes/scene3/stage1.mp4",
+  "from": 20.0,
+  "note": "Example 3, nobody home with things on (19 Nov, the lab). The replay starts at 20 s of the take: before that the lab is empty with the lights on, which would itself fire Power saving. The door and the AC are the take's own, as video/src/film/Scene3People.tsx marks them: the door open from 26.5 to 37 s and from 55.5 s on, the AC switched on by hand at 50.6 s; the lights (on the kit's Plug) are on throughout. The three phones join and leave at the door crossings OWLv2 found (in at 27, 29 and 30 s, out at 59, 62.5 and 65 s), 0.5 s after each.",
+  "setup": {"phones": {"filipe": false, "joao": false, "alice": false}, "devices": {"bc891629-98bc-44f7-99a8-1aa61428a9bf": true, "ac": false},
+            "door": "closed"},
+  "events": [
+    {"t": 26.5, "door": "open"},
+    {"t": 27.5, "phone": "filipe", "home": true}, {"t": 29.5, "phone": "joao", "home": true}, {"t": 30.5, "phone": "alice", "home": true},
+    {"t": 37.0, "door": "closed"},
+    {"t": 50.6, "device": "ac", "on": true},
+    {"t": 55.5, "door": "open"},
+    {"t": 59.5, "phone": "filipe", "home": false}, {"t": 63.0, "phone": "joao", "home": false}, {"t": 65.5, "phone": "alice", "home": false}
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "video": "video/public/takes/scene2/face-take.mp4",
+  "note": "Example 2, a stranger at home (19 Nov, 16:25:27, the lab). Only Filipe's phone is replayed, at the moments he comes in and goes out in the take (read off its frames; phones were not logged in the lab): in at 14 s, out at 27 s, in at 36 s, out at 49 s, in at 82 s. The other people's phones are not in the family. Faces are recognised live by the edge (YuNet + SFace) against the templates on the home device: Filipe's from his 7 s face video, Joao's and Alice's from one photo each.",
+  "setup": {"phones": {"filipe": false, "joao": false, "alice": false}, "devices": {"bc891629-98bc-44f7-99a8-1aa61428a9bf": false, "ac": false}},
+  "events": [
+    {"t": 14.0, "phone": "filipe", "home": true}, {"t": 27.0, "phone": "filipe", "home": false},
+    {"t": 36.0, "phone": "filipe", "home": true}, {"t": 49.0, "phone": "filipe", "home": false},
+    {"t": 82.0, "phone": "filipe", "home": true}
+  ]
+}

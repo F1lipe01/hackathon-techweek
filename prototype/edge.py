@@ -24,6 +24,7 @@ import argparse
 import base64
 import io
 import json
+import os
 import time
 from pathlib import Path
 import urllib.request
@@ -36,8 +37,9 @@ from transformers import AutoImageProcessor, AutoModel, Owlv2ForObjectDetection,
 PLACES = {"desk": "a desk", "table": "a table", "shelf": "a shelf", "sofa": "a sofa", "bench": "a workbench"}
 PERSON = "a person"
 PROFILE = {"child": "a child", "dog": "a dog", "cat": "a cat"}   # who lives here: the app suggests sensors for them
-LOCAL_FP = Path(__file__).resolve().parent / "data" / "edge-fingerprints.json"   # the home device's own copy
-EDGE_DB = Path(__file__).resolve().parent / "data" / "edge.db"   # the home device's face templates (faces.py)
+DATA = Path(os.environ.get("TT_DATA") or Path(__file__).resolve().parent / "data")   # a test or replay uses its own
+LOCAL_FP = DATA / "edge-fingerprints.json"   # the home device's own copy of the fingerprints
+EDGE_DB = DATA / "edge.db"                   # the home device's face templates (faces.py)
 ENROL_VIEWS = 8
 
 
@@ -56,7 +58,7 @@ class Motion:
     """Cheap change detector: 160 x 90 grey picture, the camera's clock overlay masked, against a slow background."""
 
     def __init__(self, pixel_delta=22, area=0.006):
-        self.bg = None
+        self.bg, self.box = None, None
         self.pixel_delta, self.area = pixel_delta, area
 
     def changed(self, img):
@@ -68,6 +70,9 @@ class Motion:
         diff = np.abs(g - self.bg) > self.pixel_delta
         frac = float(diff.mean())
         self.bg = 0.85 * self.bg + 0.15 * g               # adapts to slow light changes
+        ys, xs = np.nonzero(diff)
+        self.box = ([xs.min() / 160, ys.min() / 90, (xs.max() + 1) / 160, (ys.max() + 1) / 90]
+                    if frac > self.area and len(xs) else None)   # where it changed, 0-1 of the frame
         return frac > self.area, frac
 
 
@@ -110,6 +115,58 @@ def tight_crop(img, box, pad=0.08):
 
 def norm_box(img, b):
     return [round(b[0] / img.width, 4), round(b[1] / img.height, 4), round(b[2] / img.width, 4), round(b[3] / img.height, 4)]
+
+
+# Things are looked for on full-resolution regions, not on the whole frame shrunk to the detector's 960 px: a book flat on
+# a desk across the room is about 116 x 40 px of the 2304 x 1296 frame, and OWLv2 boxes it in 7 of 69 shrunk frames but
+# in 68 of 68 regions of 640 x 480 around the desk (video/tools/book_region.py). The regions: around each thing's last
+# known box, and around what moved (at most 640 x 640). Boxes are mapped back to the frame.
+REGION = (640, 480)
+PLACES_FILE = DATA / "edge-places.json"            # each thing's last box on this camera (the home device's own)
+
+
+def region_around(img, box, size=REGION):
+    """(x0, y0, crop): a full-resolution region of `size` centred on box (pixels), inside the frame."""
+    w, h = min(size[0], img.width), min(size[1], img.height)
+    cx, cy = (box[0] + box[2]) / 2, (box[1] + box[3]) / 2
+    x0 = int(min(max(0, cx - w / 2), img.width - w))
+    y0 = int(min(max(0, cy - h / 2), img.height - h))
+    return x0, y0, img.crop((x0, y0, x0 + w, y0 + h))
+
+
+def det_regions(det, img, queries, regions, threshold):
+    """OWLv2 on each region; boxes in frame pixels; a box overlapping a better one by more than half is dropped."""
+    found = []
+    for x0, y0, crop in regions:
+        found += [(q, s, [b[0] + x0, b[1] + y0, b[2] + x0, b[3] + y0]) for q, s, b in det(crop, queries, threshold=threshold)]
+    found.sort(key=lambda d: -d[1])
+    kept = []
+    for q, s, b in found:
+        if all(q != k[0] or iou(b, k[2]) <= 0.5 for k in kept):
+            kept.append((q, s, b))
+    return kept
+
+
+def thing_regions(img, boxes, motion_box):
+    """The regions to search for things: around each last known box, and around the change (up to 640 x 640)."""
+    regs = [region_around(img, b) for b in boxes]
+    if motion_box:
+        mb = [motion_box[0] * img.width, motion_box[1] * img.height, motion_box[2] * img.width, motion_box[3] * img.height]
+        size = (min(640, max(REGION[0], mb[2] - mb[0])), min(640, max(REGION[1], mb[3] - mb[1])))
+        regs.append(region_around(img, mb, size))
+    return regs or [(0, 0, img)]
+
+
+def load_places():
+    try:
+        return {k: v for k, v in json.loads(PLACES_FILE.read_text()).items()}
+    except Exception:
+        return {}
+
+
+def save_places(places):
+    PLACES_FILE.parent.mkdir(exist_ok=True)
+    PLACES_FILE.write_text(json.dumps(places))
 
 
 def query_for(t):
@@ -232,12 +289,16 @@ def enrol_step(img, task, det, emb, enrol, args):
     return np.asarray(enrol["vecs"], dtype=np.float32) if done else None
 
 
-def analyse(img, things, fps, det, emb, args, faceid=None):
-    """Find the tracked things, the places they rest on, people (and who each is, when the face is known), and who
-    lives here. Returns the payload for the server."""
+def analyse(img, things, fps, det, emb, args, faceid=None, places_mem=None, motion_box=None):
+    """Find the tracked things (on full-resolution regions: around their last boxes and what moved), the places they
+    rest on, people (and who each is, when the face is known), and who lives here. Returns the payload for the server."""
     tq = {query_for(t): t for t in things if t["id"] in fps}   # only what the user added and registered
-    queries = list(tq) + list(PLACES.values()) + [PERSON] + list(PROFILE.values())
+    places_mem = {} if places_mem is None else places_mem
+    queries = list(PLACES.values()) + [PERSON] + list(PROFILE.values())
     dets = det(img, queries, threshold=0.1)
+    if tq:
+        regs = thing_regions(img, [places_mem[t["id"]] for t in tq.values() if t["id"] in places_mem], motion_box)
+        dets += det_regions(det, img, list(tq), regs, threshold=0.1)
     places = [(k, b) for q, s, b in dets for k, v in PLACES.items() if q == v and s >= 0.18]
     people = [(s, b) for q, s, b in dets if q == PERSON and s >= 0.2]
     names = {t["id"]: t["name"] for t in things}
@@ -274,6 +335,7 @@ def analyse(img, things, fps, det, emb, args, faceid=None):
                               "kind": "other", "score": round(float(sim), 2)})
     out = []
     for t, s, b, note, sim in sightings:
+        places_mem[t["id"]] = [round(v, 1) for v in b]
         place = place_of(b, places)
         holder = next((i for i, (ps, pb) in enumerate(people[:6]) if in_hand(b, pb)), None)
         label = f"{t['name']} · yours {sim:.2f}" + (" · in hand" if holder is not None else "")
@@ -293,9 +355,10 @@ def analyse(img, things, fps, det, emb, args, faceid=None):
             "beings": beings}
 
 
-def best_match(img, thing, fp, det, emb, threshold):
-    """The thing in this image: (similarity, box) of the best candidate that is the user's own, else (best, None)."""
-    dets = det(img, [query_for(thing)], threshold=0.08)
+def best_match(img, thing, fp, det, emb, threshold, box=None):
+    """The thing in this image: (similarity, box) of the best candidate that is the user's own, else (best, None).
+    With box (its last known place, pixels), on the full-resolution region around it; else on the whole frame."""
+    dets = det_regions(det, img, [query_for(thing)], [region_around(img, box)] if box else [(0, 0, img)], threshold=0.08)
     cands = sorted([(s, b) for q, s, b in dets], key=lambda c: -c[0])[:4]
     if not cands:
         return 0.0, None
@@ -304,9 +367,10 @@ def best_match(img, thing, fp, det, emb, threshold):
     return float(sims[i]), (cands[i][1] if sims[i] >= threshold else None)
 
 
-def active_check(server, task, things, fps, det, emb, args, frames=3):
-    """Is the thing still here? A few new frames, whatever the motion; the best sighting wins. Returns the answer
-    for POST /api/edge/check, with a crop of the thing and its surroundings when it is seen."""
+def active_check(server, task, things, fps, det, emb, args, frames=3, places_mem=None):
+    """Is the thing still here? A few new frames, whatever the motion, on the region around its last known box; the
+    best sighting wins. Returns the answer for POST /api/edge/check, with a crop of the thing and its surroundings."""
+    last = (places_mem or {}).get(task["thing_id"])
     t = next((x for x in things if x["id"] == task["thing_id"]), None)
     fp = fps.get(task["thing_id"])
     if not t or fp is None:
@@ -314,7 +378,7 @@ def active_check(server, task, things, fps, det, emb, args, frames=3):
     best = (0.0, None, None)
     for i in range(int(task.get("frames") or frames)):
         img = Image.open(io.BytesIO(get(f"{server}/api/kit/frame.jpg"))).convert("RGB")
-        sim, box = best_match(img, t, fp, det, emb, args.match)
+        sim, box = best_match(img, t, fp, det, emb, args.match, box=last)
         if box is not None and sim > best[0]:
             best = (sim, box, img)
         time.sleep(0.4)
@@ -359,6 +423,78 @@ def run_photos(server, task, det, emb):
     return vecs
 
 
+def camera_views(frames, hint, query, det, emb, existing=None, n=8, need_overlap=True):
+    """enrol_step's rule on full-resolution regions around a hint box (pixels): OWLv2 with the thing's own query at
+    0.06, the best box (overlapping the hint when need_overlap), a tight crop, DINOv2, a view kept only when its
+    cosine to every view already in the fingerprint and kept is below 0.97, up to n. Returns (vectors, crops b64)."""
+    have = [] if existing is None else list(existing)
+    vecs, crops = [], []
+    for img in frames:
+        x0, y0, crop = region_around(img, hint)
+        dets = [(s, [b[0] + x0, b[1] + y0, b[2] + x0, b[3] + y0]) for q, s, b in det(crop, [f"a photo of {query}"], threshold=0.06)]
+        if need_overlap:
+            dets = [d for d in dets if iou(d[1], hint) >= 0.2]
+        if not dets:
+            continue
+        s, b = max(dets, key=lambda d: d[0])
+        v = emb([tight_crop(img, b)])[0]
+        if all(float(v @ u) < 0.97 for u in have + vecs):
+            vecs.append(v)
+            crops.append(crop_b64(img, b, pad=0.3, size=240))
+        if len(vecs) >= n:
+            break
+    return vecs, crops
+
+
+def learn_views(server, task, things, fps, det, emb, places_mem, frames=6):
+    """The family marked their thing on the camera picture (task["box"], 0-1): over a few new frames, views of the
+    detector's box that overlaps the mark, added to the fingerprint (camera_views)."""
+    imgs = []
+    for i in range(frames):
+        imgs.append(Image.open(io.BytesIO(get(f"{server}/api/kit/frame.jpg"))).convert("RGB"))
+        time.sleep(0.4)
+    hint = [task["box"][0] * imgs[0].width, task["box"][1] * imgs[0].height, task["box"][2] * imgs[0].width, task["box"][3] * imgs[0].height]
+    old = fps.get(task["thing_id"])
+    vecs, crops = camera_views(imgs, hint, task["query"], det, emb, existing=None if old is None else list(old))
+    places_mem[task["thing_id"]] = [round(v, 1) for v in hint]
+    post(f"{server}/api/edge/enrol", {"thing_id": task["thing_id"], "source": "camera", "done": True,
+                                      "vectors": [v.round(5).tolist() for v in vecs], "crops_b64": crops,
+                                      "model": Embedder.MODEL})
+    if not vecs:
+        return old
+    return np.vstack([old, np.asarray(vecs)]) if old is not None else np.asarray(vecs, dtype=np.float32)
+
+
+def learn_from_video(server, video, thing_id, box, every, det, emb):
+    """Camera views of a thing from another recording of the same camera (the family's own clip of it on its place):
+    frames every `every` s, camera_views on the region around box (0-1), posted to the server as camera views."""
+    import cv2                                        # noqa: PLC0415  (the vision environment has it)
+    cap = cv2.VideoCapture(str(video))
+    fps_v = cap.get(cv2.CAP_PROP_FPS) or 20.0
+    step, frames, i = max(1, int(round(fps_v * every))), [], 0
+    while True:
+        ok, bgr = cap.read()
+        if not ok:
+            break
+        if i % step == 0:
+            frames.append(Image.fromarray(bgr[:, :, ::-1]))
+        i += 1
+    cap.release()
+    W, H = frames[0].size
+    hint = [box[0] * W, box[1] * H, box[2] * W, box[3] * H]
+    t = next(x for x in json.loads(get(f"{server}/api/state"))["things"] if x["id"] == thing_id)
+    query = (t.get("description") or t["name"]).lower()
+    vecs, crops = camera_views(frames, hint, query, det, emb, need_overlap=False)
+    post(f"{server}/api/things/{thing_id}/learn", {"box": box, "from": Path(video).name})
+    post(f"{server}/api/edge/enrol", {"thing_id": thing_id, "source": "camera", "done": True,
+                                      "vectors": [v.round(5).tolist() for v in vecs], "crops_b64": crops,
+                                      "model": Embedder.MODEL})
+    places = load_places()
+    places[thing_id] = [round(v, 1) for v in hint]
+    save_places(places)
+    return len(vecs)
+
+
 def run_snapshot(server, task, img, det):
     """A picture of the room for an alert, only when the detector sees no person in it."""
     person = any(s >= 0.2 for q, s, b in det(img, [PERSON], threshold=0.15))
@@ -380,7 +516,16 @@ def main():
     ap.add_argument("--active-for", type=float, default=6.0, help="seconds to keep analysing after the last motion")
     ap.add_argument("--match", type=float, default=0.62, help="cosine similarity to a registered view to count as yours")
     ap.add_argument("--no-faces", action="store_true", help="never look for faces (every person is 'not_visible')")
+    ap.add_argument("--learn-video", help="register camera views of --thing from this recording, then exit")
+    ap.add_argument("--thing", help="the thing for --learn-video")
+    ap.add_argument("--box", type=float, nargs=4, help="for --learn-video: the thing's place, x0 y0 x1 y1 in 0-1")
+    ap.add_argument("--every", type=float, default=0.5, help="for --learn-video: seconds between frames")
     args = ap.parse_args()
+    if args.learn_video:
+        det = Detector()
+        n = learn_from_video(args.server, args.learn_video, args.thing, args.box, args.every, det, Embedder(det.dev))
+        print(f"learnt {n} camera views of {args.thing} from {Path(args.learn_video).name}", flush=True)
+        return
 
     print("loading OWLv2 and DINOv2…", flush=True)
     det = Detector()
@@ -388,6 +533,7 @@ def main():
     fps = load_fingerprints(args.server)
     save_local(fps)
     faceid = FaceID(EDGE_DB) if not args.no_faces else None
+    places_mem = load_places()
     print(f"ready on {det.dev}; {len(fps)} registered things; faces {'on' if faceid and faceid.ok else 'off'}", flush=True)
     motion = Motion()
     checked = analysed = 0
@@ -418,10 +564,16 @@ def main():
                 fps[p["thing_id"]] = run_photos(args.server, p, det, emb)
                 save_local(fps)
                 print(f"fingerprint of {p['name']} from {len(p['files'])} photos", flush=True)
+            if tasks.get("learn") and not task:
+                lt = tasks["learn"]
+                fps[lt["thing_id"]] = learn_views(args.server, lt, things, fps, det, emb, places_mem)
+                save_local(fps)
+                save_places(places_mem)
+                print(f"learnt {lt['name']} from the camera: {len(fps[lt['thing_id']])} vectors", flush=True)
             if tasks.get("check") and not task:
                 if t0 - things_at > 10:
                     things, things_at = json.loads(get(f"{args.server}/api/state"))["things"], t0
-                res = active_check(args.server, tasks["check"], things, fps, det, emb, args)
+                res = active_check(args.server, tasks["check"], things, fps, det, emb, args, places_mem=places_mem)
                 post(f"{args.server}/api/edge/check", res)
                 print(f"active check of {tasks['check']['name']}: {'seen' if res['seen'] else 'not seen'}", flush=True)
             if tasks.get("snapshot") and not task:
@@ -443,7 +595,8 @@ def main():
                         if not t.get("fingerprint"):
                             fps.pop(t["id"], None)
                 t1 = time.time()
-                payload = analyse(img, things, fps, det, emb, args, faceid)
+                payload = analyse(img, things, fps, det, emb, args, faceid, places_mem, motion.box)
+                save_places(places_mem)
                 ms = (time.time() - t1) * 1000
                 payload["ms"], payload["forced"] = round(ms), forced and not moved
                 analysed += 1

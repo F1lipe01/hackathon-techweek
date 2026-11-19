@@ -145,8 +145,8 @@ Status markers:
 **B5. How do faces work? Isn't that biometric data?**
 - **Short answer:** "Yes, so it is opt-in, with consent, and the face templates never leave the home."
 - **Detail:**
-  - **YuNet** finds the face and **SFace** compares it; both are small models that run on an ordinary processor [licences: to confirm];
-  - a known face scores 0,363 or more, OpenCV's recommended value;
+  - **YuNet** (MIT) finds the face and **SFace** (Apache-2.0) compares it; both are small models that run on an ordinary processor;
+  - a known face scores 0,363 or more in the design, OpenCV's recommended value; the prototype uses 0,30, measured on a lab take where the kit camera's faces are 40-86 px, to be calibrated per camera in a pilot;
   - only a label leaves the house: "Filipe", "unknown face" or "face not visible";
   - biometric data used to identify a person is a special category under GDPR (Article 9), which needs explicit consent;
   - **diagram:** `seq-pessoa-desconhecida.png`.
@@ -303,7 +303,7 @@ Status markers:
 
 **F2. Licences?**
 - **Short answer:** "All open and free for commercial use."
-- **Detail:** OWLv2 and DINOv2: Apache-2.0. Qwen3-1.7B: Apache-2.0. YuNet and SFace: [to confirm].
+- **Detail:** OWLv2 and DINOv2: Apache-2.0. Qwen3-1.7B: Apache-2.0. YuNet: MIT. SFace: Apache-2.0 (checked on their model files; the checksums are in AGENTS.md).
 
 ## G. The films and the demo
 

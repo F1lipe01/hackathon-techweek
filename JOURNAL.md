@@ -48,6 +48,10 @@ How the project moved, day by day: what changed, why, and what the team said. Gi
   - about 44 s, with the keys as the story;
   - an opening of fast questions over one real moment;
   - three quick cases and the approved end card with a logo sting.
+- Storyboard v7 followed: the team's notes on v6, plus a study of ten recent Claude films (video/research/claude-videos-study.md).
+- The team asked for the film rather than more storyboards, so v7 was built with the recommended choices: video/out "v7 (1080p preview)", 47 s.
+  - Every app screen was re-recorded so none shows the wallet.
+  - The app now asks "Where are my keys?" (it said "Where is my keys?").
 
 ## Wed 18 Nov: from an idea to a submitted report, a prototype and a pitch
 

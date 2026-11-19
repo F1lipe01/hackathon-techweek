@@ -20,7 +20,7 @@ The column "Tonight" is filled in only when the prototype does it and an unedite
 | A sentence becomes a scenario | Real | The local model and the rule code built the rule | |
 | He leaves without the book, comes back, takes it | Real footage | One continuous take, kit camera | |
 | "person" box | Real model output | OWLv2 run on the take afterwards (`detect_take.py`) | |
-| "livro" box on the desk | Placed by us | A fixed box where the book lies, not the model recognising it | |
+| "livro" box on the desk, with its score | Real model output (from v12) | OWLv2 ("a photo of yellow book") on the full-resolution region around the desk, then DINOv2 against a fingerprint registered from the same camera in another take: found in 68 of 68 frames, median 0,93 (`video/tools/book_region.py`). The phone-photo fingerprint alone scores 0,23 from the ceiling and would not recognise it | |
 | Door open or closed | Computed in the edit | Read from the picture | |
 | Alarm sound, notification, "Turn off the alarm" | Envisioned | Added in the edit; the alert screen was triggered for the recording (`record_app.mjs`) | "Left behind" decided by the rule (door, phone, camera check): to confirm |
 

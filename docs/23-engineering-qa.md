@@ -95,6 +95,17 @@ Status markers:
   - 0,62 or more counts as yours;
   - in the lab, on the kit camera, the book scored 0,70 and a bottle 0,10;
   - `edge.py` (matching around lines 195-208).
+- **Measured on film 1's take, ceiling camera:**
+  - on the full-resolution region around the desk, OWLv2 found the book in 68 of 68 frames;
+  - against a fingerprint registered from the same camera, the book scored a median of 0,93 (0,79-0,96), other objects 0,23 (max 0,28), and after the book was taken there were no candidates;
+  - (`video/tools/book_region.py`).
+
+**B1a. Do phone photos alone recognise the thing?**
+- **Short answer:** "Not from a ceiling camera: they give a first fingerprint, and the camera's own views make it reliable."
+- **Detail:**
+  - the phone-photo fingerprint scored 0,23 on the book from the ceiling, because close-ups look too different from a small crop seen from above;
+  - so the first time the camera sees a candidate, the app asks "is this your book?" and adds the camera's own views to the fingerprint (up to 8);
+  - analysing the full-resolution region rather than a shrunk frame is what makes the book findable at all (68 of 68 frames, against 7 of 69).
 
 **B2. How do you register a thing?**
 - **Short answer:** "Photos from the phone, or showing it to a camera; the result is 8 views and a fingerprint."

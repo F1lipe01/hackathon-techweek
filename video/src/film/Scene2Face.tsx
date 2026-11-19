@@ -1,4 +1,4 @@
-// Real example 2, the unknown person (19 Nov, the lab), v2 (the team's notes on v1), built on example 1 v9's grammar: the team's own Android
+// Real example 2, the unknown person (19 Nov, the lab), v3 (the team's notes on v2), built on example 1 v9's grammar: the team's own Android
 // phone on a light page, a touch that glides between the real taps, the camera diving into what matters, typing sounds.
 //   1  the phone glides right; the app opens (its real loading); Things › + › Person › "Record their face": the team
 //      member's own selfie video, each of 8 views flying into a card, then into its slot in the app; the name; Save;
@@ -15,7 +15,9 @@
 // glass cabin is blurred (rule 6). v2: the face scan screen centres the tracked face in a fixed oval and fills a ring of
 // segments right then left as the head really turns (measured, OWLv2 face and nose boxes, selfie A mirrored); João and
 // Alice are registered beforehand and the lab compares each face with all three; the alarm waits until the stranger
-// holds the book; the alert recommends calling the police ("Sugestão da app").
+// holds the book; the alert recommends calling the police ("Sugestão da app"). v3: the app's own person flow, recorded
+// for real: the name, the face recorded, the clip uploaded (the server cuts 8 views), "Filipe added", and the app's
+// Home security suggestion turned on (a real rule), no typed sentence; the Things list groups the Family.
 import React from "react";
 import { AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, interpolateColors, staticFile, useCurrentFrame } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Newsreader";
@@ -38,27 +40,26 @@ type Rect = { x: number; y: number; w: number; h: number };
 const lerpRect = (a: Rect, b: Rect, u: number): Rect => ({ x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u), w: lerp(a.w, b.w, u), h: lerp(a.h, b.h, u) });
 
 /* ------------------------------------------------------------------ the timeline (30 fps) */
-// add-person.marks.json (v2): things 1.702, + 2.402, Person 4.383, Record their face 6.572, faces 7.497, name 9.685,
-// Save 11.587, added 11.805, Create a scenario 14.302, the field 16.172, typing 16.362-20.02, Save 21.204,
-// saved 24.826 (the local model takes ~3,4 s: shown 3x faster), Done 28.114
+// add-person.marks.json (v3, the app's own flow): things 1.702, + 2.413, Person 4.417, the name 6.404 (typed to 7.042),
+// Record their face 8.428, the clip uploaded 10.141, "Filipe added" 13.089, Turn on 16.166, saved 19.186 (the local
+// model compiles the suggestion), Done 22.483
 const T = {
-  glide: 30, tapIcon: 80, grow: 82, s1: 118,      // the app opens; add-person from 1.38 s at 1.25x
-  face: 246,                                       // the selfie video: 8 views of the face
-  s3: 410,                                         // add-person from 7.44 s at 1.4x: the views, the name, Save
-  s4: 504,                                         // add-person from 11.80 s at 1.5x: added, the scenario, typing
-  s4b: 696, s4c: 729,                              // the save waits (21.4-24.7 s at 3x), then saved, Done (24.7 s on, 1.5x)
-  test: 820, lab: 910,                             // "Vamos testar?" (held 3 s); the lab opens out of the page
-  f1: 1090, f1end: 1210,                           // Filipe's face: caught, compared, matched (4 s)
-  cut: 1426,                                       // a cut to the stranger
-  f2: 1552, f2end: 1672,                           // the stranger's face: caught, compared, no match
-  alarm: 1755,                                     // take 64,75 s: the stranger holds the book, 0,25 s before his head comes up
-  phoneIn: 1800, notice: 1828, tap: 1892, aside: 1912,
-  close: 2090, end: 2210,
+  glide: 30, tapIcon: 80, grow: 82, s1: 118,      // the app opens; add-person from 1.38 s at 1.25x: Person, the name, Record
+  face: 292,                                       // the face scan (drawn: the phone's camera screen)
+  s3: 456,                                         // add-person from 10.141 s at 1.25x: saving, added, the suggestion, Turn on
+  s4: 604, s4b: 638,                               // the rule is compiled (16.31-19.1 s at 2.5x), then saved, Done (1.25x)
+  test: 748, lab: 838,                             // "Vamos testar?" (held 3 s); the lab opens out of the page
+  f1: 1018, f1end: 1138,                           // Filipe's face: caught, compared, matched (4 s)
+  cut: 1354,                                       // a cut to the stranger
+  f2: 1480, f2end: 1600,                           // the stranger's face: caught, compared, no match
+  alarm: 1683,                                     // take 64,75 s: the stranger holds the book, 0,25 s before his head comes up
+  phoneIn: 1728, notice: 1756, tap: 1820, aside: 1840,
+  close: 2018, end: 2138,
 };
 export const SCENE2_FRAMES = T.end + 120;
 const at = (s0: number, f0: number, rate: number, t: number) => f0 + ((t - s0) / rate) * 30;
 /** add-person's second at frame f, for the part after T.s4 (three speeds). */
-const s4Src = (t: number) => (t < 21.4 ? at(11.8, T.s4, 1.5, t) : t < 24.7 ? at(21.4, T.s4b, 3, t) : at(24.7, T.s4c, 1.5, t));
+const appSrc = (t: number) => (t < 16.31 ? at(10.141, T.s3, 1.25, t) : t < 19.1 ? at(16.31, T.s4, 2.5, t) : at(19.1, T.s4b, 1.25, t));   // add-person after the scan
 
 /* ------------------------------------------------------------------ the take (face-take: one go) */
 const TAKE = "takes/scene2/face-take.mp4";
@@ -88,11 +89,10 @@ const scr = (cx: number, sx: number, sy: number) => ({ x: phoneBox(cx).x + BEZ +
 const CX = { centre: 960, right: 1370, left: 560, cRight: 1300 };
 type CK = { at: number; s: number; x: number; y: number };
 const H0 = { s: 1, x: 960, y: 540 };
-const BTN = scr(CX.right, 603, 1366 + REC_Y), FIELD = scr(CX.right, 603, 1391 + REC_Y), TXT = scr(CX.right, 603, 1000 + REC_Y), NOTE = scr(CX.cRight, 603, SB_H + 14 + px(273) / 2);
+const FIELD = scr(CX.right, 603, 306.8 * 3 + REC_Y), BTN = scr(CX.right, 603, 507 * 3 + REC_Y), RECO = scr(CX.right, 603, 1470 + REC_Y), NOTE = scr(CX.cRight, 603, SB_H + 14 + px(273) / 2);
 const CAM: CK[] = [
-  { at: 0, ...H0 }, { at: 196, ...H0 }, { at: 222, s: 2.0, ...BTN }, { at: 246, s: 2.0, ...BTN }, { at: 270, ...H0 },
-  { at: 436, ...H0 }, { at: 452, s: 1.9, ...FIELD }, { at: 484, s: 1.9, ...FIELD }, { at: 500, ...H0 },
-  { at: 576, ...H0 }, { at: 596, s: 2.4, ...TXT }, { at: 680, s: 2.4, ...TXT }, { at: 698, ...H0 },
+  { at: 0, ...H0 }, { at: 212, ...H0 }, { at: 232, s: 1.9, ...FIELD }, { at: 258, s: 1.9, ...FIELD }, { at: 278, s: 2.0, ...BTN }, { at: 292, s: 2.0, ...BTN }, { at: 316, ...H0 },
+  { at: 534, ...H0 }, { at: 554, s: 1.7, ...RECO }, { at: 582, s: 1.7, ...RECO }, { at: 598, ...H0 },
   { at: T.notice + 2, ...H0 }, { at: T.notice + 24, s: 1.7, ...NOTE }, { at: T.tap - 10, s: 1.7, ...NOTE }, { at: T.tap + 12, ...H0 },
 ];
 const camAt = (f: number) => {
@@ -224,16 +224,16 @@ const Notice: React.FC<{ at: number }> = ({ at: a }) => {
       <div style={{ position: "absolute", left: px(584), top: px(32), width: px(48), height: px(48), borderRadius: "50%", background: "#CBD6C6", display: "grid", placeItems: "center" }}>
         <svg width={px(24)} height={px(24)} viewBox="0 0 24 24"><path d="m6 15 6-6 6 6" fill="none" stroke="#1F1F1F" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" /></svg></div>
       <div style={{ position: "absolute", left: px(105), top: px(102), width: px(440 - 105), fontSize: px(31), fontWeight: 500, color: "#1F1F1F", whiteSpace: "nowrap",
-        overflow: "hidden", textOverflow: "ellipsis" }}>Unknown person entered</div>
+        overflow: "hidden", textOverflow: "ellipsis" }}>Home Security</div>
       <div style={{ position: "absolute", left: px(105), top: px(156), width: px(505), fontSize: px(26), lineHeight: `${px(40)}px`, color: "#444746" }}>
-        Someone the camera does not know came in. The alarm is on.</div>
+        Someone who isn't Family came in. The alarm is on.</div>
     </div>
   );
 };
 
 /* ------------------------------------------------------------------ 1: the app, the face */
-const PERSON_TAPS = { add: [2.402, 249, 90], pick: [4.383, 201, 525.6], face: [6.572, 201, 455.3], name: [9.685, 201, 463.8], save: [11.587, 201, 662.5],
-  scen: [14.302, 201, 537.3], text: [16.172, 201, 320], saveScen: [21.204, 201, 436], done: [28.114, 201, 607.7] } as const;   // add-person.marks.json
+const PERSON_TAPS = { add: [2.413, 249, 90], pick: [4.417, 201, 525.6], name: [6.404, 201, 306.8], face: [8.428, 201, 507], on: [16.166, 116, 577.7],
+  done: [22.483, 201, 607.7] } as const;   // add-person.marks.json
 // The face scan (v2): selfie A, mirrored as enrolment previews are, from 0,5 s at 1,3x. Its face is tracked (OWLv2 face
 // and nose boxes, every other frame: public/phone/person/track.json) and the clip is moved under a fixed oval so the face
 // stays centred and fills 86 % of the oval's height; the clip always covers the oval. Measured turns of the mirrored
@@ -245,9 +245,6 @@ const selF = (t: number) => Math.round(T.face + ((t - SEL_T0) / SEL_RATE) * 30);
 const OX = 603, OY = 1000, RX = 360, RY = 500, S_FACE = (0.86 * 2 * RY) / 324, SEL_W = 576, SEL_H = 1024;
 const SCAN_BG = "#0F1013";
 const STEP = { right: selF(1.85), left: selF(4.25), done: selF(6.45) };
-const CAPTURE = [1.25, 1.6, 2.5, 2.9, 3.3, 4.8, 5.2, 5.6];  // the 8 views (cut at 0,9 s for the first, still a straight look, and these moments);
-// the first is taken once the camera is back out of the phone
-const VIEW_AT = CAPTURE.map(selF);
 type Track = { [k: string]: { fps: number; frames: { t: number; face: number[] | null; nose: number[] | null }[] } };
 const gauss = (a: number[], k = 3) => a.map((_, i) => { let s = 0, w = 0; for (let j = -k; j <= k; j++) { const v = a[i + j]; if (v === undefined) continue; const g = Math.exp(-0.5 * (j / (k / 2)) ** 2); s += g * v; w += g; } return s / w; });
 const fill = (a: (number | null)[]) => { const out = [...a] as number[]; let last = a.find((x) => x !== null) ?? 0; for (let i = 0; i < out.length; i++) { if (a[i] === null) out[i] = last as number; else last = a[i] as number; } return out; };
@@ -309,23 +306,19 @@ const FaceScan: React.FC = () => {
             {txt}
           </div>);
       })}
-      {step < 3 ? <div style={{ position: "absolute", left: 0, width: SCR_W, top: OY + RY + 210, textAlign: "center", fontFamily: ROBOTO, fontSize: 40, color: "rgba(255,255,255,0.6)" }}>
-        {VIEW_AT.filter((v) => f >= v).length} of 8 views</div> : null}
+
     </AbsoluteFill>
   );
 };
-const S4_END = Math.round(s4Src(33.2)) - 2;   // add-person ends at 33.27 s
+const APP_END = Math.round(appSrc(27.95)) - 2;   // add-person ends at 28.03 s
 const tapF = (f: number, t: readonly [number, number, number]) => ({ f, x: t[1] * 3, y: t[2] * 3 + REC_Y, press: true });
-const rest = (w: Way, df: number, dx: number, dy: number): Way => ({ f: w.f + df, x: w.x + dx, y: w.y + dy });
 const WAYS_A: Way[] = (() => {
   const s1 = (t: readonly [number, number, number]) => tapF(Math.round(at(1.38, T.s1, 1.25, t[0])), t);
-  const s3 = (t: readonly [number, number, number]) => tapF(Math.round(at(7.44, T.s3, 1.4, t[0])), t);
-  const s4 = (t: readonly [number, number, number]) => tapF(Math.round(s4Src(t[0])), t);
-  const name = s3(PERSON_TAPS.name), text = s4(PERSON_TAPS.text);
+  const sA = (t: readonly [number, number, number]) => tapF(Math.round(appSrc(t[0])), t);
+  const name = s1(PERSON_TAPS.name);
   return [{ f: 54, x: 860, y: 2050 }, { f: T.tapIcon, x: ICON[0] + ICON[2] / 2, y: ICON[1] + ICON[3] / 2, press: true }, { f: T.s1 + 10, x: 700, y: 1700 },
-    s1(PERSON_TAPS.add), s1(PERSON_TAPS.pick), s1(PERSON_TAPS.face), { f: T.s3 + 18, x: 760, y: 2000 },
-    name, rest(name, 16, 170, 300), s3(PERSON_TAPS.save),
-    s4(PERSON_TAPS.scen), text, rest(text, 20, 220, 520), s4(PERSON_TAPS.saveScen), s4(PERSON_TAPS.done), { f: T.test + 20, x: 760, y: 2100 }];
+    s1(PERSON_TAPS.add), s1(PERSON_TAPS.pick), name, { f: name.f + 18, x: name.x + 200, y: name.y + 380 }, s1(PERSON_TAPS.face), { f: T.s3 + 30, x: 760, y: 2000 },
+    sA(PERSON_TAPS.on), sA(PERSON_TAPS.done), { f: T.test + 20, x: 760, y: 2100 }];
 })();
 const ScreenA: React.FC = () => {
   const f = useCurrentFrame();
@@ -334,57 +327,13 @@ const ScreenA: React.FC = () => {
       {f < T.s1 + 12 ? <Home /> : null}
       {f < T.face + 2 ? <Grow at={T.grow} from={ICON} r0={40}><Sequence from={T.s1} layout="none"><Rec src="app/add-person.mp4" from={1.38} rate={1.25} /></Sequence></Grow> : null}
       {f >= T.face && f < T.s3 ? <FaceScan /> : null}
-      {f >= T.s3 && f < T.s4 ? <Sequence from={T.s3} layout="none"><Rec src="app/add-person.mp4" from={7.44} rate={1.4} /></Sequence> : null}
-      <EmptySlots />
-      {f >= T.s4 && f < T.s4b ? <Sequence from={T.s4} layout="none"><Rec src="app/add-person.mp4" from={11.8} rate={1.5} /></Sequence> : null}
-      {f >= T.s4b && f < T.s4c ? <Sequence from={T.s4b} layout="none"><Rec src="app/add-person.mp4" from={21.4} rate={3} /></Sequence> : null}
-      {f >= T.s4c && f < S4_END ? <Sequence from={T.s4c} layout="none"><Rec src="app/add-person.mp4" from={24.7} rate={1.5} /></Sequence> : null}
-      <Cursor ways={WAYS_A} show={[54, T.test + 4]} hide={[[T.grow - 2, T.s1 + 10], [T.face - 1, T.s3 + 18]]} />
+      {f >= T.s3 && f < T.s4 ? <Sequence from={T.s3} layout="none"><Rec src="app/add-person.mp4" from={10.141} rate={1.25} /></Sequence> : null}
+      {f >= T.s4 && f < T.s4b ? <Sequence from={T.s4} layout="none"><Rec src="app/add-person.mp4" from={16.31} rate={2.5} /></Sequence> : null}
+      {f >= T.s4b && f < APP_END ? <Sequence from={T.s4b} layout="none"><Rec src="app/add-person.mp4" from={19.1} rate={1.25} /></Sequence> : null}
+      <Cursor ways={WAYS_A} show={[54, T.test + 4]} hide={[[T.grow - 2, T.s1 + 10], [T.face - 1, T.s3 + 24]]} />
     </AbsoluteFill>
   );
 };
-const GRID: Rect = { x: 150, y: 420, w: 844, h: 472 };
-const slot = (j: number): Rect => ({ x: GRID.x + 24 + (j % 4) * 202, y: GRID.y + 56 + Math.floor(j / 4) * 202, w: 190, h: 190 });
-const r4 = (r: { x: number; y: number }, w: number, h: number): Rect => ({ x: r.x, y: r.y, w: w * KS * OVER, h: h * KS * OVER });
-const FACE_SRC = r4(scr(CX.right, OX - RX, OY - RX), 2 * RX, 2 * RX);   // the views leave from the oval, where the face is
-const APP_SLOTS: [number, number, number, number][] = [[116, 618, 228, 231], [364, 618, 230, 231], [612, 618, 230, 231], [861, 618, 231, 231],
-  [114, 867, 230, 231], [364, 867, 230, 231], [613, 867, 229, 231], [862, 867, 230, 231]];   // measured on add-person at 8.3 s
-const BACK = (j: number) => T.s3 + 2 + 2 * j;
-const BACK_LEN = 16;
-const FaceCard: React.FC = () => {
-  const f = useCurrentFrame();
-  if (f < T.face + 4 || f > BACK(7) + BACK_LEN + 2) return null;
-  const inU = ez(f, T.face + 4, T.face + 20, theme.ease.out) * (1 - Math.min(1, Math.max(0, (camAt(f).s - 1.03) / 0.25)));   // not while the camera is inside the phone
-  const frameOut = ez(f, BACK(5), BACK(7) + 10);
-  const views = VIEW_AT.map((a, i) => ({ src: `phone/person/face-view-${i + 1}.jpg`, at: a + 1, j: i }));
-  const landed = views.filter((v) => f >= v.at + 14).length;
-  return (
-    <>
-      <div style={{ position: "absolute", left: GRID.x, top: GRID.y, width: GRID.w, height: GRID.h, transform: `translateY(${(1 - inU) * 30}px) scale(${1 - 0.04 * frameOut})`,
-        transformOrigin: "50% 50%", opacity: inU * (1 - frameOut), borderRadius: 26, background: "#FFFFFF", boxShadow: "0 30px 70px -30px rgba(70,50,25,0.35), 0 0 0 1px rgba(30,25,15,0.05)" }}>
-        <div style={{ position: "absolute", left: 24, top: 16, right: 24, display: "flex", justifyContent: "space-between", fontFamily: SANS, fontSize: 22 }}>
-          <span style={{ color: INK, fontWeight: 600 }}>Pessoa</span><span style={{ color: "#7A756C" }}>{landed} de 8 vistas da cara</span></div>
-        {Array.from({ length: 8 }, (_, j) => <div key={j} style={{ position: "absolute", left: slot(j).x - GRID.x, top: slot(j).y - GRID.y, width: 190, height: 190, borderRadius: 95, background: "#EEEAE2" }} />)}
-      </div>
-      {views.map((p) => {
-        if (f < p.at) return null;
-        const back = BACK(p.j);
-        if (f >= back + BACK_LEN) return null;
-        const app = APP_SLOTS[p.j], to = r4(scr(CX.right, app[0], app[1] + REC_Y), app[2], app[3]);
-        const q = f < p.at + 14 ? lerpRect(FACE_SRC, slot(p.j), ez(f, p.at, p.at + 14, theme.ease.out)) : f < back ? slot(p.j) : lerpRect(slot(p.j), to, ez(f, back, back + BACK_LEN));
-        const flying = f < p.at + 14 || f >= back;
-        return <Img key={p.j} src={staticFile(p.src)} style={{ position: "absolute", left: q.x, top: q.y, width: q.w, height: q.h, objectFit: "cover", borderRadius: "50%",
-          boxShadow: flying ? "0 24px 50px -18px rgba(40,30,15,0.5)" : undefined }} />;
-      })}
-    </>
-  );
-};
-const EmptySlots: React.FC = () => {
-  const f = useCurrentFrame();
-  if (f < T.s3 || f >= BACK(7) + BACK_LEN) return null;
-  return <>{APP_SLOTS.map(([x, y, w, h], j) => f < BACK(j) + BACK_LEN ? <div key={j} style={{ position: "absolute", left: x, top: y + REC_Y, width: w, height: h, borderRadius: "50%", background: "#D9E1EE" }} /> : null)}</>;
-};
-
 /* ------------------------------------------------------------------ 3: the lab */
 const AP = [0.66, 0.705, 0.693, 0.732];
 const ALARM = [0.3135, 0.3023, 0.3243, 0.3115];
@@ -447,7 +396,7 @@ const LabLayer: React.FC<{ ov?: number }> = ({ ov = 1 }) => {
   const pColor = known ? KIND.ok : stranger ? KIND.alarm : KIND.person;
   const ax = (ALARM[0] + ALARM[2]) / 2 * 1920, ay = (ALARM[1] + ALARM[3]) / 2 * 1080;
   const chip = ringing ? ["Um desconhecido pegou no livro · alarme e mensagem", KIND.alarm, "#fff"] : known ? ["Filipe é de casa · nada toca", KIND.ok, "#fff"]
-    : stranger ? ["Não é ninguém de casa", "rgba(255,255,255,0.94)", "#B42318"] : ["Cenário ativo · Unknown person entered", "rgba(255,255,255,0.94)", INK];
+    : stranger ? ["Não é ninguém de casa", "rgba(255,255,255,0.94)", "#B42318"] : ["Cenário ativo · Home Security", "rgba(255,255,255,0.94)", INK];
   const cb = { x: CABIN[0] * 1920, y: CABIN[1] * 1080, w: (CABIN[2] - CABIN[0]) * 1920, h: (CABIN[3] - CABIN[1]) * 1080 };
   return (
     <AbsoluteFill style={{ width: 1920, height: 1080, background: "#000" }}>
@@ -602,7 +551,7 @@ const Suggestion: React.FC<{ cx: number }> = ({ cx }) => {
 /* ------------------------------------------------------------------ the local models at work (bottom right) */
 // What really ran: Qwen3-1.7B compiled the sentence (/api/rules); OWLv2 found the people in the take (detect_take.py).
 const MODELS = [
-  { from: Math.round(s4Src(21.2)), until: Math.round(s4Src(24.83)), name: "Qwen3-1.7B", what: "a frase passa a cenário" },
+  { from: Math.round(appSrc(16.17)), until: Math.round(appSrc(19.19)), name: "Qwen3-1.7B", what: "a sugestão passa a regra" },
   { from: T.lab + 20, until: LAB_OUT, name: "OWLv2", what: "deteta pessoas e coisas" },
 ];
 const ModelsCard: React.FC = () => {
@@ -628,15 +577,11 @@ const ModelsCard: React.FC = () => {
 };
 
 /* ------------------------------------------------------------------ typing */
-const SERIF_LINES: [string, number][] = [["Abre-se a app.", 44], ["Adiciona-se uma pessoa.", 150], ["Grava-se a cara, a rodar.", T.face], ["Dá-se-lhe um nome.", T.s3 + 30],
-  ["E uma frase cria o cenário.", T.s4 + 40], ["Vamos testar?", T.test + 10], ["O Filipe entrou, e o alarme não tocou.", T.close + 16], ["Um desconhecido entra, e o alarme é ativado.", T.close + 44]];
+const SERIF_LINES: [string, number][] = [["Abre-se a app.", 44], ["Adiciona-se uma pessoa.", 150], ["Grava-se a cara, a rodar.", T.face], ["A app guarda o vídeo.", T.s3 + 4],
+  ["E sugere a segurança da casa.", T.s3 + 74], ["Vamos testar?", T.test + 10], ["O Filipe entrou, e o alarme não tocou.", T.close + 16], ["Um desconhecido entra, e o alarme é ativado.", T.close + 44]];
 const WORD_KEYS = SERIF_LINES.flatMap(([text, from]) => text.split(" ").map((_, k) => from + 4 + 3 * k));
-const SENTENCE = "Sound the alarm if someone I don't know comes in";
 const typedAt = (start: number, n: number, step: number) => Array.from({ length: n }, (_, i) => start + i * step);
-const APP_KEYS = [
-  ...typedAt(PERSON_TAPS.name[0] + 0.26, 6, 0.0725).map((t) => Math.round(at(7.44, T.s3, 1.4, t))),
-  ...typedAt(16.362, SENTENCE.length, (20.02 - 16.362) / SENTENCE.length).map((t) => Math.round(s4Src(t))),
-];
+const APP_KEYS = typedAt(PERSON_TAPS.name[0] + 0.26, 6, 0.0725).map((t) => Math.round(at(1.38, T.s1, 1.25, t)));   // "Filipe"
 
 /* ------------------------------------------------------------------ the scene */
 export const Scene2Face: React.FC = () => {
@@ -653,10 +598,9 @@ export const Scene2Face: React.FC = () => {
         {f < T.test + 30 ? <PhoneAt cx={cxA} bars={{ time: "16:21", mode: f < T.grow + 10 ? "home" : f < T.s1 ? "splash" : f >= T.face && f < T.s3 ? "dark" : "app" }}><ScreenA /></PhoneAt> : null}
         <Line text="Abre-se a app." from={44} to={150} size={87} />
         <Line text="Adiciona-se uma pessoa." from={150} to={T.face} />
-        <Line text="Grava-se a cara, a rodar." from={T.face} to={T.s3 + 4} top={200} />
-        <FaceCard />
-        <Line text="Dá-se-lhe um nome." from={T.s3 + 30} to={T.s4} size={87} />
-        <Line text="E uma frase cria o cenário." from={T.s4 + 40} to={T.test + 6} />
+        <Line text="Grava-se a cara, a rodar." from={T.face} to={T.s3 + 4} />
+        <Line text="A app guarda o vídeo." from={T.s3 + 4} to={T.s3 + 70} size={87} />
+        <Line text="E sugere a segurança da casa." from={T.s3 + 74} to={T.test + 6} />
         <Line text="Vamos testar?" from={T.test + 10} to={T.lab + 14} top={360} left={0} width={1920} align="center" size={104} />
       </AbsoluteFill>
       <LabFrame />
@@ -677,11 +621,11 @@ export const Scene2Face: React.FC = () => {
           match and mismatch; the alarm a beat after the stranger's face fails to match; the buzz */}
       <Audio src={staticFile("audio/music/bed-real-long.wav")} volume={(v) => 0.5 * interpolate(v, [0, 20, T.lab, T.lab + 30, ALARM_ON - 10, ALARM_ON, T.close, T.close + 20, T.end, T.end + 20, SCENE2_FRAMES - 16, SCENE2_FRAMES],
         [0, 1, 1, 0.85, 0.85, 0.5, 0.5, 1.1, 1.1, 1.3, 1.3, 0], clamp)} />
-      {[[209, "zoom-soft", 0.9], [443, "zoom-soft", 0.9], [586, "zoom-soft", 0.9], [T.notice + 13, "zoom-soft", 0.9], [T.f1 + 14, "zoom-soft", 0.9], [T.f2 + 14, "zoom-soft", 0.9],
+      {[[222, "zoom-soft", 0.9], [544, "zoom-soft", 0.9], [T.notice + 13, "zoom-soft", 0.9], [T.f1 + 14, "zoom-soft", 0.9], [T.f2 + 14, "zoom-soft", 0.9],
         [T.glide + 18, "slow-gentle", 0.32], [T.test + 12, "fast", 0.08], [T.phoneIn + 4, "slow-gentle", 0.32], [T.aside + 15, "slow-gentle", 0.28], [LAB_OUT + 4, "fast", 0.07],
-        [T.s3 + 12, "fast", 0.07], [T.lab + 11, "riser-soft", 0.15], [T.close + 8, "riser-soft", 0.12],
+        [T.lab + 11, "riser-soft", 0.15], [T.close + 8, "riser-soft", 0.12],
         [T.end + 6, "riser-soft", 0.15], [T.end + 23, "slow-gentle", 0.28], [T.end + 68, "zoom-soft", 0.6],
-        ...VIEW_AT.map((a) => [a + 5, "throw", 0.07] as const)].map(([peak, n, vol], i) => {
+        ].map(([peak, n, vol], i) => {
         const PEAK: Record<string, number> = { "slow-gentle": 0.28, "zoom-soft": 0.37, throw: 0.07, fast: 0.15, "riser-soft": 0.43 };
         return <Sequence key={`w${i}`} from={Math.round((peak as number) - PEAK[n as string] * 30)} layout="none"><Audio src={staticFile(`audio/sfx/whoosh/${n}.wav`)} volume={vol as number} /></Sequence>;
       })}
@@ -695,7 +639,7 @@ export const Scene2Face: React.FC = () => {
       {[T.f1, T.f2].map((a, i) => <Sequence key={`sc${i}`} from={a + 30} layout="none"><Audio src={staticFile("audio/sfx/ui/scan.wav")} volume={0.5} /></Sequence>)}
       <Sequence from={T.f1 + 62 - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={0.42} /></Sequence>
       <Sequence from={T.f2 + 62 - 2} layout="none"><Audio src={staticFile("audio/sfx/ui/wrong.wav")} volume={0.9} /></Sequence>
-      <Sequence from={Math.round(s4Src(24.826)) - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={0.35} /></Sequence>
+      <Sequence from={Math.round(appSrc(19.186)) - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={0.35} /></Sequence>
       <Sequence from={ALARM_FILE0} durationInFrames={LAB_OUT + 16 - ALARM_FILE0} layout="none"><Audio src={staticFile("audio/sfx/scene1/alarm-beep.wav")} loop
         volume={(v) => { const g = ALARM_FILE0 + v; return (g < T.phoneIn ? 0.5 : g < T.aside ? 0.22 : 0.36) * (1 - ez(g, LAB_OUT - 4, LAB_OUT + 16)); }} /></Sequence>
       <Sequence from={T.notice} layout="none"><Audio src={staticFile("audio/sfx/scene1/buzz.wav")} volume={0.5} /></Sequence>

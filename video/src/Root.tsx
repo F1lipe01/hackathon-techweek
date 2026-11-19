@@ -8,6 +8,7 @@ import { RealExample, DURATION as REAL_FRAMES } from "./real/RealExample";
 import { TrackTest, TRACK_TEST_FRAMES } from "./proof/TrackTest";
 import { ProofCamera, PROOF_FRAMES } from "./proof/ProofCamera";
 import { FilmV7, FILM_FRAMES } from "./film/FilmV7";
+import { Scene1Book, SCENE1_FRAMES } from "./film/Scene1Book";
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -20,6 +21,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="ProofCamera" component={ProofCamera} durationInFrames={PROOF_FRAMES}
       fps={theme.fps} width={theme.width} height={theme.height} />
     <Composition id="FilmV7" component={FilmV7} durationInFrames={FILM_FRAMES}
+      fps={theme.fps} width={theme.width} height={theme.height} />
+    <Composition id="Scene1Book" component={Scene1Book} durationInFrames={SCENE1_FRAMES}
       fps={theme.fps} width={theme.width} height={theme.height} />
   </>
 );

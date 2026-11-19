@@ -289,6 +289,15 @@ const TAKES = {
       mark('alert');
       await pause(5000);
     }); },
+  // scene 1 (the book left behind): the door closed and the book is still on the desk
+  'alert-book': () => { Object.assign(C, { on: true, events: [], rules: [{ id: 'concept-book-rule', title: 'Left without the book', sentence: 'Tell me if I leave the room without my book', active: true }], reply: null });
+    return take('alert-book', '14:10', async ({ refresh, mark }) => {
+      await pause(1500);
+      conceptEvent({ kind: 'alert', title: 'Left without the book', text: 'The door closed and your book is still on the desk. The alarm is on.', crop: 'concept-book.jpg' });
+      await refresh();
+      mark('alert');
+      await pause(5000);
+    }); },
   // video 1 v7, the dog: "Has the dog eaten today?", answered with its picture at the bowl
   dog: () => { Object.assign(C, { on: true, events: [], rules: [], delay: 900,
     reply: () => ({ kind: 'answer', answer: 'Yes. The dog was at its bowl at 08:05.', thing: null,

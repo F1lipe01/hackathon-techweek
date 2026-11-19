@@ -1,6 +1,6 @@
 # ThingTracker · architecture
 
-Version 2, Thu 19 Nov 2026. Audience: the Altice Labs jury and engineers, and our team. It describes the **target design** the team decided on 19 Nov: what runs where, which component decides what, with which signal and which threshold. Section 17 says, item by item, what the prototype does today.
+Version 2, Thu 19 Nov 2026. Audience: the Altice Labs jury and engineers, and our team. It describes the **target design** the team decided on 19 Nov: what runs where, which component decides what, with which signal and which threshold. Section 16 says, item by item, what the prototype does today.
 
 The views follow three standards: the C4 model for context, containers and components ([c4model.com](https://c4model.com)); arc42 for the runtime view (the sequences, section 6 of arc42) and the deployment view (section 7) ([arc42.org](https://arc42.org)); and the data-flow diagram with trust boundaries used in threat modelling by the Microsoft Security Development Lifecycle ([Threat Modeling Tool](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool)) and by OWASP ([Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)). Every figure is built by `docs/architecture/build_views.py --lang en`, which measures each text against its box and stops if one does not fit.
 
@@ -91,17 +91,17 @@ Figure 3 shows where each part runs, the hardware, the numbers at 500,000 homes,
 
 **Why the load balancers are at Altice and not in the home.** A home has one agent on one router: there is nothing to spread. The 500,000 homes meet at Altice, where their connections and the app's requests have to be shared among many service instances, and where an instance that fails must be taken out without anyone noticing. The GPU work goes through queues rather than load balancers, because it can wait and be batched: the urgent queue is served at once, the batch queue in quiet hours, so the GPUs are sized for the average plus the urgent share (66,376 frames a second at 500,000 homes) instead of the evening peak (124,031), as document 17 computes.
 
-**Sizing at 500,000 homes (estimates, document 17).** About 1,427 L4 cards and €6.4 M of hardware, for about €0.49 per home a month with one camera (€0.98 with two), assuming 2 h of motion per camera a day, analysed at 1 frame per second, with GPUs at 25 % of their peak speed. Each of these three assumptions doubles or halves the cost; the first item in document 17's list of checks is to measure the real throughput.
+**Sizing at 500,000 homes (estimates, document 17).** About 1,427 L4 cards and €6.4 M of hardware, for about €0.49 per home a month with one camera (€0.98 with two), assuming 2 h of motion per camera a day, analysed at 1 frame per second, with GPUs at 25 % of their peak speed. An error of two times in any of these three assumptions doubles or halves the cost; the first item in document 17's list of checks is to measure the real throughput.
 
 ### 5.2 The upgrade path: vision in the home (A1)
 
-If Altice's routers or cameras have an NPU that can run a detector, OWLv2 and DINOv2 (or a lighter detector) move into the home agent, and only events, thumbnails and fingerprints leave the home. Document 17 estimates about €0.36 per home a month, from an assumed €15 router premium. Whether the router has such an NPU is the first question for Altice (§19).
+If Altice's routers or cameras have an NPU that can run a detector, OWLv2 and DINOv2 (or a lighter detector) move into the home agent, and only events, thumbnails and fingerprints leave the home. Document 17 estimates about €0.36 per home a month, from an assumed €15 router premium. Whether the router has such an NPU is the first question for Altice (§18).
 
 ### 5.3 The rejected options
 
 | Option | What it means | Numbers (document 17 unless noted) | Why it was rejected |
 |---|---|---|---|
-| (a) Everything in the home, language model included | A box per home runs vision and a language model | Raspberry Pi 5 with AI HAT+ (€200) or Jetson Orin Nano Super (€269): €6.55 to €8.64 per home a month, €107.5 M to €142.0 M of hardware at 500,000 homes. The prototype's language model (Qwen3-1.7B, 4-bit) takes about 1 GB; a 4B model tried took 2.1 GB and was three times slower (AGENTS.md) | The add-on can carry at most €1.73 a month for vision; a box costs four to five times that. A language model needs more memory again, small models wrote Portuguese that was not always European, and every model update has to reach 500,000 boxes |
+| (a) Everything in the home, language model included | A box per home runs vision and a language model | Raspberry Pi 5 with AI HAT+ (€200) or Jetson Orin Nano Super (€269): €6.55 to €8.64 per home a month, €107.5 M to €142.0 M of hardware at 500,000 homes. The prototype's language model (Qwen3-1.7B, 4-bit) takes about 1 GB; a 4B model tried took 2.1 GB and was three times slower (team measurement, 18 Nov) | The add-on can carry at most €1.73 a month for vision; a box costs four to five times that. A language model needs more memory again, small models wrote Portuguese that was not always European, and every model update has to reach 500,000 boxes |
 | (b) Vision in Altice's cloud from full frames or video | Every camera sends frames or a stream to GPU servers | A continuous stream at 2 Mbps (assumption): 657 GB per camera a month, 1,000 Gbps at the peak for 500,000 cameras, €1.00 per home a month in network alone. Full frames during motion: 17.5 GB per camera a month; GPUs sized for the evening peak, €2.41 per home a month on Altice's servers, €3.93 to €4.26 on hyperscaler GPUs on demand | Costs more than the add-on can carry, and the whole picture of the home would leave it, all the time |
 
 The chosen design keeps the motion gate at home, which makes a central option possible at all: the changed region is about 8.8 GB per camera a month (40 KB per region, an assumption), against 657 GB for a stream.
@@ -165,7 +165,7 @@ Figure 5 shows the presence state machine. It runs in the ThingTracker service, 
 | UNSURE | OCCUPIED | A Family phone joins the Wi-Fi, or a Family face is recognised | Phones, faces |
 | UNSURE | EMPTY | Phones away and nobody on the cameras, after the refresh | Phones, cameras |
 
-**What the states mean for the rules.** In OCCUPIED, "empty home" rules wait. In EMPTY, they act (they offer to turn off what is still on). In UNSURE, rules that need certainty ask the family instead of acting; an unknown face on 3 consecutive analyses still raises the security alarm.
+**What the states mean for the rules.** In OCCUPIED, "empty home" rules wait. In EMPTY, they act (they offer to turn off what is still on). In UNSURE, rules that need certainty ask the family instead of acting; an unknown face on 3 consecutive analyses still raises the security alert.
 
 **The count.** People home = Family members home (phone on the Wi-Fi, or face seen in the last T_face with no phone leaving since) + registered guests seen now + unknown faces seen now. A person with no visible face is added only if they cannot be a Family member already counted; with the Family away, that person makes the state UNSURE.
 
@@ -238,7 +238,7 @@ Figure 7 shows the unknown-person sequence.
 | 4 | Home agent | Up to 8 templates, chosen from different frames, are stored in the router's encrypted SQLite; the video is deleted |
 | 5 | Withdrawal | The person turns recognition off; the templates are deleted in the home and the deletion is confirmed |
 
-Document 20 (section 1.3) had proposed enrolment in front of the home camera so that no image of a face crosses the platform; the team's decision is the selfie video. Uploading it over the home Wi-Fi straight to the router would keep it off the platform entirely, and is listed as an option in §19.
+Document 20 (section 1.3) had proposed enrolment in front of the home camera so that no image of a face crosses the platform; the team's decision is the selfie video. Uploading it over the home Wi-Fi straight to the router would keep it off the platform entirely, and is listed as an option in §18.
 
 **Recognition.**
 
@@ -401,7 +401,7 @@ Figure 12 shows the five flows in the Altice app: adding a thing, adding a perso
 | DINOv2 fingerprint | 22 ms per crop | |
 | A full perception cycle | about 0.65 s | About 1.5 frames per second on this Mac |
 | MCP device command (plug off) | about 1.3 s | Measured on 16 Nov (document 10) |
-| Local text model (Qwen3-1.7B, MLX) | answers 0.4 to 1.7 s, rules 1.5 to 3.2 s | Measured on 18 Nov (AGENTS.md) |
+| Local text model (Qwen3-1.7B, MLX) | answers 0.4 to 1.7 s, rules 1.5 to 3.2 s | Team measurement, 18 Nov |
 
 **Cost per home a month at 500,000 homes (estimates):** vision about €0.49 with one camera on Altice's own L4 servers (document 17); language model about €0.43 (document 16, base case, €0.10 to €1.78). The judge's cost is not yet estimated: it is called only at ambiguous moments, and its rate has to be measured in a pilot before it is costed.
 
@@ -429,13 +429,9 @@ The text model is called only by the ThingTracker service, for two jobs: compili
 
 **The vision models' licences** (checked on the model cards and the OpenCV Zoo READMEs): OWLv2 and DINOv2 are Apache-2.0; YuNet (`face_detection_yunet_2023mar.onnx`) is MIT; SFace (`face_recognition_sface_2021dec.onnx`) is Apache-2.0.
 
-## 16. Where things run in the demo
+## 16. Prototype vs target
 
-See §5.4: the MacBook plays the home agent and the vision workers (`edge.py`), the ThingTracker service (`server.py`, with SQLite for PostgreSQL) and the language-model servers (`llm_local.py`); the phone is a browser on the Mac; the camera stream reaches the Mac through the organisers' relay, which the product never uses.
-
-## 17. Prototype vs target
-
-Status late on 19 Nov 2026, from the prototype's code and commits. "In progress" items are being built tonight and are to be confirmed.
+Status late on 19 Nov 2026, from the prototype's code and commits. "In progress" items were being built on the night of 19 Nov and are to be confirmed.
 
 | Part | Target | Prototype | Status |
 |---|---|---|---|
@@ -453,7 +449,7 @@ Status late on 19 Nov 2026, from the prototype's code and commits. "In progress"
 | Left behind | Door close + leaver + active check | Same; "unsure" when not seen or no answer | Implemented |
 | Unknown person, 112 | 3 analyses, Family away; suggestion only | Same; the app's button never dials | Implemented |
 | Power saving, door left open | On EMPTY, one alert per incident | Same | Implemented |
-| Judge | Vision-language model at Altice | A small model may be added tonight | In progress (to confirm) |
+| Judge | Vision-language model at Altice | A small model may be added on the night of 19 Nov | In progress (to confirm) |
 | Rules engine | Event-driven in the service | A loop every 2 s in `server.py` | Implemented (as a loop) |
 | Alerts and actions | Notification service; MCP after "Yes" | In the web copy of the app; dry run unless `TT_LIVE_ACTIONS=1`; the alarm always simulated | Simulated |
 | Registration from photos, from the camera | Vision workers | Implemented on the Mac | Implemented |
@@ -463,7 +459,7 @@ Status late on 19 Nov 2026, from the prototype's code and commits. "In progress"
 | PostgreSQL, cache, object storage | At Altice | SQLite (`store.py`) and local files | Simulated |
 | Text model | Altice-hosted or provider under contract | Qwen3-1.7B through MLX (`llm_local.py`); Claude off by default | Implemented |
 
-## 18. Decisions, and the alternatives we rejected
+## 17. Decisions, and the alternatives we rejected
 
 | # | Decision | Alternatives | Why |
 |---|---|---|---|
@@ -477,7 +473,7 @@ Status late on 19 Nov 2026, from the prototype's code and commits. "In progress"
 | D8 | **Recognising people: opt-in, in the home** | Never; or in the cloud | The family's safety scenarios need it; consent per person and templates at home keep the legal risk and the trust question manageable |
 | D9 | **Each camera is one place** | Zones drawn inside a camera | Simpler for the family; zones are left to Altice as a later feature |
 
-## 19. Open questions for Altice
+## 18. Open questions for Altice
 
 1. Which **routers or cameras have an NPU** that can run a detector (option A1, about €0.36 per home a month)?
 2. Does the platform offer **events or push** (door, Wi-Fi) we can use, instead of polling the MCP server?

@@ -20,7 +20,7 @@
 <text x="614.0" y="399.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Duas partes: o agente da casa, no<tspan font-style="italic"> router</tspan>, e o serviço com</text>
 <text x="614.0" y="417.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">a visão, na Altice</text>
 <rect x="1180.0" y="268.6" width="360.0" height="167.1" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
-<text x="1194.0" y="296.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma Connected Home</tspan></text>
+<text x="1194.0" y="296.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma</tspan><tspan font-weight="700" font-style="italic"> Connected Home</tspan></text>
 <text x="1194.0" y="317.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistema existente · Altice]</text>
 <text x="1194.0" y="341.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Dispositivos, cenários, segurança e notificações; servidor</text>
 <text x="1194.0" y="358.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">MCP com 18 ferramentas</text>

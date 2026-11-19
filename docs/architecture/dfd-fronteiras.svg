@@ -31,7 +31,7 @@
 <text x="494.0" y="387.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Juiz</tspan></text>
 <text x="494.0" y="408.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo, visão-linguagem]</text>
 <rect x="480.0" y="489.0" width="250.0" height="197.3" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
-<text x="494.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma Connected Home</tspan></text>
+<text x="494.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma</tspan><tspan font-weight="700" font-style="italic"> Connected Home</tspan></text>
 <text x="494.0" y="538.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo existente]</text>
 <text x="494.0" y="561.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Servidor MCP, eventos, dispositivos</text>
 <rect x="880.0" y="100.0" width="270.0" height="712.2" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>

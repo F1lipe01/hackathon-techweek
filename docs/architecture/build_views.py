@@ -60,7 +60,7 @@ def implantacao(lang):
                 "Video over RTSP on the home network only, one connection kept open")])])[0]
     A0 = COLS[0]
     note_item = dict(title=L("Porque ficam aqui os balanceadores", "Why the load balancers are here"), fill=NOTE_BG, stroke=NOTE_LINE,
-                     body=[L("É na Altice que se juntam as 500 000 casas. Em casa há um só agente, sem nada para distribuir.",
+                     body=[L("É na Altice que convergem as 500 000 casas. Em casa há um só agente, sem nada para distribuir.",
                              "This is where 500,000 homes meet. A home has one agent, with nothing to spread.")])
     note_h = cv.box_h(254, note_item["title"], note_item["body"])
     ry = max(cam[1] + 70, Y0 + note_h + 18)
@@ -98,7 +98,7 @@ def implantacao(lang):
         body=[L("_MS-WES1AS_ (LTE) e _MS-D3D_; comunicam com a plataforma Altice, como hoje",
                 "MS-WES1AS (LTE) and MS-D3D; they report to the Altice platform, as today")])
     plat_item = dict(
-        title=L("Plataforma Connected Home (existente)", "Connected Home platform (existing)"),
+        title=L("Plataforma _Connected Home_ (existente)", "Connected Home platform (existing)"),
         fill="#F7F7F7",
         body=[L("Dispositivos, cenários e segurança; servidor MCP com 18 ferramentas",
                 "Devices, scenarios and security; MCP server with 18 tools"),
@@ -131,7 +131,7 @@ def implantacao(lang):
                    L("Eventos de cada casa, por ordem (partição por casa)", "Each home’s events, in order (partitioned by home)"),
                    L("Pedidos ao modelo de linguagem", "Language-model requests")]),
         dict(title=L("_Cache_ (_Redis_)", "Cache (Redis)"),
-             body=[L("Estado de cada casa em uso: presença, trajetos, contadores e temporizadores",
+             body=[L("Estado corrente de cada casa: presença, trajetos, contadores e temporizadores",
                      "Each home’s live state: presence, tracks, counters and timers")]),
     ])
 
@@ -165,7 +165,7 @@ def implantacao(lang):
     bottom = max(hub[1], svc[-1][1], vis[-1][1], lba[-1][1])
     num_y = lba[-1][1] + 18
     num_item = dict(
-        title=L("A 500 000 casas (estimativas)", "At 500,000 homes (estimates)"), fill="#F7F9FD", stroke="#C9D2E3",
+        title=L("Com 500 000 casas (estimativas)", "At 500,000 homes (estimates)"), fill="#F7F9FD", stroke="#C9D2E3",
         body=[L("Visão: ≈ 0,49 € por casa e por mês com 1 câmara; 1 427 placas L4 (documento 17)",
                 "Vision: ≈ €0.49 per home a month with 1 camera; 1,427 L4 cards (document 17)"),
               L("Modelo de linguagem: ≈ 0,43 € por casa e por mês (documento 16)",
@@ -227,7 +227,7 @@ def implantacao(lang):
             "e só saem eventos, miniaturas e assinaturas visuais.",
             "If Altice’s routers or cameras have an NPU that can run a detector, vision moves into the home and only "
             "events, thumbnails and fingerprints leave it."),
-          L("≈ 0,36 € por casa e por mês (prémio de 15 € no _router_, um pressuposto). É a primeira pergunta para a Altice.",
+          L("≈ 0,36 € por casa e por mês (sobrecusto de 15 € por _router_, um pressuposto). É a primeira pergunta para a Altice.",
             "≈ €0.36 per home a month (a €15 router premium, an assumption). It is the first question for Altice.")]),
         (L("Rejeitada: uma caixa em cada casa, com o modelo de linguagem", "Rejected: a box in every home, language model included"),
          WARN, "#FFFFFF",
@@ -271,9 +271,9 @@ def presenca_estados(lang):
                 "The signals disagree: the phones are away but a camera sees a person (a stranger, a guest, or Family without a "
                 "phone), or a phone is home with nobody seen and no door use for T_stale (a phone left behind?)."),
             L("Nas regras: as que precisam de certeza perguntam à família em vez de agir; um rosto desconhecido em 3 análises "
-              "seguidas continua a dar o alarme.",
+              "seguidas continua a gerar o aviso de segurança.",
               "In the rules: those that need certainty ask the family instead of acting; an unknown face on 3 consecutive "
-              "analyses still raises the alarm.")]
+              "analyses still raises the security alert.")]
     uh = cv.box(U[0], uy, U[1] - U[0], L("INCERTA", "UNSURE"), u_body, stroke=WARN, title_color=WARN, **st)
     ry = uy + uh + 150
     o_body = [L("Alguém da Família está em casa: um telemóvel da Família está no Wi-Fi, ou uma câmara viu uma pessoa há "
@@ -582,7 +582,7 @@ def c4_1_contexto(lang):
                                      "home, and keeps rules written in one sentence"),
                                    L("Duas partes: o agente da casa, no _router_, e o serviço com a visão, na Altice",
                                      "Two parts: the home agent, on the router, and the service with the vision, at Altice")], **SYSTEM)),
-        "plat": (2, 1, 1, dict(title=L("Plataforma Connected Home", "Connected Home platform"), sub=L("[sistema existente · Altice]", "[existing system · Altice]"),
+        "plat": (2, 1, 1, dict(title=L("Plataforma _Connected Home_", "Connected Home platform"), sub=L("[sistema existente · Altice]", "[existing system · Altice]"),
                                body=[L("Dispositivos, cenários, segurança e notificações; servidor MCP com 18 ferramentas",
                                        "Devices, scenarios, security and notifications; MCP server with 18 tools")], **EXTERNAL)),
         "visitor": (0, 2, 1, dict(title=L("Visita ou desconhecido", "Guest or stranger"), sub=L("[pessoa]", "[person]"),
@@ -639,7 +639,7 @@ def c4_2_contentores(lang):
                                  body=[L("_OWLv2_: caixas; _DINOv2_: um vetor por candidato", "OWLv2: boxes; DINOv2: one vector per candidate")], **C)),
         "broker": (1, 2, 1, dict(title=L("Mediador de ligações", "Connection broker"), sub=L("[MQTT sobre mTLS]", "[MQTT over mTLS]"),
                                  body=[L("Uma ligação por casa, atrás de um balanceador", "One connection per home, behind a load balancer")], **C)),
-        "queues": (2, 2, 1, dict(title=L("Filas e fluxo de eventos", "Queues and event stream"), sub=L("[corretor de mensagens]", "[message broker]"),
+        "queues": (2, 2, 1, dict(title=L("Filas e fluxo de eventos", "Queues and event stream"), sub=L("[sistema de mensagens]", "[message broker]"),
                                  body=[L("Visão urgente e em lote; eventos de cada casa por ordem; pedidos ao modelo",
                                          "Urgent and batch vision; each home’s events in order; model requests")], **C)),
         "svc": (3, 2, 3, dict(title=L("Serviço _ThingTracker_", "ThingTracker service"), sub=L("[contentores sem estado, atrás de um balanceador]",
@@ -650,12 +650,12 @@ def c4_2_contentores(lang):
                                     L("Motor de presença e motor de regras, por casa; o motor de regras decide", "Presence engine and rules engine, per home; the rules engine decides"),
                                     L("Avisos; um “Sim” vira uma chamada MCP", "Alerts; a “Yes” becomes an MCP call")], stroke=BLUE, sw=2.4,
                               fill="#FFFFFF", sub_bold=False, sub_color=MUTED)),
-        "plat": (5, 2, 1, dict(title=L("Plataforma Connected Home", "Connected Home platform"), sub=L("[sistema existente]", "[existing system]"),
+        "plat": (5, 2, 1, dict(title=L("Plataforma _Connected Home_", "Connected Home platform"), sub=L("[sistema existente]", "[existing system]"),
                                body=[L("Servidor MCP, eventos da porta e do Wi-Fi, notificações", "MCP server, door and Wi-Fi events, notifications")], **EXTERNAL)),
         "faces": (0, 3, 1, dict(title=L("Padrões faciais", "Face templates"), sub=L("[_SQLite_ cifrado, no _router_]", "[encrypted SQLite, on the router]"),
                                 body=[L("Até 8 por pessoa; nunca saem de casa", "Up to 8 per person; never leave the home")], **C)),
         "cache": (2, 3, 1, dict(title=L("_Cache_", "Cache"), sub=L("[_Redis_]", "[Redis]"),
-                                body=[L("Estado de cada casa em uso: presença, trajetos, temporizadores", "Each home’s live state: presence, tracks, timers")], **C)),
+                                body=[L("Estado corrente de cada casa: presença, trajetos, temporizadores", "Each home’s live state: presence, tracks, timers")], **C)),
         "pg": (4, 3, 1, dict(title="PostgreSQL", sub=L("[com _pgvector_]", "[with pgvector]"),
                              body=[L("Por cliente: objetos, assinaturas, regras, avisos, observações", "Per customer: things, fingerprints, rules, alerts, sightings")], **C)),
         "llm": (2, 4, 1, dict(title=L("Modelos de linguagem e de visão-linguagem", "Language and vision-language models"),
@@ -856,7 +856,7 @@ def dfd_fronteiras(lang):
         "vision": (1, 0, 1, dict(title=L("Servidores de visão", "Vision workers"), sub=L("[processo]", "[process]"), **PRO)),
         "broker": (1, 1, 1, dict(title=L("Mediador e filas", "Broker and queues"), sub=L("[processo]", "[process]"), **PRO)),
         "judge": (1, 2, 1, dict(title=L("Juiz", "Judge"), sub=L("[processo, visão-linguagem]", "[process, vision-language]"), **PRO)),
-        "plat": (1, 3, 2, dict(title=L("Plataforma Connected Home", "Connected Home platform"), sub=L("[processo existente]", "[existing process]"),
+        "plat": (1, 3, 2, dict(title=L("Plataforma _Connected Home_", "Connected Home platform"), sub=L("[processo existente]", "[existing process]"),
                                body=[L("Servidor MCP, eventos, dispositivos", "MCP server, events, devices")], **dict(PRO, fill="#F2F3F5", stroke="#B8BEC6"))),
         "svc": (2, 0, 6, dict(title=L("Serviço _ThingTracker_", "ThingTracker service"), sub=L("[processo]", "[process]"),
                               body=[L("Comparação, seguimento, presença, regras e avisos, por casa", "Matching, tracking, presence, rules and alerts, per home")], **PRO)),

@@ -34,7 +34,7 @@
 <text x="444.0" y="578.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">um balanceador</text>
 <rect x="790.0" y="487.8" width="250.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
 <text x="804.0" y="515.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Filas e fluxo de eventos</tspan></text>
-<text x="804.0" y="537.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[corretor de mensagens]</text>
+<text x="804.0" y="537.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistema de mensagens]</text>
 <text x="804.0" y="560.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Visão urgente e em lote; eventos de</text>
 <text x="804.0" y="578.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">cada casa por ordem; pedidos ao</text>
 <text x="804.0" y="595.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">modelo</text>
@@ -49,7 +49,7 @@
 <text x="1194.0" y="666.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">casa; o motor de regras decide</text>
 <text x="1194.0" y="689.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Avisos; um “Sim” vira uma chamada MCP</text>
 <rect x="1970.0" y="487.8" width="250.0" height="126.1" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
-<text x="1984.0" y="515.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma Connected Home</tspan></text>
+<text x="1984.0" y="515.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma</tspan><tspan font-weight="700" font-style="italic"> Connected Home</tspan></text>
 <text x="1984.0" y="537.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistema existente]</text>
 <text x="1984.0" y="560.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Servidor MCP, eventos da porta e do</text>
 <text x="1984.0" y="578.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi, notificações</text>
@@ -60,7 +60,7 @@
 <rect x="790.0" y="709.9" width="250.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
 <text x="804.0" y="737.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">Cache</tspan></text>
 <text x="804.0" y="759.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">Redis</tspan>]</text>
-<text x="804.0" y="782.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Estado de cada casa em uso:</text>
+<text x="804.0" y="782.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Estado corrente de cada casa:</text>
 <text x="804.0" y="800.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">presença, trajetos, temporizadores</text>
 <rect x="1590.0" y="709.9" width="240.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
 <text x="1604.0" y="737.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL</tspan></text>

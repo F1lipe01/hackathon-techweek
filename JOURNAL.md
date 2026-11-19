@@ -53,6 +53,12 @@ How the project moved, day by day: what changed, why, and what the team said. Gi
   - Every app screen was re-recorded so none shows the wallet.
   - The app now asks "Where are my keys?" (it said "Where is my keys?").
 
+**The architecture, redrawn for the pitch (evening)**
+- The design is now hybrid, following the operator-cost study (document 17): motion, the changed region and opt-in faces (YuNet + SFace) on the router at home; OWLv2 and DINOv2 on Altice's L4 servers behind queues; presence and rules per home in a stateless ThingTracker service. A box in every home and full frames to the cloud are recorded as rejected, with their numbers.
+- A vision-language judge was added for rare ambiguous moments ("taken or just moved?"); "unsure" asks the family and never acts.
+- Twelve views in PT and EN (`docs/architecture/build_views.py`): C4 levels 1–3, deployment, the presence state machine, three sequences (book left behind, unknown person with the 112 suggestion, empty home and door left open), two ER diagrams, the DFD with trust boundaries, and the app flows.
+- docs/14 and docs/pt/14 rewritten around them, with a decision table per rule and the prototype's status item by item.
+
 ## Wed 18 Nov: from an idea to a submitted report, a prototype and a pitch
 
 **Morning: the product and the prototype**

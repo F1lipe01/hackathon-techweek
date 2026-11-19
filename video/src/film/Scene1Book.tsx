@@ -19,7 +19,7 @@ import "../presentation/fonts";
 import { theme } from "../theme";
 import { useJson } from "../presentation/assets";
 import { Brackets, Phone, SCREEN, clamp, phoneWidth } from "../presentation/ui";
-import { EndorsementLine } from "../presentation/brand";
+import { S23 as EndCard } from "../presentation/shots/End";
 
 const { fontFamily: SERIF } = loadFont("normal", { weights: ["400"], subsets: ["latin", "latin-ext"] });
 const { fontFamily: ROBOTO } = loadRoboto("normal", { weights: ["400", "500", "700"], subsets: ["latin"] });
@@ -41,7 +41,7 @@ const T = {
   phoneIn: 1342, notice: 1370, tap: 1434, aside: 1454, cut: 1580,
   success: 1946, end: 2070,
 };
-export const SCENE1_FRAMES = T.end + 66;
+export const SCENE1_FRAMES = T.end + 120;   // the end card: the mark lands, the name is carried out of it, then "by Altice Labs"
 const at = (s0: number, f0: number, rate: number, t: number) => f0 + ((t - s0) / rate) * 30;
 
 /* ------------------------------------------------------------------ the take (book-full: one go) */
@@ -451,7 +451,7 @@ export const Scene1Book: React.FC = () => {
   const cxC = lerp(CX.cRight + 900, CX.cRight, ez(f, T.phoneIn, T.phoneIn + 26, theme.ease.out));
   const cxC2 = lerp(cxC, CX.left, ez(f, T.aside, T.aside + 30)) - 1300 * ez(f, T.cut - 10, T.cut + 18, theme.ease.in);
   const succ = ez(f, T.success, T.success + 26);
-  const endIn = ez(f, T.end - 10, T.end + 6);
+  const endIn = ez(f, T.end - 14, T.end);   // the green close fades to the page just as the end card begins
   const tap = (s0: number, f0: number, rate: number, t: number) => Math.round(at(s0, f0, rate, t) + 1.5);
   return (
     <AbsoluteFill style={{ background: PAPER }}>
@@ -479,13 +479,9 @@ export const Scene1Book: React.FC = () => {
           <Line text="Desta vez, o alarme não tocou." from={T.success + 28} to={T.end + 4} top={455} left={0} width={1920} align="center" size={80} color="#FFFFFF" />
           <Line text="O livro saiu com ele." from={T.success + 52} to={T.end + 4} top={565} left={0} width={1920} align="center" size={54} color="#FFFFFF" />
         </AbsoluteFill>) : null}
-      {f >= T.end - 10 ? (
-        <AbsoluteFill style={{ opacity: endIn }}>
-          {/* our lockup (public/brand/thingtracker-light.svg) and "by Altice Labs", as on the deck's end card */}
-          <Img src={staticFile("brand/thingtracker-light.svg")} style={{ position: "absolute", left: 960 - 380, top: 440 - 66 + 10 * (1 - ez(f, T.end, T.end + 24, theme.ease.out)), width: 760,
-            opacity: ez(f, T.end, T.end + 18) }} />
-          <EndorsementLine cx={960} top={575} width={290} style={{ opacity: ez(f, T.end + 14, T.end + 30) }} />
-        </AbsoluteFill>) : null}
+      {/* the end card, as in the presentation film (shots/End.tsx): the mark lands, its corners close in, the dot settles
+          with its trail, the name is carried out of it, then "by Altice Labs" rises under it; on this film's page */}
+      {f >= T.end ? <Sequence from={T.end} layout="none"><EndCard bg={PAPER} /></Sequence> : null}
       <ModelsCard />
       <Grain />
       {/* sound: the song throughout, lower under the lab and under the alarm; light taps on each press; the shutters; the

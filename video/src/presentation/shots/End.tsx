@@ -17,7 +17,7 @@ const EW = Math.round(W / 3); // "by" + the logo: a third of the lockup's width
 const EH = ((EW * 0.75) * 893) / 2765; // the logo's height on that line
 const GAP = Math.round(0.35 * H);
 
-export const S23: React.FC = () => {
+export const S23: React.FC<{ bg?: string }> = ({ bg = theme.colors.white }) => {
   const frame = useCurrentFrame();
   const groupTop = 540 - (H + GAP + EH) / 2;
   const settledY = groupTop + H / 2; // the lockup's centre once the endorsement is in
@@ -32,7 +32,7 @@ export const S23: React.FC = () => {
   const e = ramp(frame, 60, 80, OUT);
   const m = g.mark(0, 0);
   return (
-    <AbsoluteFill style={{ background: theme.colors.white }}>
+    <AbsoluteFill style={{ background: bg }}>
       <MarkParts x={m.x + dx} y={m.y} unit={g.unit} corners={corners} trail={0.5 + 0.5 * d} dot={[-6 * (1 - d), 6 * (1 - d), lerp(0.8, 1, d), 1]} />
       {frame >= 14 ? <Wordmark g={g} wipe={wipe} dx={dx - 10 * (1 - wipe)} /> : null}
       <EndorsementLine cx={960} top={groupTop + H + GAP + (1 - e) * 16} width={EW} style={{ opacity: e }} />

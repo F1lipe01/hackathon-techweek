@@ -315,7 +315,7 @@ function renderAreas() {
     <button type="button" class="btn-p" data-act="stub" data-title="${sec2 ? 'Security' : 'Energy'}" style="height:46px;padding:0 44px">Let's try</button></div>`;
 }
 // Notifications: ThingTracker's alerts, the door and devices going on or off line (server.py), never made-up rows.
-const NOTE_KINDS = ['alert', 'door', 'device'];
+const NOTE_KINDS = ['alert', 'door', 'device', 'alarm'];
 const notes = () => state.events.filter((e) => NOTE_KINDS.includes(e.kind));
 function unreadCount() { return notes().filter((e) => !ui.read.has(e.id)).length; }
 function renderMenu() {
@@ -700,7 +700,7 @@ function notificationsPage() {
       <div class="unread-h"><b>Unread (${unreadCount()})</b><span data-act="mark-read" role="button" style="cursor:pointer">Mark all as read</span></div>
       ${list.length ? '' : '<div class="empty"><p>No notifications yet.</p></div>'}
       ${list.map((e) => { const thing = e.kind === 'alert'; return `<div class="nrow ${ui.read.has(e.id) ? 'read' : ''}" ${thing ? `data-act="open-alert" data-id="${esc(e.id)}" role="button" style="cursor:pointer"` : ''}><span>${I.bellC}</span><span><b>${esc(thing ? e.title || 'ThingTracker' : e.device || 'Device')}</b><small>${esc(e.text)} · ${ago(e.ts)}</small>
-        ${e.crop ? `<img class="crop" src="${crop(e.crop)}" alt="">` : ''}<span class="tag">${thing ? 'Things' : 'Device'}</span></span>${I.chevR}</div>`; }).join('')}`;
+        ${e.crop || e.picture ? `<img class="crop" src="${crop(e.crop || e.picture)}" alt="">` : ''}<span class="tag">${thing ? 'Things' : 'Device'}</span></span>${I.chevR}</div>`; }).join('')}`;
   }, { live: true });
 }
 /** An alert, opened from its notification: the camera's picture, large, what happened and when, and the alarm's state. */
@@ -711,35 +711,52 @@ const ICON_AC = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" str
 // the same icon wherever a device appears: the Altice app's own plug image for the kit's plug, the AC's for the integration
 function ttIcon(d) { return d.type === 'plug' ? `<img src="${devImg('plug')}" alt="">` : ICON_AC; }
 const askFor = (d) => (d.type === 'ac' ? 'Turn off the AC?' : /light/i.test(d.powers || '') ? 'Turn off the lights?' : `Turn off ${d.powers || d.name}?`);
-function powerCards(e) {
-  return (e.devices || []).map((id) => {
-    const d = ttOf(id) || { id, name: id, on: true };
-    const off = !d.on;
-    return `<div class="dev-ask${off ? ' done' : ''}"><span class="dic">${ttIcon(d)}</span><span><b>${esc(askFor(d))}</b><small>${esc(d.name)} · ${off ? 'Off' : 'On'}</small></span>
-      ${off ? '<span class="dev-off">Off ✓</span>' : `<button type="button" class="btn-p" data-act="tt-off" data-id="${esc(id)}">Yes</button>`}</div>`;
-  }).join('');
+/** The alert as the server keeps it now: its cards and alarm change when the user answers (server.py: /api/alerts). */
+const alertNow = (e) => (state.events || []).find((x) => x.id === e.id) || e;
+/** An alarm in the alert: {state, text, off_at} from the server, or the older plain text. */
+const alarmOf = (e) => (!e.alarm ? null : typeof e.alarm === 'string' ? { state: e.alarmOff ? 'off' : 'on', text: e.alarm, off_at: e.alarmOff } : e.alarm);
+function cardRows(e) {
+  const cards = e.cards || (e.devices || []).map((id) => ({ device: id, state: ttOf(id)?.on === false ? 'off' : 'on' }));
+  const rows = cards.map((c) => {
+    const d = ttOf(c.device) || { id: c.device, name: c.name || c.device, type: c.kind };
+    const off = c.state === 'off';
+    return `<div class="dev-ask${off ? ' done' : ''}"><span class="dic">${ttIcon(d)}</span><span><b>${esc(c.label || askFor(d))}</b><small>${esc(d.name)} · ${off ? 'Off' : 'On'}</small></span>
+      ${off ? '<span class="dev-off">Off ✓</span>' : `<button type="button" class="btn-p" data-act="alert-device" data-id="${esc(c.device)}">Yes</button>`}</div>`;
+  });
+  for (const a of e.ask || []) {
+    const done = a.state === 'done';
+    rows.push(`<div class="dev-ask${done ? ' done' : ''}"><span class="dic">${ICON_BEACON.replace('width="40" height="40"', 'width="30" height="30"')}</span><span><b>${esc(a.label)}</b><small>${done ? 'Alarm on (simulated)' : 'The alarm stays off until you say yes'}</small></span>
+      ${done ? '<span class="dev-off">Done ✓</span>' : `<button type="button" class="btn-p" data-act="alert-ask" data-id="${esc(a.act)}">Yes</button>`}</div>`);
+  }
+  return rows.length ? `<div class="dev-asks">${rows.join('')}</div>` : '';
 }
-function alertPage(e) {
-  if (e.devices) return powerAlertPage(e);
+/** An alert, opened from its notification: the camera's picture, what happened and when, then what the app can do:
+ * turn devices off, sound or stop the (simulated) alarm, the door's state, and the police suggestion (never dials). */
+function alertPage(e0) {
   document.body.classList.add('alert-open');
-  const page = push(() => `${phead('', '')}<div class="ptitle">${esc(e.title || 'Alert')}</div>
-    <div class="alert-shot">${e.snapshot || e.crop ? `<img src="${crop(e.snapshot || e.crop)}" alt="What the camera saw">` : ''}<span class="when">${hm(e.ts)} · ${esc(e.place || 'Camera')}</span></div>
+  const page = push(() => {
+    const e = alertNow(e0), alarm = alarmOf(e), door = e.door || (e.doorAlarm ? { open: true, text: 'The door is open and nobody is home.' } : null);
+    const sugg = e.suggestion || (e.unknown && !e.cards ? { kind: 'police', title: 'Possible intrusion', text: 'An unknown person came in and took something. We recommend calling the police.', number: '112' } : null);
+    const pic = e.picture || e.snapshot || e.crop, cam = e.room || e.camera, where = cam ? `${cam} camera` : e.place || 'Camera';
+    const alarmOn = alarm && alarm.state !== 'off';
+    const offBtn = alarmOn ? `<button type="button" class="btn-s small" data-act="alarm-off">Turn off the alarm</button>` : '';
+    const banner = door
+      ? (alarm ? (alarmOn ? `<div class="alert-alarm door"><span class="dot"></span><b>Door open · Alarm on</b><small>${esc(door.text)}</small>${offBtn}</div>`
+        : `<div class="alert-alarm door off"><span class="dot"></span><b>Door open · Alarm off</b><small>Turned off from the app at ${hm(alarm.off_at || Date.now() / 1000)}.</small></div>`)
+        : `<div class="alert-alarm door"><span class="dot"></span><b>Door open</b><small>${esc(door.text)}</small></div>`)
+      : alarm ? (alarmOn ? `<div class="alert-alarm"><span class="dot"></span><b>Alarm on</b><small>${esc(alarm.text)}</small></div>`
+        : `<div class="alert-alarm off"><span class="dot"></span><b>Alarm off</b><small>Turned off from the app at ${hm(alarm.off_at || Date.now() / 1000)}.</small></div>`) : '';
+    const reco = sugg ? `<div class="alert-reco"><span class="beacon">${ICON_BEACON}</span><span><b>${esc(sugg.title)}</b><small>${esc(sugg.text)}</small></span></div>` : '';
+    const acts = [sugg ? `<button type="button" class="btn-p police" data-act="call-police">Call the police (${esc(sugg.number || '112')})</button>` : '',
+      alarmOn && !door ? `<button type="button" class="${sugg ? 'btn-s' : 'btn-p danger'}" data-act="alarm-off">Turn off the alarm</button>` : '',
+      '<button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button>'].filter(Boolean);
+    return `${phead('', '')}<div class="ptitle">${esc(e.title || 'Alert')}</div>
+    <div class="alert-shot">${pic ? `<img src="${crop(pic)}" alt="What the camera saw">` : ''}<span class="when">${hm(e.ts)} · ${esc(where)}</span></div>
     <p class="alert-text">${esc(e.text || '')}</p>
-    ${e.alarm ? (e.alarmOff ? `<div class="alert-alarm off"><span class="dot"></span><b>Alarm off</b><small>Turned off from the app at ${hm(e.alarmOff)}.</small></div>` : `<div class="alert-alarm"><span class="dot"></span><b>Alarm on</b><small>${esc(e.alarm)}</small></div>`) : ''}
-    ${e.unknown ? `<div class="alert-reco"><span class="beacon">${ICON_BEACON}</span><span><b>Possible intrusion</b><small>An unknown person came in and took something. We recommend calling the police.</small></span></div>` : ''}
-    <div class="bottom-bar alert-actions${e.unknown ? ' three' : ''}">${e.unknown ? '<button type="button" class="btn-p police" data-act="call-police">Call the police (112)</button>' : ''}${e.alarm && !e.alarmOff ? `<button type="button" class="${e.unknown ? 'btn-s' : 'btn-p danger'}" data-act="alarm-off">Turn off the alarm</button>` : ''}<button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`);
-  page._alert = e;
-}
-function powerAlertPage(e) {
-  document.body.classList.add('alert-open');
-  const page = push(() => `${phead('', '')}<div class="ptitle">${esc(e.title || 'Nobody is home')}</div>
-    <div class="alert-shot">${e.snapshot || e.crop ? `<img src="${crop(e.snapshot || e.crop)}" alt="What the camera saw">` : ''}<span class="when">${hm(e.ts)} · ${esc(e.place || 'Camera')}</span></div>
-    <p class="alert-text">${esc(e.text || '')}</p>
-    <div class="dev-asks">${powerCards(e)}</div>
-    ${e.doorAlarm ? (e.alarmOff ? `<div class="alert-alarm off"><span class="dot"></span><b>Door open · Alarm off</b><small>Turned off from the app at ${hm(e.alarmOff)}.</small></div>`
-      : `<div class="alert-alarm door"><span class="dot"></span><b>Door open · Alarm on</b><small>The door is open and nobody is home.</small><button type="button" class="btn-s small" data-act="alarm-off">Turn off the alarm</button></div>`) : ''}
-    <div class="bottom-bar alert-actions"><button type="button" class="btn-s" data-act="stub" data-title="Open the camera">Open the camera</button></div>`, { live: true });
-  page._alert = e;
+    ${cardRows(e)}${banner}${reco}
+    <div class="bottom-bar alert-actions${acts.length === 3 ? ' three' : ''}">${acts.join('')}</div>`;
+  }, { live: true });
+  page._alert = e0;
 }
 function integrationPage(id) {
   push(() => {
@@ -911,10 +928,17 @@ device.addEventListener('click', async (e) => {
     case 'save-scenario': saveScenario(el); break;
     // the kit's plug goes through the Altice MCP (a dry run unless TT_LIVE_ACTIONS=1); the integration is simulated (server.py, tt_devices)
     case 'tt-off': el.blur(); api(`/api/tt-devices/${encodeURIComponent(el.dataset.id)}/power`, { method: 'POST', body: JSON.stringify({ on: false }) }).then(refresh).then(refreshPage); break;
+    // an alert's answers go to the server, which runs the action (a dry run; the alarm is simulated) and keeps the answer
+    case 'alert-device': case 'alert-ask': {
+      el.blur(); el.disabled = true;
+      const pg = el.closest('section.page'), body = act === 'alert-device' ? { device: el.dataset.id, on: false } : { act: el.dataset.id };
+      if (pg?._alert) api(`/api/alerts/${encodeURIComponent(pg._alert.id)}/act`, { method: 'POST', body: JSON.stringify(body) }).then(refresh).then(refreshPage).catch((err) => dialog('Could not do it', err.message, [['OK', 'btn-p', null]]));
+      break;
+    }
     case 'tt-device': integrationPage(el.dataset.id); break;
     case 'tt-toggle': { el.blur(); const d = ttOf(el.dataset.id); if (d) api(`/api/tt-devices/${encodeURIComponent(d.id)}/power`, { method: 'POST', body: JSON.stringify({ on: !d.on }) }).then(refresh).then(refreshPage); break; }
     // simulated: the alert shows the alarm turned off; the platform's alarm is never called (AGENTS.md rule 1)
-    case 'alarm-off': { const pg = el.closest('section.page'); if (pg?._alert) { pg._alert.alarmOff = Date.now() / 1000; pg.innerHTML = pg._render(); } break; }
+    case 'alarm-off': { el.blur(); el.disabled = true; const pg = el.closest('section.page'); if (pg?._alert) api(`/api/alerts/${encodeURIComponent(pg._alert.id)}/alarm-off`, { method: 'POST' }).then(refresh).then(refreshPage).catch((err) => dialog('Could not do it', err.message, [['OK', 'btn-p', null]])); break; }
     case 'other-thing': otherThingPage(); break;
     case 'other-next': { const n = $('othername').value.trim(); if (n) { pop(); methodPage(n.charAt(0).toUpperCase() + n.slice(1), n.toLowerCase()); } break; }
     case 'reregister': case 'retry-register': {
@@ -955,14 +979,14 @@ device.addEventListener('input', (e) => {
 async function refresh() {
   try { state = await api('/api/state'); } catch { $('status').textContent = 'Server not reachable'; return; }
   $('status').textContent = '';
-  renderEdge(state.edge); renderLog(); renderDoor(state.door);
+  renderEdge(state.edge); renderLog(); renderDoor(state.door); renderSim(state.presence);
   // re-render the app only when its data changed, so a tap is never lost to a redraw
   const sig = JSON.stringify([state.home, state.things, state.rules, state.enrol, state.events.length, state.events[0]?.id]);
   if (sig !== lastSig) { lastSig = sig; renderTabs(); if (!stack.length) renderTab(ui.tab); else refreshPage(); }
   for (const e of state.events) {
     if (seen.has(e.id)) continue;
     seen.add(e.id);
-    if (!firstLoad && e.kind === 'alert') toast(e.title || 'Alert', e.text, e.crop, e);
+    if (!firstLoad && e.kind === 'alert') toast(e.title || 'Alert', e.text, e.crop || e.picture, e);
   }
   firstLoad = false;
 }
@@ -984,7 +1008,37 @@ simDoor.addEventListener('click', async () => {
 function renderDoor(d) {
   simDoor.hidden = !!d?.live;    // the real Contact sensor drives the door while the MCP session is live
   simDoor.title = 'The MCP session is not live: this simulates the Contact sensor on the front door.';
+  simHold.hidden = !!d?.live;
+  simHold.textContent = d?.open && d?.source === 'sim' ? 'Simulate: close the door' : 'Simulate: leave the door open';
 }
+// "Leave the door open" opens the simulated Contact sensor and keeps it open (the door left open when everyone left);
+// the same button then closes it.
+const simHold = $('simhold');
+simHold.addEventListener('click', async () => {
+  simHold.disabled = true;
+  try { await api('/api/sim/door', { method: 'POST', body: JSON.stringify({ open: !(state.door?.open) }) }); } catch (e) { $('status').textContent = e.message; }
+  simHold.disabled = false;
+  refresh();
+});
+// The presence engine's state, and one toggle per Family member: their phone on the home Wi-Fi or not (simulated:
+// the Altice router sees the phones, but no MCP tool exposes them yet).
+function renderSim(p) {
+  if (!p) return;
+  const who = p.home?.length ? ` · ${p.home.join(', ')}` : '';
+  const extra = p.unknown ? ` + ${p.unknown} not known` : '';
+  $('pres').innerHTML = `Home: <b data-state="${esc(p.state)}">${esc(p.state || '…')}</b> · ${p.count} at home${esc(who)}${esc(extra)}<br>${esc(p.reason || '')}`;
+  const sig = JSON.stringify(p.phones);
+  if ($('simphones').dataset.sig === sig) return;
+  $('simphones').dataset.sig = sig;
+  $('simphones').innerHTML = (p.phones || []).map((m) => `<button type="button" class="sim-phone" data-member="${esc(m.id)}" aria-pressed="${m.home ? 'true' : 'false'}"
+    title="Simulated: ${esc(m.name)}'s phone on the home Wi-Fi">${esc(m.name)}'s phone · ${m.home ? 'home' : 'away'}</button>`).join('');
+}
+$('simphones').addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-member]'); if (!b) return;
+  b.disabled = true;
+  try { await api('/api/sim/phone', { method: 'POST', body: JSON.stringify({ member: b.dataset.member, home: b.getAttribute('aria-pressed') !== 'true' }) }); } catch (err) { $('status').textContent = err.message; }
+  refresh();
+});
 
 // Scale the 402 x 874 pt screen to the frame, so the app never reflows: the whole screen scales, as on a real device.
 const screenWrap = $('screenwrap');

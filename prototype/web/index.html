@@ -107,6 +107,10 @@
     <div class="log-head"><h2>Activity</h2><span class="status" id="status" aria-live="polite"></span><span class="spend" id="spend"></span>
       <!-- the front door's Contact sensor, simulated while the MCP session is not live (server.py: /api/sim/door) -->
       <button type="button" class="sim-door" id="simdoor">Simulate: door opens</button></div>
+    <!-- the presence engine (presence.py): its state, and the signals the prototype simulates: the family's phones on the
+         home Wi-Fi (no MCP tool exposes the router's clients yet) and the door held open (app.js: renderSim) -->
+    <div class="sim-bar" id="simbar"><span class="pres" id="pres"></span><span class="sim-phones" id="simphones"></span>
+      <button type="button" class="sim-door" id="simhold">Simulate: leave the door open</button></div>
     <ol class="log" id="log"></ol>
   </section>
 

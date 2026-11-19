@@ -12,6 +12,8 @@ Two kinds of tables live in it.
    fingerprints    each thing's visual fingerprint (8 DINOv2 vectors); the home device keeps its own copy too
    sightings       the home's memory: where and when each thing was seen, with a small crop of it
    presence        where and when the camera saw a person, a child, a dog or a cat; never a picture of them
+   phones          each Family member's phone, on the home Wi-Fi or not (simulated: no MCP tool exposes it yet)
+   presence_state  the presence engine's state (presence.py), so it survives a restart
    sensors         the rules written as sentences, compiled to structured rules
    events          what the app shows as activity and alerts
    spend           what each language-model call cost
@@ -275,6 +277,27 @@ class Store:
         with self.lock, self.db:
             self.db.execute("INSERT INTO events VALUES (?, ?, ?, ?, ?)", (e["id"], e["ts"], kind, text, json.dumps(extra)))
         return e
+
+    def event(self, eid):
+        rows = self._q("SELECT * FROM events WHERE id = ?", (eid,))
+        if not rows:
+            return None
+        e = rows[0]
+        return {**(json.loads(e["data"]) if e["data"] else {}), "id": e["id"], "ts": e["ts"], "kind": e["kind"], "text": e["text"]}
+
+    def update_event(self, eid, **fields):
+        """Merge fields into an event's data (an alert's card turned off, its alarm turned off); returns the event."""
+        with self.lock, self.db:
+            row = self.db.execute("SELECT data FROM events WHERE id = ?", (eid,)).fetchone()
+            if not row:
+                return None
+            data = {**(json.loads(row["data"]) if row["data"] else {}), **fields}
+            self.db.execute("UPDATE events SET data = ? WHERE id = ?", (json.dumps(data), eid))
+        return self.event(eid)
+
+    def set_meta(self, key, value):
+        with self.lock, self.db:
+            self._set_meta(key, value)
 
     def add_rule(self, sentence, compiled):
         r = {"id": "r-" + uuid.uuid4().hex[:6], "sentence": sentence, **compiled, "active": True, "last_fired": 0,

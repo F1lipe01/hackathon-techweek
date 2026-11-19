@@ -103,7 +103,28 @@ def door():
     call("POST", "/api/sim/door", {"open": False})
 
 
+def phone(member, home):
+    """A Family member's phone joins or leaves the home Wi-Fi (simulated)."""
+    return call("POST", "/api/sim/phone", {"member": member, "home": home})
+
+
+def edge_task(key, timeout=12.0):
+    """Play the edge: wait until the server asks for a task of this kind (check, snapshot, photos, refresh)."""
+    end = time.time() + timeout
+    while time.time() < end:
+        t = call("GET", "/api/edge/task")
+        if t.get(key):
+            return t[key]
+        time.sleep(0.4)
+    return None
+
+
+def latest(kind, rid=None, since=0.0):
+    return next((e for e in events() if e["kind"] == kind and e["ts"] >= since and (rid is None or e.get("rule_id") == rid)), None)
+
+
 LIGHT = "00e038d4-0da7-45c2-b61f-f38c9ff9df82"
+PLUG = "bc891629-98bc-44f7-99a8-1aa61428a9bf"
 DEVICES = None
 
 
@@ -124,7 +145,10 @@ def start_private_server(port):
     DEVICES = data / "devices.json"
     set_contact("normal")
     env = {**os.environ, "TT_PORT": str(port), "TT_DATA": str(data), "TT_DEVICES_FILE": str(DEVICES),
-           "TT_DOOR_POLL_S": "1"}
+           "TT_DOOR_POLL_S": "1", "TT_TIMINGS": "demo",
+           # shorter single waits than the demo's, so the whole run takes a few minutes (presence.TIMINGS)
+           "TT_TIMING_PHONE_LAG_S": "4", "TT_TIMING_LEAVING_CHECK_S": "3", "TT_TIMING_CHECK_TIMEOUT_S": "5",
+           "TT_TIMING_REFRESH_S": "3"}
     env.pop("TT_AI", None)
     env.pop("TT_LIVE_ACTIONS", None)          # never: device actions stay dry runs
     proc = subprocess.Popen([sys.executable, str(HERE / "server.py")], env=env, stdout=subprocess.DEVNULL,
@@ -283,6 +307,11 @@ def run(private, db):
         if out["kind"] == "sensor":
             call("DELETE", f"/api/rules/{out['sensor']['id']}")
 
+    filipe = call("POST", "/api/things", {"name": "Filipe", "description": "person · family"})["id"]
+    pres = call("GET", "/api/presence")
+    check("a new Family member's phone starts on the home Wi-Fi -> OCCUPIED", pres["state"] == "OCCUPIED"
+          and pres["home"] == ["Filipe"] and "presence" in call("GET", "/api/state"), pres["reason"])
+
     # ------------------------------------------------------------------ A0. the live door, read through the device poll
     if private:
         print("\nA0. The real door: the Contact sensor read every second through the device poll (a file, not the MCP)")
@@ -295,25 +324,37 @@ def run(private, db):
         check("the sentence of the lab test -> leave_without, light red", r and r["kind"] == "leave_without"
               and r["action"] == "light_red", r and f"{r['kind']}, action {r['action']}")
         if r:
-            observe(sightings=[{"thing_id": book, "place": "table", "crop_b64": JPEG, "note": "test"}])
+            observe(people=1, persons=[{"identity": filipe}],
+                    sightings=[{"thing_id": book, "place": "table", "crop_b64": JPEG, "note": "test"}])
             set_contact("alarm")
-            a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == r["id"], timeout=15)
-            door_ev = next((e for e in events() if e["kind"] == "door" and e.get("open") and not e.get("sim")), None)
+            door_ev = wait_for(lambda e: e["kind"] == "door" and e.get("open") and not e.get("sim"), timeout=8)
             check("the real sensor opens -> a door event (not simulated)", door_ev, door_ev and door_ev["text"])
-            check("… and the alert, with the book's photo", a and a.get("crop"), a and a["text"])
+            check("… and no alert while the door is open: the check starts when it closes", not alert_for(r["id"]))
+            set_contact("normal")
+            closed = wait_for(lambda e: e["kind"] == "door" and e.get("open") is False and not e.get("sim"), timeout=8)
+            check("the real sensor closes -> a door event, and presence says LEAVING", closed
+                  and call("GET", "/api/presence")["state"] == "LEAVING", closed and closed["text"])
+            phone(filipe, False)
+            chk = edge_task("check")
+            check("Filipe's phone leaves -> the server asks the edge for an active check of the book",
+                  chk and chk["thing_id"] == book and chk["frames"] >= 3, json.dumps(chk))
+            if chk:
+                call("POST", "/api/edge/check", {"id": chk["id"], "seen": True, "place": "table", "score": 0.71, "frames": 3,
+                                                 "crop_b64": JPEG})
+            a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == r["id"], timeout=10)
+            check("… seen on the table -> the alert, with the book's photo and the check's picture",
+                  a and a.get("crop") and a.get("picture") and a.get("place") == "table", a and a["text"])
             calls = (a or {}).get("action", {}).get("calls", [])
             want = [{"type": "power", "value": "on"}, {"type": "color_rgb", "redValue": 255, "greenValue": 0, "blueValue": 0}]
             check("… and the red light: the exact MCP calls, dry run", [c["arguments"].get("body") for c in calls] == want
                   and all(c["tool"] == "update_device_capabilities" and c["arguments"].get("deviceId") == LIGHT for c in calls)
                   and not a["action"]["live"] and a["action"]["result"] == "dry run: not sent",
                   "; ".join(f"{c['tool']} {json.dumps(c['arguments'])}" for c in calls))
-            set_contact("normal")
-            closed = wait_for(lambda e: e["kind"] == "door" and e.get("open") is False and not e.get("sim"), timeout=8)
-            check("the real sensor closes -> a door event", closed, closed and closed["text"])
+            phone(filipe, True)
             call("DELETE", f"/api/rules/{r['id']}")
 
     # ------------------------------------------------------------------ A. leave home without
-    print("\nA. “Tell me if I leave home without my book”: fires when the door opens and the book is still at home")
+    print("\nA. “Tell me if I leave home without my book”: on the door closing, if someone left, an active check")
     r_en = sensor("Tell me if I leave home without my book")
     check("EN sentence -> leave_without on the book", r_en and r_en["kind"] == "leave_without" and r_en["thing_id"] == book
           and r_en.get("grace_s") == 60, r_en and f"{r_en['kind']}, thing {r_en['thing_id']!r}, grace {r_en.get('grace_s')}")
@@ -327,24 +368,61 @@ def run(private, db):
     if r_ko:
         call("DELETE", f"/api/rules/{r_ko['id']}")
 
-    if r_en:
+    def leave_case(phone_after=None, answer=None):
+        """A fresh book rule; the book on the table (an hour ago, when the test owns the database); the door opens
+        and closes; then the phone change and the edge's answer to the check. Returns (rule, check task)."""
+        r = sensor("Tell me if I leave home without my book")
         observe(sightings=[{"thing_id": book, "place": "table", "crop_b64": JPEG, "note": "test"}])
-        if db:   # the camera saw it an hour ago and the room has been quiet since: it must still count as at home
+        if db:
             with sqlite3.connect(db) as c:
                 c.execute("UPDATE sightings SET ts = ts - 3600 WHERE thing_id = ?", (book,))
-        call("PATCH", f"/api/rules/{r_en['id']}", {"grace_s": 2})
         door()
-        a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == r_en["id"], timeout=12)
-        check("door opens, book last seen on the table " + ("an hour ago" if db else "just now") + " -> alert",
-              a, a and a["text"])
-        check("the alert carries the book's photo and its last place", a and a.get("crop") and a.get("place") == "table",
-              a and f"crop {a.get('crop')}, place {a.get('place')}, room {a.get('room')}")
-        check("the door opening is in the activity", any(e["kind"] == "door" and e.get("open") for e in events()))
+        if phone_after is not None:
+            phone(filipe, phone_after)
+        chk = edge_task("check", timeout=6) if answer is not None or phone_after is False else None
+        if chk and answer:
+            call("POST", "/api/edge/check", {"id": chk["id"], **answer})
+        return r, chk
+
+    if r_en:
         call("DELETE", f"/api/rules/{r_en['id']}")
+    r, chk = leave_case(phone_after=False, answer={"seen": True, "place": "table", "score": 0.7, "frames": 3, "crop_b64": JPEG})
+    a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == r["id"], timeout=10)
+    check("Filipe leaves, the book is still on the table " + ("(last seen an hour ago)" if db else "") + " -> alert",
+          a and "still on the table" in a["text"] and "Filipe left" in a.get("evidence", ""), a and f"{a['text']} | {a.get('evidence')}")
+    check("the door's closing and opening are in the activity", any(e["kind"] == "door" and e.get("open") for e in events())
+          and any(e["kind"] == "door" and e.get("open") is False for e in events()))
+    call("DELETE", f"/api/rules/{r['id']}")
+    phone(filipe, True)
+
+    r, chk = leave_case(phone_after=False, answer={"seen": False, "frames": 3, "score": 0.31})
+    u = wait_for(lambda e: e["kind"] == "unsure" and e.get("rule_id") == r["id"], timeout=10)
+    check("Filipe leaves, the book is not visible -> “unsure” in the activity, no alert, no alarm",
+          u and not alert_for(r["id"]) and not call("GET", "/api/state")["alarm"].get("on"), u and u["text"])
+    call("DELETE", f"/api/rules/{r['id']}")
+    phone(filipe, True)
+
+    r, chk = leave_case(phone_after=False)
+    u = wait_for(lambda e: e["kind"] == "unsure" and e.get("rule_id") == r["id"], timeout=12)
+    check("Filipe leaves, the camera service never answers the check -> “unsure”, no alert", chk and u
+          and not alert_for(r["id"]), u and u["text"])
+    call("DELETE", f"/api/rules/{r['id']}")
+
+    r, chk = leave_case(phone_after=True)
+    i = wait_for(lambda e: e["kind"] == "info" and e.get("rule_id") == r["id"] and "arrived" in e["text"], timeout=8)
+    check("Filipe's phone joins as the door closes (an arrival) -> no check, no alert", i and not alert_for(r["id"]),
+          i and i["text"])
+    call("DELETE", f"/api/rules/{r['id']}")
+
+    time.sleep(6)                     # the arrival above is more than 5 s before the next opening
+    r, chk = leave_case()
+    i = wait_for(lambda e: e["kind"] == "info" and e.get("rule_id") == r["id"] and "nobody left" in e["text"], timeout=10)
+    check("the door opens and closes, no phone leaves -> “nobody left”, no check, no alert", i and not alert_for(r["id"])
+          and not call("GET", "/api/edge/task").get("check"), i and i["text"])
+    call("DELETE", f"/api/rules/{r['id']}")
 
     r_k = sensor("Tell me if I leave home without my keys")
     if r_k:
-        call("PATCH", f"/api/rules/{r_k['id']}", {"grace_s": 2})
         observe(camera="Entrance", sightings=[{"thing_id": keys, "place": "room", "crop_b64": JPEG, "note": "test"}])
         door()
         ok = wait_for(lambda e: e["kind"] == "ok" and e.get("rule_id") == r_k["id"], timeout=12)
@@ -354,11 +432,193 @@ def run(private, db):
 
     r_w = sensor("Tell me if I leave home without my wallet")
     if r_w:
-        call("PATCH", f"/api/rules/{r_w['id']}", {"grace_s": 2})
         door()
         info = wait_for(lambda e: e["kind"] == "info" and e.get("rule_id") == r_w["id"], timeout=12)
         check("wallet never seen -> no alert, a line in the activity", info and not alert_for(r_w["id"]), info and info["text"])
         call("DELETE", f"/api/rules/{r_w['id']}")
+
+    # ------------------------------------------------------------------ S. someone who isn't Family
+    print("\nS. “Sound the alarm when someone who isn't Family comes in”: face identities from the edge")
+    sec = call("POST", "/api/rules", {"sentence": "Sound the alarm when someone who isn't Family comes in", "title": "Home Security"})
+    check("the app's suggestion -> someone_arrives, unknown, alarm", sec["kind"] == "someone_arrives" and sec.get("unknown")
+          and sec.get("alarm"), f"{sec['kind']} unknown={sec.get('unknown')} alarm={sec.get('alarm')}")
+    call("PATCH", f"/api/rules/{sec['id']}", {"cooldown_s": 0})
+    phone(filipe, False)
+    observe(people=0, persons=[])
+    for i in range(3):
+        observe(people=1, persons=[{"identity": "unknown", "score": 0.14, "crop_b64": JPEG}])
+        time.sleep(0.4)
+        if i == 1:
+            time.sleep(2.5)
+            check("an unknown face on 2 analyses -> no alert yet", not alert_for(sec["id"]))
+    a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == sec["id"], timeout=8)
+    check("an unknown face on 3 analyses, the family away -> alert, alarm on, police suggested, the person's picture",
+          a and (a.get("alarm") or {}).get("state") == "on" and (a.get("suggestion") or {}).get("number") == "112"
+          and a.get("picture") and call("GET", "/api/state")["alarm"].get("on"), a and f"{a['text']} | {a.get('evidence')}")
+    if a:
+        out = call("POST", f"/api/alerts/{a['id']}/alarm-off")
+        st = call("GET", "/api/state")
+        check("“Turn off the alarm” -> the alert's alarm is off, the simulated alarm is off, an event, no MCP call",
+              out["alert"]["alarm"]["state"] == "off" and not st["alarm"].get("on") and out["event"]["kind"] == "alarm"
+              and not out["event"]["action"]["calls"] and "never called" in out["event"]["action"]["result"],
+              out["event"]["text"])
+    observe(people=0, persons=[])
+    for _ in range(3):
+        observe(people=1, persons=[{"identity": "not_visible"}])
+        time.sleep(0.4)
+    a2 = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == sec["id"] and e.get("ask"), timeout=8)
+    check("a person whose face is not seen, the family away -> “Someone is home”, it asks, no alarm",
+          a2 and not a2.get("alarm") and a2["ask"][0]["act"] == "alarm_on" and not a2.get("suggestion"), a2 and a2["text"])
+    if a2:
+        out = call("POST", f"/api/alerts/{a2['id']}/act", {"act": "alarm_on"})
+        check("… “Sound the alarm?” Yes -> the simulated alarm sounds, the question is answered",
+              out["alert"]["alarm"]["state"] == "on" and out["alert"]["ask"][0]["state"] == "done"
+              and call("GET", "/api/state")["alarm"].get("on"), out["event"]["text"])
+        call("POST", f"/api/alerts/{a2['id']}/alarm-off")
+    observe(people=0, persons=[])
+    n_before = len([e for e in events() if e["kind"] == "alert" and e.get("rule_id") == sec["id"]])
+    for _ in range(3):
+        observe(people=1, persons=[{"identity": filipe, "score": 0.52}])
+        time.sleep(0.4)
+    time.sleep(3)
+    check("Filipe's face on 3 analyses, his phone away -> no alert (a Family member never counts), Filipe home",
+          len([e for e in events() if e["kind"] == "alert" and e.get("rule_id") == sec["id"]]) == n_before
+          and call("GET", "/api/presence")["home"] == ["Filipe"])
+    phone(filipe, True)
+    for _ in range(3):
+        observe(people=1, persons=[{"identity": "unknown", "score": 0.2, "crop_b64": JPEG}])
+        time.sleep(0.4)
+    a3 = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == sec["id"] and "at home with" in e["text"], timeout=8)
+    check("an unknown face while Filipe is home -> a message, no alarm, no police", a3 and not a3.get("alarm")
+          and not a3.get("suggestion") and len([e for e in events() if e["kind"] == "alert" and e.get("rule_id") == sec["id"]]) == n_before + 1,
+          a3 and a3["text"])
+    observe(people=0, persons=[])
+    call("DELETE", f"/api/rules/{sec['id']}")
+
+    # ------------------------------------------------------------------ R. the refresh for someone sitting still
+    print("\nR. The state rests on the camera alone: the edge is asked to look again without motion")
+    phone(filipe, False)
+    observe(people=1, persons=[{"identity": filipe}])
+    p = call("GET", "/api/presence")
+    check("phone away, Filipe's face seen -> OCCUPIED by the camera alone", p["state"] == "OCCUPIED" and p["relies_on_camera"],
+          p["reason"])
+    check("… no refresh right after an analysis", not call("GET", "/api/edge/task")["refresh"])
+    time.sleep(3.5)
+    check("… a refresh is asked after refresh_s", call("GET", "/api/edge/task")["refresh"])
+    observe(people=1, persons=[{"identity": filipe}], forced=True)
+    check("… and the forced analysis answers it", not call("GET", "/api/edge/task")["refresh"])
+    phone(filipe, True)
+    observe(people=0, persons=[])
+
+    # ------------------------------------------------------------------ E. nobody home: devices on, the door open
+    print("\nE. Nobody home: one alert with the devices to turn off and the door banner")
+    r1 = sensor("If nobody is home and something is on, ask me to turn it off")
+    r2 = sensor("If the door is left open when nobody is home, sound the alarm and tell me")
+    check("the two sentences -> nobody_devices_on and door_open_nobody (alarm)", r1 and r2 and r1["kind"] == "nobody_devices_on"
+          and r2["kind"] == "door_open_nobody" and r2.get("alarm"), f"{r1 and r1['kind']}, {r2 and r2['kind']}")
+    if r1 and r2:
+        call("PATCH", f"/api/rules/{r1['id']}", {"grace_s": 3})
+        call("PATCH", f"/api/rules/{r2['id']}", {"grace_s": 1})
+        devs = call("GET", "/api/state")["tt_devices"]
+        for d in devs:
+            call("POST", f"/api/tt-devices/{d['id']}/power", {"on": True})
+        if private:
+            set_contact("alarm")
+            wait_for(lambda e: e["kind"] == "door" and e.get("open") and not e.get("sim"), timeout=8)
+        else:
+            call("POST", "/api/sim/door", {"open": True})
+        t0 = time.time()
+        time.sleep(1.5)
+        check("the door open, Filipe's phone home -> no alert", not alert_for(r1["id"]) and not alert_for(r2["id"]))
+        phone(filipe, False)
+        observe(people=0, persons=[])
+        check("Filipe's phone leaves, the camera sees nobody -> EMPTY", call("GET", "/api/presence")["state"] == "EMPTY")
+        a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == r1["id"], timeout=10)
+        time.sleep(2.5)
+        own = [e for e in events() if e["kind"] == "alert" and e["ts"] >= t0 and e.get("rule_id") in (r1["id"], r2["id"])]
+        check("one alert: the devices to turn off, the door banner, the alarm on", a and len(own) == 1
+              and len(a.get("cards", [])) == len(devs) and (a.get("door") or {}).get("open")
+              and (a.get("alarm") or {}).get("state") == "on" and r2["id"] in a.get("rule_ids", []),
+              a and f"{a['title']}: {a['text']} | {len(own)} alert(s)")
+        snap = edge_task("snapshot", timeout=5)
+        if snap:
+            call("POST", "/api/edge/snapshot", {"id": snap["id"], "jpeg_b64": JPEG})
+        check("the server asks the edge for a picture of the empty room, and the alert gets it",
+              snap and (call("GET", "/api/state")["events"] and next(e for e in events() if a and e["id"] == a["id"]).get("picture")))
+        if a:
+            out = call("POST", f"/api/alerts/{a['id']}/act", {"device": PLUG, "on": False})
+            plug = next(d for d in call("GET", "/api/state")["tt_devices"] if d["id"] == PLUG)
+            calls = out["event"].get("action", {}).get("calls", [])
+            check("“Turn off the lights?” Yes -> plug_off through actions.run (dry run), the card and the plug off",
+                  not plug["on"] and next(c for c in out["alert"]["cards"] if c["device"] == PLUG)["state"] == "off"
+                  and calls and calls[0]["arguments"] == {"deviceId": PLUG, "body": {"type": "power", "value": "off"}}
+                  and calls[0]["result"] == "dry run: not sent", out["event"]["text"])
+            out = call("POST", f"/api/alerts/{a['id']}/act", {"device": "ac", "on": False})
+            check("“Turn off the AC?” Yes -> the integration off (simulated), both cards off",
+                  all(c["state"] == "off" for c in out["alert"]["cards"]) and not next(
+                      d for d in call("GET", "/api/state")["tt_devices"] if d["id"] == "ac")["on"], out["event"]["text"])
+            out = call("POST", f"/api/alerts/{a['id']}/alarm-off")
+            check("“Turn off the alarm” on the door banner -> off", out["alert"]["alarm"]["state"] == "off")
+        if private:
+            set_contact("normal")
+        else:
+            call("POST", "/api/sim/door", {"open": False})
+        phone(filipe, True)
+        call("DELETE", f"/api/rules/{r1['id']}")
+        call("DELETE", f"/api/rules/{r2['id']}")
+
+    # ------------------------------------------------------------------ H. picked up, taken, moved
+    print("\nH. Picked up, taken, moved: the edge's “in hand” sightings")
+    observe(people=0, persons=[], sightings=[{"thing_id": book, "place": "desk", "crop_b64": JPEG, "note": "test"}])
+    t0 = time.time()
+    observe(people=1, persons=[{"identity": filipe}],
+            sightings=[{"thing_id": book, "place": "desk", "in_hand": True, "by": filipe, "note": "test"}])
+    h = latest("handled", since=t0)
+    check("the book's box on Filipe's box -> “Book picked up by Filipe”", h and h["text"] == "Book picked up by Filipe.",
+          h and h["text"])
+    for i in range(3):
+        observe(people=1 if i == 0 else 0, persons=[{"identity": filipe}] if i == 0 else [])
+    h = latest("handled", since=t0)
+    check("then missing from the desk for 3 analyses -> “Book taken by Filipe”", h and h["text"].startswith("Book taken by Filipe"),
+          h and h["text"])
+    observe(people=0, persons=[], sightings=[{"thing_id": book, "place": "shelf", "crop_b64": JPEG, "note": "test"}])
+    h = latest("handled", since=t0)
+    check("then seen on the shelf -> “Book moved to the shelf”", h and h["text"].startswith("Book moved to the shelf"),
+          h and h["text"])
+    t1 = time.time()
+    observe(people=1, persons=[{"identity": "not_visible"}],
+            sightings=[{"thing_id": book, "place": "shelf", "in_hand": True, "note": "test"}])
+    observe(people=0, persons=[], sightings=[{"thing_id": book, "place": "shelf", "crop_b64": JPEG, "note": "test"}])
+    check("picked up by someone whose face is not seen, then put back -> “by a person”, “put back”",
+          [e["text"] for e in events() if e["kind"] == "handled" and e["ts"] >= t1][::-1]
+          == ["Book picked up by a person.", "Book put back on the shelf."])
+
+    # ------------------------------------------------------------------ PH. photos -> fingerprint (the edge's task)
+    print("\nPH. Phone photos: the server queues a fingerprint task for the edge")
+    glasses = call("POST", "/api/things", {"name": "Glasses", "description": "black glasses"})["id"]
+    out = call("POST", f"/api/things/{glasses}/photos", {"photos_b64": [JPEG, JPEG, JPEG]})
+    task = edge_task("photos", timeout=3)
+    check("3 photos -> a photos task with the files and the description as the query", out.get("queued") and task
+          and task["thing_id"] == glasses and len(task["files"]) == 3 and task["query"] == "black glasses", json.dumps(task)[:160])
+    if task:
+        vec = [[0.1] * 384, [0.2] * 384, [0.3] * 384]
+        call("POST", "/api/edge/enrol", {"thing_id": glasses, "source": "photos", "done": True, "found": 3, "vectors": vec,
+                                         "model": "facebook/dinov2-small"})
+        fp = call("GET", "/api/edge/fingerprints").get(glasses)
+        t = next(x for x in call("GET", "/api/state")["things"] if x["id"] == glasses)
+        check("the edge's vectors -> the fingerprint (3 vectors, DINOv2), the task done", fp and len(fp["vectors"]) == 3
+              and t["fingerprint"]["model"] == "facebook/dinov2-small" and not call("GET", "/api/edge/task")["photos"],
+              json.dumps(t["fingerprint"])[:160])
+    face_photo = HERE.parent / "video" / "public" / "phone" / "person" / "joao.jpg"
+    if face_photo.exists() and (HERE / "models" / "face_detection_yunet_2023mar.onnx").exists():
+        ana = call("POST", "/api/things", {"name": "Ana", "description": "person · family"})["id"]
+        b64 = __import__("base64").b64encode(face_photo.read_bytes()).decode()
+        call("POST", f"/api/things/{ana}/photos", {"photos_b64": [b64]})
+        t = next(x for x in call("GET", "/api/state")["things"] if x["id"] == ana)
+        check("a person's photo -> face templates on the home device, no fingerprint task", t["fingerprint"].get("faces") == 1
+              and not call("GET", "/api/edge/task")["photos"], json.dumps(t["fingerprint"])[:160])
+    else:
+        print("SKIP  a person's photo -> face templates (no photo or no face models here)")
 
     # ------------------------------------------------------------------ B. deadlines
     print("\nB. Deadlines: not_by and nobody_by")

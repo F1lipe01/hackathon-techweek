@@ -16,8 +16,8 @@ import { join, resolve } from 'node:path';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright-core');
-const BASE = 'http://127.0.0.1:8765';
-const OUT = resolve('video/public/app');
+const BASE = process.env.REC_BASE || 'http://127.0.0.1:8765';   // REC_BASE: a private test server instead
+const OUT = resolve(process.env.REC_OUT || 'video/public/app');   // REC_OUT: write the takes elsewhere (a dry run)
 const IMG = process.env.REC_IMG; // folder with live.jpg, view1-3.jpg, seen.jpg
 const W = 402, H = 874, DSF = 3;
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -28,6 +28,23 @@ async function api(path, body, method = 'POST') {
   if (!r.ok) throw new Error(`${method} ${path}: ${r.status} ${await r.text()}`);
   return r.json();
 }
+
+// The three alert takes (book, person, nobody) trigger the server's REAL rules: the simulated door and phones, and a
+// stand-in for the camera service that posts analyses and answers the server's own tasks (an active check of the
+// book, a picture of the empty room). The alert, its cards, the alarm and the police suggestion all come from the
+// server's rules engine; nothing is injected. Only the times the app shows are moved to the story's clock (C.shift).
+async function waitTask(key, timeout = 30000) {
+  const end = Date.now() + timeout;
+  while (Date.now() < end) {
+    const t = await api('/api/edge/task', null, 'GET');
+    if (t[key]) return t[key];
+    await pause(400);
+  }
+  throw new Error(`the server never asked the stand-in edge for a ${key}`);
+}
+const crop64 = async (name) => Buffer.from(await (await fetch(`${BASE}/crops/${encodeURIComponent(name)}`)).arrayBuffer()).toString('base64');
+const family = async () => (await api('/api/presence', null, 'GET')).phones;
+const phones = async (home) => { for (const m of await family()) await api('/api/sim/phone', { member: m.id, home }); };
 
 // the stand-in camera service: online while recording
 let edgeTimer = null;
@@ -84,6 +101,16 @@ async function take(name, clock, script) {
   // the phone's clock in the status bar reads the story's time
   await page.addInitScript((t) => { setInterval(() => { const e = document.getElementById('iostime'); if (e && e.textContent !== t) e.textContent = t; }, 50); }, clock);
   // a take can also set the page's own clock to the story's time (times the app writes, e.g. "turned off at 16:00")
+  if (C.shift && C.nowAt) {   // the real events of the take carry the server's time: show them at the story's
+    const real0 = Date.now() / 1000, off = C.nowAt / 1000 - real0;
+    await page.route('**/api/state', async (route) => {
+      const st = await (await fetch(BASE + '/api/state')).json();
+      const move = (o, k) => { if (o && o[k] >= real0) o[k] += off; };
+      for (const e of st.events) { move(e, 'ts'); move(e.alarm, 'since'); move(e.alarm, 'off_at'); (e.cards || []).forEach((c) => move(c, 'at')); }
+      for (const t of st.things) move(t.last_seen, 'ts');
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(st) });
+    });
+  }
   if (C.nowAt) { await page.addInitScript((target) => { const real = Date.now.bind(Date), off = target - real(); Date.now = () => real() + off; }, C.nowAt); C.nowAt = undefined; }
   await page.goto(`${BASE}/#things`, { waitUntil: 'networkidle' });
   await page.addStyleTag({ content: RAW_CSS });
@@ -435,22 +462,29 @@ const TAKES = {
       await hideFinger();
       await pause(2200);
     }); },
-  // scene 2, the end: the app's real state (the person and the scenario, made in add-person); only the alert of the take
-  // is added (the take was filmed before the scenario existed). Its picture is the lab camera's frame of the stranger.
-  'alert-person-open': () => { Object.assign(C, { on: true, onlyRules: false, events: [], things: [], rules: [], reply: null, nowAt: today(16, 26) * 1000 + 35000 });
+  // scene 2, the end: the app's real state (the person and the scenario, made in add-person). The family's phones leave the
+  // home Wi-Fi (simulated); the stand-in edge reports an unknown face in three analyses in a row, with the person crop
+  // the real edge sends only for a face that matches nobody (the lab camera's frame of the stranger). The server's
+  // "Home Security" rule fires: the alarm (simulated) and the police suggestion.
+  'alert-person-open': () => { Object.assign(C, { on: false, shift: true, nowAt: today(16, 26) * 1000 + 35000 });
     return take('alert-person-open', '16:26', async ({ page, refresh, mark }) => {
       const st = await (await fetch(BASE + '/api/state')).json();
-      const rule = st.rules.find((r) => r.unknown);
+      if (st.settings?.live_actions) throw new Error('TT_LIVE_ACTIONS is on');
+      if (!st.rules.find((r) => r.unknown && r.active)) throw new Error('no active "someone who isn\'t Family" scenario');
+      await phones(false);
       await pause(1200);
-      conceptEvent({ kind: 'alert', ts: today(16, 26), title: rule?.title || 'Unknown person at home', rule_id: rule?.id,
-        text: "Someone who isn't Family came in. The alarm is on.", unknown: true, crop: 'concept-stranger-face.jpg',
-        snapshot: 'concept-stranger.jpg', alarm: 'The lab siren is sounding.', place: 'Work Room camera' });
-      await refresh();
+      const stranger = b64('concept-stranger.jpg');
+      for (let i = 0; i < 3; i++) {
+        await api('/api/edge/observe', { people: 1, persons: [{ identity: 'unknown', score: 0.12, crop_b64: stranger }], sightings: [] });
+        await pause(900);
+      }
+      await page.waitForSelector('#toast.show', { timeout: 20000 });
       mark('alert');
       await pause(1600);
       await page.evaluate(() => document.getElementById('toast').click());
       mark('open');
       await pause(4000);
+      await phones(true);
     }); },
   // example 3: two scenarios typed in Menu › Scenarios › Add scenario, saved for real through /api/rules (the server
   // compiles them into the presence kinds nobody_devices_on and door_open_nobody); Done returns to the list
@@ -490,23 +524,27 @@ const TAKES = {
       await scenario(2, 'If the door is left open when nobody is home, sound the alarm and tell me');
       await pause(1500);
     }); },
-  // example 3, the end: everyone left with the lights and the AC on and the door open. Only the alert is added (the lab
-  // take was filmed before the rules existed); its picture is the lab camera's frame of the empty room (stage1 69 s,
-  // 17:32:29). The lights hang on the kit's real Plug (the link is ThingTracker's): its Yes runs plug_off through the
-  // Altice MCP as a dry run (TT_LIVE_ACTIONS is never set). The AC is a third-party integration, simulated.
-  'alert-nobody-open': () => { Object.assign(C, { on: true, onlyRules: false, events: [], things: [], rules: [], reply: null, nowAt: today(17, 32) * 1000 + 40000 });
+  // example 3, the end: everyone left with the lights and the AC on and the door open. Real rules: the door is held open
+  // (simulated), the family's phones leave the Wi-Fi (simulated) and the stand-in edge sees nobody; the presence engine
+  // says EMPTY and the server sends ONE alert with both devices and the door banner (the alarm, simulated). The stand-in
+  // answers the server's request for a picture of the empty room with the lab camera's frame (stage1 69 s, 17:32:29).
+  // The lights hang on the kit's real Plug (the link is ThingTracker's): its Yes runs plug_off through the Altice MCP as
+  // a dry run (TT_LIVE_ACTIONS is never set). The AC is a third-party integration, simulated.
+  'alert-nobody-open': () => { Object.assign(C, { on: false, shift: true, nowAt: today(17, 32) * 1000 + 40000 });
     return take('alert-nobody-open', '17:32', async ({ page, tap, hideFinger, refresh, mark }) => {
       const st0 = await (await fetch(BASE + '/api/state')).json();
       if (st0.settings?.live_actions) throw new Error('TT_LIVE_ACTIONS is on: this take would switch the real plug');
       for (const d of st0.tt_devices) await fetch(BASE + `/api/tt-devices/${encodeURIComponent(d.id)}/power`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ on: true }) });
       const st = await (await fetch(BASE + '/api/state')).json();
       const plug = st.tt_devices.find((d) => d.type === 'plug'), ac = st.tt_devices.find((d) => d.type === 'ac');
-      const rule = st.rules.find((r) => r.kind === 'nobody_devices_on');
       await refresh();
       await pause(1200);
-      conceptEvent({ kind: 'alert', ts: today(17, 32), title: 'Nobody is home', rule_id: rule?.id, text: 'Everyone left, and 2 things are still on.',
-        devices: [plug.id, ac.id], doorAlarm: true, crop: 'concept-empty-lab.jpg', snapshot: 'concept-empty-lab.jpg', place: 'Work Room camera' });
-      await refresh();
+      await api('/api/sim/door', { open: true });
+      await phones(false);
+      await api('/api/edge/observe', { people: 0, persons: [], sightings: [] });
+      const snap = await waitTask('snapshot', 40000);
+      await api('/api/edge/snapshot', { id: snap.id, jpeg_b64: b64('concept-empty-lab.jpg') });
+      await page.waitForSelector('#toast.show', { timeout: 20000 });
       mark('alert');
       await pause(1600);
       const xy = await page.evaluate(() => { const r = document.getElementById('toast').getBoundingClientRect(), d = document.getElementById('device').getBoundingClientRect();
@@ -514,28 +552,42 @@ const TAKES = {
       await page.evaluate(() => document.getElementById('toast').click());  // the film draws its own tap on the notification
       mark('open', { x: xy[0], y: xy[1] });
       await pause(2200);
-      await tap(`[data-act="tt-off"][data-id="${plug.id}"]`);
+      await tap(`[data-act="alert-device"][data-id="${plug.id}"]`);
       await page.waitForSelector('.dev-ask.done', { state: 'visible', timeout: 8000 });
       mark('lights-off');
       await pause(2500);
-      await tap(`[data-act="tt-off"][data-id="${ac.id}"]`);
+      await tap(`[data-act="alert-device"][data-id="${ac.id}"]`);
       await page.waitForFunction(() => document.querySelectorAll('.dev-ask.done').length === 2, null, { timeout: 8000 });
       mark('ac-off');
       await hideFinger();
       await pause(3200);
+      await api('/api/sim/door', { open: false });
+      await phones(true);
     }); },
-  // scene 1, the end: the alert arrives; tapping it opens the camera's picture, large
-  // the app's real state (the book and its rule, made in the add-book take); only the alert of 14:10 is added, because the
-  // lab take was filmed before the rule existed. Its title is the real rule's, its picture the lab camera's frame.
-  'alert-book-open': () => { Object.assign(C, { on: true, onlyRules: false, events: [], things: [], rules: [], reply: null, nowAt: today(16, 0) * 1000 + 20000 });
+  // scene 1, the end: the alert arrives; tapping it opens the camera's picture, large. Real rules: the stand-in edge sees
+  // the book on the desk; the door opens and closes (simulated); Filipe's phone leaves the Wi-Fi (simulated); the server
+  // asks the edge for an active check of the book and the stand-in answers "seen on the desk", with the lab camera's
+  // frame as the check's picture. The server's "Book left at home" rule fires (and the simulated alarm, which the take
+  // turns off from the alert through the server).
+  'alert-book-open': () => { Object.assign(C, { on: false, shift: true, nowAt: today(16, 0) * 1000 + 20000 });
     return take('alert-book-open', '16:00', async ({ page, refresh, mark, tap, hideFinger }) => {
       const st = await (await fetch(BASE + '/api/state')).json();
-      const rule = st.rules.find((r) => r.thing_id === 'book'), book = st.things.find((t) => t.id === 'book');
+      if (st.settings?.live_actions) throw new Error('TT_LIVE_ACTIONS is on');
+      const rule = st.rules.find((r) => r.kind === 'leave_without' && r.thing_id === 'book' && r.active);
+      const book = st.things.find((t) => t.id === 'book');
+      if (!rule || !book) throw new Error('no book, or no active "leave without the book" scenario');
+      await phones(true);
+      const thingCrop = book.fingerprint?.crops?.[0] ? await crop64(book.fingerprint.crops[0]) : b64('concept-snapshot.jpg');
+      await api('/api/edge/observe', { people: 1, persons: [{ identity: 'filipe' }], sightings: [{ thing_id: 'book', place: 'desk', crop_b64: thingCrop, note: 'stand-in' }] });
       await pause(1200);
-      conceptEvent({ kind: 'alert', ts: today(16, 0), title: rule?.title || 'Book left at home', rule_id: rule?.id, thing_id: 'book',
-        text: 'The door closed and your book is still on the desk. The alarm is on.', crop: book?.fingerprint?.crops?.[0],
-        snapshot: 'concept-snapshot.jpg', alarm: 'The lab siren is sounding.', place: 'Work Room camera' });
-      await refresh();
+      await api('/api/sim/door', { open: true });
+      await pause(1500);
+      await api('/api/sim/door', { open: false });
+      const me = (await family()).find((m) => m.id === 'filipe') || (await family())[0];
+      await api('/api/sim/phone', { member: me.id, home: false });
+      const check = await waitTask('check', 30000);
+      await api('/api/edge/check', { id: check.id, seen: true, place: 'desk', score: 0.7, frames: 3, crop_b64: b64('concept-snapshot.jpg') });
+      await page.waitForSelector('#toast.show', { timeout: 20000 });
       mark('alert');
       await pause(1600);
       await page.evaluate(() => document.getElementById('toast').click());  // the film draws its own tap on the notification
@@ -545,6 +597,7 @@ const TAKES = {
       mark('alarm-off');
       await hideFinger();
       await pause(2800);
+      await api('/api/sim/phone', { member: me.id, home: true });
     }); },
   // video 1 v7, the dog: "Has the dog eaten today?", answered with its picture at the bowl
   dog: () => { Object.assign(C, { on: true, events: [], rules: [], delay: 900,

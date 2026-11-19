@@ -296,6 +296,7 @@ def main(argv=None):
         p.add_argument("--video" if name == "enrol-video" else "--image", required=True, nargs="+" if name == "enrol-image" else None)
         p.add_argument("--db")
         p.add_argument("--crops-out", help="folder for the aligned face crops (JPEG)")
+        p.add_argument("--prefix", help="crop file names: <prefix>-face<i>.jpg (default: the person's id)")
     p = sub.add_parser("look")
     p.add_argument("--video", required=True)
     p.add_argument("--t", type=float, required=True)
@@ -326,9 +327,11 @@ def main(argv=None):
     if a.crops_out:
         out = Path(a.crops_out)
         out.mkdir(parents=True, exist_ok=True)
-        for i, j in enumerate(jpgs):
-            (out / f"{a.person}-face{i}.jpg").write_bytes(j)
-    print(json.dumps({"person": a.person, "n": len(vecs), "source": source, "db": str(tpl.path)}))
+        names = [f"{a.prefix or a.person}-face{i}.jpg" for i in range(len(jpgs))]
+        for name, j in zip(names, jpgs):
+            (out / name).write_bytes(j)
+    print(json.dumps({"person": a.person, "n": len(vecs), "source": source, "db": str(tpl.path),
+                      "crops": names if a.crops_out else []}))
 
 
 if __name__ == "__main__":

@@ -47,10 +47,13 @@ load_env({"ANTHROPIC_API_KEY", "CAMERA_RTSP_URL"})
 import actions  # noqa: E402  (after the environment is loaded)
 from brain import BEINGS, Brain, BudgetExceeded, hhmm, place_matches  # noqa: E402
 from kitcam import KitCamera  # noqa: E402
-from store import CROPS, Store  # noqa: E402
+from presence import EMPTY, LEAVING, Presence, join  # noqa: E402
+from store import CROPS, DATA, Store  # noqa: E402
 
 store = Store()
 brain = Brain(store)
+presence = Presence(store)
+T = presence.t                  # the named timings (presence.TIMINGS): demo seconds, or production minutes
 app = FastAPI(title="ThingTracker prototype")
 
 
@@ -119,13 +122,39 @@ def tt_set(did, on):
     TT_FILE.write_text(json.dumps(d))
 
 
-def fire(rule, crop=None, evidence="", text=None, **extra):
-    result = actions.run(rule["action"])
-    if rule.get("alarm"):
-        extra.setdefault("alarm", "Simulated: the alarm sounds.")
+# ---------------------------------------------------------------------- alerts and the (simulated) alarm
+# An alert is an event of kind "alert" with a structured payload the app draws as its notification and alert screen:
+#   title, text (the message), picture (a crop file: the thing, the unknown person, or the empty room), crop,
+#   cards    [{"device", "name", "kind", "label", "state": "on"|"off"}]  devices the app offers to turn off ("Yes")
+#   ask      [{"act": "alarm_on", "label", "state": "ask"|"done"}]       a question the app asks ("Sound the alarm?")
+#   door     {"open": true, "text"}                                      the door banner
+#   alarm    {"state": "on"|"off", "text", "since", "off_at"}            the simulated alarm, with "Turn off the alarm"
+#   suggestion {"kind": "police", "title", "text", "number": "112"}      the app offers the call; it never dials
+# Every answer goes through POST /api/alerts/{id}/act or /alarm-off -> actions.run (a dry run, or simulated for the
+# alarm) -> the simulated device or alarm state -> an event. The Altice alarm is never called (AGENTS.md rule 1).
+def alarm_state():
+    return store.meta("alarm", {"on": False, "since": 0.0, "alert": None})
+
+
+def sound_alarm(why):
+    res = actions.run("alarm_on")
+    store.set_meta("alarm", {"on": True, "since": time.time(), "alert": None, "why": why})
+    return {"state": "on", "since": time.time(), "text": "Simulated: the alarm sounds in the app. The Altice alarm is never called.",
+            "action": res}
+
+
+def fire(rule, crop=None, evidence="", text=None, title=None, action=None, alarm=None, picture=None, **extra):
+    """An alert for this rule: its device action (a dry run), the simulated alarm if the rule asks for it (alarm=None)
+    or as given (True/False), and the structured payload."""
+    result = actions.run(rule["action"] if action is None else action)
+    if (rule.get("alarm") if alarm is None else alarm):
+        extra["alarm"] = sound_alarm(rule["title"])
     store.update_rule(rule["id"], last_fired=time.time(), fired_today=True)
-    return store.add_event("alert", text or rule["message"], rule_id=rule["id"], title=rule["title"], action=result,
-                           crop=crop, evidence=evidence, **extra)
+    e = store.add_event("alert", text or rule["message"], rule_id=rule["id"], title=title or rule["title"], action=result,
+                        crop=crop, picture=picture or crop, evidence=evidence, **extra)
+    if extra.get("alarm"):
+        store.set_meta("alarm", {**alarm_state(), "alert": e["id"]})
+    return e
 
 
 def hm(ts):
@@ -251,8 +280,10 @@ threading.Thread(target=deadline_ticker, daemon=True).start()
 
 
 # ---------------------------------------------------------------------- edge service (prototype/edge.py)
-EDGE = {"state": "offline", "checked": 0, "analysed": 0, "last_motion": 0.0, "last_person": 0.0, "updated": 0.0, "ms": None}
+# Who is home is the presence engine's (presence.py); the edge only reports what each analysis saw.
+EDGE = {"state": "offline", "checked": 0, "analysed": 0, "last_motion": 0.0, "updated": 0.0, "ms": None}
 _last_crop = {}
+_unknown_crop = {}      # camera -> (ts, jpeg b64) of the latest unknown face's person crop; written only if a rule fires
 
 
 def edge_online():
@@ -295,26 +326,86 @@ def record_presence(payload, camera):
             continue
         _last_presence[(who, camera, place)] = now_
         store.add_presence(who, place, camera)
-        if who in ("person", "child"):
-            EDGE["last_person"] = now_
+
+
+def persons_of(payload):
+    """The persons of one analysis, each with an identity: a registered person's id (face recognised at the edge),
+    "unknown" (a face is visible and matches nobody) or "not_visible" (no face seen). An edge without the face model
+    sends only a count of people: each is "not_visible"."""
+    if isinstance(payload.get("persons"), list):
+        return [{"identity": str(p.get("identity") or "not_visible")[:40], "score": p.get("score")}
+                for p in payload["persons"][:12] if isinstance(p, dict)]
+    return [{"identity": "not_visible"} for _ in range(min(12, int(payload.get("people", 0) or 0)))]
+
+
+def thing_place(sgt):
+    return "".join(ch for ch in str(sgt.get("place", "room")).lower() if ch.isalpha() or ch == " ")[:24] or "room"
+
+
+# ---------------------------------------------------------------------- picked up, taken, moved (edge: "in_hand")
+# The edge marks a sighting "in_hand" when the thing's box sits on a person's box, with "by" the person's id when their
+# face was recognised. Here: "picked up by" once; then, if the thing is missing from its place for taken_misses analyses
+# of that camera, "taken by"; when it is seen again somewhere else, "moved to"; back where it was, "put back".
+HELD = {}       # thing id -> {"by", "camera", "place", "ts", "misses", "taken"}
+
+
+def track_handling(payload, camera, known, people):
+    now_, seen = time.time(), {}
+    for sgt in payload.get("sightings", [])[:12]:
+        if sgt.get("thing_id") in known:
+            seen[sgt["thing_id"]] = sgt
+    for tid, sgt in seen.items():
+        h = HELD.get(tid)
+        if sgt.get("in_hand"):
+            who = people.get(sgt.get("by") or "", "")
+            if not h:
+                last = store.last_seen(tid)
+                HELD[tid] = {"by": who, "camera": camera, "place": last["zone_name"] if last else thing_place(sgt),
+                             "room": last["room"] if last else camera, "ts": now_, "misses": 0, "taken": False}
+                store.add_event("handled", f"{known[tid]} picked up" + (f" by {who}." if who else " by a person."),
+                                thing_id=tid, by=who or None, camera=camera)
+            elif who and not h["by"]:
+                h["by"] = who
+            if h:
+                h["misses"] = 0
+            continue
+        if h:
+            place = thing_place(sgt)
+            if place != h["place"] or camera != h["room"]:
+                where = "the room" if place == "room" else f"the {place}"
+                store.add_event("handled", f"{known[tid]} moved to {where}" + ("" if camera == store.camera_room() else f" ({camera})")
+                                + (f" by {h['by']}." if h["by"] else "."), thing_id=tid, place=place, room=camera)
+            elif not h["taken"]:
+                store.add_event("handled", f"{known[tid]} put back on the {place}.", thing_id=tid, place=place)
+            HELD.pop(tid, None)
+    for tid, h in list(HELD.items()):
+        if tid in seen or h["camera"] != camera or h["taken"]:
+            continue
+        h["misses"] += 1
+        if h["misses"] >= T["taken_misses"]:
+            h["taken"] = True
+            store.add_event("handled", f"{known.get(tid, tid)} taken by {h['by'] or 'a person'}: not on the {h['place']} "
+                            f"for {h['misses']} analyses.", thing_id=tid, by=h["by"] or None, taken=True)
 
 
 @app.post("/api/edge/observe")
 def edge_observe(payload: dict = Body(...)):
-    """What the edge saw: thing, place, a small crop of the thing, who is there (people, pets) and where. Never the
-    full frame, never a picture of a person. 'camera' names the camera's place (default: the kit camera's room)."""
+    """What the edge saw: thing, place, a small crop of the thing, who is there (people, pets) and where, and who each
+    person is when the face was recognised. Never the full frame; a person's crop only for a face that matches nobody
+    (kept only if a security rule fires). 'camera' names the camera's place (default: the kit camera's room).
+    A post with "persons" or "people" is one analysis and feeds the presence engine; one with only "boxes" does not."""
     now_ = time.time()
     EDGE["updated"], EDGE["ms"] = now_, payload.get("ms")
-    if int(payload.get("people", 0)) > 0:
-        EDGE["last_person"] = now_
     camera = clean_place(payload.get("camera")) or store.camera_room()
-    known = {t["id"]: t["name"] for t in store.things()}
+    things = store.things()
+    known = {t["id"]: t["name"] for t in things}
+    people = {t["id"]: t["name"] for t in things if (t.get("description") or "").startswith("person")}
     last = {t["id"]: t.get("last_seen") for t in store.snapshot()["things"]}
     for sgt in payload.get("sightings", [])[:12]:
         tid = sgt.get("thing_id")
-        if tid not in known:
+        if tid not in known or sgt.get("in_hand"):        # in someone's hand: the memory keeps where it rests
             continue
-        place = "".join(ch for ch in str(sgt.get("place", "room")).lower() if ch.isalpha() or ch == " ")[:24] or "room"
+        place = thing_place(sgt)
         zone = {"id": "place-" + place, "name": place}
         prev = last.get(tid)
         moved = (not prev or prev.get("zone_id") != zone["id"] or prev.get("room") != camera
@@ -332,6 +423,13 @@ def edge_observe(payload: dict = Body(...)):
             store.add_event("seen", f"{known[tid]} seen " + ("in the room" if place == "room" else f"on the {place}")
                             + f"{cam}.", thing_id=tid, crop=crop)
     record_presence(payload, camera)
+    if ("persons" in payload or "people" in payload) and not payload.get("enrol"):
+        persons = persons_of(payload)
+        for p in payload.get("persons") or []:
+            if isinstance(p, dict) and p.get("identity") == "unknown" and p.get("crop_b64"):
+                _unknown_crop[camera] = (now_, p["crop_b64"])
+        presence.analysis(camera, persons, forced=bool(payload.get("forced")))
+        track_handling(payload, camera, known, people)
     if "boxes" in payload:
         EDGE["boxes"], EDGE["boxes_at"] = payload["boxes"][:30], now_
     for kind, score in (payload.get("profile") or {}).items():
@@ -360,18 +458,88 @@ def start_enrol(tid: str):
     return ENROL
 
 
+# What the server asks of the edge besides registering (GET /api/edge/task):
+#   refresh   analyse now even without motion: the presence state rests on the cameras alone (a person sitting still)
+#   check     an active check of one thing over a few frames, regardless of motion (left behind: "is it still there?")
+#   photos    make a thing's fingerprint from the phone photos: OWLv2 crops it, DINOv2 makes the vectors
+#   snapshot  one picture of the room for an alert, sent only if the edge sees no person in it
+CHECKS = {}             # check id -> {"thing_id", "query", "name", "frames", "asked", "result"}
+SNAPSHOTS = {}          # snapshot id -> {"alert_id", "asked"}
+
+
+def photo_tasks():
+    return store.meta("photo_tasks", {})
+
+
 @app.get("/api/edge/task")
-def edge_task():
+def edge_task(camera: str = ""):
     if ENROL and time.time() > ENROL["until"]:
         store.add_event("thing", f"Registration of {ENROL['name']} stopped: the camera did not see it well enough.")
         ENROL.clear()
-    return {"enrol": dict(ENROL) or None}
+    cam = clean_place(camera) or store.camera_room()
+    check = next(({"id": k, **{x: v[x] for x in ("thing_id", "query", "name", "frames")}} for k, v in CHECKS.items()
+                  if v.get("result") is None), None)
+    photos = next(iter(photo_tasks().values()), None)
+    snap = next(({"id": k, "alert_id": v["alert_id"]} for k, v in SNAPSHOTS.items() if not v.get("done")), None)
+    return {"enrol": dict(ENROL) or None, "refresh": presence.wants_refresh(cam), "check": check, "photos": photos,
+            "snapshot": snap}
+
+
+@app.post("/api/edge/check")
+def edge_check(payload: dict = Body(...)):
+    """The edge's answer to an active check: {"id", "seen", "place", "score", "frames", "crop_b64"}."""
+    c = CHECKS.get(payload.get("id"))
+    if not c:
+        return {"ok": False}
+    crop = None
+    if payload.get("seen") and payload.get("crop_b64"):
+        crop = f"{time.strftime('%Y%m%d-%H%M%S')}-{c['thing_id']}-check.jpg"
+        (CROPS / crop).write_bytes(base64.b64decode(payload["crop_b64"]))
+    c["result"] = {"seen": bool(payload.get("seen")), "place": thing_place(payload) if payload.get("seen") else "",
+                   "score": payload.get("score"), "frames": payload.get("frames"), "crop": crop, "at": time.time()}
+    return {"ok": True}
+
+
+@app.post("/api/edge/snapshot")
+def edge_snapshot(payload: dict = Body(...)):
+    """A picture of the room for an alert ({"id", "jpeg_b64"}), or {"id", "person": true} when someone is in view:
+    then no picture is sent at all."""
+    s = SNAPSHOTS.get(payload.get("id"))
+    if not s:
+        return {"ok": False}
+    s["done"] = True
+    if payload.get("jpeg_b64") and not payload.get("person"):
+        name = f"{time.strftime('%Y%m%d-%H%M%S')}-room.jpg"
+        (CROPS / name).write_bytes(base64.b64decode(payload["jpeg_b64"]))
+        store.update_event(s["alert_id"], picture=name)
+    return {"ok": True}
+
+
+def ask_snapshot(alert):
+    SNAPSHOTS[f"s{int(time.time() * 1000)}"] = {"alert_id": alert["id"], "asked": time.time()}
 
 
 @app.post("/api/edge/enrol")
 def edge_enrol(payload: dict = Body(...)):
-    """Progress while the edge collects views, then the finished fingerprint (vectors and a few crops)."""
+    """Progress while the edge collects views, then the finished fingerprint (vectors and a few crops). With
+    "source": "photos", the fingerprint the edge made from the phone photos of a queued photos task."""
     tid = payload.get("thing_id")
+    if payload.get("source") == "photos":
+        tasks = photo_tasks()
+        task = tasks.pop(tid, None)
+        if not task or not payload.get("vectors"):
+            return {"ok": False}
+        store.set_meta("photo_tasks", tasks)
+        t = next((x for x in store.things() if x["id"] == tid), None)
+        if not t:
+            return {"ok": False}
+        found = int(payload.get("found", len(payload["vectors"])))
+        info = {**(t.get("fingerprint") or {}), "n": len(payload["vectors"]), "model": payload.get("model", ""),
+                "source": "photos", "found": found, "photos": len(task["files"]), "created": time.time()}
+        store.set_fingerprint(tid, info, vectors=payload["vectors"], model=payload.get("model", ""))
+        store.add_event("thing", f"{t['name']}: visual fingerprint made from {len(task['files'])} photos (found in "
+                        f"{found} of them).", thing_id=tid, crop=(info.get("crops") or [None])[0])
+        return {"ok": True}
     if not ENROL or ENROL.get("thing_id") != tid:
         return {"ok": False}
     ENROL["got"] = int(payload.get("got", ENROL["got"]))
@@ -394,7 +562,10 @@ def edge_enrol(payload: dict = Body(...)):
 @app.post("/api/things/{tid}/photos")
 def thing_photos(tid: str, payload: dict = Body(...)):
     """Registration from photos taken with the phone (or frames picked from a phone video): the photos become the
-    thing's views. The vectors are computed by the edge service, which has the vision model (DINOv2)."""
+    thing's views, and a photos task is queued for the edge service, which has the vision models: OWLv2 finds the thing
+    in each photo (its description is the query), DINOv2 makes a vector of each crop, and the edge posts them to
+    /api/edge/enrol. The task is kept in the database until the edge runs. People are not registered here: their face
+    templates are made on the home device (face-video)."""
     t = next((t for t in store.things() if t["id"] == tid), None)
     if not t:
         raise HTTPException(404, "unknown thing")
@@ -406,16 +577,58 @@ def thing_photos(tid: str, payload: dict = Body(...)):
     for i, b64 in enumerate(photos):
         names.append(f"{stamp}-{tid}-photo{i}.jpg")
         (CROPS / names[-1]).write_bytes(base64.b64decode(b64.split(",", 1)[-1]))
-    store.set_fingerprint(tid, {"n": len(names), "crops": names, "created": time.time(), "source": "photos", "model": ""})
-    store.add_event("thing", f"{t['name']} registered from {len(names)} photos.", thing_id=tid, crop=names[0])
-    return {"ok": True, "n": len(names)}
+    store.set_fingerprint(tid, {"n": len(names), "crops": names, "created": time.time(), "source": "photos", "model": "",
+                                "pending": True})
+    queued = not (t.get("description") or "").startswith("person")
+    if not queued:                    # a person: their face templates, made on the home device from the photos
+        res = enrol_face(tid, ["enrol-image", "--image", *[str(CROPS / n) for n in names]], f"{stamp}-{tid}")
+        store.set_fingerprint(tid, {"n": len(names), "crops": names, "created": time.time(), "source": "photos",
+                                    "model": "YuNet + SFace (opencv_zoo)" if res.get("n") else "", "faces": res.get("n", 0)})
+    if queued:
+        store.set_meta("photo_tasks", {**photo_tasks(), tid: {"thing_id": tid, "name": t["name"], "files": names,
+                                                               "query": (t.get("description") or t["name"]).lower()}})
+    store.add_event("thing", f"{t['name']} registered from {len(names)} photos." + (
+        " The camera service makes its visual fingerprint." if queued else ""), thing_id=tid, crop=names[0])
+    return {"ok": True, "n": len(names), "queued": queued}
+
+
+# ---------------------------------------------------------------------- faces: templates on the home device
+# A person's face templates are made by faces.py (YuNet + SFace, OpenCV), the home device's code, and kept in the home
+# device's own database (data/edge.db), never in this server's. In the prototype both run on one machine, so the server
+# starts faces.py in the vision environment and waits (about 1-2 s); in production the app would hand the video to
+# the home device. The server keeps only the aligned face crops the app shows as the person's views.
+VISION_PY = Path(os.environ.get("TT_VISION_PY") or HERE / ".venv-vision" / "bin" / "python")
+EDGE_DB = DATA / "edge.db"
+
+
+def enrol_face(tid, source_args, prefix):
+    """faces.py enrol-video / enrol-image for one person: {"n", "crops", ...} or {"n": 0, "error"}."""
+    if not VISION_PY.exists():
+        return {"n": 0, "error": "the vision environment (prototype/.venv-vision) is missing"}
+    try:
+        out = subprocess.run([str(VISION_PY), "-I", str(HERE / "faces.py"), *source_args, "--person", tid,
+                              "--db", str(EDGE_DB), "--crops-out", str(CROPS), "--prefix", prefix],
+                             capture_output=True, text=True, timeout=120, env={**os.environ, "TT_DATA": str(DATA)})
+        lines = out.stdout.strip().splitlines()
+        return json.loads(lines[-1]) if lines else {"n": 0, "error": out.stderr.strip()[-200:]}
+    except (subprocess.TimeoutExpired, ValueError, OSError) as e:
+        return {"n": 0, "error": str(e)[:200]}
+
+
+def forget_face(tid):
+    """The person was removed: their templates go from the home device's database too."""
+    if EDGE_DB.exists():
+        import sqlite3                                   # noqa: PLC0415
+        with sqlite3.connect(EDGE_DB) as db:
+            if db.execute("SELECT 1 FROM sqlite_master WHERE name = 'face_templates'").fetchone():
+                db.execute("DELETE FROM face_templates WHERE person_id = ?", (tid,))
 
 
 @app.post("/api/things/{tid}/face-video")
 def thing_face_video(tid: str, payload: dict = Body(...)):
-    """A person registered from a short video of their face: the video is kept as it came; the server cuts 8 views
-    spread through it (a square around the face's usual place, ffmpeg) as the person's views. The edge service, which
-    has the vision models, would compute the vectors from them; it has no face model yet."""
+    """A person registered from a short video of their face: the video is kept as it came; the home device's face
+    step (faces.py) samples it, finds the face in each frame (YuNet), aligns it and keeps up to 8 diverse SFace
+    templates in its own database. The aligned faces become the person's views in the app."""
     t = next((t for t in store.things() if t["id"] == tid), None)
     if not t:
         raise HTTPException(404, "unknown thing")
@@ -432,34 +645,98 @@ def thing_face_video(tid: str, payload: dict = Body(...)):
         dur = float(probe.stdout.strip())
     except ValueError:
         raise HTTPException(400, "not a video")
-    names = []
-    for i in range(ENROL_VIEWS):
-        name = f"{stamp}-{tid}-view{i}.jpg"
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{dur * (i + 0.5) / ENROL_VIEWS:.3f}", "-i", str(video), "-frames:v", "1",
-                        "-vf", "crop=iw:iw:0:max(0\\,min(ih-iw\\,ih*0.47-iw/2)),scale=480:480", "-q:v", "3", str(CROPS / name)], check=True)
-        names.append(name)
+    res = enrol_face(tid, ["enrol-video", "--video", str(video)], f"{stamp}-{tid}")
+    if not res.get("n"):
+        store.add_event("thing", f"{t['name']}: no clear face was found in the {dur:.0f} s video. Try again, in good light.",
+                        thing_id=tid)
+        raise HTTPException(422, "No clear face was found in the video: " + str(res.get("error", ""))[:120])
+    names = res["crops"]
     store.set_fingerprint(tid, {"n": len(names), "crops": names, "created": time.time(), "source": "video", "video": video.name,
-                                "duration": round(dur, 1), "model": ""})
-    store.add_event("thing", f"{t['name']} added from a {dur:.0f} s video of their face: {len(names)} views.", thing_id=tid, crop=names[0])
-    return {"ok": True, "n": len(names), "duration": round(dur, 1)}
+                                "duration": round(dur, 1), "model": "YuNet + SFace (opencv_zoo)", "faces": res["n"]})
+    store.add_event("thing", f"{t['name']} added from a {dur:.0f} s video of their face: {res['n']} face templates, kept on "
+                    "the home device.", thing_id=tid, crop=names[0])
+    return {"ok": True, "n": len(names), "duration": round(dur, 1), "faces": res["n"]}
+
+
+def power(did, on, **extra):
+    """Turn a device off (or on). The kit's plug: actions.run through the Altice MCP (a dry run unless
+    TT_LIVE_ACTIONS=1, which is never set). The integration: simulated, nothing is sent. Logs a device event."""
+    d = next((x for x in tt_devices() if x["id"] == did), None)
+    if not d:
+        raise HTTPException(404, "unknown device")
+    if d["kit"]:
+        res = actions.run("plug_on" if on else "plug_off")
+        sent = "sent to the platform" if res.get("live") else "not sent (dry run)"
+        ev = store.add_event("device", f"{d['name']} (powers {d['powers']}) turned {'on' if on else 'off'} from the app: {sent}.",
+                             action=res, **extra)
+    else:
+        ev = store.add_event("device", f"{d['name']} turned {'on' if on else 'off'} from the app ({d.get('via', 'integration').lower()}, simulated).",
+                             **extra)
+    tt_set(did, on)
+    return ev
 
 
 @app.post("/api/tt-devices/{did}/power")
 def set_tt_device(did: str, payload: dict = Body(...)):
-    """Turn a device off (or on) from the app. The kit's plug: through the Altice MCP (a dry run unless
-    TT_LIVE_ACTIONS=1). The integration: simulated, nothing is sent."""
-    d = next((x for x in tt_devices() if x["id"] == did), None)
-    if not d:
-        raise HTTPException(404, "unknown device")
-    on = bool(payload.get("on"))
-    if d["kit"]:
-        res = actions.run("plug_on" if on else "plug_off")
-        sent = "sent to the platform" if res.get("live") else "not sent (dry run)"
-        store.add_event("device", f"{d['name']} (powers {d['powers']}) turned {'on' if on else 'off'} from the app: {sent}.")
-    else:
-        store.add_event("device", f"{d['name']} turned {'on' if on else 'off'} from the app ({d.get('via', 'integration').lower()}, simulated).")
-    tt_set(did, on)
+    """Turn a device off (or on) from the app's device screen."""
+    power(did, bool(payload.get("on")))
     return {"ok": True, "devices": tt_devices()}
+
+
+def _alert(eid):
+    e = store.event(eid)
+    if not e or e["kind"] != "alert":
+        raise HTTPException(404, "no such alert")
+    return e
+
+
+@app.post("/api/alerts/{eid}/act")
+def alert_act(eid: str, payload: dict = Body(...)):
+    """The answer to one of an alert's questions: {"device": id, "on": false} for a card ("Turn off the lights?" Yes),
+    or {"act": "alarm_on"} for an ask ("Sound the alarm?" Yes). The alert keeps what was done."""
+    e = _alert(eid)
+    if payload.get("device"):
+        did, on = str(payload["device"]), bool(payload.get("on", False))
+        ev = power(did, on, alert_id=eid)
+        cards = [{**c, "state": "on" if on else "off", "at": time.time()} if c.get("device") == did else c
+                 for c in (e.get("cards") or [])]
+        return {"ok": True, "alert": store.update_event(eid, cards=cards), "event": ev}
+    if payload.get("act") == "alarm_on":
+        alarm = sound_alarm(e.get("title", "alert"))
+        store.set_meta("alarm", {**alarm_state(), "alert": eid})
+        asks = [{**a, "state": "done", "at": time.time()} if a.get("act") == "alarm_on" else a for a in (e.get("ask") or [])]
+        ev = store.add_event("alarm", "Alarm turned on from the app (simulated: the Altice alarm is never called).",
+                             alert_id=eid, action=alarm["action"])
+        return {"ok": True, "alert": store.update_event(eid, alarm=alarm, ask=asks), "event": ev}
+    raise HTTPException(400, "device or act is required")
+
+
+@app.post("/api/alerts/{eid}/alarm-off")
+def alert_alarm_off(eid: str):
+    """"Turn off the alarm" on an alert: the simulated alarm goes off; the Altice alarm is never called."""
+    e = _alert(eid)
+    res = actions.run("alarm_off")
+    store.set_meta("alarm", {"on": False, "since": 0.0, "alert": None, "off_at": time.time()})
+    alarm = e.get("alarm") if isinstance(e.get("alarm"), dict) else {"text": e.get("alarm") or ""}
+    ev = store.add_event("alarm", "Alarm turned off from the app (simulated: the Altice alarm is never called).",
+                         alert_id=eid, action=res)
+    return {"ok": True, "alert": store.update_event(eid, alarm={**alarm, "state": "off", "off_at": time.time()}), "event": ev}
+
+
+@app.post("/api/sim/phone")
+def sim_phone(payload: dict = Body(...)):
+    """A Family member's phone joins or leaves the home Wi-Fi: {"member": "filipe", "home": false}. Simulated: the
+    Altice router sees the phones, but no MCP tool exposes them yet (presence.py names the one we would propose)."""
+    mid = str(payload.get("member", ""))
+    if mid not in {m["id"] for m in presence.family()}:
+        raise HTTPException(404, "not a Family member")
+    presence.set_phone(mid, bool(payload.get("home")), source="sim")
+    return presence.snapshot()
+
+
+@app.get("/api/presence")
+def get_presence():
+    return presence.evaluate()
 
 
 @app.get("/api/edge/fingerprints")
@@ -564,23 +841,24 @@ def _stay_start(thing_id, place):
 # The door is the home's Contact sensor ('sensorState' 'alarm' means open). When the MCP session is live, the server
 # polls it every 4 s with the read-only tool get_home_devices; when it is not, the page's "Simulate: door opens" button
 # drives it (POST /api/sim/door). Both feed door_changed(), which starts the leave_without checks.
-DOOR = {"open": None, "source": "", "changed": 0.0, "live": False}
-PENDING = {}                    # leave_without rule id -> {"opened": ts, "due": ts}
+DOOR = {"open": None, "source": "", "changed": 0.0, "opened_at": 0.0, "live": False}
+PENDING = {}                    # leave_without rule id -> the check started when the door closed (check_leave_without)
 _door_lock = threading.Lock()
 POLL_S = float(os.environ.get("TT_DOOR_POLL_S", "4"))
 
 
-NO_EXIT_GRACE = 5   # seconds: with no camera at the entrance there is nothing to wait for
-
-
 def door_changed(is_open, source, baseline=False):
-    """baseline: the first live reading after the session comes up says where the door is, not that it moved."""
+    """baseline: the first live reading after the session comes up says where the door is, not that it moved.
+    Every change goes to the presence engine (an opening then a closing is LEAVING). The leave_without rules start on
+    the CLOSING after an opening: by then whoever went out is out."""
     now_ = time.time()
     with _door_lock:
         prev = DOOR["open"]
         if prev is is_open:
             return
         DOOR.update(open=is_open, source=source, changed=now_)
+        if is_open:
+            DOOR["opened_at"] = now_
     if baseline or (source == "live" and prev is None):
         return
     sim = source == "sim"
@@ -588,17 +866,17 @@ def door_changed(is_open, source, baseline=False):
         store.set_device_status("contactSensor", "Open" if is_open else "Closed")
     store.add_event("door", ("Simulated: the door " if sim else "The door ") + ("opened" if is_open else "closed")
                     + " (Contact sensor).", sim=sim, open=is_open, device="Contact sensor")
-    if not is_open:
+    count_before = presence.s.get("count", 0)
+    presence.door(is_open)
+    if is_open or not prev:
         return
-    # grace_s is the time to see the thing go out at an entrance camera; with none, only a few seconds
-    entrance = any(place_matches("entrance", p) for p in store.camera_places())
-    for r in store.active_rules():          # closed (or unknown, for the simulation) -> open
+    opened = DOOR["opened_at"] or now_
+    count_before = (presence.s.get("leaving") or {}).get("count_before", count_before)   # the count as the door opened
+    for r in store.active_rules():          # open -> closed
         if (r.get("kind") == "leave_without" and r["id"] not in PENDING
                 and now_ - r.get("last_fired", 0) >= r.get("cooldown_s", 300)):
-            grace = float(r.get("grace_s") or 60)
-            if not (entrance or r.get("exit_place")):
-                grace = min(grace, NO_EXIT_GRACE)
-            PENDING[r["id"]] = {"opened": now_, "due": now_ + grace}
+            PENDING[r["id"]] = {"stage": "who", "opened": opened, "closed": now_, "count_before": count_before,
+                                "decide_by": now_ + T["phone_lag_s"]}
 
 
 @app.post("/api/sim/door")
@@ -660,49 +938,200 @@ def last_place_text(o, lang):
     return f"Last seen {where} ({o['room']}), {when} at {hm(o['ts'])}."
 
 
-def check_leave_without(r, p):
-    """The door opened grace_s ago: alert if the thing is still at home, with its photo and its last place.
-    "At home" means its newest sighting is anywhere but the way out; it need not be recent, because the last known
-    place stays home until a camera sees the thing going out. "Going out" means seen at an entrance camera (a place
-    named entrance, hall, door, entrada...) from grace_s before the door opened until now.
-    Limits of this simple version, on purpose:
-    - the contact sensor says the door opened, not who opened it nor which way: someone arriving also counts;
-    - without a camera at the entrance nothing is ever seen going out, so every opening while the thing is at home
-      alerts, also when the user did take it;
-    - a thing taken out unseen still counts as at home until a camera sees it again;
-    - a thing the camera has never seen gives no alert (a line in the activity instead): there is no last place."""
+def check_leave_without(r, p, now_):
+    """A leave_without check, started when the door CLOSED after an opening (door_changed). Returns True when done.
+    1. who: did a Family member leave? A phone left the home Wi-Fi since the door opened, or the presence count dropped
+       below the count as the door opened. A phone joining instead is an arrival: no check. Neither within phone_lag_s:
+       nobody left, no check. A thing seen at an entrance camera as the door opened went out with them: no check.
+    2. check: the edge looks for the thing now, over a few frames, whatever the motion (an active check). Seen at
+       home: the alert, with that picture and the place. Not visible: "unsure" in the activity, no alert, no alarm.
+       No answer within check_timeout_s (the camera service is off): "unsure" too."""
     tid = r.get("thing_id")
     thing = next((t for t in store.things() if t["id"] == tid), None)
-    last = store.last_seen(tid) if thing else None
-    if not last:
-        what = thing["name"] if thing else "the thing"
-        store.add_event("info", f"{r['title']}: the door opened, but the camera has never seen {what}, so there is no "
-                        "last place to check.", rule_id=r["id"])
+    what = thing["name"] if thing else "the thing"
+    if p["stage"] == "who":
+        last = store.last_seen(tid) if thing else None
+        if not last:
+            store.add_event("info", f"{r['title']}: the door closed, but the camera has never seen {what.lower()}, so "
+                            "there is no place to check.", rule_id=r["id"])
+            return True
+        grace = float(r.get("grace_s") or 60)
+        if is_exit(r, last) and last["ts"] >= p["opened"] - grace:
+            store.add_event("ok", f"{what} was seen at the {last['room']} as the door opened: it went out.",
+                            rule_id=r["id"], thing_id=tid, crop=last.get("crop"))
+            return True
+        since = p["opened"] - 5
+        left, came = presence.left_since(since), presence.arrived_since(since)
+        dropped = presence.s["state"] != LEAVING and presence.s.get("count", 0) < p["count_before"]
+        if came and not left:
+            store.add_event("info", f"{r['title']}: the door opened and closed as {join(came)} arrived: no check.",
+                            rule_id=r["id"])
+            return True
+        if left or dropped:
+            who = (f"{join(left)} left (phone off the home Wi-Fi)" if left
+                   else f"someone left (people at home: {p['count_before']} → {presence.s.get('count', 0)})")
+            cid = f"c{int(now_ * 1000)}"
+            CHECKS[cid] = {"thing_id": tid, "name": what, "query": (thing.get("description") or what).lower(),
+                           "frames": 3, "asked": now_, "result": None}
+            p.update(stage="check", check=cid, who=who, left=left, usual=last["zone_name"], room=last["room"],
+                     due=now_ + T["check_timeout_s"])
+            store.add_event("info", f"{r['title']}: {who}. Checking the {last['zone_name']} for {what.lower()}.",
+                            rule_id=r["id"], thing_id=tid)
+            return False
+        if now_ >= p["decide_by"]:
+            store.add_event("info", f"{r['title']}: the door opened and closed, but nobody left (no phone left the "
+                            "home Wi-Fi, the count did not drop): no check.", rule_id=r["id"])
+            return True
+        return False
+    c = CHECKS.get(p.get("check"), {})
+    res = c.get("result")
+    if res is None and now_ < p["due"]:
+        return False
+    CHECKS.pop(p.get("check"), None)
+    if res is None:
+        store.add_event("unsure", f"{r['title']}: unsure. {p['who'][0].upper() + p['who'][1:]}, but the camera service did not "
+                        f"answer the check of the {p['usual']}: no alert.", rule_id=r["id"], thing_id=tid)
+        return True
+    if not res["seen"]:
+        store.add_event("unsure", f"{r['title']}: unsure. {what} was not visible on the {p['usual']} after "
+                        f"{p['who'].split(' (')[0]}: maybe it went with them. No alert.", rule_id=r["id"], thing_id=tid)
+        return True
+    place = res["place"] if res["place"] not in ("", "room") else p["usual"]
+    text = f"The door closed and your {what.lower()} is still on the {place}." + (" The alarm is on." if r.get("alarm") else "")
+    thing_crop = (store.last_seen(tid) or {}).get("crop")
+    fire(r, crop=thing_crop or res["crop"], picture=res["crop"] or thing_crop, text=text, thing_id=tid, place=place, room=p["room"],
+         evidence=f"Door opened at {hm(p['opened'])}, closed at {hm(p['closed'])}; {p['who']}; the camera saw "
+                  f"{what.lower()} on the {place} ({res.get('score')}, {res.get('frames')} frames).")
+    return True
+
+
+POLICE = {"kind": "police", "title": "Possible intrusion", "number": "112",
+          "text": "Someone who isn't Family is at home while the family is away. We recommend calling the police."}
+
+
+def person_picture(camera):
+    """The unknown face's person crop the edge sent with its latest analysis of this camera, saved now that a rule
+    fires; None if there is none from the last minute."""
+    ts, b64 = _unknown_crop.get(camera, (0, None))
+    if not b64 or time.time() - ts > 60:
+        return None
+    name = f"{time.strftime('%Y%m%d-%H%M%S')}-unknown-person.jpg"
+    (CROPS / name).write_bytes(base64.b64decode(b64))
+    return name
+
+
+def check_security(r, now_):
+    """'Sound the alarm when someone who isn't Family comes in' (a rule marked unknown). Per camera, from the edge's
+    face recognition (presence runs):
+    - a visible face that matches no registered person on unknown_runs consecutive analyses, with the Family away:
+      the alarm (simulated) and the police suggestion; with a Family member at home (a guest, most likely): a message,
+      no alarm. A Family member's face never counts: it is a known identity, not "unknown".
+    - a person whose face is not seen, on unknown_runs consecutive analyses, with the Family away: an alert that asks
+      ("Sound the alarm?"), never the alarm by itself."""
+    need, fam_home = T["unknown_runs"], presence.family_home()
+    names = presence.people()
+    for cam in list(presence.s["cameras"]):
+        n, since = presence.run(cam, "unknown")
+        if n >= need and r.get("episode", 0) < since:
+            store.update_rule(r["id"], episode=since)
+            pic = person_picture(cam)
+            if fam_home:
+                fire(r, alarm=False, action="notify", picture=pic, unknown=True, camera=cam,
+                     text=f"Someone who isn't Family is at home with {join(names.get(m, m) for m in fam_home)}.",
+                     evidence=f"An unknown face on {n} analyses in a row ({cam}); Family at home, so no alarm.")
+            else:
+                took = [e for e in store.events(40) if e["kind"] == "handled" and e.get("taken") and e["ts"] >= since - 60]
+                sugg = dict(POLICE)
+                if took:
+                    sugg["text"] = ("An unknown person came in and took something while the family is away. "
+                                    "We recommend calling the police.")
+                fire(r, picture=pic, unknown=True, camera=cam, suggestion=sugg,
+                     text="Someone who isn't Family came in." + (" The alarm is on." if r.get("alarm") else ""),
+                     evidence=f"An unknown face on {n} analyses in a row ({cam}); the family's phones are away and no "
+                              "Family face was seen.")
+            continue
+        n2, since2 = presence.run(cam, "no_face")
+        if n2 >= need and not fam_home and r.get("episode_noface", 0) < since2:
+            store.update_rule(r["id"], episode_noface=since2)
+            fire(r, alarm=False, action="notify", title="Someone is home", camera=cam,
+                 text="Someone is at home, and the camera has not seen their face. The family is away.",
+                 ask=[{"act": "alarm_on", "label": "Sound the alarm?", "state": "ask"}],
+                 evidence=f"A person with no visible face on {n2} analyses in a row ({cam}); the family's phones are away.")
+
+
+def check_empty_home(rules, now_):
+    """nobody_devices_on and door_open_nobody, on the presence engine's EMPTY: one alert per incident. When devices are
+    still on and the door is open, the alert waits for the longer grace and carries both: the devices to turn off and
+    the door banner (with the simulated alarm if the door rule asks for it)."""
+    if presence.s["state"] != EMPTY:
         return
-    grace = float(r.get("grace_s") or 60)
-    if is_exit(r, last) and last["ts"] >= p["opened"] - grace:
-        store.add_event("ok", f"{thing['name']} was seen at the {last['room']} as the door opened: it went out.",
-                        rule_id=r["id"], thing_id=tid, crop=last.get("crop"))
+    empty_since = presence.s["since"]
+    dev_rules = [r for r in rules if r.get("kind") == "nobody_devices_on"]
+    door_rules = [r for r in rules if r.get("kind") == "door_open_nobody"]
+    grace = lambda r: float(r.get("grace_s") or float(r.get("minutes") or 0) * 60 or 10)
+    on = [d for d in tt_devices() if d["on"]]
+    door_open = DOOR["open"] is True
+    dev_due = [r for r in dev_rules if on and r.get("asked_after", 0) < empty_since and now_ - empty_since >= grace(r)]
+    dev_wait = [r for r in dev_rules if on and r.get("asked_after", 0) < empty_since and now_ - empty_since < grace(r)]
+    door_due = [r for r in door_rules if door_open and r.get("door_seen", 0) < DOOR["changed"]
+                and now_ - max(empty_since, DOOR["changed"]) >= grace(r)]
+    if door_due and dev_wait:
+        return                                   # one alert: wait for the devices' grace
+    if not dev_due and not door_due:
         return
-    fire(r, crop=last.get("crop"), text=f"{r['message']} {last_place_text(last, r.get('lang'))}",
-         evidence=f"Door opened at {hm(p['opened'])}; not seen going out.", thing_id=tid,
-         place=last["zone_name"], room=last["room"], seen_at=last["ts"])
+    door = {"open": True, "text": "The door is open and nobody is home."} if door_open and (door_due or door_rules) else None
+    sound = any(r.get("alarm") for r in door_due)
+    evidence = presence.s["reason"]
+    if dev_due:
+        r = dev_due[0]
+        for x in dev_due:
+            store.update_rule(x["id"], asked_after=empty_since)
+        for x in door_due:
+            store.update_rule(x["id"], door_seen=DOOR["changed"], last_fired=now_)
+        cards = [{"device": d["id"], "name": d["name"], "kind": d["type"], "state": "on",
+                  "label": "Turn off the AC?" if d["type"] == "ac" else "Turn off the lights?" if "light" in (d.get("powers") or "").lower()
+                  else f"Turn off {d.get('powers') or d['name']}?"} for d in on]
+        text = f"Everyone left, and {len(on)} thing{'s are' if len(on) > 1 else ' is'} still on." + (" The door is open." if door else "")
+        e = fire(r, title="Nobody is home", text=text, alarm=sound, cards=cards, door=door, devices=[d["id"] for d in on],
+                 camera=store.camera_room(),
+                 rule_ids=[x["id"] for x in dev_due + door_due], evidence=evidence + " On: " + ", ".join(
+                     d["name"] + (f" ({d['powers']})" if d.get("powers") else "") for d in on) + ".", ask_off=True)
+    else:
+        r = door_due[0]
+        for x in door_due:
+            store.update_rule(x["id"], door_seen=DOOR["changed"])
+        e = fire(r, door={"open": True, "text": "The door is open and nobody is home."}, camera=store.camera_room(),
+                 evidence=f"Door open since {hm(DOOR['changed'])}. {evidence}")
+    ask_snapshot(e)
 
 
 def rules_engine():
-    """Evaluates the local rules every 2 s against the memory, the door and the edge's presence signals."""
+    """Evaluates the local rules every 2 s against the memory, the door and the presence engine."""
     while True:
         now_ = time.time()
+        try:
+            presence.evaluate()                         # time passes: LEAVING ends, faces and sightings grow old
+            rules = [r for r in store.active_rules() if r.get("engine") == "local"]
+            check_empty_home([r for r in rules if now_ - r.get("last_fired", 0) >= r.get("cooldown_s", 300)], now_)
+        except Exception as e:
+            print("presence error", e)
+        for k, v in list(CHECKS.items()):               # a check nobody is waiting for any more
+            if now_ - v["asked"] > 300:
+                CHECKS.pop(k, None)
+        for k, v in list(SNAPSHOTS.items()):
+            if now_ - v["asked"] > 60:
+                SNAPSHOTS.pop(k, None)
         for r in store.active_rules():
             if r.get("engine") != "local":
                 continue
-            if r.get("kind") == "leave_without":        # started by the door, not by the clock
+            if r.get("kind") == "leave_without":        # started by the door closing, not by the clock
                 p = PENDING.get(r["id"])
-                if p and now_ >= p["due"]:
-                    PENDING.pop(r["id"], None)
+                if p:
                     try:
-                        check_leave_without(r, p)
+                        if check_leave_without(r, p, now_):
+                            PENDING.pop(r["id"], None)
                     except Exception as e:
+                        PENDING.pop(r["id"], None)
                         print("rule error", r.get("id"), e)
                 continue
             if now_ - r.get("last_fired", 0) < r.get("cooldown_s", 300):
@@ -737,33 +1166,23 @@ def rules_engine():
                         if start and now_ - start >= mins * 60:
                             fire(r, crop=last.get("crop"), evidence=f"On the {place} for {int((now_ - start) // 60)} min.")
                 elif kind == "nobody_for" and edge_online():
-                    quiet = now_ - max(EDGE["last_motion"], EDGE["last_person"], r.get("armed_at", 0))
+                    quiet = now_ - max(EDGE["last_motion"], presence.s["last_person"], r.get("armed_at", 0))
                     if quiet >= mins * 60:
                         fire(r, evidence=f"No movement for {int(quiet // 60)} min.")
                         store.update_rule(r["id"], armed_at=now_)
-                elif kind == "someone_arrives" and edge_online():
-                    lp = EDGE["last_person"]
+                elif kind == "someone_arrives" and r.get("unknown"):
+                    check_security(r, now_)
+                elif kind == "someone_arrives":
+                    # anyone arrives: the presence engine's last person seen, after none was seen for `minutes`
+                    lp = presence.s["last_person"]
                     if lp > r.get("seen_person", 0) and lp - r.get("seen_person", 0) > max(mins, 5) * 60:
                         if r.get("seen_person"):
-                            fire(r, evidence="Someone arrived after the room was empty.")
+                            fire(r, evidence="Someone arrived after the room was empty. " + presence.s["reason"])
                         store.update_rule(r["id"], seen_person=lp)
                     elif lp > r.get("seen_person", 0):
                         store.update_rule(r["id"], seen_person=lp)
-                elif kind == "nobody_devices_on" and edge_online():
-                    # nobody seen by the camera for grace_s seconds, and something is still on: ask once per empty spell
-                    lp = EDGE["last_person"]
-                    on = [d for d in tt_devices() if d["on"]]
-                    if on and lp and now_ - lp >= (r.get("grace_s") or mins * 60 or 10) and r.get("asked_after", 0) < lp:
-                        store.update_rule(r["id"], asked_after=lp)
-                        fire(r, text=f"Everyone left, and {len(on)} thing{'s are' if len(on) > 1 else ' is'} still on.",
-                             evidence=f"No one seen since {hm(lp)}; on: " + ", ".join(d["name"] + (f" ({d['powers']})" if d.get("powers") else "") for d in on) + ".",
-                             devices=[d["id"] for d in on], ask_off=True)
-                elif kind == "door_open_nobody" and edge_online():
-                    # the contact sensor says open, and nobody has been seen for grace_s seconds since it opened
-                    if DOOR["open"] and now_ - max(DOOR["changed"], EDGE["last_person"]) >= (r.get("grace_s") or mins * 60 or 5) \
-                            and r.get("door_seen", 0) < DOOR["changed"]:
-                        store.update_rule(r["id"], door_seen=DOOR["changed"])
-                        fire(r, evidence=f"Door open since {hm(DOOR['changed'])}; nobody seen since.", door=True)
+                elif kind in ("nobody_devices_on", "door_open_nobody"):
+                    pass                                # check_empty_home, above: one alert per empty-home incident
                 elif kind == "seen_in":
                     last = store.last_seen(r.get("thing_id"))
                     if last and now_ - last["ts"] < 10 and (not r.get("place") or last["zone_name"] == r["place"]):
@@ -786,6 +1205,8 @@ def state():
     s["enrol"] = dict(ENROL) or None
     s["tt_devices"] = tt_devices()
     s["door"] = dict(DOOR)
+    s["presence"] = presence.snapshot()
+    s["alarm"] = alarm_state()
     return s
 
 
@@ -820,6 +1241,7 @@ def thing_sightings(tid: str):
 @app.delete("/api/things/{tid}")
 def delete_thing(tid: str):
     store.delete_thing(tid)
+    forget_face(tid)
     return {"ok": True}
 
 
@@ -1031,6 +1453,8 @@ def delete_rule(rid: str):
 @app.post("/api/reset")
 def reset():
     store.reset()
+    presence.reset()
+    HELD.clear()
     return {"ok": True}
 
 

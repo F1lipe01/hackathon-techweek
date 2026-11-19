@@ -87,6 +87,9 @@ class Presence:
         self.store, self.clock = store, clock
         self.mode = os.environ.get("TT_TIMINGS", "demo") if timings is None else "custom"
         self.t = dict(TIMINGS.get(self.mode, TIMINGS["demo"]) if timings is None else timings)
+        for k in self.t:                    # TT_TIMING_PHONE_LAG_S=4 and the like: the tests shorten single waits
+            if os.environ.get(f"TT_TIMING_{k.upper()}") and timings is None:
+                self.t[k] = float(os.environ[f"TT_TIMING_{k.upper()}"])
         with store.lock, store.db:
             store.db.executescript(SCHEMA)
         row = self._q("SELECT data FROM presence_state WHERE id = 1")
@@ -302,8 +305,10 @@ class Presence:
         return [names[m] for m, p in self.phones().items() if m in names and not p["home"] and p["changed"] >= ts]
 
     def arrived_since(self, ts):
+        """Family members whose phone joined the Wi-Fi at or after ts (a member just added is not an arrival)."""
         names = {m["id"]: m["name"] for m in self.family()}
-        return [names[m] for m, p in self.phones().items() if m in names and p["home"] and p["changed"] >= ts]
+        return [names[m] for m, p in self.phones().items()
+                if m in names and p["home"] and p["changed"] >= ts and p["source"] != "sim-default"]
 
     def run(self, camera, key):
         """(consecutive analyses, since when) of an unknown face ('unknown') or of a person with no face ('no_face')."""

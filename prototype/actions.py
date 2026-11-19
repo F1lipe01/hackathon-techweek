@@ -42,12 +42,20 @@ CALLS = {
 LABELS = {
     "notify": "aviso no telemóvel", "light_red": "luz vermelha", "light_blue": "luz azul", "light_green": "luz verde",
     "light_off": "desligar a luz", "plug_off": "desligar a tomada", "plug_on": "ligar a tomada",
+    "alarm_on": "alarme (simulado)", "alarm_off": "desligar o alarme (simulado)",
 }
+# The alarm is ThingTracker's own simulated state, ALWAYS: no MCP call is ever built for it, live or not (AGENTS.md
+# rule 1: never touch the alarm; patch_home_security_status is a write tool and only changes the arming mode anyway).
+SIMULATED = {"alarm_on": "simulated: the alarm sounds in the app only; the Altice alarm is never called",
+             "alarm_off": "simulated: the alarm is off in the app; the Altice alarm is never called"}
 
 
 def run(action):
     """Returns {"action", "label", "live", "calls": [{"tool", "arguments", "result"}], "result"}; never raises.
     "tool" and "arguments" repeat the first call, for older readers of the event log."""
+    if action in SIMULATED:
+        return {"action": action, "label": LABELS[action], "live": False, "calls": [], "tool": None, "arguments": None,
+                "result": SIMULATED[action]}
     if action == "notify" or action not in CALLS:
         return {"action": action, "label": LABELS.get(action, action), "live": False, "calls": [], "tool": None,
                 "arguments": None, "result": "notification only"}

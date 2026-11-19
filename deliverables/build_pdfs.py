@@ -29,8 +29,8 @@ ROOT = Path(__file__).resolve().parents[1]
 HEAVY = ROOT / "video" / "tools" / "heavy.sh"
 PDF = "docs/business-case/build_pdf.py"
 STEPS = [
-    ["docs/architecture/build_diagram.py", "--lang", "en"],
-    ["docs/architecture/build_sequence.py", "--lang", "en"],
+    ["docs/architecture/build_diagram.py", "--lang", "en"],      # still copied by the submitted report's figuras.py
+    ["docs/architecture/build_views.py", "--lang", "en"],        # the architecture views of docs/14 and docs/15
     ["deliverables/executive-summary/figuras.py", "--lang", "en"],
     ["deliverables/executive-summary/build.py", "--lang", "en"],
     ["docs/business-case/build_graficos.py", "--lang", "en"],

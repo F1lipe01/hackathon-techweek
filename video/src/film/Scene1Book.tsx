@@ -21,13 +21,13 @@ import { useJson } from "../presentation/assets";
 import { Brackets, Phone, SCREEN, clamp, phoneWidth } from "../presentation/ui";
 import { S23 as EndCard } from "../presentation/shots/End";
 
-const { fontFamily: SERIF } = loadFont("normal", { weights: ["400"], subsets: ["latin", "latin-ext"] });
-const { fontFamily: ROBOTO } = loadRoboto("normal", { weights: ["400", "500", "700"], subsets: ["latin"] });
-const { fontFamily: MONO } = loadMono("normal", { weights: ["500"], subsets: ["latin"] });
-const SANS = theme.fonts.display;
-const PAPER = "#F3F0EA", INK = "#1E1D1A", ACCENT = "#1C9A7E";
-const ez = (f: number, a: number, b: number, e = theme.ease.inOut) => interpolate(f, [a, b], [0, 1], { ...clamp, easing: e });
-const lerp = (a: number, b: number, u: number) => a + (b - a) * u;
+export const { fontFamily: SERIF } = loadFont("normal", { weights: ["400"], subsets: ["latin", "latin-ext"] });
+export const { fontFamily: ROBOTO } = loadRoboto("normal", { weights: ["400", "500", "700"], subsets: ["latin"] });
+export const { fontFamily: MONO } = loadMono("normal", { weights: ["500"], subsets: ["latin"] });
+export const SANS = theme.fonts.display;
+export const PAPER = "#F3F0EA", INK = "#1E1D1A", ACCENT = "#1C9A7E";
+export const ez = (f: number, a: number, b: number, e = theme.ease.inOut) => interpolate(f, [a, b], [0, 1], { ...clamp, easing: e });
+export const lerp = (a: number, b: number, u: number) => a + (b - a) * u;
 type Rect = { x: number; y: number; w: number; h: number };
 const lerpRect = (a: Rect, b: Rect, u: number): Rect => ({ x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u), w: lerp(a.w, b.w, u), h: lerp(a.h, b.h, u) });
 
@@ -62,16 +62,16 @@ const ALARM_OFF = T.tap + 2 + Math.round((ALARM_OFF_T - ALERT_OPEN) * 30);
 // and its real status and navigation bars (cut from its screenshot) fixed above whatever the screen shows. The screen
 // is drawn in content px: 1206 × 2680 (the screenshots × 1206/720). The app recordings (1206 × 2622, their iPhone status
 // row and home bar hidden by record_app.mjs) sit REC_Y higher, so the app starts right under the real status bar.
-const SCR_W = 1206, SCR_H = 2680, PK = SCR_W / 720;
-const px = (x: number) => x * PK, py = (y: number) => y * PK;
-const SB_H = py(84), NAV_Y = py(1504);                  // the status bar's height and the navigation bar's top, measured on the screenshot
-const REC_Y = -21;
-const PH = 900, BEZ = 9, SHC = PH - 2 * BEZ, KS = SHC / SCR_H, SWC = SCR_W * KS, PW = SWC + 2 * BEZ;
-const phoneBox = (cx: number) => ({ x: cx - PW / 2, y: 540 - PH / 2 });
-const OVER = 1.01;   // the screen's content is drawn 1 % larger, centred, so no edge shows while the phone moves
-const scr = (cx: number, sx: number, sy: number) => ({ x: phoneBox(cx).x + BEZ + KS * (OVER * sx - ((OVER - 1) / 2) * SCR_W),
+export const SCR_W = 1206, SCR_H = 2680, PK = SCR_W / 720;
+export const px = (x: number) => x * PK, py = (y: number) => y * PK;
+export const SB_H = py(84), NAV_Y = py(1504);                  // the status bar's height and the navigation bar's top, measured on the screenshot
+export const REC_Y = -21;
+export const PH = 900, BEZ = 9, SHC = PH - 2 * BEZ, KS = SHC / SCR_H, SWC = SCR_W * KS, PW = SWC + 2 * BEZ;
+export const phoneBox = (cx: number) => ({ x: cx - PW / 2, y: 540 - PH / 2 });
+export const OVER = 1.01;   // the screen's content is drawn 1 % larger, centred, so no edge shows while the phone moves
+export const scr = (cx: number, sx: number, sy: number) => ({ x: phoneBox(cx).x + BEZ + KS * (OVER * sx - ((OVER - 1) / 2) * SCR_W),
   y: phoneBox(cx).y + BEZ + KS * (OVER * sy - ((OVER - 1) / 2) * SCR_H) });
-const CX = { centre: 960, right: 1370, left: 560, cRight: 1300 };
+export const CX = { centre: 960, right: 1370, left: 560, cRight: 1300 };
 type CK = { at: number; s: number; x: number; y: number };
 const H0 = { s: 1, x: 960, y: 540 };
 const BTN = scr(CX.right, 603, 1366 + REC_Y), FIELDS = scr(CX.right, 603, 1560 + REC_Y), TXT = scr(CX.right, 603, 1000 + REC_Y), NOTE = scr(CX.cRight, 603, SB_H + 14 + px(273) / 2);
@@ -89,13 +89,13 @@ const camAt = (f: number) => {
   return { s: Math.exp(lerp(Math.log(a.s), Math.log(b.s), u)), x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u) };
 };
 const camCss = (f: number) => { const c = camAt(f); return `translate(960px,540px) scale(${c.s}) translate(${-c.x}px,${-c.y}px)`; };
-const Grain: React.FC = () => (
+export const Grain: React.FC = () => (
   <svg width={1920} height={1080} style={{ position: "absolute", inset: 0, opacity: 0.05, mixBlendMode: "multiply", pointerEvents: "none" }}>
     <filter id="paper"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves={2} stitchTiles="stitch" /><feColorMatrix type="saturate" values="0" /></filter>
     <rect width="100%" height="100%" filter="url(#paper)" />
   </svg>
 );
-type BarMode = "home" | "splash" | "app" | "none";
+export type BarMode = "home" | "splash" | "app" | "none";
 const ClockText: React.FC<{ time: string; color: string }> = ({ time, color }) => (
   <span style={{ position: "absolute", left: px(77), top: px(24.5), fontFamily: ROBOTO, fontWeight: 500, fontSize: px(31), lineHeight: 1, color, letterSpacing: "0.01em" }}>{time}</span>
 );
@@ -116,7 +116,7 @@ const Bars: React.FC<{ mode: BarMode; time: string }> = ({ mode, time }) => {
   );
 };
 /** The phone at a centre x: a dark body with a thin even bezel, side buttons, the screen and its punch-hole camera. */
-const PhoneAt: React.FC<{ cx: number; shadow?: number; bars: { mode: BarMode; time: string }; children: React.ReactNode }> = ({ cx, shadow = 0, bars, children }) => {
+export const PhoneAt: React.FC<{ cx: number; shadow?: number; bars: { mode: BarMode; time: string }; children: React.ReactNode }> = ({ cx, shadow = 0, bars, children }) => {
   const { x, y } = phoneBox(cx);
   return (
     <div style={{ position: "absolute", left: x, top: y, width: PW, height: PH, filter: shadow ? `drop-shadow(0 ${40 * shadow}px ${70 * shadow}px rgba(0,0,0,${0.45 * shadow}))` : undefined }}>
@@ -136,7 +136,7 @@ const PhoneAt: React.FC<{ cx: number; shadow?: number; bars: { mode: BarMode; ti
     </div>
   );
 };
-const Rec: React.FC<{ src: string; from: number; rate?: number; w?: number; h?: number; top?: number }> = ({ src, from, rate = 1, w = SCR_W, h = 2622, top = REC_Y }) => (
+export const Rec: React.FC<{ src: string; from: number; rate?: number; w?: number; h?: number; top?: number }> = ({ src, from, rate = 1, w = SCR_W, h = 2622, top = REC_Y }) => (
   <OffthreadVideo src={staticFile(src)} muted trimBefore={Math.round(from * 30)} playbackRate={rate} style={{ position: "absolute", left: (SCR_W - w) / 2, top, width: w, height: h }} />
 );
 /** A serif line streamed word by word: each new word arrives in the accent and settles into ink. */
@@ -157,11 +157,11 @@ const Line: React.FC<{ text: string; from: number; to: number; top?: number; lef
 
 /* ------------------------------------------------------------------ the team's phone: its screenshots and recordings */
 const PhoneImg: React.FC<{ src: string }> = ({ src }) => <Img src={staticFile(src)} style={{ position: "absolute", left: 0, top: 0, width: SCR_W, height: SCR_H }} />;
-const Home: React.FC = () => <PhoneImg src="phone/home.jpg" />;
+export const Home: React.FC = () => <PhoneImg src="phone/home.jpg" />;
 /** One touch mark that glides between the taps like a pointer: it eases into each tap (slowing almost to a stop),
  *  presses, and moves on; between moves it keeps a slight drift so it never quite stops. `hide` lists frame ranges. */
-type Way = { f: number; x: number; y: number; press?: boolean };
-const Cursor: React.FC<{ ways: Way[]; hide?: [number, number][]; show?: [number, number] }> = ({ ways, hide = [], show }) => {
+export type Way = { f: number; x: number; y: number; press?: boolean };
+export const Cursor: React.FC<{ ways: Way[]; hide?: [number, number][]; show?: [number, number] }> = ({ ways, hide = [], show }) => {
   const f = useCurrentFrame();
   if (show && (f < show[0] || f > show[1])) return null;
   const fade = Math.min(1, ...hide.map(([a, b]) => (f < a - 6 || f > b + 6 ? 1 : f < a ? (a - f) / 6 : f > b ? (f - b) / 6 : 0)),
@@ -182,7 +182,7 @@ const ADD_TAPS = { add: [2.405, 201, 440], pick: [4.405, 201, 525.6], photos: [6
 const ALERT_TAP_OFF = [6.54, 201, 596] as const;   // app points; screen y = 3 × y + REC_Y
 /** The system's opening: the app's window grows out of what was tapped, under the phone's bars; inside, the Altice
  *  app's real loading (a screen recording of the team's phone), then the app. */
-const Grow: React.FC<{ at: number; from: [number, number, number, number]; r0: number; splash?: boolean; appAt?: number; children?: React.ReactNode }> = ({ at: a, from, r0, splash = true, appAt = 34, children }) => {
+export const Grow: React.FC<{ at: number; from: [number, number, number, number]; r0: number; splash?: boolean; appAt?: number; children?: React.ReactNode }> = ({ at: a, from, r0, splash = true, appAt = 34, children }) => {
   const f = useCurrentFrame();
   if (f < a) return null;
   const u = ez(f, a, a + 14);
@@ -199,8 +199,8 @@ const Grow: React.FC<{ at: number; from: [number, number, number, number]; r0: n
     </div>
   );
 };
-const ICON: [number, number, number, number] = [px(390), py(708), px(108), px(108)];   // SmartHome Beta on the home screen
-const CARD: [number, number, number, number] = [px(28), SB_H + 14, px(664), px(273)];   // under the status bar; size measured on the team's phone
+export const ICON: [number, number, number, number] = [px(390), py(708), px(108), px(108)];   // SmartHome Beta on the home screen
+export const CARD: [number, number, number, number] = [px(28), SB_H + 14, px(664), px(273)];   // under the status bar; size measured on the team's phone
 /** The notification as the team's phone draws it, measured on a real one with a picture (19 Nov, 720 px wide): a light
  *  card (#F3F3F3, radius 44); the app's round icon (48) at left; "app • time" in grey; the picture (96, radius 10) at
  *  the top right beside the round expand button (48, #CBD6C6); the title (medium) and the whole message below. */
@@ -309,17 +309,17 @@ const ALARM = [0.3135, 0.3023, 0.3243, 0.3115];
 const DOOR: [number, number][] = [[0.339, 0.268], [0.435, 0.289], [0.414, 0.651], [0.321, 0.637]];
 const BEEPS: [number, number][] = [[0.09, 0.73], [1.08, 1.81], [2.42, 2.69], [3.48, 4.5], [4.79, 6.2]];
 const BEEP_LEN = 6.67;
-const beepAt = (s: number) => { const m = s % BEEP_LEN; return Math.max(0, ...BEEPS.map(([a, b]) => Math.min(interpolate(m, [a - 0.03, a + 0.12], [0, 1], clamp), interpolate(m, [b - 0.05, b + 0.3], [1, 0], clamp)))); };
-const KIND = { thing: "#2ABE9E", person: "#FFFFFF", device: "#8B7CF6", alarm: "#E5322D", door: "#C9D1DB", open: "#E8710A", ok: "#1FA37F" };
+export const beepAt = (s: number) => { const m = s % BEEP_LEN; return Math.max(0, ...BEEPS.map(([a, b]) => Math.min(interpolate(m, [a - 0.03, a + 0.12], [0, 1], clamp), interpolate(m, [b - 0.05, b + 0.3], [1, 0], clamp)))); };
+export const KIND = { thing: "#2ABE9E", person: "#FFFFFF", device: "#8B7CF6", alarm: "#E5322D", door: "#C9D1DB", open: "#E8710A", ok: "#1FA37F" };
 type Det = { frames: { t: number; boxes: { label: string; score: number; box: number[] }[] }[] };
-const Label: React.FC<{ x: number; y: number; kind: string; text?: string; color: string; dark?: boolean; below?: boolean }> = ({ x, y, kind, text, color, dark, below }) => (
+export const Label: React.FC<{ x: number; y: number; kind: string; text?: string; color: string; dark?: boolean; below?: boolean }> = ({ x, y, kind, text, color, dark, below }) => (
   <div style={{ position: "absolute", left: x, top: y, transform: below ? undefined : "translateY(-100%)", marginTop: below ? 6 : -6, display: "flex", borderRadius: 7,
     overflow: "hidden", fontFamily: SANS, fontWeight: 600, fontSize: 21, whiteSpace: "nowrap", boxShadow: "0 4px 14px -6px rgb(0 0 0 / 0.5)" }}>
     <span style={{ background: "rgba(14,17,22,0.82)", color, padding: "4px 8px" }}>{kind}</span>
     {text ? <span style={{ background: color, color: dark ? "#111" : "#fff", padding: "4px 10px" }}>{text}</span> : null}
   </div>
 );
-const Box: React.FC<{ b: number[]; kind: string; text?: string; color: string; pad?: number; dark?: boolean; brackets?: boolean; below?: boolean }> = ({ b, kind, text, color, pad = 0.006, dark, brackets = true, below }) => {
+export const Box: React.FC<{ b: number[]; kind: string; text?: string; color: string; pad?: number; dark?: boolean; brackets?: boolean; below?: boolean }> = ({ b, kind, text, color, pad = 0.006, dark, brackets = true, below }) => {
   const x = (b[0] - pad) * 1920, y = (b[1] - pad) * 1080, w = (b[2] - b[0] + 2 * pad) * 1920, h = (b[3] - b[1] + 2 * pad) * 1080;
   return (
     <>
@@ -331,7 +331,7 @@ const Box: React.FC<{ b: number[]; kind: string; text?: string; color: string; p
   );
 };
 const hms = (s: number) => { const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = Math.floor(s % 60); return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(x).padStart(2, "0")}`; };
-const ms = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+export const ms = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 /** The lab at frame f (absolute): the take, the detector's boxes, the alarm, the camera readout. */
 const LabLayer: React.FC = () => {
   const f = useCurrentFrame();

@@ -13,7 +13,9 @@ Team IT-Porto, Aveiro Tech City Hackathon 2026, Challenge #3 by Altice Labs ("Co
 | `deliverables/executive-summary/` | The 2-page report (`sumario-executivo.md` → `build.py` → PDF and DOCX on the official template), Figure 1 (`figuras.py`, photos in `fotos/`) |
 | `docs/14-architecture.md`, `15-integration-spec.md`, `16-business-case.md` | The technical and business documents (English) |
 | `docs/pt/` | The same three documents in European Portuguese, the versions shared on Google Drive |
-| `docs/architecture/` | Architecture diagram (`build_diagram.py`) and the integration sequence diagram (`build_sequence.py`) |
+| `docs/architecture/` | The twelve architecture views in PT and EN (C4, deployment, presence states, three sequences, data flow with trust boundaries, data model, app flows), built by `build_views.py` with the drawing rules in `diagram_kit.py`: `python3 docs/architecture/build_views.py [--only <view>] [--lang pt\|en]`. The first design's figures (`build_diagram.py`, `build_sequence.py`) are superseded; see `docs/architecture/README.md` |
+| `docs/23-engineering-qa.md`, `docs/24-what-is-real.md` | The engineering questions and answers, and what in each film is real, staged or envisioned |
+| `video/out/pitch/`, `video/out/proof/` | The films' short cuts for the pitch (`video/tools/pitch_cut.py`) and the unedited proof runs (`video/tools/proof_run.py`); videos are not committed |
 | `docs/business-case/` | Business-case charts (`build_graficos.py`) and the 9-page PDF (`build_pdf.py`) |
 | `prototype/` | The working prototype: server, edge service, local text model, local database, web app |
 | `mcp/` | Our MCP client and the tool schema of the Altice Connected Home server |

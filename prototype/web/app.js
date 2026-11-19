@@ -401,6 +401,8 @@ async function startRegister(name, q) {
     dialog('The camera is not ready', /not running/.test(e.message) ? 'The camera service is not running. Start it and try again.' : e.message, [['OK', 'btn-p', null]]);
   }
 }
+/** "Where is my wallet?", "Where are my keys?": plural names (keys, glasses) take "are". */
+const whereIs = (n) => `Where ${/s$/.test(n) ? "are" : "is"} my ${n}?`;
 function registerPage(id) {
   const el = push(() => {
     const t = state.things.find((x) => x.id === id);
@@ -408,7 +410,7 @@ function registerPage(id) {
     if (t?.fingerprint) {
       return `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
         <div class="views-grid" style="width:100%;margin-bottom:22px">${t.fingerprint.crops.slice(0, 8).map((c) => `<img src="${crop(c)}" alt="">`).join('')}</div>
-        <h3>${esc(name)} added</h3><p>ThingTracker learnt it from ${t.fingerprint.n} views. From now on, the camera finds it whenever something moves, and you can ask “Where is my ${esc(name.toLowerCase())}?”.</p></div>
+        <h3>${esc(name)} added</h3><p>ThingTracker learnt it from ${t.fingerprint.n} views. From now on, the camera finds it whenever something moves, and you can ask “${esc(whereIs(name.toLowerCase()))}”.</p></div>
         <div class="bottom-bar"><button type="button" class="btn-p" data-act="finish">Done</button></div>`;
     }
     const got = en?.got || 0, target = en?.target || 8, failed = !en;
@@ -521,7 +523,7 @@ function openAssistant(prefill = '') {
   if (!chat.length) {
     const n = (state.things[0]?.name || 'keys').toLowerCase();     // the examples use a thing the home really has
     chat.push({ text: 'Hi! Ask me anything about your home, like where you left something, or describe a sensor in one sentence.',
-      html: `<div class="suggest">${[`Where is my ${n}?`, `Tell me if I leave home without my ${n}`, 'What did the camera see today?'].map((s) => `<button type="button" data-ask="${esc(s)}">${esc(s)}</button>`).join('')}</div>` });
+      html: `<div class="suggest">${[whereIs(n), `Tell me if I leave home without my ${n}`, 'What did the camera see today?'].map((s) => `<button type="button" data-ask="${esc(s)}">${esc(s)}</button>`).join('')}</div>` });
   }
   openSheet({ head: `<div class="shead"><b>Assistant</b><button type="button" class="ibtn" data-act="close-sheet" aria-label="Close">${I.x}</button></div>`, body: chatHtml(),
     foot: `<input class="field" id="askfield" placeholder="Ask anything" maxlength="300" autocomplete="off" value="${esc(prefill)}"><button type="button" class="send" data-act="send" aria-label="Send">${I.send}</button>` },
@@ -606,7 +608,7 @@ device.addEventListener('click', async (e) => {
     case 'assistant': openAssistant(); break;
     case 'send': ask($('askfield')?.value); break;
     case 'thing': closeSheet(); thingPage(id); break;
-    case 'ask-about': { const t = state.things.find((x) => x.id === id); ask(`Where is my ${t ? t.name.toLowerCase() : 'thing'}?`); break; }
+    case 'ask-about': { const t = state.things.find((x) => x.id === id); ask(whereIs(t ? t.name.toLowerCase() : 'thing')); break; }
     case 'sightings': sightingsPage(topId()); break;
     case 'add-thing': addThingPage(); break;
     case 'pick-thing': startRegister(el.dataset.name, el.dataset.q); break;

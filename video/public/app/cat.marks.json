@@ -1,19 +1,19 @@
 [
  {
   "name": "start",
-  "s": 0.401
+  "s": 0.404
  },
  {
   "name": "tap [data-act=\"suggest\"]",
-  "s": 2.312
+  "s": 2.315
  },
  {
   "name": "suggest",
-  "s": 2.508
+  "s": 2.5
  },
  {
   "name": "tap [data-act=\"close-sheet\"]",
-  "s": 5.798
+  "s": 5.794
  },
  {
   "name": "alert",

@@ -24,7 +24,7 @@ const KEYS = "keys-shown-1"; // 3840 x 2160, 30 fps
 const P = APP.px; // recording px per pt
 
 // the register-keys recording: when each view is counted (s), from its marks
-const VIEW_AT = [5.601, 6.029, 6.46, 6.892, 7.324, 7.756, 8.193, 8.625];
+const VIEW_AT = [5.655, 6.093, 6.522, 6.952, 7.385, 7.818, 8.251, 8.682]; // register-keys.marks.json (re-recorded 19 Nov)
 const viewsAt = (t: number) => VIEW_AT.filter((v) => t >= v).length;
 
 type Boxes = { frames: { t: number; boxes: { label: string; score: number; box: [number, number, number, number] }[] }[] };
@@ -128,7 +128,8 @@ const Sound: React.FC = () => (
 );
 
 /* ------------------------------------------------------------------ the shot */
-export const ProofCamera: React.FC = () => {
+/** Proof A's picture only, for the film, which carries its own continuous sound. */
+export const ProofPicture: React.FC = () => {
   // shot 1: a slow push towards the live view (from the footage as filmed to about 1,2x), so the keys can be seen
   const still: CamKey[] = [{ at: 0, ppt: 0, fx: 201, fy: 230 }, { at: 1, ppt: 0, fx: 201, fy: 230 }, { at: 44, ppt: 0.95, fx: 201, fy: 230, upright: false }];
   const push: CamKey[] = [{ at: 0, ppt: 0, fx: 201, fy: 300 }, { at: 3, ppt: 0, fx: 201, fy: 300 }, { at: 24, ppt: 1.9, fx: 201, fy: 300, cx: 960, cy: 560 }];
@@ -142,7 +143,7 @@ export const ProofCamera: React.FC = () => {
         <CameraView />
       </Sequence>
       <Sequence from={90} durationInFrames={60}>
-        <TrackedScreen take={PHONE} track={TRACK} keyed={KEYED} from={6.2} rec="register-keys" segs={[[0, 9.0]]} keys={push} overlay={<IslandCover />} />
+        <TrackedScreen take={PHONE} track={TRACK} keyed={KEYED} from={6.2} rec="register-keys" segs={[[0, 9.15]]} keys={push} overlay={<IslandCover />} />
       </Sequence>
       <Sequence from={0} durationInFrames={90} layout="none">
         <div style={{ position: "absolute", left: 110, top: 96 }}>
@@ -151,7 +152,13 @@ export const ProofCamera: React.FC = () => {
         </div>
       </Sequence>
       <Tag text="imagens de arquivo" dark />
-      <Sound />
     </AbsoluteFill>
   );
 };
+
+export const ProofCamera: React.FC = () => (
+  <AbsoluteFill>
+    <ProofPicture />
+    <Sound />
+  </AbsoluteFill>
+);

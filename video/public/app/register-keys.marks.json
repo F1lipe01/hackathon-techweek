@@ -1,62 +1,62 @@
 [
  {
   "name": "start",
-  "s": 0.401
+  "s": 0.402
  },
  {
   "name": "tap [data-act=\"add-thing\"].btn-p",
-  "s": 2.32
+  "s": 2.341
  },
  {
   "name": "tap [data-act=\"pick-thing\"][data-name=\"Keys\"]",
-  "s": 4.497
+  "s": 4.521
  },
  {
   "name": "register",
-  "s": 4.681
+  "s": 4.72
  },
  {
   "name": "view-1",
-  "s": 5.601
+  "s": 5.655
  },
  {
   "name": "view-2",
-  "s": 6.029
+  "s": 6.093
  },
  {
   "name": "view-3",
-  "s": 6.46
+  "s": 6.522
  },
  {
   "name": "view-4",
-  "s": 6.892
+  "s": 6.952
  },
  {
   "name": "view-5",
-  "s": 7.324
+  "s": 7.385
  },
  {
   "name": "view-6",
-  "s": 7.756
+  "s": 7.818
  },
  {
   "name": "view-7",
-  "s": 8.193
+  "s": 8.251
  },
  {
   "name": "view-8",
-  "s": 8.625
+  "s": 8.682
  },
  {
   "name": "added",
-  "s": 9.063
+  "s": 9.128
  },
  {
   "name": "tap .bottom-bar [data-act=\"finish\"]",
-  "s": 12.946
+  "s": 13.022
  },
  {
   "name": "done",
-  "s": 13.13
+  "s": 13.218
  }
 ]

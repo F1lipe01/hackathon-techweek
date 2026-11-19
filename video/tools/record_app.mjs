@@ -3,7 +3,7 @@
 // action next to it (<take>.marks.json, seconds from the first frame).
 //   NODE_PATH=<playwright-core's folder> node video/tools/record_app.mjs <take> [<take> ...]
 // Takes: register (Things tab, add the wallet), register-keys (the same with the keys, eight views), ask (Where is my wallet? + the sentence that becomes a sensor),
-// alert (the door opens, the notification).
+// alert (the door opens, the notification); ask-keys, alert-keys and dog (video 1 v7, prepared data, the real screens).
 // The server, the database and the language model are the real ones. Only two things stand in for the camera service
 // (edge.py), which stays off: its status and registration progress are posted to the server's own edge API, and the
 // live view inside the registration screen shows a still of the wallet instead of the lab's camera stream.
@@ -248,6 +248,65 @@ const TAKES = {
     await api('/api/sim/door', { open: false });
     await pause(5000);
   }),
+  // video 1 v7, the keys story: the same real screens as ask/alert, answered with prepared data about the keys
+  // (crops in REC_IMG: concept-keys.jpg), so nothing reaches the server's database
+  'ask-keys': () => { Object.assign(C, { on: true, events: [], rules: [], delay: 900,
+    reply: (text) => {
+      if (/tell me/i.test(text)) {
+        const r = { id: 'concept-keys-rule', title: 'Left home without the keys', sentence: 'Tell me if I leave home without my keys', active: true };
+        C.rules = [r]; return { kind: 'sensor', sensor: r };
+      }
+      return { kind: 'answer', answer: 'Your keys are on the hall table. I saw them at 08:12.', thing: null,
+        candidates: [{ id: 'concept-keys', name: 'Keys', last_seen: { ts: today(8, 12), zone_name: 'hall table', crop: 'concept-keys.jpg' } }] };
+    } });
+    return take('ask-keys', '8:40', async ({ tap, hideFinger, type, mark }) => {
+      await pause(900);
+      await tap('#fab');
+      mark('assistant');
+      await pause(900);
+      await tap('#askfield');
+      await hideFinger();
+      mark('type-question');
+      await type('Where are my keys?');
+      await pause(350);
+      await tap('[data-act="send"]');
+      mark('sent-question');
+      await hideFinger();
+      await pause(4200);
+      mark('type-sensor');
+      await type('Tell me if I leave home without my keys');
+      await pause(350);
+      await tap('[data-act="send"]');
+      mark('sent-sensor');
+      await hideFinger();
+      await pause(5200);
+    }); },
+  'alert-keys': () => { Object.assign(C, { on: true, events: [], rules: [{ id: 'concept-keys-rule', title: 'Left home without the keys', sentence: 'Tell me if I leave home without my keys', active: true }], reply: null });
+    return take('alert-keys', '8:52', async ({ refresh, mark }) => {
+      await pause(1500);
+      conceptEvent({ kind: 'alert', title: 'Left home without the keys', text: 'The front door opened and your keys are still on the hall table.', crop: 'concept-keys.jpg' });
+      await refresh();
+      mark('alert');
+      await pause(5000);
+    }); },
+  // video 1 v7, the dog: "Has the dog eaten today?", answered with its picture at the bowl
+  dog: () => { Object.assign(C, { on: true, events: [], rules: [], delay: 900,
+    reply: () => ({ kind: 'answer', answer: 'Yes. The dog was at its bowl at 08:05.', thing: null,
+      candidates: [{ id: 'concept-dog-bowl', name: 'Dog at the bowl', last_seen: { ts: today(8, 5), zone_name: 'kitchen floor', crop: 'concept-dog.jpg' } }] }) });
+    return take('dog', '9:10', async ({ tap, hideFinger, type, mark }) => {
+      await pause(800);
+      await tap('#fab');
+      await pause(800);
+      await tap('#askfield');
+      await hideFinger();
+      mark('type');
+      await type('Has the dog eaten today?');
+      await pause(300);
+      await tap('[data-act="send"]');
+      mark('sent');
+      await hideFinger();
+      await pause(3600);
+    }); },
   // act 6, the cat: the app proposes a sensor, one tap adds it, later the alert with the cat's photo
   cat: () => { Object.assign(C, { on: true, events: [], rules: [], delay: 800,
     reply: () => { const r = { id: 'concept-r1', title: 'Cat on the kitchen counter', sentence: 'Tell me if the cat jumps on the kitchen counter', active: true };

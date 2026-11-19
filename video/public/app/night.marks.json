@@ -1,26 +1,26 @@
 [
  {
   "name": "start",
-  "s": 0.4
+  "s": 0.402
  },
  {
   "name": "tap #fab",
-  "s": 1.902
+  "s": 1.905
  },
  {
   "name": "tap #askfield",
-  "s": 3.574
+  "s": 3.584
  },
  {
   "name": "type",
-  "s": 3.761
+  "s": 3.767
  },
  {
   "name": "tap [data-act=\"send\"]",
-  "s": 6.532
+  "s": 6.557
  },
  {
   "name": "sent",
-  "s": 6.714
+  "s": 6.749
  }
 ]

@@ -144,7 +144,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--server", help="use this running server instead of a private one (writes into its database)")
     ap.add_argument("--port", type=int, default=8775)
+    ap.add_argument("--unit", action="store_true", help="only the presence engine's unit tests (no server)")
     args = ap.parse_args()
+    if args.unit:
+        presence_unit()
+        failed = [n for n, ok in results if not ok]
+        print(f"\n{len(results) - len(failed)} of {len(results)} passed" + (f"; failed: {', '.join(failed)}" if failed else ""))
+        sys.exit(1 if failed else 0)
     proc, data = None, None
     if args.server:
         SERVER = args.server.rstrip("/")
@@ -164,7 +170,94 @@ def main():
     sys.exit(1 if failed else 0)
 
 
+def presence_unit():
+    """The presence engine alone (presence.py), on a fake clock and a throwaway database: no server, no camera."""
+    print("\nP. Presence engine: phones + door + cameras (fake clock, own database)")
+    sys.path.insert(0, str(HERE))
+    import presence as P
+    from store import Store
+    st = Store(Path(tempfile.mkdtemp(prefix="tt-presence-")) / "home.db")
+    clock = [1_000_000.0]
+    t = P.TIMINGS["demo"]
+    pr = P.Presence(st, timings=t, clock=lambda: clock[0])
+    st.add_thing("Filipe", "person · family")
+    st.add_thing("Ana", "person · family")
+    st.add_thing("Rui", "person · guest")
+    later = lambda s: clock.__setitem__(0, clock[0] + s)
+    cam = "Work Room"
+
+    s = pr.evaluate()
+    check("P1 new Family members' phones start home -> OCCUPIED, 2 at home", s["state"] == P.OCCUPIED and s["count"] == 2
+          and s["home"] == ["Filipe", "Ana"], s["reason"])
+    pr.set_phone("filipe", False)
+    pr.set_phone("ana", False)
+    s = pr.evaluate()
+    check("P2 both phones leave the Wi-Fi, nobody seen -> EMPTY, 0", s["state"] == P.EMPTY and s["count"] == 0, s["reason"])
+    for _ in range(t["unknown_runs"]):
+        later(1)
+        pr.analysis(cam, [{"identity": "unknown"}])
+    s = pr.evaluate()
+    check("P3 phones away, a face that matches nobody -> UNSURE, 1 at home", s["state"] == P.UNSURE and s["count"] == 1
+          and s["unknown"] == 1, s["reason"])
+    check("P4 ... and the security run counts consecutive analyses", pr.run(cam, "unknown")[0] == t["unknown_runs"],
+          str(pr.run(cam, "unknown")))
+    check("P5 ... and the state rests on the camera: a refresh is wanted after refresh_s", s["relies_on_camera"]
+          and not pr.wants_refresh(cam) and (later(t["refresh_s"]) or pr.wants_refresh(cam)))
+    pr.analysis(cam, [])
+    check("P6 the camera looks again and sees nobody -> EMPTY, and the run resets",
+          pr.evaluate()["state"] == P.EMPTY and pr.run(cam, "unknown")[0] == 0)
+    pr.analysis(cam, [{"identity": "filipe"}])
+    s = pr.evaluate()
+    check("P7 Filipe's face, his phone away -> OCCUPIED: Filipe (the face is direct evidence)", s["state"] == P.OCCUPIED
+          and s["home"] == ["Filipe"], s["reason"])
+    later(2)
+    pr.analysis(cam, [{"identity": "not_visible"}])
+    s = pr.evaluate()
+    check("P8 then a person with no face visible -> still 1: it can be Filipe", s["count"] == 1, s["reason"])
+    check("P9 a family face never starts a security run", pr.run(cam, "no_face")[0] == 0 and pr.run(cam, "unknown")[0] == 0)
+    later(t["face_recent_s"] + 1)
+    s = pr.evaluate()
+    check("P10 Filipe still and unseen for face_recent_s, phone away -> EMPTY (hence the refresh analyses)",
+          s["state"] == P.EMPTY, s["reason"])
+    pr.set_phone("ana", True)
+    pr.analysis(cam, [{"identity": "rui"}, {"identity": "not_visible"}])
+    s = pr.evaluate()
+    check("P11 Ana's phone home, Rui (guest) seen, one person face not visible -> 2 (the faceless one may be Ana)",
+          s["count"] == 2 and set(s["home"]) == {"Ana", "Rui"}, s["reason"])
+    pr.door(True)
+    later(2)
+    pr.door(False)
+    s = pr.evaluate()
+    check("P12 the door opens then closes -> LEAVING", s["state"] == P.LEAVING, s["reason"])
+    opened = clock[0] - 2
+    later(3)
+    pr.set_phone("ana", False)
+    check("P13 Ana's phone leaves after the door -> left_since says Ana; nobody arrived",
+          pr.left_since(opened - 5) == ["Ana"] and pr.arrived_since(opened - 5) == [])
+    check("P13b while LEAVING the engine asks the camera for refresh analyses", pr.wants_refresh(cam))
+    pr.analysis(cam, [], forced=True)                    # the refresh: the camera sees nobody
+    later(t["leaving_check_s"])
+    s = pr.evaluate()
+    check("P14 LEAVING ends after leaving_check_s -> EMPTY", s["state"] == P.EMPTY, s["reason"])
+    t0 = clock[0]
+    pr.set_phone("filipe", True)
+    check("P15 Filipe's phone joins -> an arrival", pr.arrived_since(t0) == ["Filipe"] and pr.evaluate()["state"] == P.OCCUPIED)
+    later(t["stale_s"] + 1)
+    s = pr.evaluate()
+    check("P16 a phone home, nobody seen and the door unused for stale_s -> UNSURE (a phone left at home?)",
+          s["state"] == P.UNSURE and s["count"] == 1, s["reason"])
+    again = P.Presence(st, timings=t, clock=lambda: clock[0])
+    check("P17 a new engine on the same database (a restart) keeps the state and the count",
+          again.s["state"] == P.UNSURE and again.s["count"] == 1 and again.phones()["ana"]["home"] is False)
+    moves = [e["text"].split(".")[0] for e in st.events(100) if e["kind"] == "presence"][::-1]
+    check("P18 every change of state is an event", len(moves) >= 8 and moves[0].startswith("Home: started → OCCUPIED"),
+          " | ".join(moves))
+    check("P19 production timings are minutes, demo timings seconds", P.TIMINGS["prod"]["leaving_check_s"] >= 60
+          and P.TIMINGS["prod"]["face_recent_s"] >= 600 and P.TIMINGS["demo"]["leaving_check_s"] <= 30)
+
+
 def run(private, db):
+    presence_unit()
     st = call("GET", "/api/state")
     engine = st["settings"]["llm"]
     print(f"Assistant engine: {engine}; device actions live: {st['settings']['live_actions']}\n")

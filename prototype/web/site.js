@@ -97,15 +97,18 @@ $('#views').innerHTML = VIEWS.map(([f, t]) => `<figure data-src="/media/views/${
 
 // ------------------------------------------------------------------ videos
 const VIDEOS = [
-  ['', '', [
+  ['hero', '', [
+    ['film-completo.mp4', 'O filme', 'As três histórias, em cerca de 90 s.'],
+  ]],
+  ['Os três exemplos', '', [
     ['film-livro.mp4', 'O livro', 'Sair de casa sem o livro: a porta, o telemóvel e a câmara decidem, e a aplicação avisa.'],
     ['film-pessoa.mp4', 'A pessoa desconhecida', 'A família é reconhecida; um rosto que não é da família, com a casa vazia, faz soar o alarme.'],
     ['film-pessoas.mp4', 'Ninguém em casa', 'Todos saem e ficam aparelhos ligados: a aplicação pergunta se os desliga.'],
   ]],
 ];
-$('#videos').innerHTML = VIDEOS.map(([g, d, xs]) => `<div class="vgroup">${g ? `<h2 class="sec">${esc(g)}</h2>` : ''}${d ? `<p>${esc(d)}</p>` : ''}<div class="vgrid">${xs.map(([f, t, p]) =>
+$('#videos').innerHTML = VIDEOS.map(([g, d, xs]) => `<div class="vgroup${g === 'hero' ? ' hero' : ''}">${g && g !== 'hero' ? `<h2 class="sec">${esc(g)}</h2>` : ''}${d ? `<p>${esc(d)}</p>` : ''}<div class="vgrid">${xs.map(([f, t, p]) =>
   `<article class="vcard" data-f="${f}"><video src="/media/${f}" controls preload="metadata" playsinline></video><div class="t"><h3>${esc(t)}</h3>${p ? `<p>${esc(p)}</p>` : ''}</div></article>`).join('')}</div></div>`).join('');
-document.querySelectorAll('#videos .vcard video').forEach((v) => v.addEventListener('error', () => v.closest('.vcard').remove()));
+document.querySelectorAll('#videos .vcard video').forEach((v) => v.addEventListener('error', () => { const g = v.closest('.vgroup'); v.closest('.vcard').remove(); if (g && !g.querySelector('.vcard')) g.remove(); }));
 document.querySelectorAll('#videos video').forEach((v) => v.addEventListener('play', () => document.querySelectorAll('#videos video').forEach((o) => o !== v && o.pause())));
 
 // ------------------------------------------------------------------ zoom on figures (drawn in the page)

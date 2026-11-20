@@ -212,3 +212,5 @@ body[data-tab="demo"] .offline { display: none; }
 #t-videos .vcard h3 { font-size: 1.1rem; }
 @media (max-width: 1100px) { #t-videos .vgrid { grid-template-columns: 1fr; } }
 .flow-fig { padding: 24px 28px; } .flow-fig svg { width: 100%; height: auto; display: block; }
+#t-videos .vgroup.hero .vgrid { grid-template-columns: 1fr; }
+#t-videos .vgroup.hero .vcard video { max-height: calc(100svh - 220px); }

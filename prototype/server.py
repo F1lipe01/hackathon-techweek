@@ -1950,6 +1950,7 @@ MEDIA = {   # what the site may serve from the repo, and nothing else (never the
     "film-livro.mp4": "video/out/ThingTracker - exemplo 1 - o livro (v13).mp4",
     "film-pessoa.mp4": "video/out/ThingTracker - exemplo 2 - a pessoa desconhecida (v7).mp4",
     "film-pessoas.mp4": "video/out/ThingTracker - exemplo 3 - as pessoas (rascunho 4).mp4",
+    "film-completo.mp4": "video/out/ThingTracker - filme completo (90 s).mp4",
     "demo-fallback.mp4": "video/out/demo/site-demo.mp4",
     "sumario-executivo.pdf": "deliverables/executive-summary/sumario-executivo-IT-Porto.pdf",
     "arquitetura.pdf": "deliverables/pt/ThingTracker · Arquitetura.pdf",

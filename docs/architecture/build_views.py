@@ -6,8 +6,8 @@
 
 Each view is written as <name>.svg / <name>.png (Portuguese, for the deck) and <name>.en.svg / <name>.en.png.
 The drawing rules live in diagram_kit.py: text measured and wrapped to its box, straight one-way arrows.
-The design drawn here is the TARGET design of 19 Nov 2026 (hybrid: motion, regions and faces at home; vision,
-presence and rules at Altice); docs/14 section 12 says what the prototype does today.
+The design drawn here is the FINAL design of 20 Nov 2026 (fully local: all perception and inference on the home device;
+the Altice platform as a text-only control and data plane); docs/14 says what the prototype does today.
 """
 import argparse
 
@@ -44,201 +44,148 @@ def mid_overlap(a, b, margin=14):
 def implantacao(lang):
     cv = Canvas(2040, lang, "Implantação do ThingTracker" if lang == "pt" else "ThingTracker deployment")
     L = cv.L
-    HB, AB, PB = (20, 470), (610, 1730), (1800, 2020)
-    HX, HW = HB[0] + 24, HB[1] - HB[0] - 48
-    COLS = [634 + i * (254 + 18) for i in range(4)]
-    CW = 254
+    HB, AB, PB = (20, 960), (1040, 1730), (1800, 2020)
+    H1X, H1W = HB[0] + 24, 300
+    H2X = H1X + H1W + 90
+    H2W = HB[1] - 24 - H2X
+    AX, AW = AB[0] + 24, 260
+    BX = AX + AW + 100
+    BW = AB[1] - 24 - BX
     PX, PW = PB[0] + 20, PB[1] - PB[0] - 40
     Y0 = 108
 
-    # ---- the home: the equipment that is already there
-    cam = stack(cv, HX, Y0, HW, [dict(
+    # ---- the home: the home device does all the perception and inference
+    dev = stack(cv, H2X, Y0, H2W, [dict(
+        title=L("Equipamento da casa", "Home device"),
+        sub=L("O _router_, se tiver NPU, ou uma caixa dedicada: _Raspberry Pi 5_ com acelerador de IA, ou _Jetson Orin Nano Super_",
+              "The router, if it has an NPU, or a dedicated box: a Raspberry Pi 5 with an AI accelerator, or a Jetson Orin Nano Super"),
+        stroke=BLUE, sw=2, sub_bold=False, sub_color=MUTED,
+        body=[L("Recebe o vídeo das câmaras na rede da casa", "Takes in the cameras’ video on the home network"),
+              L("Filtro de movimento: imagem cinzenta de 160 × 90, a cada 0,5 s; só analisa quando há movimento ou um pedido",
+                "Motion gate: a 160 × 90 grey picture, every 0.5 s; analyses only on motion or on request"),
+              L("Visão: deteção e reidentificação com a assinatura visual (≥ 0,62). _OWLv2_ + _DINOv2_ no protótipo; detetores mais leves, "
+                "como o _YOLOv8n_, em equipamentos pequenos",
+                "Vision: detection and re-identification against the fingerprint (≥ 0.62). OWLv2 + DINOv2 in the prototype; lighter "
+                "detectors, such as YOLOv8n, on small devices"),
+              L("Rostos (opcional, com consentimento): _YuNet_ encontra, _SFace_ compara; os padrões ficam no equipamento",
+                "Faces (opt-in, with consent): YuNet finds, SFace compares; the templates stay on the device"),
+              L("Memória local: onde e quando cada objeto foi visto", "Local memory: where and when each thing was seen"),
+              L("Motor de presença e motor de regras: o motor de regras decide", "Presence engine and rules engine: the rules engine decides"),
+              L("Modelo de linguagem (_Qwen3-1.7B_ no protótipo): frase em regra, pergunta em resposta; nunca decide",
+                "Language model (Qwen3-1.7B in the prototype): sentence into rule, question into answer; it never decides"),
+              L("Constrói a assinatura visual a partir das fotografias de registo", "Builds the fingerprint from the registration photos"),
+              L("Imagens, vídeo, assinaturas visuais e padrões faciais nunca saem daqui", "Images, video, fingerprints and face templates never leave it")])])[0]
+    cam = stack(cv, H1X, Y0, H1W, [dict(
         title=L("Câmaras do kit", "Kit cameras"),
-        body=[L("_Tuya SC034-WNV3_ · H.265 · 2304 × 1296 · 20 fps",
-                "Tuya SC034-WNV3 · H.265 · 2304 × 1296 · 20 fps"),
-              L("Vídeo por RTSP só na rede da casa, com uma ligação mantida aberta",
-                "Video over RTSP on the home network only, one connection kept open")])])[0]
-    A0 = COLS[0]
-    note_item = dict(title=L("Porque ficam aqui os balanceadores", "Why the load balancers are here"), fill=NOTE_BG, stroke=NOTE_LINE,
-                     body=[L("É na Altice que convergem as 500 000 casas. Em casa há um só agente, sem nada para distribuir.",
-                             "This is where 500,000 homes meet. A home has one agent, with nothing to spread.")])
-    note_h = cv.box_h(254, note_item["title"], note_item["body"])
-    ry = max(cam[1] + 70, Y0 + note_h + 18)
-    stack(cv, A0, Y0, 254, [note_item])
-    router_items = [dict(
-        title=L("_Router_ Altice · CPU, sem acelerador de IA", "Altice router · CPU, no AI accelerator"),
-        sub=L("Agente da casa (_ThingTracker_)", "Home agent (ThingTracker)"),
-        stroke=BLUE, sw=2,
-        body=[L("Máscaras de privacidade: zonas nunca analisadas", "Privacy masks: areas never analysed"),
-              L("Filtro de movimento: imagem cinzenta de 160 × 90, a cada 0,5 s",
-                "Motion gate: a 160 × 90 grey picture, every 0.5 s"),
-              L("Região que mudou: recortada, no máximo 640 × 640, cerca de 1 por segundo enquanto há movimento",
-                "Changed region: cut out, at most 640 × 640, about 1 a second while there is motion"),
-              L("Rostos (opcional, com consentimento): _YuNet_ encontra, _SFace_ compara; semelhança ≥ 0,363 dá um nome",
-                "Faces (opt-in, with consent): YuNet finds, SFace compares; similarity ≥ 0.363 gives a name"),
-              L("Padrões faciais cifrados, guardados só aqui", "Face templates encrypted, kept only here"),
-              L("Guarda só em memória os últimos 3 s, para o juiz", "Keeps the last 3 s in memory only, for the judge"),
-              L("Fila de saída: guarda os eventos enquanto não há internet; sem internet, não há análise de imagem",
-                "Outbox: keeps events while offline; without internet there is no image analysis"),
-              L("Wi-Fi: o _router_ sabe que telemóveis da família estão ligados",
-                "Wi-Fi: the router knows which family phones are connected")])]
-    # ---- Altice, column A: what faces the homes
-    A, B, C, D = COLS
-    lbh = stack(cv, A, ry, CW, [dict(
-        title=L("Balanceador de carga (casas)", "Load balancer (homes)"),
-        body=[L("Distribui as ligações das casas pelos mediadores e retira os que falham",
-                "Spreads the homes’ connections over the brokers and drops any that fail")])])[0]
-    broker = stack(cv, A, lbh[1] + 18, CW, [dict(
-        title=L("Mediador de ligações", "Connection broker"),
-        sub=L("MQTT sobre mTLS", "MQTT over mTLS"),
-        body=[L("Uma ligação de saída por casa e um tópico por casa, para as regiões e os pedidos",
-                "One outbound connection per home, one topic per home, for regions and requests")])])[0]
-    hub_item = dict(
-        title=L("Central de segurança e sensor da porta", "Security hub and door contact sensor"),
-        body=[L("_MS-WES1AS_ (LTE) e _MS-D3D_; comunicam com a plataforma Altice, como hoje",
-                "MS-WES1AS (LTE) and MS-D3D; they report to the Altice platform, as today")])
-    plat_item = dict(
-        title=L("Plataforma _Connected Home_ (existente)", "Connected Home platform (existing)"),
-        fill="#F7F7F7",
-        body=[L("Dispositivos, cenários e segurança; servidor MCP com 18 ferramentas",
-                "Devices, scenarios and security; MCP server with 18 tools"),
-              L("Pedidos à Altice: eventos da porta e do Wi-Fi, a ferramenta de presença no Wi-Fi e as ferramentas _Things_",
-                "Asked of Altice: door and Wi-Fi events, the Wi-Fi presence tool and the Things tools")])
-    plat_y = broker[1] + 18
-    rneed = cv.box_h(HW, router_items[0]["title"], router_items[0]["body"], sub=router_items[0]["sub"])
-    router = stack(cv, HX, ry, HW, [dict(router_items[0], h=max(rneed, plat_y + 70 - ry))])[0]
-    plat_need = cv.box_h(CW, plat_item["title"], plat_item["body"])
-    hub_y = router[1] + 24
-    hub_h = max(cv.box_h(HW, hub_item["title"], hub_item["body"]), plat_y + plat_need - hub_y)
-    hub = stack(cv, HX, hub_y, HW, [dict(hub_item, h=hub_h)])[0]
-    plat = stack(cv, A, plat_y, CW, [dict(plat_item, h=hub[1] - plat_y)])[0]
+        body=[L("_Tuya SC034-WNV3_ · H.265 · 2304 × 1296 · 20 fps", "Tuya SC034-WNV3 · H.265 · 2304 × 1296 · 20 fps"),
+              L("Vídeo por RTSP só na rede da casa", "Video over RTSP on the home network only")])])[0]
+    hub_y = dev[1] + 24
+    hub = stack(cv, H2X, hub_y, H2W, [
+        dict(title=L("Central de segurança e sensor da porta", "Security hub and door contact sensor"),
+             body=[L("_MS-WES1AS_ (LTE) e _MS-D3D_; comunicam com a plataforma Altice, como hoje",
+                     "MS-WES1AS (LTE) and MS-D3D; they report to the Altice platform, as today")]),
+        dict(title=L("_Router_ Altice · Wi-Fi", "Altice router · Wi-Fi"),
+             body=[L("Sabe que telemóveis da família estão ligados", "Knows which family phones are connected")])])
 
-    # ---- column B: the ThingTracker service, its queues and its cache
-    svc = stack(cv, B, Y0, CW, [
-        dict(title=L("Serviço _ThingTracker_", "ThingTracker service"), stroke=BLUE, sw=2,
-             sub=L("N instâncias sem estado, em contentores", "N stateless instances, in containers"),
-             body=[L("API da aplicação e _host_ MCP", "App API and MCP host"),
-                   L("Motor de presença e motor de regras: por casa, a cada evento e a cada temporizador",
-                     "Presence engine and rules engine: per home, on every event and every timer"),
-                   L("Compara os vetores com as assinaturas visuais (_pgvector_): semelhança ≥ 0,62 é o seu",
-                     "Matches the vectors with the fingerprints (pgvector): similarity ≥ 0.62 means yours"),
-                   L("Seguimento das caixas entre análises", "Tracking of boxes between analyses"),
-                   L("Chama os modelos só para frases, perguntas e, raramente, o juiz",
-                     "Calls the models only for sentences, questions and, rarely, the judge")]),
-        dict(title=L("Filas e fluxo de eventos", "Queues and event stream"),
-             body=[L("Visão urgente: verificações das regras", "Urgent vision: rule checks"),
-                   L("Visão em lote: o resto, nas horas calmas", "Batch vision: the rest, in quiet hours"),
-                   L("Eventos de cada casa, por ordem (partição por casa)", "Each home’s events, in order (partitioned by home)"),
-                   L("Pedidos ao modelo de linguagem", "Language-model requests")]),
-        dict(title=L("_Cache_ (_Redis_)", "Cache (Redis)"),
-             body=[L("Estado corrente de cada casa: presença, trajetos, contadores e temporizadores",
-                     "Each home’s live state: presence, tracks, counters and timers")]),
+    # ---- Altice: control and data plane, text only
+    relay = stack(cv, AX, Y0, AW, [dict(
+        title=L("Retransmissão e mediador", "Relay and connection broker"), sub=L("MQTT sobre mTLS", "MQTT over mTLS"),
+        body=[L("Uma ligação de saída por casa, atrás de um balanceador", "One outbound connection per home, behind a load balancer"),
+              L("Leva a aplicação até casa quando a família está fora", "Lets the app reach the home when the family is away"),
+              L("As fotografias de registo passam cifradas de ponta a ponta: a Altice não as lê",
+                "Registration photos pass encrypted end to end: Altice cannot read them")])])[0]
+    plat_y = hub[0][0]
+    plat = stack(cv, AX, plat_y, AW, [dict(
+        title=L("Plataforma _Connected Home_ (existente)", "Connected Home platform (existing)"), fill="#F7F7F7",
+        h=hub[-1][1] - plat_y,
+        body=[L("Dispositivos, cenários e segurança; servidor MCP com 18 ferramentas", "Devices, scenarios and security; MCP server with 18 tools"),
+              L("Pedidos à Altice: eventos do Wi-Fi e a ferramenta de presença no Wi-Fi",
+                "Asked of Altice: Wi-Fi events and the Wi-Fi presence tool")])])[0]
+    svc_item = dict(title=L("Serviço _ThingTracker_", "ThingTracker service"), stroke=BLUE, sw=2, sub=L("só texto", "text only"),
+                    body=[L("Contas, identidade e permissões da família", "Accounts, identity and family permissions"),
+                          L("Registo de eventos em texto (“livro, secretária, 18h02”)", "Event log as structured text (“book, desk, 18:02”)"),
+                          L("Notificações para a aplicação, pelo serviço que ela já usa", "Push notifications to the app, through the service it already uses"),
+                          L("Um “Sim” vira uma ação pelo MCP", "A “Yes” becomes an action through the MCP")])
+    svc = stack(cv, BX, Y0, BW, [
+        dict(svc_item, h=max(cv.box_h(BW, svc_item["title"], svc_item["body"], sub=svc_item["sub"]), hub[-1][1] - Y0)),
+        dict(title=L("PostgreSQL · metadados", "PostgreSQL · metadata"),
+             body=[L("Objetos, pessoas (só nomes), donos e cenários: cópia de segurança, sincronização entre telemóveis e reposição se a "
+                     "caixa for trocada",
+                     "Things, people (names only), owners and scenarios: backup, sync across phones, and restore if the box is replaced")]),
     ])
-
-    # ---- column C: vision and data
-    vis = stack(cv, C, Y0, CW, [
-        dict(title=L("Servidores de visão", "Vision workers"), sub=L("GPU NVIDIA L4", "NVIDIA L4 GPUs"),
-             body=[L("_OWLv2_: encontra objetos, pessoas e superfícies na região",
-                     "OWLv2: finds things, people and surfaces in the region"),
-                   L("_DINOv2_: calcula o vetor de cada candidato", "DINOv2: computes each candidate’s vector"),
-                   L("Sem estado: leem as filas e devolvem caixas e vetores", "Stateless: read the queues, return boxes and vectors")]),
-        dict(title=L("PostgreSQL com _pgvector_", "PostgreSQL with pgvector"), sub=L("primário e réplica", "primary and replica"),
-             body=[L("Por cliente: objetos, assinaturas visuais, regras, eventos, observações e presença",
-                     "Per customer: things, fingerprints, rules, events, sightings and presence")]),
-        dict(title=L("Armazenamento de objetos", "Object storage"),
-             body=[L("Miniaturas das observações, 30 dias (proposta)", "Sighting thumbnails, 30 days (proposal)")]),
-    ])
-
-    # ---- column D: what faces the phones, the language model and the numbers
-    lba = stack(cv, D, Y0, CW, [
-        dict(title=L("Balanceador de carga (aplicação)", "Load balancer (app)"),
-             body=[L("HTTPS da aplicação para as instâncias do serviço", "The app’s HTTPS to the service instances")]),
-        dict(title=L("Notificações (existente)", "Notifications (existing)"),
-             body=[L("O serviço que a aplicação Altice já usa", "The service the Altice app already uses")]),
-        dict(title=L("Modelos de linguagem e de visão-linguagem", "Language and vision-language models"),
-             sub=L("servidores GPU, atrás de uma fila", "GPU servers, behind a queue"),
-             body=[L("Texto: frases em regras e respostas (alojado pela Altice ou fornecedor sob contrato na UE)",
-                     "Text: sentences into rules, and answers (hosted by Altice, or a provider under contract in the EU)"),
-                   L("Juiz, na Altice: raramente, 2 a 3 s da região num momento duvidoso",
-                     "Judge, at Altice: rarely, 2 to 3 s of the region at an ambiguous moment")]),
-    ])
-    bottom = max(hub[1], svc[-1][1], vis[-1][1], lba[-1][1])
-    num_y = lba[-1][1] + 18
-    num_item = dict(
-        title=L("Com 500 000 casas (estimativas)", "At 500,000 homes (estimates)"), fill="#F7F9FD", stroke="#C9D2E3",
-        body=[L("Visão: ≈ 0,49 € por casa e por mês com 1 câmara; 1 427 placas L4 (documento 17)",
-                "Vision: ≈ €0.49 per home a month with 1 camera; 1,427 L4 cards (document 17)"),
-              L("Modelo de linguagem: ≈ 0,43 € por casa e por mês (documento 16)",
-                "Language model: ≈ €0.43 per home a month (document 16)"),
-              L("Pressupostos: 2 h de movimento por dia, 1 imagem por segundo, GPU a 25 % do seu pico",
-                "Assumptions: 2 h of motion a day, 1 frame a second, GPUs at 25 % of their peak")])
-    num_h = max(cv.box_h(CW, num_item["title"], num_item["body"]), bottom - num_y)
-    stack(cv, D, num_y, CW, [dict(num_item, h=num_h)])
-    band_bottom = max(bottom, num_y + num_h) + 26
-    # bands go under the cards: insert them at the start of the drawing
+    bottom = max(cam[1], hub[-1][1], plat[1], svc[-1][1])
+    band_bottom = bottom + 26
     bands = Canvas(cv.w, lang, "")
     bands.band(HB[0], 20, HB[1] - HB[0], band_bottom - 20, L("Em casa", "In the home"),
-               L("Equipamento que já lá está: movimento, regiões e rostos", "Equipment already there: motion, regions and faces"),
-               fill=HOME_BG)
-    bands.band(AB[0], 20, AB[1] - AB[0], band_bottom - 20, L("Altice · centro de dados", "Altice · datacentre"),
-               L("Visão, presença, regras e os dados de cada cliente", "Vision, presence, rules and each customer’s data"),
-               fill=ALTICE_BG)
+               L("Toda a perceção e inferência", "All the perception and inference"), fill=HOME_BG)
+    bands.band(AB[0], 20, AB[1] - AB[0], band_bottom - 20, L("Altice · só texto", "Altice · text only"),
+               L("Contas, metadados, eventos, notificações, ações", "Accounts, metadata, events, push, actions"), fill=ALTICE_BG)
     bands.band(PB[0], 20, PB[1] - PB[0], band_bottom - 20, L("Telemóvel", "Phone"), None, fill=PHONE_BG)
     cv.o = bands.o + cv.o
 
     app = stack(cv, PX, Y0, PW, [dict(
-        title=L("Aplicação Altice", "Altice app"), h=lba[1][1] - Y0,
+        title=L("Aplicação Altice", "Altice app"), h=svc[-1][1] - Y0,
         body=[L("Separador _Things_ e assistente", "Things tab and assistant"),
               L("Avisos com cartões de ação", "Alerts with action cards"),
+              L("Fotografias de registo: para o equipamento da casa, no Wi-Fi ou cifradas pela retransmissão",
+                "Registration photos: to the home device, on the Wi-Fi or encrypted through the relay"),
               L("Vídeo em direto, como hoje, fora do _ThingTracker_", "Live video, as today, outside ThingTracker")])])[0]
 
     # ---- arrows across the boundaries (labels in the gaps)
-    gx0, gx1 = HX + HW, A
-    lw = gx1 - gx0 - 20
-    ya = router[0] + 34
+    cv.arrow(H1X + H1W, mid_overlap(cam, dev), H2X, mid_overlap(cam, dev), BODY)
+    cv.label(H1X + H1W + 8, mid_overlap(cam, dev) - 8, L("vídeo, só em casa", "video, home only"), 76, fill=BODY, size=11)
+    gx0, gx1 = H2X + H2W, AX
+    lw = gx1 - gx0 - 16
+    ya = relay[0] + 40
     cv.arrow(gx0, ya, gx1, ya, BLUE, 2)
-    cv.label(gx0 + 10, ya - 8, L("1 ligação de saída mTLS: regiões e rótulos de rostos; nunca vídeo contínuo",
-                                 "1 outbound mTLS connection: regions and face labels; never continuous video"), lw, bold=True)
-    yb = lbh[1] - 14
+    cv.label(gx0 + 8, ya - 8, L("só texto: eventos, avisos", "text only: events, alerts"), lw, bold=True)
+    yb = relay[1] - 30
     cv.arrow(gx1, yb, gx0, yb, BLUE, 2)
-    cv.label(gx0 + 10, yb + 17, L("pedidos: verificação ativa, atualização", "requests: active check, refresh"), lw, below=True)
-    yc = mid_overlap(router, plat)
-    cv.arrow(gx0, yc, gx1, yc, BODY)
-    cv.label(gx0 + 10, yc - 8, L("telemóveis da família no Wi-Fi (ferramenta proposta)", "family phones on the Wi-Fi (proposed tool)"), lw, fill=BODY)
-    yd = mid_overlap(hub, plat)
+    cv.label(gx0 + 8, yb + 17, L("pedidos, comandos, fotografias cifradas", "requests, commands, encrypted photos"), lw, below=True)
+    yd = mid_overlap(hub[0], plat)
     cv.arrow(gx0, yd, gx1, yd, BODY)
-    cv.label(gx0 + 10, yd - 8, L("porta aberta e fechada, como hoje", "door open and closed, as today"), lw, fill=BODY)
-    cv.arrow(HX + HW / 2, cam[1], HX + HW / 2, router[0], BODY)
-    cv.label(HX + HW / 2 + 12, (cam[1] + router[0]) / 2 + 4, L("vídeo, só dentro de casa", "video, inside the home only"), 200, fill=BODY)
-    px0, px1 = D + CW, PX
-    y1 = mid_overlap(lba[0], app, 20)
+    cv.label(gx0 + 8, yd - 8, L("porta, como hoje", "door, as today"), lw, fill=BODY)
+    yc = mid_overlap(hub[1], plat)
+    cv.arrow(gx0, yc, gx1, yc, BODY)
+    cv.label(gx0 + 8, yc - 8, L("telemóveis no Wi-Fi", "phones on the Wi-Fi"), lw, fill=BODY)
+    ax0, ax1 = AX + AW, BX
+    alw = ax1 - ax0 - 14
+    y3 = relay[0] + 50
+    cv.arrow(ax0, y3, ax1, y3, BODY)
+    cv.label(ax0 + 7, y3 - 8, L("eventos, avisos", "events, alerts"), alw, fill=BODY, size=11)
+    y3b = relay[1] - 40
+    cv.arrow(ax1, y3b, ax0, y3b, BODY)
+    cv.label(ax0 + 7, y3b + 16, L("pedidos da aplicação", "app requests"), alw, fill=BODY, size=11, below=True)
+    y4 = plat[0] + 50
+    cv.arrow(ax0, y4, ax1, y4, BODY)
+    cv.label(ax0 + 7, y4 - 8, L("porta, Wi-Fi", "door, Wi-Fi"), alw, fill=BODY, size=11)
+    y4b = plat[1] - 30
+    cv.arrow(ax1, y4b, ax0, y4b, BODY)
+    cv.label(ax0 + 7, y4b + 16, L("ações MCP após “Sim”", "MCP actions after “Yes”"), alw, fill=BODY, size=11, below=True)
+    px0, px1 = BX + BW, PX
+    y1 = Y0 + 60
     cv.arrow(px1, y1, px0, y1, BODY)
     cv.label(px0 + 8, y1 - 8, L("frases, perguntas, “Sim”", "sentences, questions, “Yes”"), px1 - px0 - 14, fill=BODY, size=11)
-    y2 = mid_overlap(lba[1], app, 20)
+    y2 = svc[0][1] - 60
     cv.arrow(px0, y2, px1, y2, BODY)
-    cv.label(px0 + 8, y2 - 8, L("avisos (_push_)", "alerts (push)"), px1 - px0 - 14, fill=BODY, size=11)
+    cv.label(px0 + 8, y2 - 8, L("respostas, avisos (_push_)", "answers, alerts (push)"), px1 - px0 - 14, fill=BODY, size=11)
 
-    # ---- the options below
+    # ---- the costs and the options below
     oy = band_bottom + 30
     ow = (2040 - 40 - 2 * 24) / 3
     panels = [
-        (L("Evolução prevista (A1 no documento 17)", "Upgrade path (A1 in document 17)"), BLUE, "#FFFFFF",
-         [L("Se os _routers_ ou as câmaras da Altice tiverem uma NPU capaz de correr um detetor, a visão passa para casa "
-            "e só saem eventos, miniaturas e assinaturas visuais.",
-            "If Altice’s routers or cameras have an NPU that can run a detector, vision moves into the home and only "
-            "events, thumbnails and fingerprints leave it."),
-          L("≈ 0,36 € por casa e por mês (sobrecusto de 15 € por _router_, um pressuposto). É a primeira pergunta para a Altice.",
-            "≈ €0.36 per home a month (a €15 router premium, an assumption). It is the first question for Altice.")]),
-        (L("Rejeitada: uma caixa em cada casa, com o modelo de linguagem", "Rejected: a box in every home, language model included"),
+        (L("Custos do desenho escolhido (estimativas da equipa, 20 nov.)", "Costs of the chosen design (team estimates, 20 Nov)"), BLUE, "#FFFFFF",
+         [L("Equipamento, comprado uma vez: câmara interior ≈ 45 €; _Raspberry Pi 5_ ≈ 200 €; _Jetson Orin Nano Super_ ≈ 345 €; ou "
+            "_router_ com NPU, + 15 € (estimativa). Em 5 anos, 3,33 ou 5,75 € por mês pelo equipamento.",
+            "Equipment, bought once: indoor camera ≈ €45; Raspberry Pi 5 ≈ €200; Jetson Orin Nano Super ≈ €345; or a router with an "
+            "NPU, + €15 (an estimate). Over 5 years, €3.33 or €5.75 a month for the device."),
+          L("Energia dos modelos: _YOLOv8n_ abaixo de 0,01 € por mês; _OWLv2_ até 0,72 € com 12 h de movimento por dia (num _Jetson Orin Nano_).",
+            "Model energy: YOLOv8n below €0.01 a month; OWLv2 up to €0.72 at 12 h of motion a day (on a Jetson Orin Nano).")]),
+        (L("Alternativa avaliada, não escolhida: visão nos servidores L4 da Altice", "Alternative evaluated, not chosen: vision on Altice’s L4 servers"),
          WARN, "#FFFFFF",
-         [L("_Raspberry Pi 5_ com _AI HAT+_ (200 €) ou _Jetson Orin Nano Super_ (269 €): 6,55 a 8,64 € por casa e por mês, "
-            "e 107,5 a 142,0 M€ de equipamento para 500 000 casas (documento 17).",
-            "A Raspberry Pi 5 with AI HAT+ (€200) or a Jetson Orin Nano Super (€269): €6.55 to €8.64 per home a month, "
-            "and €107.5 M to €142.0 M of hardware for 500,000 homes (document 17)."),
-          L("O modelo de linguagem exige ainda mais memória (cerca de 1 GB o do protótipo, 2,1 GB o de 4B testado, três vezes "
-            "mais lento) e cada atualização chega a 500 000 caixas.",
-            "The language model needs more memory again (about 1 GB for the prototype’s, 2.1 GB for the 4B one tried, three "
-            "times slower), and every update has to reach 500,000 boxes.")]),
+         [L("Regiões da imagem enviadas para GPU L4 da Altice: ≈ 0,49 € por casa e por mês com 1 câmara (documento 17).",
+            "Image regions sent to Altice’s L4 GPUs: ≈ €0.49 per home a month with 1 camera (document 17)."),
+          L("Não escolhida: as imagens sairiam de casa.", "Not chosen: images would leave the home.")]),
         (L("Rejeitada: vídeo ou imagens completas para a nuvem", "Rejected: video or full frames to the cloud"), WARN, "#FFFFFF",
          [L("Vídeo contínuo a 2 Mbps (pressuposto): 657 GB por câmara e por mês e 1 000 Gbps no pico com 500 000 câmaras. "
             "Imagens completas durante o movimento: 2,41 € por casa e por mês nos servidores da Altice e 3,93 a 4,26 € em GPU "
@@ -251,7 +198,12 @@ def implantacao(lang):
     hs = [cv.box_h(ow, t, b, 16, 14.5, 12.5) for t, c, f, b in panels]
     for i, (t, c, f, b) in enumerate(panels):
         cv.box(20 + i * (ow + 24), oy, ow, t, b, h=max(hs), pad=16, stroke=c, sw=1.5, title_color=c if c == WARN else DEEP)
-    cv.save("implantacao", round(oy + max(hs) + 20))
+    end = cv.para(20, oy + max(hs) + 30,
+                  L("Uma caixa paga pela Altice não se paga a 3,99 € por mês (−4,81 a −6,90 € por casa e por mês, documento 17): o modelo "
+                    "funciona com a IA no _router_ ou com equipamento comprado pelo cliente.",
+                    "A box paid for by Altice does not pay back at €3.99 a month (−€4.81 to −€6.90 per home a month, document 17): the "
+                    "model works with the AI on the router, or with equipment the customer buys."), 2000, 12.5, fill=MUTED)
+    cv.save("implantacao", round(end + 10))
 
 
 # ====================================================================== presence
@@ -397,9 +349,9 @@ def presenca_estados(lang):
     cv.para(c1, yy + 26, L("* Fora de A SAIR; em A SAIR conta logo. Valores do protótipo (presence.py); os de produção são propostas.",
                            "* Outside LEAVING; in LEAVING it counts at once. The prototype’s values (presence.py); production ones are proposals."),
             bw - 32, 11.5, fill=MUTED)
-    foot = L("Corre no serviço _ThingTracker_, na Altice: um estado por casa, recalculado a cada evento (porta, Wi-Fi, resultado "
+    foot = L("Corre no equipamento da casa: um estado por casa, recalculado a cada evento (porta, Wi-Fi, resultado "
              "da visão) e a cada temporizador.",
-             "Runs in the ThingTracker service, at Altice: one state per home, recomputed on every event (door, Wi-Fi, vision "
+             "Runs on the home device: one state per home, recomputed on every event (door, Wi-Fi, vision "
              "result) and every timer.")
     end = cv.para(40, by + hb + 30, foot, W - 80, 12.5, fill=MUTED)
     cv.save("presenca-estados", round(end))
@@ -416,40 +368,38 @@ def legend(lang):
 def seq_livro_esquecido(lang):
     pt = lang == "pt"
     L = (lambda a, b: a if pt else b)
-    cols = [(L("Sensor da porta e _router_", "Door sensor and router"), L("em casa, ligados à Altice", "in the home, on Altice"), "home"),
-            (L("Agente da casa", "Home agent"), L("no _router_", "on the router"), "home"),
-            (L("Plataforma Altice", "Altice platform"), L("dispositivos e eventos", "devices and events"), "altice"),
-            (L("Servidores de visão", "Vision workers"), L("_OWLv2_ e _DINOv2_, GPU L4", "OWLv2 and DINOv2, L4 GPUs"), "altice"),
-            (L("Serviço _ThingTracker_", "ThingTracker service"), L("presença e regras, por casa", "presence and rules, per home"), "altice"),
+    cols = [(L("Equipamento da casa", "Home device"), L("visão, memória e regras", "vision, memory and rules"), "home"),
+            (L("Sensor da porta e _router_", "Door sensor and router"), L("em casa, ligados à Altice", "in the home, on Altice"), "home"),
+            (L("Plataforma Altice", "Altice platform"), L("eventos, retransmissão, notificações", "events, relay, notifications"), "altice"),
             (L("Aplicação Altice", "Altice app"), L("no telemóvel", "on the phone"), "phone")]
     rows = [
         ("g", L("Estado: OCUPADA (o telemóvel do dono do livro está no Wi-Fi). O livro foi visto pela última vez na secretária da Sala 1, às 18h02.",
                 "State: OCCUPIED (the book owner’s phone is on the Wi-Fi). The book was last seen on the desk in Living room 1, at 18:02.")),
-        ("m", 0, 2, L("porta aberta (`sensorState: alarm`)", "door open (`sensorState: alarm`)")),
-        ("m", 2, 4, L("`door.opened` (hoje: `get_home_devices` a cada 4 s)", "`door.opened` (today: `get_home_devices` every 4 s)")),
-        ("m", 0, 2, L("porta fechada, 8 s depois", "door closed, 8 s later")),
-        ("m", 2, 4, L("`door.closed`", "`door.closed`")),
-        ("n", 4, 4, L("A porta abriu e fechou: OCUPADA → A SAIR. Espera até T_saída (10 s na demonstração, 5 min em produção) por quem saiu",
+        ("m", 1, 2, L("porta aberta (`sensorState: alarm`)", "door open (`sensorState: alarm`)")),
+        ("m", 2, 0, L("`door.opened`, em texto, pela retransmissão", "`door.opened`, as text, through the relay")),
+        ("m", 1, 2, L("porta fechada, 8 s depois", "door closed, 8 s later")),
+        ("m", 2, 0, L("`door.closed`", "`door.closed`")),
+        ("n", 0, 0, L("A porta abriu e fechou: OCUPADA → A SAIR. Espera até T_saída (10 s na demonstração, 5 min em produção) por quem saiu",
                       "The door opened and closed: OCCUPIED → LEAVING. Waits up to T_leave (10 s in the demo, 5 min in production) for whoever left")),
-        ("m", 0, 2, L("o telemóvel do dono do livro saiu do Wi-Fi", "the book owner’s phone left the Wi-Fi")),
-        ("m", 2, 4, L("`wifi.left`: o dono do livro (evento proposto)", "`wifi.left`: the book owner (proposed event)")),
-        ("n", 4, 4, L("Saiu alguém da família: verificação ativa do lugar habitual do livro, sem esperar por movimento",
-                      "A family member left: an active check of the book’s usual place, without waiting for motion")),
-        ("m", 4, 1, L("pede a região da secretária: 3 imagens, 1 por segundo", "asks for the desk’s region: 3 frames, 1 a second")),
-        ("m", 1, 3, L("3 regiões, na fila urgente", "3 regions, on the urgent queue")),
-        ("m", 3, 4, L("3 resultados: caixas de “livro” e vetores _DINOv2_", "3 results: “book” boxes and DINOv2 vectors")),
-        ("n", 4, 4, L("Comparados com as 8 vistas do livro (_pgvector_): 0,70 ≥ 0,62 em 3 de 3 imagens. Regra “avisa-me se sair sem o "
-                      "livro” cumprida, porque bastam 2 de 3",
-                      "Matched with the book’s 8 views (pgvector): 0.70 ≥ 0.62 in 3 of 3 frames. Rule “tell me if I leave without "
-                      "my book” met, since 2 of 3 are enough")),
-        ("m", 4, 5, L("aviso: “O livro ficou em casa”, com a miniatura e “na secretária, às 18h02”",
-                      "alert: “Your book stayed at home”, with the thumbnail and “on the desk, at 18:02”")),
+        ("m", 1, 2, L("o telemóvel do dono do livro saiu do Wi-Fi", "the book owner’s phone left the Wi-Fi")),
+        ("m", 2, 0, L("`wifi.left`: o dono do livro (evento proposto)", "`wifi.left`: the book owner (proposed event)")),
+        ("n", 0, 0, L("Saiu alguém da família: verificação ativa do lugar habitual do livro, sem esperar por movimento. Lê 3 imagens da "
+                      "secretária, 1 por segundo, na rede da casa",
+                      "A family member left: an active check of the book’s usual place, without waiting for motion. Reads 3 frames of "
+                      "the desk, 1 a second, on the home network")),
+        ("n", 0, 0, L("Caixas de “livro” e vetores _DINOv2_, comparados com as 8 fotos do livro: 0,70 ≥ 0,62 em 3 de 3 imagens. Regra "
+                      "“avisa-me se sair sem o livro” cumprida, porque bastam 2 de 3",
+                      "“Book” boxes and DINOv2 vectors, matched with the book’s 8 photos: 0.70 ≥ 0.62 in 3 of 3 frames. Rule “tell me "
+                      "if I leave without my book” met, since 2 of 3 are enough")),
+        ("m", 0, 2, L("aviso, só texto: “livro, secretária, 18h02”", "alert, text only: “book, desk, 18:02”")),
+        ("m", 2, 3, L("notificação: “O livro ficou em casa, na secretária, às 18h02”",
+                      "push: “Your book stayed at home, on the desk, at 18:02”")),
         ("g", L("Se o livro aparecer em menos de 2 das 3 imagens (meio tapado, por exemplo), o motor de regras pode chamar o juiz: um modelo "
-                "de visão-linguagem na Altice vê 2 a 3 s da região e responde sim, não ou incerto, com uma frase. “Sim” dá o aviso; “não” "
-                "não dá; “incerto” faz a aplicação perguntar à família, sem alarme.",
-                "If the book is seen in fewer than 2 of the 3 frames (half hidden, say), the rules engine may call the judge: a "
-                "vision-language model at Altice looks at 2 to 3 s of the region and answers yes, no or unsure, with a sentence. “Yes” "
-                "gives the alert; “no” does not; “unsure” makes the app ask the family, with no alarm.")),
+                "de visão-linguagem opcional, no equipamento da casa, vê 2 a 3 s da região e responde sim, não ou incerto. “Sim” dá o aviso; "
+                "“não” não dá; “incerto” faz a aplicação perguntar à família, sem alarme. As imagens não saem de casa.",
+                "If the book is seen in fewer than 2 of the 3 frames (half hidden, say), the rules engine may call the judge: an optional "
+                "vision-language model on the home device looks at 2 to 3 s of the region and answers yes, no or unsure. “Yes” gives the "
+                "alert; “no” does not; “unsure” makes the app ask the family, with no alarm. The images do not leave the home.")),
         ("g", L("Uma chegada (a porta abre e fecha e um telemóvel entra no Wi-Fi) não inicia a verificação.",
                 "An arrival (the door opens and closes and a phone joins the Wi-Fi) does not start the check.")),
         ("g", L("Sem sensor de porta, o mesmo teste começa quando um telemóvel da família sai do Wi-Fi (passado T_telemóvel, por isso "
@@ -458,7 +408,7 @@ def seq_livro_esquecido(lang):
                 "when a camera that sees the exit door sees someone leave through it.")),
     ]
     sequence(lang, "seq-livro-esquecido", L("Sequência: o livro esquecido", "Sequence: the book left behind"), cols, rows, legend(lang),
-             colw=[200, 190, 210, 200, 250, 290])
+             colw=[340, 250, 330, 340])
 
 
 @view
@@ -466,32 +416,30 @@ def seq_pessoa_desconhecida(lang):
     pt = lang == "pt"
     L = (lambda a, b: a if pt else b)
     cols = [(L("Câmara", "Camera"), L("Sala 1, rede da casa", "Living room 1, home network"), "home"),
-            (L("Agente da casa", "Home agent"), L("no _router_, com _YuNet_ e _SFace_", "on the router, with YuNet and SFace"), "home"),
-            (L("Servidores de visão", "Vision workers"), L("_OWLv2_, GPU L4", "OWLv2, L4 GPUs"), "altice"),
-            (L("Serviço _ThingTracker_", "ThingTracker service"), L("presença e regras, por casa", "presence and rules, per home"), "altice"),
-            (L("Aplicação Altice", "Altice app"), L("no telemóvel", "on the phone"), "phone"),
-            (L("Servidor MCP", "MCP server"), L("plataforma Altice", "Altice platform"), "altice")]
+            (L("Equipamento da casa", "Home device"), L("visão, rostos com _YuNet_ e _SFace_, regras", "vision, faces with YuNet and SFace, rules"), "home"),
+            (L("Plataforma Altice", "Altice platform"), L("retransmissão, notificações, servidor MCP", "relay, notifications, MCP server"), "altice"),
+            (L("Aplicação Altice", "Altice app"), L("no telemóvel", "on the phone"), "phone")]
     rows = [
         ("g", L("Estado: VAZIA desde as 14h10 (nenhum telemóvel da família no Wi-Fi). Regra ativa: “Toca o alarme quando entrar alguém "
                 "que não seja da família”, com a escolha “perguntar primeiro”.",
                 "State: EMPTY since 14:10 (no family phone on the Wi-Fi). Active rule: “Sound the alarm when someone who isn’t family "
                 "comes in”, with the choice “ask first”.")),
         ("m", 0, 1, L("imagens RTSP, só na rede da casa", "RTSP frames, on the home network only")),
-        ("n", 1, 1, L("Movimento: recorta a região que mudou. _YuNet_ encontra um rosto; _SFace_ dá 0,21 contra o padrão mais "
-                      "parecido, abaixo de 0,363: “rosto desconhecido”",
-                      "Motion: cuts out the changed region. YuNet finds a face; SFace gives 0.21 against the closest template, "
-                      "below 0.363: “unknown face”")),
-        ("m", 1, 2, L("região + “rosto desconhecido” e a sua caixa (fila urgente)", "region + “unknown face” and its box (urgent queue)")),
-        ("m", 2, 3, L("uma pessoa; o rosto está dentro da sua caixa", "a person; the face is inside their box")),
-        ("n", 3, 3, L("3 análises seguidas (cerca de 3 s) com o mesmo rosto desconhecido: VAZIA → INCERTA, e a regra cumpre-se",
+        ("n", 1, 1, L("Movimento: o detetor encontra uma pessoa. _YuNet_ encontra o rosto dentro da sua caixa; _SFace_ dá 0,21 contra o "
+                      "padrão mais parecido, abaixo de 0,363: “rosto desconhecido”",
+                      "Motion: the detector finds a person. YuNet finds the face inside their box; SFace gives 0.21 against the closest "
+                      "template, below 0.363: “unknown face”")),
+        ("n", 1, 1, L("3 análises seguidas (cerca de 3 s) com o mesmo rosto desconhecido: VAZIA → INCERTA, e a regra cumpre-se",
                       "3 consecutive analyses (about 3 s) with the same unknown face: EMPTY → UNSURE, and the rule is met")),
-        ("m", 3, 4, L("aviso urgente: “Está alguém que não é da família na Sala 1”, com o recorte da pessoa",
-                      "urgent alert: “Someone who isn’t family is in Living room 1”, with the crop of the person")),
-        ("n", 4, 4, L("Cartões do aviso: “Tocar a sirene”, “Ligar à polícia (112)” e “Ver em direto”",
+        ("m", 1, 2, L("aviso urgente, só texto: “desconhecido, Sala 1”", "urgent alert, text only: “unknown, Living room 1”")),
+        ("m", 2, 3, L("notificação urgente no telemóvel: “Está alguém que não é da família na Sala 1”",
+                      "push: “Someone who isn’t family is in Living room 1”")),
+        ("n", 3, 3, L("Cartões do aviso: “Tocar a sirene”, “Ligar à polícia (112)” e “Ver em direto”",
                       "The alert’s cards: “Sound the siren”, “Call the police (112)” and “See live”")),
-        ("m", 4, 3, L("“Sim” em “Tocar a sirene”", "“Yes” on “Sound the siren”")),
-        ("m", 3, 5, L("`update_device_capabilities`: `sirenSwitch` da câmara ligado", "`update_device_capabilities`: camera `sirenSwitch` on")),
-        ("n", 4, 4, L("“Ligar à polícia (112)” abre a chamada no telemóvel e é a pessoa quem liga. O sistema nunca marca o número",
+        ("m", 3, 2, L("“Sim” em “Tocar a sirene”", "“Yes” on “Sound the siren”")),
+        ("m", 2, 0, L("servidor MCP, `update_device_capabilities`: `sirenSwitch` da câmara ligado",
+                      "MCP server, `update_device_capabilities`: camera `sirenSwitch` on")),
+        ("n", 3, 3, L("“Ligar à polícia (112)” abre a chamada no telemóvel e é a pessoa quem liga. O sistema nunca marca o número",
                       "“Call the police (112)” opens the call on the phone and the person places it. The system never dials")),
         ("g", L("Rosto da família (semelhança ≥ 0,363): nenhum aviso, e INCERTA → OCUPADA. Rosto não visível: a aplicação pergunta "
                 "“Está alguém na Sala 1. É alguém conhecido?”, sem alarme, e só sugere o 112 se a resposta for “não”.",
@@ -499,51 +447,52 @@ def seq_pessoa_desconhecida(lang):
                 "Living room 1. Do you know them?”, with no alarm, and suggests 112 only if the answer is “no”.")),
     ]
     sequence(lang, "seq-pessoa-desconhecida", L("Sequência: pessoa desconhecida", "Sequence: an unknown person"), cols, rows, legend(lang),
-             colw=[190, 230, 200, 250, 290, 200])
+             colw=[260, 360, 360, 330])
 
 
 @view
 def seq_casa_vazia(lang):
     pt = lang == "pt"
     L = (lambda a, b: a if pt else b)
-    cols = [(L("Sensor da porta e _router_", "Door sensor and router"), L("em casa, ligados à Altice", "in the home, on Altice"), "home"),
-            (L("Agente da casa", "Home agent"), L("no _router_", "on the router"), "home"),
-            (L("Plataforma Altice", "Altice platform"), L("eventos e servidor MCP", "events and MCP server"), "altice"),
-            (L("Servidores de visão", "Vision workers"), L("_OWLv2_, GPU L4", "OWLv2, L4 GPUs"), "altice"),
-            (L("Serviço _ThingTracker_", "ThingTracker service"), L("presença e regras, por casa", "presence and rules, per home"), "altice"),
+    cols = [(L("Equipamento da casa", "Home device"), L("visão, presença e regras", "vision, presence and rules"), "home"),
+            (L("Sensor da porta e _router_", "Door sensor and router"), L("em casa, ligados à Altice", "in the home, on Altice"), "home"),
+            (L("Plataforma Altice", "Altice platform"), L("eventos, servidor MCP, notificações", "events, MCP server, notifications"), "altice"),
             (L("Aplicação Altice", "Altice app"), L("no telemóvel", "on the phone"), "phone")]
     rows = [
         ("g", L("Estado: OCUPADA. Regras ativas: “Quando não estiver ninguém, propõe desligar o que ficou ligado” e “Avisa-me se a "
                 "porta ficar aberta sem ninguém por perto”.",
                 "State: OCCUPIED. Active rules: “When nobody is home, offer to turn off what is still on” and “Tell me if the "
                 "door is left open with nobody around”.")),
-        ("m", 0, 2, L("porta aberta e fechada; os 2 telemóveis da família saem do Wi-Fi", "door opened and closed; both family phones leave the Wi-Fi")),
-        ("m", 2, 4, L("`door.opened`, `door.closed`, `wifi.left` × 2", "`door.opened`, `door.closed`, `wifi.left` × 2")),
-        ("n", 4, 4, L("OCUPADA → A SAIR. Nenhuma pessoa vista desde que a porta fechou; falta confirmar que ninguém ficou parado",
+        ("m", 1, 2, L("porta aberta e fechada; os 2 telemóveis da família saem do Wi-Fi", "door opened and closed; both family phones leave the Wi-Fi")),
+        ("m", 2, 0, L("`door.opened`, `door.closed`, `wifi.left` × 2, em texto", "`door.opened`, `door.closed`, `wifi.left` × 2, as text")),
+        ("n", 0, 0, L("OCUPADA → A SAIR. Nenhuma pessoa vista desde que a porta fechou; falta confirmar que ninguém ficou parado",
                       "OCCUPIED → LEAVING. No person seen since the door closed; it still has to confirm that nobody stayed still")),
-        ("m", 4, 1, L("atualização: as regiões onde as pessoas foram vistas por último", "refresh: the regions where people were last seen")),
-        ("m", 1, 3, L("regiões (fila urgente)", "regions (urgent queue)")),
-        ("m", 3, 4, L("nenhuma pessoa", "no person")),
-        ("n", 4, 4, L("Passado T_saída, ninguém nas câmaras: A SAIR → VAZIA. Ligados, segundo `get_home_devices`: as luzes (na tomada) e o ar condicionado",
-                      "After T_leave, nobody on the cameras: LEAVING → EMPTY. On, according to `get_home_devices`: the lights (on the plug) and the air conditioner")),
-        ("m", 4, 5, L("aviso: “Não está ninguém em casa e há 2 aparelhos ligados”, com dois cartões “Sim”",
-                      "alert: “Nobody is home and 2 appliances are on”, with two “Yes” cards")),
-        ("m", 5, 4, L("“Sim”: desligar as luzes", "“Yes”: turn off the lights")),
-        ("m", 4, 2, L("`update_device_capabilities`: tomada desligada", "`update_device_capabilities`: plug off")),
-        ("m", 5, 4, L("“Sim”: desligar o ar condicionado", "“Yes”: turn off the air conditioner")),
-        ("m", 4, 2, L("`update_device_capabilities`: ar condicionado desligado", "`update_device_capabilities`: air conditioner off")),
+        ("n", 0, 0, L("Atualização: lê as câmaras onde as pessoas foram vistas por último, na rede da casa. Nenhuma pessoa",
+                      "Refresh: reads the cameras where people were last seen, on the home network. No person")),
+        ("m", 0, 2, L("que aparelhos estão ligados? (`get_home_devices`)", "which appliances are on? (`get_home_devices`)")),
+        ("m", 2, 0, L("as luzes (na tomada) e o ar condicionado", "the lights (on the plug) and the air conditioner")),
+        ("n", 0, 0, L("Passado T_saída, ninguém nas câmaras: A SAIR → VAZIA, com 2 aparelhos ligados",
+                      "After T_leave, nobody on the cameras: LEAVING → EMPTY, with 2 appliances on")),
+        ("m", 0, 2, L("aviso, só texto, com as 2 ações propostas", "alert, text only, with the 2 proposed actions")),
+        ("m", 2, 3, L("notificação: “Não está ninguém em casa e há 2 aparelhos ligados”, com dois cartões “Sim”",
+                      "push: “Nobody is home and 2 appliances are on”, with two “Yes” cards")),
+        ("m", 3, 2, L("“Sim”: desligar as luzes", "“Yes”: turn off the lights")),
+        ("m", 2, 1, L("`update_device_capabilities`: tomada desligada", "`update_device_capabilities`: plug off")),
+        ("m", 3, 2, L("“Sim”: desligar o ar condicionado", "“Yes”: turn off the air conditioner")),
+        ("m", 2, 1, L("`update_device_capabilities`: ar condicionado desligado", "`update_device_capabilities`: air conditioner off")),
         ("g", L("Noutro dia, a porta da entrada fica aberta", "Another day, the front door is left open")),
-        ("m", 0, 2, L("porta aberta", "door open")),
-        ("m", 2, 4, L("`door.opened`", "`door.opened`")),
-        ("n", 4, 4, L("Porta aberta há T_porta (5 s na demonstração, 2 min em produção, proposta), sem ninguém em nenhuma câmara "
+        ("m", 1, 2, L("porta aberta", "door open")),
+        ("m", 2, 0, L("`door.opened`", "`door.opened`")),
+        ("n", 0, 0, L("Porta aberta há T_porta (5 s na demonstração, 2 min em produção, proposta), sem ninguém em nenhuma câmara "
                       "desde que abriu",
                       "Door open for T_door (5 s in the demo, 2 min in production, a proposal), with nobody on any camera "
                       "since it opened")),
-        ("m", 4, 5, L("aviso: “A porta da entrada está aberta e não está ninguém por perto”, com a faixa da porta e “Ver em direto”",
-                      "alert: “The front door is open and nobody is around”, with the door banner and “See live”")),
+        ("m", 0, 2, L("aviso, só texto: “porta da entrada aberta, ninguém por perto”", "alert, text only: “front door open, nobody around”")),
+        ("m", 2, 3, L("notificação: “A porta da entrada está aberta e não está ninguém por perto”, com a faixa da porta e “Ver em direto”",
+                      "push: “The front door is open and nobody is around”, with the door banner and “See live”")),
     ]
     sequence(lang, "seq-casa-vazia", L("Sequência: casa vazia e porta aberta", "Sequence: empty home and open door"), cols, rows, legend(lang),
-             colw=[200, 190, 210, 200, 250, 290])
+             colw=[340, 250, 330, 340])
 
 
 # ====================================================================== C4
@@ -580,18 +529,20 @@ def c4_1_contexto(lang):
                                      "em casa e cumpre regras escritas numa frase",
                                      "Makes the camera a source of information: finds the registered things and people, knows who is "
                                      "home, and keeps rules written in one sentence"),
-                                   L("Duas partes: o agente da casa, no _router_, e o serviço com a visão, na Altice",
-                                     "Two parts: the home agent, on the router, and the service with the vision, at Altice")], **SYSTEM)),
+                                   L("Corre todo no equipamento da casa (o _router_, se tiver NPU, ou uma pequena caixa): imagens, assinaturas visuais e padrões faciais nunca saem de casa",
+                                     "Runs entirely on the home device (the router, if it has an NPU, or a small box): images, fingerprints and face templates never leave the home")], **SYSTEM)),
         "plat": (2, 1, 1, dict(title=L("Plataforma _Connected Home_", "Connected Home platform"), sub=L("[sistema existente · Altice]", "[existing system · Altice]"),
                                body=[L("Dispositivos, cenários, segurança e notificações; servidor MCP com 18 ferramentas",
-                                       "Devices, scenarios, security and notifications; MCP server with 18 tools")], **EXTERNAL)),
+                                       "Devices, scenarios, security and notifications; MCP server with 18 tools"),
+                                     L("Para o _ThingTracker_, só texto: contas, nomes, cenários e registo de eventos",
+                                       "For ThingTracker, text only: accounts, names, scenarios and the event log")], **EXTERNAL)),
         "visitor": (0, 2, 1, dict(title=L("Visita ou desconhecido", "Guest or stranger"), sub=L("[pessoa]", "[person]"),
                                   body=[L("Aparece nas imagens; sem registo nem consentimento, nunca recebe um nome",
                                           "Appears in the frames; without registration and consent, never gets a name")], **PERSON)),
-        "llm": (1, 2, 1, dict(title=L("Modelos de linguagem e de visão-linguagem", "Language and vision-language models"),
-                              sub=L("[o de texto pode ser de um fornecedor sob contrato]", "[the text model may be a provider under contract]"),
-                              body=[L("Só escrevem texto (frases em regras, que o serviço valida, e respostas); nunca decidem. O juiz vê, raramente, 2 a 3 s de um momento duvidoso",
-                                      "Write text only (sentences into rules, which the service checks, and answers); they never decide. The judge rarely sees 2 to 3 s of an ambiguous moment")],
+        "llm": (1, 2, 1, dict(title=L("Modelo de linguagem externo", "External language model"),
+                              sub=L("[possível no futuro, por opção do cliente; não agora]", "[a possible future opt-in; not now]"),
+                              body=[L("Por exemplo, o _ChatGPT_ ou o _Claude_ do próprio cliente; só texto. Hoje, o modelo de linguagem corre no equipamento da casa",
+                                      "For example, the customer’s own ChatGPT or Claude; text only. Today the language model runs on the home device")],
                               dash="6 4", **EXTERNAL)),
         "router": (2, 2, 1, dict(title=L("_Router_ e sensores do kit", "Router and kit sensors"), sub=L("[sistemas existentes · em casa]", "[existing systems · in the home]"),
                                  body=[L("Wi-Fi com os telemóveis da família; sensor da porta; luz, tomada e sirene",
@@ -599,21 +550,21 @@ def c4_1_contexto(lang):
     })
     g.h2("family", "app", L("usa: regista, pergunta, escreve regras, diz “Sim”", "uses it: registers, asks, writes rules, says “Yes”"),
          L("mostra avisos e respostas", "shows alerts and answers"))
-    g.v2("app", "tt", L("frases, perguntas, fotografias, vídeo do rosto, “Sim”", "sentences, questions, photos, face video, “Yes”"),
+    g.v2("app", "tt", L("frases, perguntas, “Sim”; fotografias e vídeo do rosto, cifrados de ponta a ponta", "sentences, questions, “Yes”; photos and face video, encrypted end to end"),
          L("respostas", "answers"), lw=160)
     g.v("plat", "app", L("notificações com os avisos", "notifications with the alerts"), lw=160)
-    g.h("cams", "tt", L("vídeo, lido em casa pelo agente no _router_", "video, read in the home by the agent on the router"))
-    g.h2("tt", "plat", L("chamadas MCP: ações após “Sim”, leitura dos dispositivos; avisos", "MCP calls: actions after “Yes”, device reads; alerts"),
+    g.h("cams", "tt", L("vídeo, lido só em casa, pelo equipamento da casa", "video, read only in the home, by the home device"))
+    g.h2("tt", "plat", L("só texto: eventos e avisos; ações após “Sim”, pelo MCP", "text only: events and alerts; actions after “Yes”, through the MCP"),
          L("eventos da porta e do Wi-Fi", "door and Wi-Fi events"))
-    g.v2("tt", "llm", L("texto; raramente, um clipe curto", "text; rarely, a short clip"), L("regras, respostas, veredictos", "rules, answers, verdicts"), lw=150)
+    g.v2("tt", "llm", L("só texto, se o cliente optar", "text only, if the customer opts in"), L("regras, respostas", "rules, answers"), lw=150)
     g.v2("plat", "router", L("comandos: luz, tomada, sirene", "commands: light, plug, siren"),
          L("porta aberta e fechada; telemóveis no Wi-Fi (ferramenta proposta)", "door open and closed; phones on the Wi-Fi (proposed tool)"), lw=155)
     g.v("visitor", "cams", L("aparece nas imagens", "appears in the frames"), lw=150)
     end = max(r[3] for r in g.r.values())
     end = cv.para(40, end + 40, L("Notação C4 (c4model.com), nível 1. Azul: o sistema descrito; cinzento: sistemas existentes; contorno "
-                                  "azul-escuro: pessoas; tracejado: pode ser externo à Altice.",
+                                  "azul-escuro: pessoas; tracejado: uma opção futura, fora da Altice.",
                                   "C4 notation (c4model.com), level 1. Blue: the system described; grey: existing systems; dark blue "
-                                  "outline: people; dashed: may be outside Altice."), W - 80, 12.5, fill=MUTED)
+                                  "outline: people; dashed: a future option, outside Altice."), W - 80, 12.5, fill=MUTED)
     cv.save("c4-1-contexto", round(end))
 
 
@@ -627,69 +578,68 @@ def c4_2_contentores(lang):
     C = CONTAINER
     g.place({
         "cams": (0, 0, 1, dict(title=L("Câmaras do kit", "Kit cameras"), sub=L("[sistema existente]", "[existing system]"),
-                               body=[L("RTSP, H.265", "RTSP, H.265")], **EXTERNAL)),
+                               body=[L("RTSP, H.265, só na rede da casa", "RTSP, H.265, on the home network only")], **EXTERNAL)),
         "app": ((3, 5), 0, 1, dict(title=L("Aplicação Altice", "Altice app"), sub=L("[sistema existente · telemóvel]", "[existing system · phone]"),
                                    body=[L("Separador _Things_, assistente e avisos com cartões de ação", "Things tab, assistant, and alerts with action cards")], **EXTERNAL)),
-        "agent": (0, 1, 2, dict(title=L("Agente da casa", "Home agent"), sub=L("[_Python_ no CPU do _router_]", "[Python on the router’s CPU]"),
-                                body=[L("Máscaras, filtro de movimento, recorte da região que mudou", "Masks, motion gate, cutting out the changed region"),
-                                      L("Rostos com _YuNet_ e _SFace_ (opcional)", "Faces with YuNet and SFace (opt-in)"),
-                                      L("Lê a pedido do serviço, mesmo sem movimento", "Reads on the service’s request, even without motion"),
-                                      L("Guarda só em memória os últimos 3 s, para o juiz", "Keeps the last 3 s in memory only, for the judge")], **C)),
-        "vision": (2, 1, 1, dict(title=L("Servidores de visão", "Vision workers"), sub=L("[_PyTorch_, GPU L4]", "[PyTorch, L4 GPUs]"),
-                                 body=[L("_OWLv2_: caixas; _DINOv2_: um vetor por candidato", "OWLv2: boxes; DINOv2: one vector per candidate")], **C)),
-        "broker": (1, 2, 1, dict(title=L("Mediador de ligações", "Connection broker"), sub=L("[MQTT sobre mTLS]", "[MQTT over mTLS]"),
-                                 body=[L("Uma ligação por casa, atrás de um balanceador", "One connection per home, behind a load balancer")], **C)),
-        "queues": (2, 2, 1, dict(title=L("Filas e fluxo de eventos", "Queues and event stream"), sub=L("[sistema de mensagens]", "[message broker]"),
-                                 body=[L("Visão urgente e em lote; eventos de cada casa por ordem; pedidos ao modelo",
-                                         "Urgent and batch vision; each home’s events in order; model requests")], **C)),
-        "svc": (3, 2, 3, dict(title=L("Serviço _ThingTracker_", "ThingTracker service"), sub=L("[contentores sem estado, atrás de um balanceador]",
-                                                                                            "[stateless containers, behind a load balancer]"),
-                              body=[L("API da aplicação e _host_ MCP", "App API and MCP host"),
-                                    L("Comparação com as assinaturas visuais", "Matching with the fingerprints"),
-                                    L("Seguimento: na mão, levado, mudado", "Tracking: in hand, taken, moved"),
-                                    L("Motor de presença e motor de regras, por casa; o motor de regras decide", "Presence engine and rules engine, per home; the rules engine decides"),
-                                    L("Avisos; um “Sim” vira uma chamada MCP", "Alerts; a “Yes” becomes an MCP call")], stroke=BLUE, sw=2.4,
-                              fill="#FFFFFF", sub_bold=False, sub_color=MUTED)),
-        "plat": (5, 2, 1, dict(title=L("Plataforma _Connected Home_", "Connected Home platform"), sub=L("[sistema existente]", "[existing system]"),
+        "ingest": (0, 1, 1, dict(title=L("Captura e filtro de movimento", "Capture and motion gate"), sub="[_ffmpeg_, _OpenCV_]" if lang == "pt" else "[ffmpeg, OpenCV]",
+                                 body=[L("Lê as câmaras na rede da casa; máscaras de privacidade; só analisa quando há movimento ou um pedido",
+                                         "Reads the cameras on the home network; privacy masks; analyses only on motion or on request")], **C)),
+        "vision": (1, 1, 1, dict(title=L("Visão", "Vision"), sub=L("[_OWLv2_ + _DINOv2_ no protótipo]", "[OWLv2 + DINOv2 in the prototype]"),
+                                 body=[L("Deteção e reidentificação com a assinatura visual (≥ 0,62); detetores leves, como o _YOLOv8n_, em equipamentos pequenos",
+                                         "Detection and re-identification against the fingerprint (≥ 0.62); lighter detectors, such as YOLOv8n, on small devices")], **C)),
+        "faces": (0, 2, 1, dict(title=L("Rostos (opcional)", "Faces (opt-in)"), sub=L("[_YuNet_ + _SFace_]", "[YuNet + SFace]"),
+                                body=[L("Com consentimento; os padrões faciais ficam guardados no equipamento", "With consent; face templates kept on the device")], **C)),
+        "mem": (1, 2, 1, dict(title=L("Memória local", "Local memory"), sub=L("[_SQLite_ cifrado]", "[encrypted SQLite]"),
+                              body=[L("Assinaturas visuais, padrões faciais, onde e quando cada objeto foi visto", "Fingerprints, face templates, where and when each thing was seen")], **C)),
+        "rules": (2, 1, 2, dict(title=L("Serviço da casa", "Home service"), sub=L("[_Python_, no equipamento da casa]", "[Python, on the home device]"),
+                                body=[L("Motor de presença e motor de regras; o motor de regras decide", "Presence engine and rules engine; the rules engine decides"),
+                                      L("Seguimento: na mão, levado, mudado", "Tracking: in hand, taken, moved"),
+                                      L("Avisos, em texto; um “Sim” vira um pedido de ação MCP", "Alerts, as text; a “Yes” becomes an MCP action request"),
+                                      L("Constrói a assinatura a partir das fotografias de registo", "Builds the fingerprint from the registration photos")],
+                                stroke=BLUE, sw=2.4, fill="#FFFFFF", sub_bold=False, sub_color=MUTED)),
+        "llm": (2, 3, 1, dict(title=L("Modelo de linguagem", "Language model"), sub=L("[_Qwen3-1.7B_ no protótipo]", "[Qwen3-1.7B in the prototype]"),
+                              body=[L("Frase em regra, pergunta em resposta; o serviço valida; nunca decide", "Sentence into rule, question into answer; the service checks; it never decides")], **C)),
+        "relay": (3, 1, 2, dict(title=L("Retransmissão e mediador", "Relay and connection broker"), sub=L("[MQTT sobre mTLS]", "[MQTT over mTLS]"),
+                                body=[L("Uma ligação de saída por casa, atrás de um balanceador", "One outbound connection per home, behind a load balancer"),
+                                      L("Leva a aplicação até casa quando a família está fora", "Lets the app reach the home when the family is away"),
+                                      L("As fotografias de registo passam cifradas de ponta a ponta: a Altice não as lê", "Registration photos pass encrypted end to end: Altice cannot read them")], **C)),
+        "svc": (4, 1, 2, dict(title=L("Serviço _ThingTracker_ na Altice", "ThingTracker service at Altice"), sub=L("[contentores sem estado; só texto]", "[stateless containers; text only]"),
+                              body=[L("Contas, identidade e permissões da família", "Accounts, identity and family permissions"),
+                                    L("Registo de eventos em texto (“livro, secretária, 18h02”)", "Event log as structured text (“book, desk, 18:02”)"),
+                                    L("Cópia de segurança e sincronização entre os telemóveis da família", "Backup and sync across the family’s phones")],
+                              stroke=BLUE, sw=2.4, fill="#FFFFFF", sub_bold=False, sub_color=MUTED)),
+        "plat": (5, 1, 2, dict(title=L("Plataforma _Connected Home_", "Connected Home platform"), sub=L("[sistema existente]", "[existing system]"),
                                body=[L("Servidor MCP, eventos da porta e do Wi-Fi, notificações", "MCP server, door and Wi-Fi events, notifications")], **EXTERNAL)),
-        "faces": (0, 3, 1, dict(title=L("Padrões faciais", "Face templates"), sub=L("[_SQLite_ cifrado, no _router_]", "[encrypted SQLite, on the router]"),
-                                body=[L("Até 8 por pessoa; nunca saem de casa", "Up to 8 per person; never leave the home")], **C)),
-        "cache": (2, 3, 1, dict(title=L("_Cache_", "Cache"), sub=L("[_Redis_]", "[Redis]"),
-                                body=[L("Estado corrente de cada casa: presença, trajetos, temporizadores", "Each home’s live state: presence, tracks, timers")], **C)),
-        "pg": (4, 3, 1, dict(title="PostgreSQL", sub=L("[com _pgvector_]", "[with pgvector]"),
-                             body=[L("Por cliente: objetos, assinaturas, regras, avisos, observações", "Per customer: things, fingerprints, rules, alerts, sightings")], **C)),
-        "llm": (2, 4, 1, dict(title=L("Modelos de linguagem e de visão-linguagem", "Language and vision-language models"),
-                              sub=L("[servidores GPU atrás de uma fila]", "[GPU servers behind a queue]"),
-                              body=[L("Só escrevem texto: frases em regras, que o serviço valida, e respostas; nunca decidem", "Write text only: sentences into rules, which the service checks, and answers; they never decide"),
-                                    L("Juiz: raramente, um clipe curto", "Judge: rarely, a short clip")], **C)),
-        "store": (4, 4, 1, dict(title=L("Armazenamento de objetos", "Object storage"), sub=L("[compatível com S3]", "[S3-compatible]"),
-                                body=[L("Miniaturas, 30 dias (proposta)", "Thumbnails, 30 days (proposal)")], **C)),
+        "pg": (4, 3, 1, dict(title="PostgreSQL", sub=L("[só metadados, em texto]", "[metadata only, as text]"),
+                             body=[L("Objetos, pessoas (só nomes), donos, cenários, eventos; repõe-nos se a caixa for trocada",
+                                     "Things, people (names only), owners, scenarios, events; restores them if the box is replaced")], **C)),
     })
-    g.v("cams", "agent", L("vídeo RTSP, rede da casa", "RTSP video, home network"), lw=110)
-    g.v2("agent", "faces", L("guarda padrões", "stores templates"), L("padrões para comparar", "templates to compare"), lw=100)
-    g.h2("agent", "broker", L("regiões e rótulos de rostos", "regions and face labels"), L("pedidos, vídeo de registo", "requests, registration video"))
-    g.h2("broker", "queues", L("regiões", "regions"), L("pedidos às casas", "requests to homes"))
-    g.v2("vision", "queues", L("caixas e vetores", "boxes and vectors"), L("regiões", "regions"), lw=100)
-    g.h2("queues", "svc", L("eventos de cada casa, por ordem", "each home’s events, in order"), L("pedidos às casas e ao modelo", "requests to homes and the model"))
-    g.h2("cache", "svc", L("estado", "state"), L("estado e temporizadores", "state and timers"))
-    g.h2("llm", "svc", L("regra, resposta, veredicto", "rule, answer, verdict"), L("texto ou clipe curto, pela fila", "text or a short clip, through the queue"))
-    g.h2("svc", "pg", L("objetos, regras, avisos", "things, rules, alerts"), L("assinaturas (_pgvector_)", "fingerprints (pgvector)"))
-    g.h("svc", "store", L("miniaturas", "thumbnails"))
-    g.h2("svc", "plat", L("chamadas MCP: ações, leitura", "MCP calls: actions, reads"), L("eventos: porta, Wi-Fi", "events: door, Wi-Fi"))
-    g.v2("app", "svc", L("pedidos HTTPS, pelo balanceador", "HTTPS requests, through the load balancer"), L("respostas, miniaturas", "answers, thumbnails"), lw=120)
+    g.v("cams", "ingest", L("vídeo RTSP, rede da casa", "RTSP video, home network"), lw=110)
+    g.h("ingest", "vision", L("região que mudou", "changed region"))
+    g.v("ingest", "faces", L("pessoa na imagem", "person in the frame"), lw=110)
+    g.h("faces", "mem", L("nome ou “desconhecido”", "name or “unknown”"))
+    g.v2("vision", "mem", L("observações", "sightings"), L("assinaturas", "fingerprints"), lw=100)
+    g.h("vision", "rules", L("objetos e pessoas vistos", "things and people seen"))
+    g.h2("mem", "rules", L("última vez visto, quem está", "last seen, who is in"), L("eventos, regras", "events, rules"))
+    g.v2("rules", "llm", L("frase ou pergunta", "sentence or question"), L("regra proposta, resposta", "draft rule, answer"), lw=100)
+    g.h2("rules", "relay", L("só texto: eventos, avisos", "text only: events, alerts"), L("pedidos, comandos, fotografias cifradas", "requests, commands, encrypted photos"))
+    g.h2("relay", "svc", L("eventos em texto", "events as text"), L("pedidos da aplicação", "app requests"))
+    g.h2("svc", "plat", L("ações MCP após “Sim”; notificações", "MCP actions after “Yes”; push"), L("eventos: porta, Wi-Fi", "events: door, Wi-Fi"))
+    g.v2("svc", "pg", L("grava", "writes"), L("lê", "reads"), lw=100)
+    g.v2("app", "svc", L("frases, perguntas, “Sim” (HTTPS)", "sentences, questions, “Yes” (HTTPS)"), L("respostas, lista de objetos", "answers, list of things"), lw=120)
     g.v("plat", "app", L("notificações", "notifications"), lw=110)
     top, bot = g.ys[1] - 50, max(r[3] for r in g.r.values()) + 24
     app = g.r["app"]
 
     def zones(b):
-        b.band(20, 24, xs[0] + ws[0] + 20 - 20, bot - 24, L("Em casa", "In the home"), None, fill=HOME_BG)
+        b.band(20, 24, xs[2] + ws[2] + 20 - 20, bot - 24, L("Em casa · equipamento da casa", "In the home · home device"), None, fill=HOME_BG)
         b.band(app[0] - 20, 24, app[2] - app[0] + 40, app[3] + 18 - 24, L("Telemóvel", "Phone"), None, fill=PHONE_BG)
-        b.band(xs[1] - 20, top, xs[5] + ws[5] + 20 - (xs[1] - 20), bot - top, L("Altice", "Altice"), None, fill=ALTICE_BG)
+        b.band(xs[3] - 20, top, xs[5] + ws[5] + 20 - (xs[3] - 20), bot - top, L("Altice · só texto", "Altice · text only"), None, fill=ALTICE_BG)
     bands_under(cv, zones)
     end = cv.para(40, bot + 34, L("Notação C4, nível 2. Contorno azul: contentores do _ThingTracker_; cinzento: sistemas existentes. Cada seta "
-                                  "é um sentido do fluxo, com o que leva.",
+                                  "é um sentido do fluxo, com o que leva. Imagens, vídeo, assinaturas visuais e padrões faciais nunca saem de casa.",
                                   "C4 notation, level 2. Blue outline: ThingTracker containers; grey: existing systems. Each arrow is one "
-                                  "direction of a flow, with what it carries."), 2180, 12.5, fill=MUTED)
+                                  "direction of a flow, with what it carries. Images, video, fingerprints and face templates never leave the home."), 2180, 12.5, fill=MUTED)
     cv.save("c4-2-contentores", round(end))
 
 
@@ -704,109 +654,94 @@ def c4_3_componentes(lang):
     X = EXTERNAL
     g.place({
         "cams": (0, 0, 1, dict(title=L("Câmaras", "Cameras"), sub=L("[existente]", "[existing]"), body=[L("RTSP na rede da casa", "RTSP on the home network")], **X)),
-        "cap": (1, 0, 1, dict(title=L("Captura", "Capture"), sub="[_ffmpeg_, _OpenCV_]" if lang == "pt" else "[ffmpeg, OpenCV]",
-                              body=[L("Uma ligação aberta por câmara; só os últimos 3 s, em memória, para o juiz", "One open connection per camera; only the last 3 s, in memory, for the judge")], **C)),
-        "mask": (1, 1, 1, dict(title=L("Máscaras de privacidade", "Privacy masks"),
+        "cap": (0, 1, 1, dict(title=L("Captura", "Capture"), sub="[_ffmpeg_, _OpenCV_]" if lang == "pt" else "[ffmpeg, OpenCV]",
+                              body=[L("Uma ligação aberta por câmara, só na rede da casa", "One open connection per camera, on the home network only")], **C)),
+        "mask": (0, 2, 1, dict(title=L("Máscaras de privacidade", "Privacy masks"),
                                body=[L("Apaga as zonas que a família marcou, antes de qualquer análise", "Blanks the areas the family marked, before any analysis")], **C)),
-        "gate": (1, 2, 1, dict(title=L("Filtro de movimento", "Motion gate"), sub=L("[160 × 90, cinzento, a cada 0,5 s]", "[160 × 90, grey, every 0.5 s]"),
+        "gate": (0, 3, 1, dict(title=L("Filtro de movimento", "Motion gate"), sub=L("[160 × 90, cinzento, a cada 0,5 s]", "[160 × 90, grey, every 0.5 s]"),
                                body=[L("Abre se mais de 0,6 % dos píxeis mudar e fica aberto 6 s; abre também a pedido",
                                        "Opens if more than 0.6 % of the pixels change and stays open 6 s; also opens on request")], **C)),
-        "reg": (1, 3, 1, dict(title=L("Recorte da região", "Region cutter"),
-                              body=[L("A região que mudou, ou a pedida, no máximo 640 × 640; cerca de 1 por segundo",
-                                      "The changed region, or the requested one, at most 640 × 640; about 1 a second")], **C)),
-        "face": (1, 4, 1, dict(title=L("Rostos (opcional)", "Faces (opt-in)"), sub=L("[_YuNet_ + _SFace_, no CPU]", "[YuNet + SFace, on the CPU]"),
+        "det": (0, 4, 1, dict(title=L("Deteção", "Detection"), sub=L("[_OWLv2_; _YOLOv8n_ em equipamentos pequenos]", "[OWLv2; YOLOv8n on small devices]"),
+                              body=[L("Objetos registados, “a person” e superfícies (secretária, mesa)",
+                                      "Registered things, “a person” and surfaces (desk, table)")], **C)),
+        "face": (1, 3, 1, dict(title=L("Rostos (opcional)", "Faces (opt-in)"), sub=L("[_YuNet_ + _SFace_, no CPU]", "[YuNet + SFace, on the CPU]"),
                                body=[L("Encontra, alinha e compara: ≥ 0,363 dá o nome; abaixo, “rosto desconhecido”",
                                        "Finds, aligns and compares: ≥ 0.363 gives the name; below, “unknown face”")], **C)),
-        "tpl": (0, 4, 1, dict(title=L("Padrões faciais", "Face templates"), sub=L("[_SQLite_ cifrado]", "[encrypted SQLite]"),
-                              body=[L("Até 8 por pessoa; nunca saem de casa", "Up to 8 per person; never leave")], **C)),
-        "chan": (2, 2, 4, dict(title=L("Canal seguro", "Secure channel"), sub=L("[MQTT sobre mTLS]", "[MQTT over mTLS]"),
-                               body=[L("Uma ligação de saída", "One outbound connection"),
-                                     L("Envia regiões e rótulos; recebe pedidos", "Sends regions and labels; receives requests"),
-                                     L("Sem internet, guarda eventos e rótulos numa fila, nunca imagens", "Offline, queues events and labels, never images")], **C)),
-        "brk": (3, 5, 1, dict(title=L("Mediador", "Broker"), sub="[MQTT]",
-                              body=[L("Recebe as regiões de cada casa e entrega-lhe os pedidos", "Takes each home’s regions and delivers its requests")], **C)),
-        "q": (3, 4, 1, dict(title=L("Filas de visão", "Vision queues"),
-                            body=[L("Urgente: pedidos, registos, clipes para o juiz e casas com regra de segurança ativa",
-                                    "Urgent: requests, registrations, clips for the judge, homes with an active safety rule"),
-                                  L("Lote: o resto, nas horas calmas", "Batch: the rest, in quiet hours")], **C)),
-        "owl": (3, 3, 1, dict(title=L("Deteção", "Detection"), sub=L("[_OWLv2_, GPU L4]", "[OWLv2, L4 GPU]"),
-                              body=[L("Objetos registados da casa, “a person” e superfícies (secretária, mesa)",
-                                      "The home’s registered things, “a person” and surfaces (desk, table)")], **C)),
-        "dino": (3, 2, 1, dict(title=L("Vetores", "Vectors"), sub=L("[_DINOv2 small_, GPU L4]", "[DINOv2 small, L4 GPU]"),
-                               body=[L("Um vetor de 384 números por candidato", "One 384-number vector per candidate")], **C)),
-        "judge": (3, 0, 1, dict(title=L("Juiz", "Judge"), sub=L("[visão-linguagem, GPU, raramente]", "[vision-language, GPU, rarely]"),
-                                body=[L("Vê 2 a 3 s da região num momento duvidoso; responde sim, não ou incerto, com uma frase",
-                                        "Looks at 2 to 3 s of the region at an ambiguous moment; answers yes, no or unsure, with a sentence")], **C)),
-        "stream": (3, 1, 1, dict(title=L("Fluxo da casa", "Home stream"), sub=L("[partição por casa]", "[partitioned by home]"),
-                                 body=[L("Resultados de cada casa, pela ordem de chegada", "Each home’s results, in arrival order")], **C)),
-        "match": (4, 1, 1, dict(title=L("Comparação", "Matching"), sub="[_pgvector_]" if lang == "pt" else "[pgvector]",
-                                body=[L("Cada vetor contra as 8 vistas de cada objeto: ≥ 0,62 é o seu", "Each vector against each thing’s 8 views: ≥ 0.62 means yours")], **C)),
-        "track": (4, 2, 1, dict(title=L("Seguimento", "Tracking"),
+        "tpl": (1, 2, 1, dict(title=L("Padrões faciais", "Face templates"), sub=L("[_SQLite_ cifrado]", "[encrypted SQLite]"),
+                              body=[L("Até 8 por pessoa; nunca saem de casa", "Up to 8 per person; never leave the home")], **C)),
+        "vec": (1, 4, 1, dict(title=L("Vetores", "Vectors"), sub=L("[_DINOv2 small_]", "[DINOv2 small]"),
+                              body=[L("Um vetor de 384 números por candidato", "One 384-number vector per candidate")], **C)),
+        "match": (2, 4, 1, dict(title=L("Reidentificação", "Re-identification"),
+                                body=[L("Cada vetor contra as 8 fotos de cada objeto: ≥ 0,62 é o seu", "Each vector against each thing’s 8 photos: ≥ 0.62 means yours")], **C)),
+        "mem": (2, 5, 1, dict(title=L("Memória local", "Local memory"), sub=L("[_SQLite_ cifrado]", "[encrypted SQLite]"),
+                              body=[L("Assinaturas visuais; onde e quando cada objeto foi visto", "Fingerprints; where and when each thing was seen")], **C)),
+        "lm": (2, 2, 1, dict(title=L("Modelo de linguagem", "Language model"), sub=L("[_Qwen3-1.7B_ no protótipo]", "[Qwen3-1.7B in the prototype]"),
+                             body=[L("Frase em regra, pergunta em resposta; nunca decide", "Sentence into rule, question into answer; never decides")], **C)),
+        "track": (3, 4, 1, dict(title=L("Seguimento", "Tracking"),
                                 body=[L("Sobre uma pessoa: na mão. Ausente 3 análises depois: levado. Noutro sítio: mudado",
                                         "Over a person: in hand. Gone 3 analyses later: taken. Elsewhere: moved")], **C)),
-        "pres": (4, 3, 1, dict(title=L("Motor de presença", "Presence engine"),
-                               body=[L("OCUPADA, A SAIR, VAZIA ou INCERTA; pede atualizações se só as câmaras o sustentam",
-                                       "OCCUPIED, LEAVING, EMPTY or UNSURE; asks for refreshes when only cameras support it")], **C)),
-        "rules": (4, 4, 1, dict(title=L("Motor de regras", "Rules engine"),
-                                body=[L("Decide: regras compiladas, a cada evento e temporizador; pede verificações ativas e, num momento duvidoso, o juiz",
-                                        "Decides: compiled rules, on every event and timer; asks for active checks and, at an ambiguous moment, the judge")], **C)),
-        "alert": (4, 5, 2, dict(title=L("Avisos e ações", "Alerts and actions"),
-                                body=[L("Título, mensagem, miniatura, cartões de ação, faixa da porta, sugestão",
-                                        "Title, message, thumbnail, action cards, door banner, suggestion"),
-                                      L("Um “Sim” vira uma chamada MCP; a sirene segue a escolha da família; armar o alarme pergunta sempre",
-                                        "A “Yes” becomes an MCP call; the siren follows the family’s choice; arming always asks")], **C)),
-        "pg": (5, 1, 2, dict(title="PostgreSQL", sub="[_pgvector_]" if lang == "pt" else "[pgvector]",
-                             body=[L("Assinaturas, observações, regras, avisos", "Fingerprints, sightings, rules, alerts")], **C)),
-        "plat": (5, 3, 1, dict(title=L("Plataforma Altice", "Altice platform"), sub=L("[existente]", "[existing]"),
+        "pres": (3, 3, 1, dict(title=L("Motor de presença", "Presence engine"),
+                               body=[L("OCUPADA, A SAIR, VAZIA ou INCERTA, com a porta, o Wi-Fi e as câmaras",
+                                       "OCCUPIED, LEAVING, EMPTY or UNSURE, from the door, the Wi-Fi and the cameras")], **C)),
+        "rules": (3, 2, 1, dict(title=L("Motor de regras", "Rules engine"),
+                                body=[L("Decide: regras compiladas, a cada evento e temporizador; valida o que o modelo propõe",
+                                        "Decides: compiled rules, on every event and timer; checks what the model proposes")], **C)),
+        "alert": (3, 1, 1, dict(title=L("Avisos", "Alerts"),
+                                body=[L("Título, mensagem e cartões de ação, em texto", "Title, message and action cards, as text")], **C)),
+        "chan": (3, 0, 1, dict(title=L("Canal seguro", "Secure channel"), sub=L("[MQTT sobre mTLS]", "[MQTT over mTLS]"),
+                               body=[L("Uma ligação de saída; envia só texto; recebe eventos da porta e do Wi-Fi, pedidos e comandos",
+                                       "One outbound connection; sends text only; receives door and Wi-Fi events, requests and commands")], **C)),
+        "brk": (4, 0, 1, dict(title=L("Retransmissão", "Relay"), sub="[MQTT]",
+                              body=[L("Leva a aplicação até casa; as fotografias de registo passam cifradas de ponta a ponta",
+                                      "Lets the app reach the home; registration photos pass encrypted end to end")], **C)),
+        "svc": (4, 1, 2, dict(title=L("Serviço na Altice", "Service at Altice"), sub=L("[só texto]", "[text only]"),
+                              body=[L("Contas, identidade, permissões da família; registo de eventos; um “Sim” vira uma chamada MCP",
+                                      "Accounts, identity, family permissions; event log; a “Yes” becomes an MCP call")], **C)),
+        "pg": (4, 3, 1, dict(title="PostgreSQL", sub=L("[metadados, em texto]", "[metadata, as text]"),
+                             body=[L("Objetos, pessoas (só nomes), donos, cenários, eventos", "Things, people (names only), owners, scenarios, events")], **C)),
+        "plat": (5, 0, 1, dict(title=L("Plataforma Altice", "Altice platform"), sub=L("[existente]", "[existing]"),
                                body=[L("Eventos da porta e telemóveis no Wi-Fi", "Door events and phones on the Wi-Fi")], **X)),
-        "cache": (5, 4, 1, dict(title=L("_Cache_", "Cache"), sub="[_Redis_]" if lang == "pt" else "[Redis]",
-                                body=[L("Presença, trajetos, contadores, temporizadores", "Presence, tracks, counters, timers")], **C)),
-        "notif": (5, 5, 1, dict(title=L("Notificações e aplicação", "Notifications and app"), sub=L("[existente]", "[existing]"),
+        "notif": (5, 1, 1, dict(title=L("Notificações e aplicação", "Notifications and app"), sub=L("[existente]", "[existing]"),
                                 body=[L("Mostram o aviso e devolvem o “Sim”", "Show the alert, return the “Yes”")], **X)),
-        "mcp": (5, 6, 1, dict(title=L("Servidor MCP", "MCP server"), sub=L("[existente]", "[existing]"),
+        "mcp": (5, 2, 1, dict(title=L("Servidor MCP", "MCP server"), sub=L("[existente]", "[existing]"),
                               body=["`update_device_capabilities`"], **X)),
     })
     S = 11
-    g.h("cams", "cap", "RTSP", size=S)
+    g.v("cams", "cap", "RTSP", size=S, lw=100)
     g.v("cap", "mask", L("imagem", "frame"), size=S, lw=100)
     g.v("mask", "gate", L("imagem com máscaras", "masked frame"), size=S, lw=100)
-    g.v("gate", "reg", L("aberto", "open"), size=S, lw=100)
-    g.v("reg", "face", L("região", "region"), size=S, lw=100)
-    g.h2("tpl", "face", L("padrões", "templates"), L("registo", "registration"), size=S)
-    g.h("face", "chan", L("região e rótulos", "region and labels"), size=S)
-    g.h("chan", "gate", L("pedido: analisar já", "request: analyse now"), size=S)
-    g.h2("chan", "brk", L("regiões e rótulos", "regions and labels"), L("pedidos", "requests"), size=S)
-    g.v2("q", "brk", L("pedidos às casas", "requests to homes"), L("regiões", "regions"), size=S, lw=110)
-    g.v("q", "owl", L("regiões", "regions"), size=S, lw=110)
-    g.v("owl", "dino", L("caixas", "boxes"), size=S, lw=110)
-    g.v("dino", "stream", L("caixas e vetores", "boxes and vectors"), size=S, lw=110)
-    g.h("stream", "match", L("por ordem", "in order"), size=S)
-    g.v("match", "track", L("objetos reconhecidos, pessoas e rótulos", "recognised things, people and labels"), size=S, lw=120)
-    g.v("track", "pres", L("pessoas e rostos", "people and faces"), size=S, lw=120)
-    g.v("pres", "rules", L("estado da casa", "home state"), size=S, lw=120)
-    g.v("rules", "alert", L("regra cumprida", "rule met"), size=S, lw=120)
-    g.h("rules", "q", L("verificação ativa, atualização, juiz", "active check, refresh, judge"), size=S)
-    g.v("judge", "stream", L("veredicto", "verdict"), size=S, lw=110)
-    g.h("pg", "match", L("assinaturas", "fingerprints"), size=S)
-    g.h("track", "pg", L("observações, quando algo muda", "sightings, when something changes"), size=S)
-    g.h("plat", "pres", L("porta, Wi-Fi", "door, Wi-Fi"), size=S)
-    g.h2("rules", "cache", L("estado", "state"), L("temporizadores", "timers"), size=S)
-    g.h2("alert", "notif", L("aviso", "alert"), L("“Sim”", "“Yes”"), size=S)
-    g.h("alert", "mcp", L("ação após “Sim”", "action after “Yes”"), size=S)
+    g.v("gate", "det", L("aberto: região", "open: region"), size=S, lw=100)
+    g.h("gate", "face", L("pessoa na região", "person in the region"), size=S)
+    g.v2("tpl", "face", L("padrões", "templates"), L("registo", "registration"), size=S, lw=100)
+    g.h("face", "pres", L("nome ou “rosto desconhecido”", "name or “unknown face”"), size=S)
+    g.h("det", "vec", L("caixas", "boxes"), size=S)
+    g.h("vec", "match", L("vetores", "vectors"), size=S)
+    g.v2("match", "mem", L("observações", "sightings"), L("assinaturas", "fingerprints"), size=S, lw=100)
+    g.h("match", "track", L("objetos reconhecidos, pessoas", "recognised things, people"), size=S)
+    g.v("track", "pres", L("pessoas", "people"), size=S, lw=110)
+    g.v("pres", "rules", L("estado da casa", "home state"), size=S, lw=110)
+    g.h2("lm", "rules", L("regra proposta, resposta", "draft rule, answer"), L("frase, pergunta, linhas da memória", "sentence, question, memory lines"), size=S)
+    g.v("rules", "alert", L("regra cumprida", "rule met"), size=S, lw=110)
+    g.v("alert", "chan", L("aviso em texto", "alert as text"), size=S, lw=110)
+    g.h2("chan", "brk", L("só texto: eventos, avisos", "text only: events, alerts"), L("pedidos, comandos", "requests, commands"), size=S)
+    g.v2("brk", "svc", L("eventos, avisos", "events, alerts"), L("pedidos da aplicação", "app requests"), size=S, lw=110)
+    g.h("plat", "brk", L("porta, Wi-Fi", "door, Wi-Fi"), size=S)
+    g.h2("svc", "notif", L("aviso", "alert"), L("“Sim”", "“Yes”"), size=S)
+    g.h("svc", "mcp", L("ação após “Sim”", "action after “Yes”"), size=S)
+    g.v2("svc", "pg", L("grava", "writes"), L("lê", "reads"), size=S, lw=100)
     bot = max(r[3] for r in g.r.values()) + 24
 
     def zones(b):
-        b.band(20, 24, xs[2] + ws[2] + 20 - 20, bot - 24, L("Em casa · agente da casa, no _router_", "In the home · home agent, on the router"),
-               L("Sem acelerador de IA", "No AI accelerator"), fill=HOME_BG)
-        b.band(xs[3] - 20, 24, xs[5] + ws[5] + 20 - (xs[3] - 20), bot - 24,
-               L("Altice · visão e serviço _ThingTracker_, por casa", "Altice · vision and ThingTracker service, per home"),
-               L("Os componentes da coluna do meio correm no serviço, para cada casa", "The middle column’s components run in the service, for each home"),
+        b.band(20, 24, xs[3] + ws[3] + 20 - 20, bot - 24, L("Em casa · equipamento da casa", "In the home · home device"),
+               L("O _router_, se tiver NPU, ou uma caixa dedicada", "The router, if it has an NPU, or a dedicated box"), fill=HOME_BG)
+        b.band(xs[4] - 20, 24, xs[5] + ws[5] + 20 - (xs[4] - 20), bot - 24,
+               L("Altice · só texto", "Altice · text only"), L("Contas, metadados, eventos, notificações, ações", "Accounts, metadata, events, push, actions"),
                fill=ALTICE_BG)
     bands_under(cv, zones)
     end = cv.para(40, bot + 34, L("Notação C4, nível 3. Cada componente diz o que decide e com que limiar. Valores do filtro de movimento: os "
-                                  "do protótipo.",
+                                  "do protótipo. Imagens, vídeo, assinaturas visuais e padrões faciais nunca saem de casa.",
                                   "C4 notation, level 3. Each component says what it decides and with which threshold. Motion gate values: "
-                                  "the prototype’s."), 1980, 12.5, fill=MUTED)
+                                  "the prototype’s. Images, video, fingerprints and face templates never leave the home."), 1980, 12.5, fill=MUTED)
     cv.save("c4-3-componentes", round(end))
 
 
@@ -850,49 +785,41 @@ def dfd_fronteiras(lang):
     STO = dict(stroke=None, fill="#FAFBFC", rx=0, sub_bold=False, sub_color=MUTED)
     g.place({
         "cams": (0, 0, 1, dict(title=L("Câmaras", "Cameras"), sub=L("[entidade externa]", "[external entity]"), **ENT)),
-        "agent": (0, 1, 1, dict(title=L("Agente da casa", "Home agent"), sub=L("[processo, no _router_]", "[process, on the router]"), **PRO)),
-        "tpl": (0, 2, 1, dict(title=L("Padrões faciais", "Face templates"), sub=L("[arquivo, cifrado]", "[store, encrypted]"), **STO)),
+        "mem": (0, 1, 1, dict(title=L("Memória local", "Local memory"), sub=L("[arquivo, cifrado]", "[store, encrypted]"),
+                              body=[L("Assinaturas, padrões faciais, observações", "Fingerprints, face templates, sightings")], **STO)),
+        "dev": (1, 0, 3, dict(title=L("Equipamento da casa", "Home device"), sub=L("[processo]", "[process]"),
+                              body=[L("Visão, rostos, memória, presença, regras e modelo de linguagem", "Vision, faces, memory, presence, rules and language model")], **PRO)),
         "router": (0, 3, 1, dict(title=L("_Router_ Wi-Fi", "Wi-Fi router"), sub=L("[entidade externa]", "[external entity]"), **ENT)),
         "door": (0, 4, 1, dict(title=L("Sensor da porta e atuadores", "Door sensor and actuators"), sub=L("[entidades externas]", "[external entities]"), **ENT)),
-        "vision": (1, 0, 1, dict(title=L("Servidores de visão", "Vision workers"), sub=L("[processo]", "[process]"), **PRO)),
-        "broker": (1, 1, 1, dict(title=L("Mediador e filas", "Broker and queues"), sub=L("[processo]", "[process]"), **PRO)),
-        "judge": (1, 2, 1, dict(title=L("Juiz", "Judge"), sub=L("[processo, visão-linguagem]", "[process, vision-language]"), **PRO)),
-        "plat": (1, 3, 2, dict(title=L("Plataforma _Connected Home_", "Connected Home platform"), sub=L("[processo existente]", "[existing process]"),
+        "relay": (2, 0, 1, dict(title=L("Retransmissão e mediador", "Relay and broker"), sub=L("[processo]", "[process]"), **PRO)),
+        "svc": (2, 1, 2, dict(title=L("Serviço _ThingTracker_", "ThingTracker service"), sub=L("[processo, só texto]", "[process, text only]"),
+                              body=[L("Contas, permissões, metadados, registo de eventos", "Accounts, permissions, metadata, event log")], **PRO)),
+        "pg": (3, 2, 1, dict(title="PostgreSQL", sub=L("[arquivo, só texto]", "[store, text only]"), **STO)),
+        "plat": (2, 3, 2, dict(title=L("Plataforma _Connected Home_", "Connected Home platform"), sub=L("[processo existente]", "[existing process]"),
                                body=[L("Servidor MCP, eventos, dispositivos", "MCP server, events, devices")], **dict(PRO, fill="#F2F3F5", stroke="#B8BEC6"))),
-        "svc": (2, 0, 6, dict(title=L("Serviço _ThingTracker_", "ThingTracker service"), sub=L("[processo]", "[process]"),
-                              body=[L("Comparação, seguimento, presença, regras e avisos, por casa", "Matching, tracking, presence, rules and alerts, per home")], **PRO)),
-        "pg": (3, 1, 1, dict(title="PostgreSQL", sub=L("[arquivo]", "[store]"), **STO)),
-        "store": (3, 2, 1, dict(title=L("Miniaturas", "Thumbnails"), sub=L("[arquivo de objetos]", "[object store]"), **STO)),
         "notif": (3, 3, 1, dict(title=L("Notificações", "Notifications"), sub=L("[processo existente]", "[existing process]"), **dict(PRO, fill="#F2F3F5", stroke="#B8BEC6"))),
-        "llm": (4, 0, 1, dict(title=L("Modelo de linguagem", "Language model"), sub=L("[processo]", "[process]"), **PRO)),
-        "app": (4, 3, 3, dict(title=L("Aplicação Altice", "Altice app"), sub=L("[processo existente]", "[existing process]"), **dict(PRO, fill="#F2F3F5", stroke="#B8BEC6"))),
-        "fam": (4, 6, 1, dict(title=L("Família", "Family"), sub=L("[entidade externa]", "[external entity]"), **ENT)),
+        "app": (4, 0, 4, dict(title=L("Aplicação Altice", "Altice app"), sub=L("[processo existente]", "[existing process]"), **dict(PRO, fill="#F2F3F5", stroke="#B8BEC6"))),
+        "fam": (4, 4, 1, dict(title=L("Família", "Family"), sub=L("[entidade externa]", "[external entity]"), **ENT)),
     }, min_row=64)
-    for k in ("tpl", "pg", "store"):                     # a data store: two parallel lines, open at the sides
+    for k in ("mem", "pg"):                              # a data store: two parallel lines, open at the sides
         x0, y0, x1, y1 = g.r[k]
         for yy in (y0, y1):
             cv.o.append(f'<line x1="{x0}" y1="{yy:.1f}" x2="{x1}" y2="{yy:.1f}" stroke="{BODY}" stroke-width="1.6"/>')
-    B, S = BLUE, 11.5
-    g.v("cams", "agent", L("vídeo, rede da casa", "video, home network"), lw=110)
-    g.v2("agent", "tpl", L("guarda", "stores"), L("compara", "compares"), lw=90)
-    g.h2("agent", "broker", L("F1 regiões e rótulos", "F1 regions and labels"), L("F2 pedidos, vídeo do rosto", "F2 requests, face video"), color=B, lcolor=B)
-    g.v("broker", "vision", L("regiões", "regions"), lw=110)
-    g.h("vision", "svc", L("caixas e vetores", "boxes and vectors"))
-    g.h("svc", "broker", L("pedidos às casas, fotografias a analisar", "requests to homes, photos to analyse"), below=True)
+    B = BLUE
+    g.h("cams", "dev", L("vídeo, rede da casa", "video, home network"))
+    g.h2("mem", "dev", L("lê, compara", "reads, compares"), L("guarda", "stores"))
+    g.h2("dev", "relay", L("F1 só texto", "F1 text only"), L("F2 pedidos, comandos", "F2 requests, commands"), color=B, lcolor=B)
+    g.v2("relay", "svc", L("eventos, avisos", "events, alerts"), L("pedidos da aplicação", "app requests"), lw=110)
+    g.h2("svc", "pg", L("grava", "writes"), L("lê", "reads"))
     g.h("router", "plat", L("F3 telemóveis no Wi-Fi", "F3 phones on the Wi-Fi"), color=B, lcolor=B)
     g.h2("door", "plat", L("F4 porta", "F4 door"), L("F5 comandos", "F5 commands"), color=B, lcolor=B)
-    g.h2("plat", "svc", L("eventos: porta, Wi-Fi", "events: door, Wi-Fi"), L("chamadas MCP", "MCP calls"))
-    g.h2("svc", "pg", L("grava", "writes"), L("lê, compara", "reads, matches"))
-    g.h2("judge", "svc", L("veredicto", "verdict"), L("clipe de 2 a 3 s", "2 to 3 s clip"))
-    g.h("svc", "store", L("miniaturas", "thumbnails"))
-    g.h("svc", "notif", L("avisos", "alerts"))
-    g.h2("svc", "llm", L("F6 texto", "F6 text"), L("F7 regra, resposta", "F7 rule, answer"), color=B, lcolor=B)
+    g.v2("svc", "plat", L("chamadas MCP", "MCP calls"), L("eventos: porta, Wi-Fi", "events: door, Wi-Fi"), lw=110)
+    g.h("plat", "notif", L("avisos", "alerts"))
     g.h("notif", "app", L("F9 avisos", "F9 alerts"), color=B, lcolor=B)
-    r4 = g.ys[4] + g.hs[4] / 2
-    r5 = g.ys[5] + g.hs[5] / 2
-    g.h("app", "svc", L("F8 frases, perguntas, fotografias, vídeo do rosto, “Sim”", "F8 sentences, questions, photos, face video, “Yes”"),
-        color=B, lcolor=B, at=r4)
-    g.h("svc", "app", L("F10 respostas, miniaturas", "F10 answers, thumbnails"), color=B, lcolor=B, at=r5)
+    g.h("app", "relay", L("F8 fotografias de registo, cifradas", "F8 registration photos, encrypted"), color=B, lcolor=B)
+    r1 = g.ys[1] + g.hs[1] / 2
+    g.h("app", "svc", L("F6 frases, perguntas, “Sim”", "F6 sentences, questions, “Yes”"), color=B, lcolor=B, at=r1 - 14)
+    g.h("svc", "app", L("F7 respostas, lista de objetos", "F7 answers, list of things"), color=B, lcolor=B, at=r1 + 14, below=True)
     g.v2("app", "fam", L("mostra", "shows"), L("usa", "uses"), lw=100)
 
     def bounds(b):
@@ -903,30 +830,27 @@ def dfd_fronteiras(lang):
             y1 = max(g.r[k][3] for k in keys) + 18
             b.rect(x0, y0, x1 - x0, y1 - y0, fill=fill, stroke=WARN, rx=14, sw=1.6, dash="7 6")
             b.text(x0 + 14, y0 + 26, title, 13, True, WARN, max_w=x1 - x0 - 28)
-        box(["cams", "agent", "tpl", "router", "door"], L("Fronteira: casa", "Boundary: home"), HOME_BG)
-        box(["vision", "broker", "judge", "plat", "svc", "pg", "store", "notif"], L("Fronteira: Altice", "Boundary: Altice"), ALTICE_BG)
-        box(["llm"], L("Fronteira: fornecedor do modelo*", "Boundary: model provider*"), EXT_BG)
+        box(["cams", "mem", "dev", "router", "door"], L("Fronteira: casa", "Boundary: home"), HOME_BG)
+        box(["relay", "svc", "pg", "plat", "notif"], L("Fronteira: Altice", "Boundary: Altice"), ALTICE_BG)
         box(["app", "fam"], L("Fronteira: telemóvel", "Boundary: phone"), PHONE_BG)
     bands_under(cv, bounds)
     y = max(r[3] for r in g.r.values()) + 46
-    y = cv.para(40, y, L("* Só existe se o modelo de linguagem não for alojado pela Altice. Azul: fluxos que atravessam uma fronteira de "
-                         "confiança, descritos na tabela.",
-                         "* Only if the language model is not hosted by Altice. Blue: flows that cross a trust boundary, described "
-                         "in the table."), W - 80, 12.5, fill=MUTED) + 8
+    y = cv.para(40, y, L("Azul: fluxos que atravessam uma fronteira de confiança, descritos na tabela. Um modelo de linguagem externo (o "
+                         "_ChatGPT_ ou o _Claude_ do próprio cliente, só texto) é uma opção futura, não incluída.",
+                         "Blue: flows that cross a trust boundary, described in the table. An external language model (the customer’s "
+                         "own ChatGPT or Claude, text only) is a possible future opt-in, not included."), W - 80, 12.5, fill=MUTED) + 8
     rows = [
-        ("F1", L("agente da casa → mediador (casa → Altice)", "home agent → broker (home → Altice)"),
-         L("A região que mudou (no máximo 640 × 640, cerca de 1 por segundo com movimento) ou a pedida numa verificação; raramente, "
-           "2 a 3 s da região para o juiz; os rótulos dos rostos (o nome da pessoa ou “rosto desconhecido”) com as caixas. Nunca vídeo contínuo "
-           "nem padrões faciais",
-           "The changed region (at most 640 × 640, about 1 a second during motion) or the one asked for in a check; rarely, 2 to 3 s "
-           "of the region for the judge; the face labels (the person’s name or “unknown face”) with their boxes. Never continuous video or face "
-           "templates"),
+        ("F1", L("equipamento da casa → retransmissão (casa → Altice)", "home device → relay (home → Altice)"),
+         L("Só texto: eventos estruturados (“livro, secretária, 18h02”), avisos (título, mensagem, cartões de ação), rótulos (o nome da pessoa "
+           "ou “desconhecido”) e o estado das regras. Nunca imagens, vídeo, assinaturas visuais nem padrões faciais",
+           "Text only: structured events (“book, desk, 18:02”), alerts (title, message, action cards), labels (the person’s name or "
+           "“unknown”) and the rules’ state. Never images, video, fingerprints or face templates"),
          L("mTLS, um certificado por casa", "mTLS, one certificate per home")),
-        ("F2", L("mediador → agente da casa (Altice → casa)", "broker → home agent (Altice → home)"),
-         L("Pedidos de verificação ativa e de atualização; o vídeo do rosto no registo de uma pessoa, reencaminhado sem ficar guardado; "
-           "máscaras; ordens para apagar padrões",
-           "Active-check and refresh requests; the face video when a person is registered, relayed without being stored; masks; "
-           "orders to delete templates"), "mTLS"),
+        ("F2", L("retransmissão → equipamento da casa (Altice → casa)", "relay → home device (Altice → home)"),
+         L("Eventos da porta e do Wi-Fi, pedidos da aplicação (frases, perguntas, “Sim”), comandos; as fotografias de registo, "
+           "cifradas de ponta a ponta, que a Altice não consegue ler",
+           "Door and Wi-Fi events, app requests (sentences, questions, “Yes”), commands; the registration photos, encrypted end "
+           "to end, which Altice cannot read"), L("mTLS; cifra de ponta a ponta nas fotografias", "mTLS; end-to-end encryption for photos")),
         ("F3", L("_router_ → plataforma (casa → Altice)", "router → platform (home → Altice)"),
          L("Que telemóveis da família estão no Wi-Fi e quando entram ou saem (ferramenta MCP proposta)",
            "Which family phones are on the Wi-Fi, and when they join or leave (proposed MCP tool)"),
@@ -935,29 +859,26 @@ def dfd_fronteiras(lang):
          L("Porta aberta ou fechada, como hoje", "Door open or closed, as today"), L("O canal da central (LTE), como hoje", "The hub’s channel (LTE), as today")),
         ("F5", L("plataforma → atuadores (Altice → casa)", "platform → actuators (Altice → home)"),
          L("Comandos depois de um “Sim”: luz, tomada, sirene", "Commands after a “Yes”: light, plug, siren"), L("Como hoje", "As today")),
-        ("F6", L("serviço → modelo de linguagem", "service → language model"),
-         L("Só texto: a frase ou a pergunta, os nomes dos objetos, lugares e dispositivos, linhas da memória. Os clipes do juiz "
-           "ficam na Altice",
-           "Text only: the sentence or question, the names of things, places and devices, memory lines. The judge’s clips stay "
-           "at Altice"),
-         L("TLS; contrato sem treino com os dados, DPA e processamento na UE", "TLS; a contract with no training on the data, a DPA and EU processing")),
-        ("F7", L("modelo de linguagem → serviço", "language model → service"), L("Só texto: a regra estruturada, que o serviço valida, ou a resposta. O modelo nunca decide",
-                                                                              "Text only: the structured rule, which the service checks, or the answer. The model never decides"), "TLS"),
-        ("F8", L("aplicação → serviço (telemóvel → Altice)", "app → service (phone → Altice)"),
-         L("Frases, perguntas, fotografias de objetos, o vídeo do rosto, “Sim”", "Sentences, questions, photos of things, the face video, “Yes”"),
+        ("F6", L("aplicação → serviço (telemóvel → Altice)", "app → service (phone → Altice)"),
+         L("Frases, perguntas, “Sim”; seguem para casa por F2", "Sentences, questions, “Yes”; passed on to the home through F2"),
          L("HTTPS, com a sessão da aplicação Altice", "HTTPS, with the Altice app’s session")),
+        ("F7", L("serviço → aplicação (Altice → telemóvel)", "service → app (Altice → phone)"),
+         L("Respostas e a lista de objetos, em texto", "Answers and the list of things, as text"), "HTTPS"),
+        ("F8", L("aplicação → equipamento da casa", "app → home device"),
+         L("Fotografias de registo: diretamente no Wi-Fi da casa ou pela retransmissão, cifradas de ponta a ponta. O equipamento da casa "
+           "constrói a assinatura visual",
+           "Registration photos: directly on the home Wi-Fi, or through the relay, encrypted end to end. The home device builds the "
+           "fingerprint"), L("Cifra de ponta a ponta", "End-to-end encryption")),
         ("F9", L("notificações → aplicação (Altice → telemóvel)", "notifications → app (Altice → phone)"),
-         L("Avisos: título, mensagem, cartões de ação, ligação à miniatura", "Alerts: title, message, action cards, link to the thumbnail"),
+         L("Avisos em texto: título, mensagem, cartões de ação", "Alerts as text: title, message, action cards"),
          L("O serviço de notificações da aplicação", "The app’s notification service")),
-        ("F10", L("serviço → aplicação (Altice → telemóvel)", "service → app (Altice → phone)"),
-         L("Respostas e miniaturas, por ligações assinadas de curta duração", "Answers and thumbnails, through short-lived signed links"), "HTTPS"),
     ]
     y = table(cv, 40, y + 10, [70, 380, 1100, W - 80 - 1550], [L("Fluxo", "Flow"), L("De → para", "From → to"), L("O que leva", "What it carries"),
                                                      L("Proteção", "Protection")], rows)
-    y = cv.para(40, y + 30, L("Nunca atravessam a fronteira da casa: o vídeo contínuo e os padrões faciais. Método: diagrama de fluxo de dados com fronteiras "
-                              "de confiança, como no Microsoft SDL e no OWASP.",
-                              "Never cross the home boundary: continuous video and face templates. Method: a data-flow diagram with trust boundaries, "
-                              "as in the Microsoft SDL and OWASP threat modelling."), W - 80, 12.5, fill=MUTED)
+    y = cv.para(40, y + 30, L("Nunca atravessam a fronteira da casa: imagens, vídeo, assinaturas visuais e padrões faciais. Método: diagrama de "
+                              "fluxo de dados com fronteiras de confiança, como no Microsoft SDL e no OWASP.",
+                              "Never cross the home boundary: images, video, fingerprints and face templates. Method: a data-flow diagram with "
+                              "trust boundaries, as in the Microsoft SDL and OWASP threat modelling."), W - 80, 12.5, fill=MUTED)
     cv.save("dfd-fronteiras", round(y))
 
 
@@ -999,7 +920,7 @@ def er_line(cv, x0, y0, x1, y1, a="1", b="N"):
 @view
 def er_plataforma(lang):
     cw, gap = 262, 40
-    xs = [40 + i * (cw + gap) for i in range(6)]
+    xs = [40 + i * (cw + gap) for i in range(5)]
     W = xs[-1] + cw + 40
     cv = Canvas(W, lang, "Modelo de dados: plataforma" if lang == "pt" else "Data model: platform")
     L = cv.L
@@ -1010,31 +931,22 @@ def er_plataforma(lang):
         "member": [("PK", "id", "uuid"), ("FK", "home_id", FK("home")), ("", "name", "text"), ("", "role", L("família, visita…", "family, guest…")),
                    ("", "recognition_on", "bool"), ("", "consent_at", "timestamptz"), ("", "consent_text", L("versão", "version"))],
         "phone": [("PK", "id", "uuid"), ("FK", "member_id", FK("member")), ("", "router_device", "text"), ("", "label", "text")],
-        "camera": [("PK", "id", "uuid"), ("FK", "home_id", FK("home")), ("", "altice_device_id", "text"), ("", "place", L("“Sala 1”", "“Living room 1”")),
-                   ("", "masks", "jsonb")],
+        "camera": [("PK", "id", "uuid"), ("FK", "home_id", FK("home")), ("", "altice_device_id", "text"), ("", "place", L("“Sala 1”", "“Living room 1”"))],
         "person_seen": [("PK", "id", "uuid"), ("FK", "camera_id", FK("camera")), ("", "ts", "timestamptz"),
                         ("", "label", L("membro, desconhecido…", "member, unknown…")), ("FK", "member_id", FK("member"))],
         "thing": [("PK", "id", "uuid"), ("FK", "home_id", FK("home")), ("", "name", "text"), ("", "query", L("palavra do detetor", "detector word")),
-                  ("", "photo_key", "text"), ("FK", "usual_camera", FK("camera"))],
-        "fingerprint": [("PK", "id", "uuid"), ("FK", "thing_id", FK("thing")), ("", "view_no", "1–8"), ("", "embedding", "vector(384)"),
-                        ("", "model", "text")],
-        "sighting": [("PK", "id", "uuid"), ("FK", "thing_id", FK("thing")), ("FK", "camera_id", FK("camera")), ("", "ts", "timestamptz"),
-                     ("", "surface", L("secretária…", "desk…")), ("", "state", L("pousado, na mão…", "placed, in hand…")),
-                     ("FK", "member_id", FK("member")), ("", "match", "real"), ("", "thumb_key", "text")],
+                  ("FK", "owner_id", FK("member")), ("FK", "usual_camera", FK("camera"))],
+        "event": [("PK", "id", "uuid"), ("FK", "thing_id", FK("thing")), ("FK", "camera_id", FK("camera")), ("", "ts", "timestamptz"),
+                  ("", "surface", L("secretária…", "desk…")), ("", "state", L("pousado, na mão…", "placed, in hand…")),
+                  ("FK", "member_id", FK("member"))],
         "rule": [("PK", "id", "uuid"), ("FK", "home_id", FK("home")), ("", "sentence", "text"), ("", "compiled", "jsonb"),
                  ("FK", "owner_id", FK("member")), ("", "active", "bool"), ("", "siren", L("perguntar, logo", "ask, at once")),
                  ("", "scenario_id", "text")],
         "alert": [("PK", "id", "uuid"), ("FK", "rule_id", FK("rule")), ("", "ts", "timestamptz"), ("", "level", "text"), ("", "title", "text"),
-                  ("", "message", "text"), ("", "thumb_key", "text"), ("", "actions", "jsonb"), ("", "answer", "text"),
+                  ("", "message", "text"), ("", "actions", "jsonb"), ("", "answer", "text"),
                   ("FK", "answered_by", FK("member"))],
         "action_log": [("PK", "id", "uuid"), ("FK", "alert_id", FK("alert")), ("", "mcp_tool", "text"), ("", "args", "jsonb"),
                        ("", "result", "text"), ("", "ts", "timestamptz")],
-        "presence": [("PK", "home_id", FK("home")), ("", "state", L("OCUPADA…", "OCCUPIED…")), ("", "since", "timestamptz"),
-                     ("", "members_home", "jsonb"), ("", "reason", "text")],
-        "presence_change": [("PK", "id", "uuid"), ("FK", "home_id", FK("presence")), ("", "ts", "timestamptz"), ("", "from_state", "text"),
-                            ("", "to_state", "text"), ("", "reason", "text")],
-        "llm_call": [("PK", "id", "uuid"), ("FK", "home_id", FK("home")), ("", "purpose", "text"), ("", "model", "text"),
-                     ("", "tokens", "int"), ("", "cost_eur", "real")],
     }
     hgt = lambda n: 32 + len(T[n]) * 21 + 10
     y0 = 30
@@ -1043,7 +955,7 @@ def er_plataforma(lang):
     er_table(cv, xs[0], y0, cw, "customer", T["customer"])
     er_table(cv, xs[hc], y0, cw, "home", T["home"])
     er_line(cv, xs[0] + cw, y0 + 60, xs[hc], y0 + 60)
-    row1 = {"member": 0, "camera": 1, "thing": 2, "sighting": 3, "rule": 4, "presence": 5}
+    row1 = {"member": 0, "camera": 1, "thing": 2, "event": 3, "rule": 4}
     y1 = y0 + max(hgt("customer"), hgt("home")) + 90
     bus = y1 - 44
     for n, c in row1.items():
@@ -1051,32 +963,33 @@ def er_plataforma(lang):
     hb = y0 + hgt("home")
     cv.o.append(f'<line x1="{cx(hc):.1f}" y1="{hb}" x2="{cx(hc):.1f}" y2="{bus}" stroke="{BODY}" stroke-width="1.4"/>')
     cv.text(cx(hc) + 6, hb + 16, "1", 11, True, BLUE)
-    cv.o.append(f'<line x1="{cx(0):.1f}" y1="{bus}" x2="{cx(5):.1f}" y2="{bus}" stroke="{BODY}" stroke-width="1.4"/>')
-    for n in ("member", "camera", "thing", "rule", "presence"):
+    cv.o.append(f'<line x1="{cx(0):.1f}" y1="{bus}" x2="{cx(4):.1f}" y2="{bus}" stroke="{BODY}" stroke-width="1.4"/>')
+    for n in ("member", "camera", "thing", "rule"):
         c = row1[n]
         cv.o.append(f'<line x1="{cx(c):.1f}" y1="{bus}" x2="{cx(c):.1f}" y2="{y1}" stroke="{BODY}" stroke-width="1.4"/>')
-        cv.text(cx(c) + 6, y1 - 8, "1" if n == "presence" else "N", 11, True, BLUE)
+        cv.text(cx(c) + 6, y1 - 8, "N", 11, True, BLUE)
     er_line(cv, xs[2] + cw, y1 + 60, xs[3], y1 + 60)
     y2 = y1 + max(hgt(n) for n in row1) + 60
-    row2 = {"phone": 0, "person_seen": 1, "fingerprint": 2, "llm_call": 3, "alert": 4, "presence_change": 5}
+    row2 = {"phone": 0, "person_seen": 1, "alert": 4}
     for n, c in row2.items():
         er_table(cv, xs[c], y2, cw, n, T[n])
-    for parent, child, c in (("member", "phone", 0), ("camera", "person_seen", 1), ("thing", "fingerprint", 2), ("rule", "alert", 4),
-                             ("presence", "presence_change", 5)):
+    for parent, child, c in (("member", "phone", 0), ("camera", "person_seen", 1), ("rule", "alert", 4)):
         er_line(cv, cx(c), y1 + hgt(parent), cx(c), y2)
     y3 = y2 + max(hgt(n) for n in row2) + 60
     er_table(cv, xs[4], y3, cw, "action_log", T["action_log"])
     er_line(cv, cx(4), y2 + hgt("alert"), cx(4), y3)
     nx = xs[0]
     ny = y3 + 10
-    notes = [L("Uma base PostgreSQL com _pgvector_; cada linha pertence a um cliente, com segurança ao nível da linha.",
-               "One PostgreSQL database with pgvector; every row belongs to one customer, with row-level security."),
-             L("Nenhuma tabela guarda dados biométricos: `member` tem o nome, o papel e o registo do consentimento; os padrões faciais "
-               "só existem em casa.",
-               "No table holds biometric data: `member` has the name, the role and the consent record; face templates exist only in "
-               "the home."),
-             L("Retenção proposta: observações, pessoas vistas e miniaturas, 30 dias; avisos e ações, 90 dias.",
-               "Proposed retention: sightings, people seen and thumbnails, 30 days; alerts and actions, 90 days."),
+    notes = [L("Uma base PostgreSQL, só com texto; cada linha pertence a um cliente, com segurança ao nível da linha. Serve de cópia de "
+               "segurança, sincroniza os telemóveis da família e repõe os metadados se a caixa da casa for trocada.",
+               "One PostgreSQL database, text only; every row belongs to one customer, with row-level security. It is the backup, "
+               "syncs the family’s phones and restores the metadata if the home box is replaced."),
+             L("Nenhuma tabela guarda imagens, assinaturas visuais ou dados biométricos: `member` tem o nome, o papel e o registo do "
+               "consentimento; as assinaturas visuais e os padrões faciais só existem no equipamento da casa.",
+               "No table holds images, fingerprints or biometric data: `member` has the name, the role and the consent record; "
+               "fingerprints and face templates exist only on the home device."),
+             L("Retenção proposta: eventos e pessoas vistas, 30 dias; avisos e ações, 90 dias.",
+               "Proposed retention: events and people seen, 30 days; alerts and actions, 90 days."),
              L("Linhas: 1 e N indicam quantos registos de cada lado. As chaves estrangeiras sem linha estão escritas no campo (→ tabela).",
                "Lines: 1 and N say how many records on each side. Foreign keys without a line are written in the field (→ table).")]
     yy = ny + 20
@@ -1087,8 +1000,8 @@ def er_plataforma(lang):
 
 @view
 def er_casa(lang):
-    cw, gap = 290, 50
-    xs = [40 + i * (cw + gap) for i in range(4)]
+    cw, gap = 250, 40
+    xs = [40 + i * (cw + gap) for i in range(5)]
     W = xs[-1] + cw + 40
     cv = Canvas(W, lang, "Modelo de dados: casa" if lang == "pt" else "Data model: home")
     L = cv.L
@@ -1097,36 +1010,52 @@ def er_casa(lang):
         "face_template": [("PK", "id", "integer"), ("FK", "person_id", "→ person"), ("", "view_no", "1–8"),
                           ("", "feature", L("128 números", "128 numbers")), ("", "model", "SFace"), ("", "created_at", "timestamp")],
         "camera": [("PK", "id", "text"), ("", "rtsp_url", L("só na rede local", "local network only")), ("", "masks", "json")],
-        "outbox": [("PK", "id", "integer"), ("", "ts", "timestamp"), ("", "kind", L("evento, rótulo", "event, label")), ("", "payload", "json"),
+        "thing": [("PK", "id", L("= `thing.id`", "= `thing.id`")), ("", "name", "text"), ("", "query", L("palavra do detetor", "detector word")),
+                  ("", "photo", L("imagem, só aqui", "image, only here"))],
+        "fingerprint": [("PK", "id", "integer"), ("FK", "thing_id", "→ thing"), ("", "photo_no", "1–8"), ("", "embedding", L("384 números", "384 numbers")),
+                        ("", "model", "DINOv2")],
+        "sighting": [("PK", "id", "integer"), ("FK", "thing_id", "→ thing"), ("FK", "camera_id", "→ camera"), ("", "ts", "timestamp"),
+                     ("", "surface", L("secretária…", "desk…")), ("", "state", L("pousado, na mão…", "placed, in hand…")),
+                     ("", "match", "real"), ("", "thumb", L("imagem, só aqui", "image, only here"))],
+        "rule": [("PK", "id", L("= `rule.id`", "= `rule.id`")), ("", "compiled", "json"), ("", "active", "bool")],
+        "presence": [("PK", "id", "integer"), ("", "state", L("OCUPADA…", "OCCUPIED…")), ("", "since", "timestamp"),
+                     ("", "members_home", "json"), ("", "reason", "text")],
+        "outbox": [("PK", "id", "integer"), ("", "ts", "timestamp"), ("", "kind", L("evento, aviso", "event, alert")), ("", "payload", L("json, só texto", "json, text only")),
                    ("", "sent", "bool")],
         "setting": [("PK", "key", "text"), ("", "value", "text")],
     }
     hgt = lambda n: 32 + len(T[n]) * 21 + 10
     y0 = 92
-    cv.band(20, 20, W - 40, 0, "", None)          # placeholder removed below
-    cv.o.pop()
-    for n, c in (("person", 0), ("camera", 1), ("outbox", 2), ("setting", 3)):
+    top = ("person", "camera", "thing", "rule", "setting")
+    for c, n in enumerate(top):
         er_table(cv, xs[c], y0, cw, n, T[n])
-    y1 = y0 + hgt("person") + 60
-    er_table(cv, xs[0], y1, cw, "face_template", T["face_template"])
-    er_line(cv, xs[0] + cw / 2, y0 + hgt("person"), xs[0] + cw / 2, y1)
-    bot = max(y1 + hgt("face_template"), y0 + hgt("outbox"))
-    notes = [L("Uma base _SQLite_ cifrada no _router_, gerida pelo agente da casa. Não guarda imagens.",
-               "One encrypted SQLite database on the router, kept by the home agent. It holds no images."),
-             L("`face_template`: até 8 padrões por pessoa registada com consentimento; nunca saem de casa e são apagados quando a "
-               "pessoa retira o consentimento.",
-               "`face_template`: up to 8 templates per person registered with consent; they never leave the home and are deleted "
-               "when the person withdraws consent."),
-             L("`outbox`: guarda eventos e rótulos enquanto não há internet, nunca imagens; `setting` guarda, por exemplo, o limiar 0,363.",
-               "`outbox`: keeps events and labels while offline, never images; `setting` holds, for example, the 0.363 threshold.")]
-    yy = y1 + 20
+    y1 = y0 + max(hgt(n) for n in top) + 60
+    low = ("face_template", "sighting", "fingerprint", "presence", "outbox")
+    for c, n in enumerate(low):
+        er_table(cv, xs[c], y1, cw, n, T[n])
+    for c, (p, ch) in enumerate((("person", "face_template"), ("camera", "sighting"), ("thing", "fingerprint"))):
+        er_line(cv, xs[c] + cw / 2, y0 + hgt(p), xs[c] + cw / 2, y1)
+    bot = y1 + max(hgt(n) for n in low)
+    notes = [L("Uma base _SQLite_ cifrada no equipamento da casa (o _router_, se tiver NPU, ou uma caixa dedicada). As imagens, as "
+               "assinaturas visuais e os padrões faciais só existem aqui.",
+               "One encrypted SQLite database on the home device (the router, if it has an NPU, or a dedicated box). Images, "
+               "fingerprints and face templates exist only here."),
+             L("`face_template`: até 8 padrões por pessoa registada com consentimento; são apagados quando a pessoa retira o consentimento. "
+               "`fingerprint`: um vetor por cada uma das 8 fotos do objeto.",
+               "`face_template`: up to 8 templates per person registered with consent; deleted when the person withdraws consent. "
+               "`fingerprint`: one vector for each of the thing’s 8 photos."),
+             L("`outbox`: guarda eventos e avisos, em texto, enquanto não há internet; a análise de imagem continua sem internet. "
+               "`thing`, `rule` e `person` usam os mesmos identificadores da plataforma, que guarda os seus nomes e regras.",
+               "`outbox`: keeps events and alerts, as text, while offline; image analysis carries on without internet. `thing`, `rule` "
+               "and `person` share the platform’s ids; the platform keeps their names and rules.")]
+    yy = bot + 30
     for t in notes:
-        yy = cv.para(xs[1], yy, t, W - xs[1] - 40, 12.5) + 6
+        yy = cv.para(xs[0], yy, t, W - 80, 12.5) + 6
 
     def zone(b):
-        b.band(20, 20, W - 40, max(bot, yy) + 4 - 20, L("_Router_ da casa · agente da casa", "Home router · home agent"), None, fill=HOME_BG)
+        b.band(20, 20, W - 40, yy + 4 - 20, L("Equipamento da casa", "Home device"), None, fill=HOME_BG)
     bands_under(cv, zone)
-    cv.save("er-casa", round(max(bot, yy) + 30))
+    cv.save("er-casa", round(yy + 30))
 
 
 # ====================================================================== user flow
@@ -1146,9 +1075,9 @@ def fluxo_app(lang):
             (L("Separador _Things_", "Things tab"), L("(+) “Adicionar objeto”", "(+) “Add thing”")),
             (L("A procurar nas câmaras", "Looking through the cameras"), L("Propostas do que as câmaras veem, ou um nome escrito",
                                                                         "Proposals of what the cameras see, or a typed name")),
-            (L("Fotografias ou câmara", "Photos or camera"), L("6 a 8 fotografias com o telemóvel, ou mostrá-lo a uma câmara (8 vistas diferentes)",
-                                                             "6 to 8 photos with the phone, or show it to a camera (8 different views)")),
-            (L("Novo objeto", "New thing"), L("As vistas aprendidas e o nome; “Guardar”", "The learnt views and the name; “Save”")),
+            (L("Fotografias ou câmara", "Photos or camera"), L("6 a 8 fotografias com o telemóvel, enviadas ao equipamento da casa, ou mostrá-lo a uma câmara",
+                                                             "6 to 8 photos with the phone, sent to the home device, or show it to a camera")),
+            (L("Novo objeto", "New thing"), L("As fotos aprendidas e o nome; “Guardar”", "The learnt photos and the name; “Save”")),
             (L("Criar um cenário?", "Create a scenario?"), L("Propõe uma regra para o objeto: “avisa-me se sair sem ele”",
                                                             "Offers a rule for the thing: “tell me if I leave without it”")),
         ]),
@@ -1169,7 +1098,7 @@ def fluxo_app(lang):
             (L("A frase", "The sentence"), L("“Avisa-me se sair de casa sem o livro”", "“Tell me if I leave home without my book”")),
             (L("A regra em palavras simples", "The rule in plain words"), L("O que observa, quando avisa, o que faz e a escolha para a sirene",
                                                                            "What it watches, when it alerts, what it does, and the siren choice")),
-            (L("“Guardar”", "“Save”"), L("A regra passa a correr na Altice, a cada evento", "The rule now runs at Altice, on every event")),
+            (L("“Guardar”", "“Save”"), L("A regra passa a correr no equipamento da casa, a cada evento", "The rule now runs on the home device, on every event")),
             (L("Cenários", "Scenarios"), L("Aparece ao lado dos cenários que já existem", "Appears next to the existing scenarios")),
         ]),
         (L("Cenário sugerido", "A suggested scenario"), [
@@ -1181,8 +1110,8 @@ def fluxo_app(lang):
         ]),
         (L("Aviso com ações", "An alert with actions"), [
             (L("Notificação", "Notification"), L("Pelo serviço de notificações da aplicação", "Through the app’s notification service")),
-            (L("Aviso", "Alert"), L("Título, mensagem, miniatura e o que o motivou; a faixa da porta, quando é o caso",
-                                   "Title, message, thumbnail and what caused it; the door banner, when relevant")),
+            (L("Aviso", "Alert"), L("Título, mensagem e o que o motivou; a faixa da porta, quando é o caso",
+                                   "Title, message and what caused it; the door banner, when relevant")),
             (L("Cartões de ação", "Action cards"), L("Um “Sim” por ação: desligar as luzes, desligar o ar condicionado, tocar a sirene",
                                                     "One “Yes” per action: turn off the lights, turn off the air conditioner, sound the siren")),
             (L("Ação feita", "Action done"), L("O “Sim” vira uma chamada MCP; o aviso mostra o resultado",

@@ -1,138 +1,139 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2260 1160" width="2260" height="1160" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="C4, nível 2: contentores"><title>C4, nível 2: contentores</title><defs><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2260" height="1160" fill="#FFFFFF"/><rect x="20.0" y="24.0" width="290.0" height="1084.5" rx="18" fill="#F4F4F4"/>
-<text x="40.0" y="54.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Em casa</tspan></text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2260 964" width="2260" height="964" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="C4, nível 2: contentores"><title>C4, nível 2: contentores</title><defs><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2260" height="964" fill="#FFFFFF"/><rect x="20.0" y="24.0" width="1040.0" height="888.6" rx="18" fill="#F4F4F4"/>
+<text x="40.0" y="54.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Em casa · equipamento da casa</tspan></text>
 <rect x="1160.0" y="24.0" width="1080.0" height="181.2" rx="18" fill="#FFF6EA"/>
 <text x="1180.0" y="54.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Telemóvel</tspan></text>
-<rect x="410.0" y="233.1" width="1830.0" height="875.4" rx="18" fill="#EEF3FB"/>
-<text x="430.0" y="263.1" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice</tspan></text>
+<rect x="1160.0" y="233.1" width="1080.0" height="679.4" rx="18" fill="#EEF3FB"/>
+<text x="1180.0" y="263.1" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice · só texto</tspan></text>
 <rect x="40.0" y="96.0" width="250.0" height="91.2" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
 <text x="54.0" y="123.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Câmaras do kit</tspan></text>
 <text x="54.0" y="145.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistema existente]</text>
-<text x="54.0" y="168.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">RTSP, H.265</text>
+<text x="54.0" y="168.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">RTSP, H.265, só na rede da casa</text>
 <rect x="1180.0" y="96.0" width="1040.0" height="91.2" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
 <text x="1194.0" y="123.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Aplicação Altice</tspan></text>
 <text x="1194.0" y="145.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistema existente · telemóvel]</text>
 <text x="1194.0" y="168.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Separador<tspan font-style="italic"> Things</tspan>, assistente e avisos com cartões de ação</text>
-<rect x="40.0" y="283.1" width="250.0" height="330.8" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
-<text x="54.0" y="310.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Agente da casa</tspan></text>
-<text x="54.0" y="332.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">Python</tspan> no CPU do<tspan font-style="italic"> router</tspan>]</text>
-<text x="54.0" y="355.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Máscaras, filtro de movimento, recorte</text>
-<text x="54.0" y="373.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">da região que mudou</text>
-<text x="54.0" y="396.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Rostos com<tspan font-style="italic"> YuNet</tspan> e<tspan font-style="italic"> SFace</tspan> (opcional)</text>
-<text x="54.0" y="420.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Lê a pedido do serviço, mesmo sem</text>
-<text x="54.0" y="437.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">movimento</text>
-<text x="54.0" y="461.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Guarda só em memória os últimos 3 s,</text>
-<text x="54.0" y="478.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">para o juiz</text>
-<rect x="790.0" y="283.1" width="250.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
-<text x="804.0" y="310.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Servidores de visão</tspan></text>
-<text x="804.0" y="332.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">PyTorch</tspan>, GPU L4]</text>
-<text x="804.0" y="355.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">OWLv2</tspan>: caixas;<tspan font-style="italic"> DINOv2</tspan>: um vetor por</text>
-<text x="804.0" y="373.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">candidato</text>
-<rect x="430.0" y="487.8" width="220.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
-<text x="444.0" y="515.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Mediador de ligações</tspan></text>
-<text x="444.0" y="537.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[MQTT sobre mTLS]</text>
-<text x="444.0" y="560.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Uma ligação por casa, atrás de</text>
-<text x="444.0" y="578.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">um balanceador</text>
-<rect x="790.0" y="487.8" width="250.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
-<text x="804.0" y="515.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Filas e fluxo de eventos</tspan></text>
-<text x="804.0" y="537.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistema de mensagens]</text>
-<text x="804.0" y="560.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Visão urgente e em lote; eventos de</text>
-<text x="804.0" y="578.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">cada casa por ordem; pedidos ao</text>
-<text x="804.0" y="595.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">modelo</text>
-<rect x="1180.0" y="487.8" width="270.0" height="596.8" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="2.4"/>
-<text x="1194.0" y="515.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Serviço</tspan><tspan font-weight="700" font-style="italic"> ThingTracker</tspan></text>
-<text x="1194.0" y="537.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[contentores sem estado, atrás de um</text>
-<text x="1194.0" y="554.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">balanceador]</text>
-<text x="1194.0" y="578.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">API da aplicação e<tspan font-style="italic"> host</tspan> MCP</text>
-<text x="1194.0" y="601.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Comparação com as assinaturas visuais</text>
-<text x="1194.0" y="625.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Seguimento: na mão, levado, mudado</text>
-<text x="1194.0" y="648.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Motor de presença e motor de regras, por</text>
-<text x="1194.0" y="666.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">casa; o motor de regras decide</text>
-<text x="1194.0" y="689.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Avisos; um “Sim” vira uma chamada MCP</text>
-<rect x="1970.0" y="487.8" width="250.0" height="126.1" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
-<text x="1984.0" y="515.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma</tspan><tspan font-weight="700" font-style="italic"> Connected Home</tspan></text>
-<text x="1984.0" y="537.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistema existente]</text>
-<text x="1984.0" y="560.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Servidor MCP, eventos da porta e do</text>
-<text x="1984.0" y="578.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi, notificações</text>
-<rect x="40.0" y="709.9" width="250.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
-<text x="54.0" y="737.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Padrões faciais</tspan></text>
-<text x="54.0" y="759.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">SQLite</tspan> cifrado, no<tspan font-style="italic"> router</tspan>]</text>
-<text x="54.0" y="782.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Até 8 por pessoa; nunca saem de casa</text>
-<rect x="790.0" y="709.9" width="250.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
-<text x="804.0" y="737.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">Cache</tspan></text>
-<text x="804.0" y="759.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">Redis</tspan>]</text>
-<text x="804.0" y="782.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Estado corrente de cada casa:</text>
-<text x="804.0" y="800.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">presença, trajetos, temporizadores</text>
-<rect x="1590.0" y="709.9" width="240.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
-<text x="1604.0" y="737.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL</tspan></text>
-<text x="1604.0" y="759.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[com<tspan font-style="italic"> pgvector</tspan>]</text>
-<text x="1604.0" y="782.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Por cliente: objetos, assinaturas,</text>
-<text x="1604.0" y="800.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">regras, avisos, observações</text>
-<rect x="790.0" y="914.6" width="250.0" height="170.0" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
-<text x="804.0" y="942.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Modelos de linguagem e de</tspan></text>
-<text x="804.0" y="962.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">visão-linguagem</tspan></text>
-<text x="804.0" y="984.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[servidores GPU atrás de uma fila]</text>
-<text x="804.0" y="1007.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Só escrevem texto: frases em regras,</text>
-<text x="804.0" y="1025.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">que o serviço valida, e respostas;</text>
-<text x="804.0" y="1042.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">nunca decidem</text>
-<text x="804.0" y="1066.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Juiz: raramente, um clipe curto</text>
-<rect x="1590.0" y="914.6" width="240.0" height="170.0" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
-<text x="1604.0" y="942.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Armazenamento de objetos</tspan></text>
-<text x="1604.0" y="963.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[compatível com S3]</text>
-<text x="1604.0" y="987.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Miniaturas, 30 dias (proposta)</text>
+<rect x="40.0" y="283.1" width="250.0" height="161.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
+<text x="54.0" y="310.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Captura e filtro de movimento</tspan></text>
+<text x="54.0" y="332.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">ffmpeg</tspan>,<tspan font-style="italic"> OpenCV</tspan>]</text>
+<text x="54.0" y="355.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Lê as câmaras na rede da casa;</text>
+<text x="54.0" y="373.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">máscaras de privacidade; só analisa</text>
+<text x="54.0" y="390.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">quando há movimento ou um pedido</text>
+<rect x="430.0" y="283.1" width="220.0" height="161.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
+<text x="444.0" y="310.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Visão</tspan></text>
+<text x="444.0" y="332.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">OWLv2</tspan> +<tspan font-style="italic"> DINOv2</tspan> no protótipo]</text>
+<text x="444.0" y="355.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Deteção e reidentificação com a</text>
+<text x="444.0" y="373.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">assinatura visual (≥ 0,62);</text>
+<text x="444.0" y="390.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">detetores leves, como o</text>
+<text x="444.0" y="408.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">YOLOv8n</tspan>, em equipamentos</text>
+<text x="444.0" y="425.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">pequenos</text>
+<rect x="40.0" y="540.3" width="250.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
+<text x="54.0" y="568.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Rostos (opcional)</tspan></text>
+<text x="54.0" y="589.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">YuNet</tspan> +<tspan font-style="italic"> SFace</tspan>]</text>
+<text x="54.0" y="613.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Com consentimento; os padrões</text>
+<text x="54.0" y="630.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">faciais ficam guardados no</text>
+<text x="54.0" y="648.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">equipamento</text>
+<rect x="430.0" y="540.3" width="220.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
+<text x="444.0" y="568.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Memória local</tspan></text>
+<text x="444.0" y="589.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">SQLite</tspan> cifrado]</text>
+<text x="444.0" y="613.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Assinaturas visuais, padrões</text>
+<text x="444.0" y="630.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">faciais, onde e quando cada</text>
+<text x="444.0" y="648.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">objeto foi visto</text>
+<rect x="790.0" y="283.1" width="250.0" height="383.3" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="2.4"/>
+<text x="804.0" y="310.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Serviço da casa</tspan></text>
+<text x="804.0" y="332.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">Python</tspan>, no equipamento da casa]</text>
+<text x="804.0" y="355.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Motor de presença e motor de regras;</text>
+<text x="804.0" y="373.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">o motor de regras decide</text>
+<text x="804.0" y="396.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Seguimento: na mão, levado, mudado</text>
+<text x="804.0" y="420.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Avisos, em texto; um “Sim” vira um</text>
+<text x="804.0" y="437.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">pedido de ação MCP</text>
+<text x="804.0" y="461.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Constrói a assinatura a partir das</text>
+<text x="804.0" y="478.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">fotografias de registo</text>
+<rect x="790.0" y="762.4" width="250.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
+<text x="804.0" y="790.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Modelo de linguagem</tspan></text>
+<text x="804.0" y="811.7" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[<tspan font-style="italic">Qwen3-1.7B</tspan> no protótipo]</text>
+<text x="804.0" y="835.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Frase em regra, pergunta em resposta;</text>
+<text x="804.0" y="852.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">o serviço valida; nunca decide</text>
+<rect x="1180.0" y="283.1" width="270.0" height="383.3" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
+<text x="1194.0" y="310.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Retransmissão e mediador</tspan></text>
+<text x="1194.0" y="332.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[MQTT sobre mTLS]</text>
+<text x="1194.0" y="355.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Uma ligação de saída por casa, atrás de</text>
+<text x="1194.0" y="373.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">um balanceador</text>
+<text x="1194.0" y="396.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Leva a aplicação até casa quando a família</text>
+<text x="1194.0" y="414.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">está fora</text>
+<text x="1194.0" y="437.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">As fotografias de registo passam cifradas</text>
+<text x="1194.0" y="455.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">de ponta a ponta: a Altice não as lê</text>
+<rect x="1590.0" y="283.1" width="240.0" height="383.3" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="2.4"/>
+<text x="1604.0" y="310.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Serviço</tspan><tspan font-weight="700" font-style="italic"> ThingTracker</tspan><tspan font-weight="700"> na Altice</tspan></text>
+<text x="1604.0" y="332.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[contentores sem estado; só texto]</text>
+<text x="1604.0" y="355.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Contas, identidade e permissões da</text>
+<text x="1604.0" y="373.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">família</text>
+<text x="1604.0" y="396.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Registo de eventos em texto (“livro,</text>
+<text x="1604.0" y="414.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">secretária, 18h02”)</text>
+<text x="1604.0" y="437.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Cópia de segurança e sincronização</text>
+<text x="1604.0" y="455.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">entre os telemóveis da família</text>
+<rect x="1970.0" y="283.1" width="250.0" height="383.3" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="1984.0" y="310.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma</tspan><tspan font-weight="700" font-style="italic"> Connected Home</tspan></text>
+<text x="1984.0" y="332.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistema existente]</text>
+<text x="1984.0" y="355.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Servidor MCP, eventos da porta e do</text>
+<text x="1984.0" y="373.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi, notificações</text>
+<rect x="1590.0" y="762.4" width="240.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
+<text x="1604.0" y="790.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL</tspan></text>
+<text x="1604.0" y="811.7" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[só metadados, em texto]</text>
+<text x="1604.0" y="835.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Objetos, pessoas (só nomes), donos,</text>
+<text x="1604.0" y="852.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">cenários, eventos; repõe-nos se a</text>
+<text x="1604.0" y="870.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">caixa for trocada</text>
 <path d="M165.0 187.2 V273.1" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="174.0" y="231.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">vídeo RTSP, rede da</text>
 <text x="174.0" y="246.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">casa</text>
-<path d="M173.0 613.9 V699.9" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="182.0" y="666.0" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">guarda padrões</text>
-<path d="M157.0 709.9 V623.9" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="148.0" y="658.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">padrões para</text>
-<text x="148.0" y="673.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">comparar</text>
-<path d="M290.0 543.9 H420.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="298.0" y="521.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">regiões e rótulos de</text>
-<text x="298.0" y="536.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">rostos</text>
-<path d="M430.0 557.9 H300.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="298.0" y="573.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">pedidos, vídeo de</text>
-<text x="298.0" y="588.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">registo</text>
-<path d="M650.0 543.9 H780.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="658.0" y="536.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">regiões</text>
-<path d="M790.0 557.9 H660.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="658.0" y="573.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">pedidos às casas</text>
-<path d="M923.0 391.8 V477.8" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="932.0" y="443.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">caixas e vetores</text>
-<path d="M907.0 487.8 V401.8" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="898.0" y="443.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">regiões</text>
-<path d="M1040.0 543.9 H1170.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1048.0" y="521.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">eventos de cada casa,</text>
-<text x="1048.0" y="536.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">por ordem</text>
-<path d="M1180.0 557.9 H1050.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1048.0" y="573.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">pedidos às casas e ao</text>
-<text x="1048.0" y="588.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">modelo</text>
-<path d="M1040.0 757.3 H1170.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1048.0" y="750.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">estado</text>
-<path d="M1180.0 771.3 H1050.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1048.0" y="787.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">estado e</text>
-<text x="1048.0" y="802.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">temporizadores</text>
-<path d="M1040.0 992.6 H1170.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1048.0" y="970.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">regra, resposta,</text>
-<text x="1048.0" y="985.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">veredicto</text>
-<path d="M1180.0 1006.6 H1050.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1048.0" y="1022.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">texto ou clipe curto,</text>
-<text x="1048.0" y="1037.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">pela fila</text>
-<path d="M1450.0 757.3 H1580.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1458.0" y="750.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">objetos, regras, avisos</text>
-<path d="M1590.0 771.3 H1460.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1458.0" y="787.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">assinaturas (<tspan font-style="italic">pgvector</tspan>)</text>
-<path d="M1450.0 999.6 H1580.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1458.0" y="992.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">miniaturas</text>
-<path d="M1450.0 543.9 H1960.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1458.0" y="536.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">chamadas MCP: ações, leitura</text>
-<path d="M1970.0 557.9 H1460.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1458.0" y="573.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">eventos: porta, Wi-Fi</text>
-<path d="M1323.0 187.2 V477.8" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1332.0" y="334.0" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">pedidos HTTPS, pelo</text>
-<text x="1332.0" y="349.0" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">balanceador</text>
-<path d="M1307.0 487.8 V197.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1298.0" y="341.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">respostas, miniaturas</text>
-<path d="M2095.0 487.8 V197.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="2104.0" y="341.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">notificações</text>
-<text x="40.0" y="1142.5" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Notação C4, nível 2. Contorno azul: contentores do<tspan font-style="italic"> ThingTracker</tspan>; cinzento: sistemas existentes. Cada seta é um sentido do fluxo, com o que leva.</text></svg>
+<path d="M290.0 363.7 H420.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="298.0" y="356.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">região que mudou</text>
+<path d="M165.0 444.3 V530.3" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="174.0" y="496.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">pessoa na imagem</text>
+<path d="M290.0 603.4 H420.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="298.0" y="581.4" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">nome ou</text>
+<text x="298.0" y="596.4" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">“desconhecido”</text>
+<path d="M548.0 444.3 V530.3" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="557.0" y="496.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">observações</text>
+<path d="M532.0 540.3 V454.3" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="523.0" y="496.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">assinaturas</text>
+<path d="M650.0 363.7 H780.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="658.0" y="341.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">objetos e pessoas</text>
+<text x="658.0" y="356.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">vistos</text>
+<path d="M650.0 596.4 H780.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="658.0" y="574.4" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">última vez visto, quem</text>
+<text x="658.0" y="589.4" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">está</text>
+<path d="M790.0 610.4 H660.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="658.0" y="626.4" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">eventos, regras</text>
+<path d="M923.0 666.4 V752.4" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="932.0" y="718.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">frase ou pergunta</text>
+<path d="M907.0 762.4 V676.4" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="898.0" y="711.0" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">regra proposta,</text>
+<text x="898.0" y="726.0" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">resposta</text>
+<path d="M1040.0 467.8 H1170.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1048.0" y="445.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">só texto: eventos,</text>
+<text x="1048.0" y="460.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">avisos</text>
+<path d="M1180.0 481.8 H1050.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1048.0" y="497.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">pedidos, comandos,</text>
+<text x="1048.0" y="512.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">fotografias cifradas</text>
+<path d="M1450.0 467.8 H1580.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1458.0" y="460.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">eventos em texto</text>
+<path d="M1590.0 481.8 H1460.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1458.0" y="497.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">pedidos da aplicação</text>
+<path d="M1830.0 467.8 H1960.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1838.0" y="445.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">ações MCP após</text>
+<text x="1838.0" y="460.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">“Sim”; notificações</text>
+<path d="M1970.0 481.8 H1840.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1838.0" y="497.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">eventos: porta, Wi-Fi</text>
+<path d="M1718.0 666.4 V752.4" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1727.0" y="718.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">grava</text>
+<path d="M1702.0 762.4 V676.4" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1693.0" y="718.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">lê</text>
+<path d="M1718.0 187.2 V273.1" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1727.0" y="231.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">frases, perguntas,</text>
+<text x="1727.0" y="246.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">“Sim” (HTTPS)</text>
+<path d="M1702.0 283.1 V197.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1693.0" y="231.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">respostas, lista de</text>
+<text x="1693.0" y="246.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">objetos</text>
+<path d="M2095.0 283.1 V197.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="2104.0" y="239.2" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">notificações</text>
+<text x="40.0" y="946.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Notação C4, nível 2. Contorno azul: contentores do<tspan font-style="italic"> ThingTracker</tspan>; cinzento: sistemas existentes. Cada seta é um sentido do fluxo, com o que leva. Imagens, vídeo, assinaturas visuais e padrões faciais nunca saem de casa.</text></svg>

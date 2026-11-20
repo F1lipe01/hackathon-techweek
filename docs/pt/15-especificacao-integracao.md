@@ -69,7 +69,7 @@ A Figura 1 mostra as mensagens trocadas quando a regra se cumpre, nomeadamente a
 
 ![Sequência: o livro esquecido](../architecture/seq-livro-esquecido.png){width=100%}
 
-**Figura 1** – O livro esquecido: mensagens entre o sensor da porta e o _router_, o agente da casa, a plataforma Altice, os servidores de visão, o serviço _ThingTracker_ e a aplicação.
+**Figura 1** – O livro esquecido: mensagens entre o equipamento da casa, o sensor da porta e o _router_, a plataforma Altice e a aplicação.
 
 Na solução final, o modelo de linguagem e o motor de regras correm no equipamento da casa: a aplicação envia-lhe a frase (pelo _relay_, quando a família está fora) e a plataforma guarda o cenário resultante em texto. Os passos seguintes mantêm os nomes do desenho de 19 de novembro.
 

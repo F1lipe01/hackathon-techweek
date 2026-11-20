@@ -1,117 +1,118 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 1279" width="1380" height="1279" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequência: casa vazia e porta aberta"><title>Sequência: casa vazia e porta aberta</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1380" height="1279" fill="#FFFFFF"/><line x1="120.0" y1="102.77499999999999" x2="120.0" y2="1225.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="315.0" y1="102.77499999999999" x2="315.0" y2="1225.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="515.0" y1="102.77499999999999" x2="515.0" y2="1225.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="720.0" y1="102.77499999999999" x2="720.0" y2="1225.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="945.0" y1="102.77499999999999" x2="945.0" y2="1225.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="1215.0" y1="102.77499999999999" x2="1215.0" y2="1225.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<rect x="32.0" y="20.0" width="176.0" height="82.8" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="44.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Sensor da porta e</tspan></text>
-<text x="44.0" y="64.9" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">router</tspan></text>
-<text x="44.0" y="86.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">em casa, ligados à Altice</text>
-<rect x="232.0" y="20.0" width="166.0" height="82.8" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="244.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Agente da casa</tspan></text>
-<text x="244.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">no<tspan font-style="italic"> router</tspan></text>
-<rect x="422.0" y="20.0" width="186.0" height="82.8" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="434.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma Altice</tspan></text>
-<text x="434.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">eventos e servidor MCP</text>
-<rect x="632.0" y="20.0" width="176.0" height="82.8" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="644.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Servidores de visão</tspan></text>
-<text x="644.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start"><tspan font-style="italic">OWLv2</tspan>, GPU L4</text>
-<rect x="832.0" y="20.0" width="226.0" height="82.8" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="844.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Serviço</tspan><tspan font-weight="700" font-style="italic"> ThingTracker</tspan></text>
-<text x="844.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">presença e regras, por casa</text>
-<rect x="1082.0" y="20.0" width="266.0" height="82.8" rx="12" fill="#FFF6EA" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="1094.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Aplicação Altice</tspan></text>
-<text x="1094.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">no telemóvel</text>
-<rect x="12.0" y="142.8" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="690.0" y="161.8" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Estado: OCUPADA. Regras ativas: “Quando não estiver ninguém, propõe desligar o que ficou ligado” e “Avisa-me se a porta ficar aberta sem ninguém por perto”.</text>
-<rect x="147.3" y="183.5" width="340.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="317.5" y="196.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">porta aberta e fechada; os 2 telemóveis da família saem do</text>
-<rect x="297.9" y="200.5" width="39.2" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="317.5" y="213.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Wi-Fi</text>
-<path d="M132.0 222.0 H501.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="120.0" cy="221.97499999999997" r="11" fill="#0084D6"/>
-<text x="120.0" y="226.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">1</tspan></text>
-<rect x="602.5" y="248.5" width="255.0" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="730.0" y="261.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">door.opened</tspan>, <tspan font-family="Menlo, monospace" font-size="11.2">door.closed</tspan>, <tspan font-family="Menlo, monospace" font-size="11.2">wifi.left</tspan> × 2</text>
-<path d="M527.0 270.0 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="515.0" cy="269.97499999999997" r="11" fill="#0084D6"/>
-<text x="515.0" y="274.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">2</tspan></text>
-<rect x="795.0" y="314.0" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="333.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">OCUPADA → A SAIR. Nenhuma pessoa vista</text>
-<text x="945.0" y="350.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">desde que a porta fechou; falta confirmar que</text>
-<text x="945.0" y="367.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">ninguém ficou parado</text>
-<rect x="446.4" y="387.5" width="367.2" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="630.0" y="400.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">atualização: as regiões onde as pessoas foram vistas por último</text>
-<path d="M933.0 409.0 H329.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="408.97499999999997" r="11" fill="#0084D6"/>
-<text x="945.0" y="413.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">3</tspan></text>
-<rect x="456.3" y="435.5" width="122.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="517.5" y="448.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">regiões (fila urgente)</text>
-<path d="M327.0 457.0 H706.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="315.0" cy="456.97499999999997" r="11" fill="#0084D6"/>
-<text x="315.0" y="461.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">4</tspan></text>
-<rect x="779.6" y="483.5" width="105.9" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="832.5" y="496.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">nenhuma pessoa</text>
-<path d="M732.0 505.0 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="720.0" cy="504.97499999999997" r="11" fill="#0084D6"/>
-<text x="720.0" y="509.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">5</tspan></text>
-<rect x="795.0" y="549.0" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="568.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Passado T_saída, ninguém nas câmaras: A SAIR</text>
-<text x="945.0" y="585.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">→ VAZIA. Ligados, segundo <tspan font-family="Menlo, monospace" font-size="11.2">get_home_devices</tspan>:</text>
-<text x="945.0" y="602.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">as luzes (na tomada) e o ar condicionado</text>
-<rect x="959.2" y="622.5" width="241.6" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="635.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso: “Não está ninguém em casa e há 2</text>
-<rect x="971.3" y="639.5" width="217.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="652.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aparelhos ligados”, com dois cartões</text>
-<rect x="1058.9" y="656.5" width="42.2" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="669.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Sim”</text>
-<path d="M957.0 678.0 H1201.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="677.9749999999999" r="11" fill="#0084D6"/>
-<text x="945.0" y="682.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">6</tspan></text>
-<rect x="1009.1" y="704.5" width="141.7" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="717.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Sim”: desligar as luzes</text>
-<path d="M1203.0 726.0 H959.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="1215.0" cy="725.9749999999999" r="11" fill="#0084D6"/>
-<text x="1215.0" y="730.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">7</tspan></text>
-<rect x="583.6" y="752.5" width="292.9" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="730.0" y="765.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: tomada desligada</text>
-<path d="M933.0 774.0 H529.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="773.9749999999999" r="11" fill="#0084D6"/>
-<text x="945.0" y="778.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">8</tspan></text>
-<rect x="981.2" y="800.5" width="197.5" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="813.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Sim”: desligar o ar condicionado</text>
-<path d="M1203.0 822.0 H959.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="1215.0" cy="821.9749999999999" r="11" fill="#0084D6"/>
-<text x="1215.0" y="826.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">9</tspan></text>
-<rect x="559.5" y="848.5" width="341.0" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="730.0" y="861.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: ar condicionado desligado</text>
-<path d="M933.0 870.0 H529.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="869.9749999999999" r="11" fill="#0084D6"/>
-<text x="945.0" y="874.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">10</tspan></text>
-<rect x="12.0" y="914.0" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="690.0" y="933.0" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Noutro dia, a porta da entrada fica aberta</text>
-<rect x="278.2" y="954.7" width="78.5" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="317.5" y="967.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">porta aberta</text>
-<path d="M132.0 976.2 H501.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="120.0" cy="976.175" r="11" fill="#0084D6"/>
-<text x="120.0" y="980.5" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">11</tspan></text>
-<rect x="687.8" y="1002.7" width="84.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="730.0" y="1015.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">door.opened</tspan></text>
-<path d="M527.0 1024.2 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="515.0" cy="1024.175" r="11" fill="#0084D6"/>
-<text x="515.0" y="1028.5" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">12</tspan></text>
-<rect x="795.0" y="1068.2" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="1087.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Porta aberta há T_porta (5 s na demonstração,</text>
-<text x="945.0" y="1104.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">2 min em produção, proposta), sem ninguém em</text>
-<text x="945.0" y="1121.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">nenhuma câmara desde que abriu</text>
-<rect x="963.8" y="1141.7" width="232.5" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="1154.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso: “A porta da entrada está aberta e</text>
-<rect x="959.2" y="1158.7" width="241.5" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="1171.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">não está ninguém por perto”, com a faixa</text>
-<rect x="1002.3" y="1175.7" width="155.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="1188.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">da porta e “Ver em direto”</text>
-<path d="M957.0 1197.2 H1201.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="1197.175" r="11" fill="#0084D6"/>
-<text x="945.0" y="1201.5" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">13</tspan></text>
-<text x="20.0" y="1251.2" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Cinzento: em casa. Azul: Altice. Laranja: telemóvel. Os tempos de produção são propostas, a afinar num piloto.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 1399" width="1300" height="1399" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequência: casa vazia e porta aberta"><title>Sequência: casa vazia e porta aberta</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1300" height="1399" fill="#FFFFFF"/><line x1="190.0" y1="83.175" x2="190.0" y2="1344.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="485.0" y1="83.175" x2="485.0" y2="1344.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="775.0" y1="83.175" x2="775.0" y2="1344.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="1110.0" y1="83.175" x2="1110.0" y2="1344.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="32.0" y="20.0" width="316.0" height="63.2" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="44.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Equipamento da casa</tspan></text>
+<text x="44.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">visão, presença e regras</text>
+<rect x="372.0" y="20.0" width="226.0" height="63.2" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="384.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Sensor da porta e</tspan><tspan font-weight="700" font-style="italic"> router</tspan></text>
+<text x="384.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">em casa, ligados à Altice</text>
+<rect x="622.0" y="20.0" width="306.0" height="63.2" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="634.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma Altice</tspan></text>
+<text x="634.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">eventos, servidor MCP, notificações</text>
+<rect x="952.0" y="20.0" width="316.0" height="63.2" rx="12" fill="#FFF6EA" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="964.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Aplicação Altice</tspan></text>
+<text x="964.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">no telemóvel</text>
+<rect x="12.0" y="123.2" width="1276.0" height="32.2" rx="8" fill="#EEF1F6"/>
+<text x="650.0" y="142.2" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Estado: OCUPADA. Regras ativas: “Quando não estiver ninguém, propõe desligar o que ficou ligado” e “Avisa-me se a porta ficar aberta sem ninguém por perto”.</text>
+<rect x="505.5" y="163.9" width="248.9" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="176.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">porta aberta e fechada; os 2 telemóveis da</text>
+<rect x="564.7" y="180.9" width="130.6" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="193.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">família saem do Wi-Fi</text>
+<path d="M497.0 202.4 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="485.0" cy="202.375" r="11" fill="#0084D6"/>
+<text x="485.0" y="206.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">1</tspan></text>
+<rect x="327.0" y="228.9" width="311.0" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="241.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">door.opened</tspan>, <tspan font-family="Menlo, monospace" font-size="11.2">door.closed</tspan>, <tspan font-family="Menlo, monospace" font-size="11.2">wifi.left</tspan> × 2, em texto</text>
+<path d="M763.0 250.4 H204.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="250.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="254.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">2</tspan></text>
+<rect x="40.0" y="294.4" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="190.0" y="313.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">OCUPADA → A SAIR. Nenhuma pessoa vista</text>
+<text x="190.0" y="330.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">desde que a porta fechou; falta confirmar que</text>
+<text x="190.0" y="347.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">ninguém ficou parado</text>
+<rect x="40.0" y="385.4" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="190.0" y="404.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Atualização: lê as câmaras onde as pessoas</text>
+<text x="190.0" y="421.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">foram vistas por último, na rede da casa.</text>
+<text x="190.0" y="438.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Nenhuma pessoa</text>
+<rect x="336.3" y="458.9" width="292.4" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="471.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">que aparelhos estão ligados? (<tspan font-family="Menlo, monospace" font-size="11.2">get_home_devices</tspan>)</text>
+<path d="M202.0 480.4 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="190.0" cy="480.375" r="11" fill="#0084D6"/>
+<text x="190.0" y="484.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">3</tspan></text>
+<rect x="362.8" y="506.9" width="239.4" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="519.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">as luzes (na tomada) e o ar condicionado</text>
+<path d="M763.0 528.4 H204.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="528.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="532.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">4</tspan></text>
+<rect x="40.0" y="572.4" width="300.0" height="50.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="190.0" y="591.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Passado T_saída, ninguém nas câmaras: A SAIR</text>
+<text x="190.0" y="608.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">→ VAZIA, com 2 aparelhos ligados</text>
+<rect x="359.3" y="628.9" width="246.3" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="641.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso, só texto, com as 2 ações propostas</text>
+<path d="M202.0 650.4 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="190.0" cy="650.375" r="11" fill="#0084D6"/>
+<text x="190.0" y="654.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">5</tspan></text>
+<rect x="805.6" y="676.9" width="273.8" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="689.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">notificação: “Não está ninguém em casa e há 2</text>
+<rect x="816.0" y="693.9" width="253.1" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="706.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aparelhos ligados”, com dois cartões “Sim”</text>
+<path d="M787.0 715.4 H1096.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="715.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="719.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">6</tspan></text>
+<rect x="871.6" y="741.9" width="141.7" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="754.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Sim”: desligar as luzes</text>
+<path d="M1098.0 763.4 H789.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="1110.0" cy="763.375" r="11" fill="#0084D6"/>
+<text x="1110.0" y="767.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">7</tspan></text>
+<rect x="512.3" y="789.9" width="235.5" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="802.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: tomada</text>
+<rect x="598.0" y="806.9" width="64.0" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="819.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">desligada</text>
+<path d="M763.0 828.4 H499.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="828.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="832.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">8</tspan></text>
+<rect x="843.7" y="854.9" width="197.5" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="867.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Sim”: desligar o ar condicionado</text>
+<path d="M1098.0 876.4 H789.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="1110.0" cy="876.375" r="11" fill="#0084D6"/>
+<text x="1110.0" y="880.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">9</tspan></text>
+<rect x="528.1" y="902.9" width="203.7" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="915.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: ar</text>
+<rect x="558.1" y="919.9" width="143.8" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="932.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">condicionado desligado</text>
+<path d="M763.0 941.4 H499.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="941.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="945.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">10</tspan></text>
+<rect x="12.0" y="985.4" width="1276.0" height="32.2" rx="8" fill="#EEF1F6"/>
+<text x="650.0" y="1004.4" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Noutro dia, a porta da entrada fica aberta</text>
+<rect x="590.7" y="1026.1" width="78.5" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="1038.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">porta aberta</text>
+<path d="M497.0 1047.6 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="485.0" cy="1047.575" r="11" fill="#0084D6"/>
+<text x="485.0" y="1051.9" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">11</tspan></text>
+<rect x="440.3" y="1074.1" width="84.4" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="1086.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">door.opened</tspan></text>
+<path d="M763.0 1095.6 H204.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="1095.575" r="11" fill="#0084D6"/>
+<text x="775.0" y="1099.9" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">12</tspan></text>
+<rect x="40.0" y="1139.6" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="190.0" y="1158.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Porta aberta há T_porta (5 s na demonstração,</text>
+<text x="190.0" y="1175.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">2 min em produção, proposta), sem ninguém em</text>
+<text x="190.0" y="1192.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">nenhuma câmara desde que abriu</text>
+<rect x="306.9" y="1213.1" width="351.2" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="1225.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso, só texto: “porta da entrada aberta, ninguém por perto”</text>
+<path d="M202.0 1234.6 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="190.0" cy="1234.575" r="11" fill="#0084D6"/>
+<text x="190.0" y="1238.9" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">13</tspan></text>
+<rect x="798.0" y="1261.1" width="289.0" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="1273.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">notificação: “A porta da entrada está aberta e não</text>
+<rect x="790.3" y="1278.1" width="304.5" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="1290.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">está ninguém por perto”, com a faixa da porta e “Ver</text>
+<rect x="908.4" y="1295.1" width="68.1" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="1307.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">em direto”</text>
+<path d="M787.0 1316.6 H1096.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="1316.575" r="11" fill="#0084D6"/>
+<text x="775.0" y="1320.9" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">14</tspan></text>
+<text x="20.0" y="1370.6" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Cinzento: em casa. Azul: Altice. Laranja: telemóvel. Os tempos de produção são propostas, a afinar num piloto.</text></svg>

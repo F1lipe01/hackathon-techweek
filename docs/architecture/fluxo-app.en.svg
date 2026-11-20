@@ -10,12 +10,12 @@
 <text x="550.0" y="119.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">see, or a typed name</text>
 <rect x="806.0" y="30.0" width="224.0" height="107.4" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
 <text x="820.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Photos or camera</tspan></text>
-<text x="820.0" y="81.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">6 to 8 photos with the phone, or</text>
-<text x="820.0" y="98.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">show it to a camera (8 different</text>
-<text x="820.0" y="116.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">views)</text>
+<text x="820.0" y="81.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">6 to 8 photos with the phone, sent</text>
+<text x="820.0" y="98.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">to the home device, or show it to a</text>
+<text x="820.0" y="116.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">camera</text>
 <rect x="1076.0" y="30.0" width="224.0" height="107.4" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
 <text x="1090.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">New thing</tspan></text>
-<text x="1090.0" y="81.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The learnt views and the name;</text>
+<text x="1090.0" y="81.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The learnt photos and the name;</text>
 <text x="1090.0" y="98.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">“Save”</text>
 <rect x="1346.0" y="30.0" width="224.0" height="107.4" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
 <text x="1360.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Create a scenario?</tspan></text>
@@ -63,8 +63,8 @@
 <text x="820.0" y="378.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">what it does, and the siren choice</text>
 <rect x="1076.0" y="310.1" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
 <text x="1090.0" y="337.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">“Save”</tspan></text>
-<text x="1090.0" y="361.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The rule now runs at Altice, on</text>
-<text x="1090.0" y="378.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">every event</text>
+<text x="1090.0" y="361.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">The rule now runs on the home</text>
+<text x="1090.0" y="378.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">device, on every event</text>
 <rect x="1346.0" y="310.1" width="224.0" height="87.1" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
 <text x="1360.0" y="337.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Scenarios</tspan></text>
 <text x="1360.0" y="361.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Appears next to the existing</text>
@@ -92,9 +92,8 @@
 <text x="280.0" y="621.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">service</text>
 <rect x="536.0" y="552.4" width="224.0" height="104.6" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
 <text x="550.0" y="580.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Alert</tspan></text>
-<text x="550.0" y="603.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Title, message, thumbnail and</text>
-<text x="550.0" y="621.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">what caused it; the door banner,</text>
-<text x="550.0" y="638.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">when relevant</text>
+<text x="550.0" y="603.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Title, message and what caused it;</text>
+<text x="550.0" y="621.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">the door banner, when relevant</text>
 <rect x="806.0" y="552.4" width="224.0" height="104.6" rx="12" fill="#FFFFFF" stroke="#C9D2E3" stroke-width="1.2"/>
 <text x="820.0" y="580.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Action cards</tspan></text>
 <text x="820.0" y="603.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">One “Yes” per action: turn off the</text>

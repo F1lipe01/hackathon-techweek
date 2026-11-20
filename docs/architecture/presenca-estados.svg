@@ -98,4 +98,4 @@
 <text x="1524.0" y="752.6" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">4 h</tspan></text>
 <text x="1112.0" y="778.6" font-size="11.5" font-weight="400" fill="#555555" text-anchor="start">* Fora de A SAIR; em A SAIR conta logo. Valores do protótipo (presence.py); os de</text>
 <text x="1112.0" y="794.8" font-size="11.5" font-weight="400" fill="#555555" text-anchor="start">produção são propostas.</text>
-<text x="40.0" y="838.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Corre no serviço<tspan font-style="italic"> ThingTracker</tspan>, na Altice: um estado por casa, recalculado a cada evento (porta, Wi-Fi, resultado da visão) e a cada temporizador.</text></svg>
+<text x="40.0" y="838.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Corre no equipamento da casa: um estado por casa, recalculado a cada evento (porta, Wi-Fi, resultado da visão) e a cada temporizador.</text></svg>

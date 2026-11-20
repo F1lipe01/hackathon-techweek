@@ -1,180 +1,151 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2010 1421" width="2010" height="1421" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Fluxo de dados e fronteiras de confiança"><title>Fluxo de dados e fronteiras de confiança</title><defs><marker id="m0084D6" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#0084D6"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2010" height="1421" fill="#FFFFFF"/><rect x="28.0" y="56.0" width="274.0" height="648.2" rx="14" fill="#F4F4F4" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2010 1161" width="2010" height="1161" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Fluxo de dados e fronteiras de confiança"><title>Fluxo de dados e fronteiras de confiança</title><defs><marker id="m0084D6" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#0084D6"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2010" height="1161" fill="#FFFFFF"/><rect x="28.0" y="56.0" width="714.0" height="689.2" rx="14" fill="#F4F4F4" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
 <text x="42.0" y="82.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Fronteira: casa</tspan></text>
-<rect x="468.0" y="56.0" width="1074.0" height="774.2" rx="14" fill="#EEF3FB" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
-<text x="482.0" y="82.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Fronteira: Altice</tspan></text>
-<rect x="1688.0" y="56.0" width="294.0" height="129.7" rx="14" fill="#F3EFFA" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
-<text x="1702.0" y="82.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Fronteira: fornecedor do modelo*</tspan></text>
-<rect x="1688.0" y="445.0" width="294.0" height="514.9" rx="14" fill="#FFF6EA" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
-<text x="1702.0" y="471.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Fronteira: telemóvel</tspan></text>
+<rect x="868.0" y="56.0" width="674.0" height="689.2" rx="14" fill="#EEF3FB" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
+<text x="882.0" y="82.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Fronteira: Altice</tspan></text>
+<rect x="1688.0" y="56.0" width="294.0" height="689.2" rx="14" fill="#FFF6EA" stroke="#C2410C" stroke-width="1.6" stroke-dasharray="7 6"/>
+<text x="1702.0" y="82.0" font-size="13" font-weight="400" fill="#C2410C" text-anchor="start"><tspan font-weight="700">Fronteira: telemóvel</tspan></text>
 <rect x="40.0" y="100.0" width="250.0" height="67.7" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
 <text x="54.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Câmaras</tspan></text>
 <text x="54.0" y="149.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[entidade externa]</text>
-<rect x="40.0" y="229.7" width="250.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
-<text x="54.0" y="257.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Agente da casa</tspan></text>
-<text x="54.0" y="278.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo, no<tspan font-style="italic"> router</tspan>]</text>
-<rect x="40.0" y="359.3" width="250.0" height="67.7" rx="0" fill="#FAFBFC"/>
-<text x="54.0" y="387.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Padrões faciais</tspan></text>
-<text x="54.0" y="408.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[arquivo, cifrado]</text>
-<rect x="40.0" y="489.0" width="250.0" height="67.6" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
-<text x="54.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">Router</tspan><tspan font-weight="700"> Wi-Fi</tspan></text>
-<text x="54.0" y="538.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[entidade externa]</text>
-<rect x="40.0" y="618.6" width="250.0" height="67.6" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
-<text x="54.0" y="646.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Sensor da porta e atuadores</tspan></text>
-<text x="54.0" y="667.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[entidades externas]</text>
-<rect x="480.0" y="100.0" width="250.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
-<text x="494.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Servidores de visão</tspan></text>
+<rect x="40.0" y="229.7" width="250.0" height="108.7" rx="0" fill="#FAFBFC"/>
+<text x="54.0" y="257.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Memória local</tspan></text>
+<text x="54.0" y="278.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[arquivo, cifrado]</text>
+<text x="54.0" y="302.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Assinaturas, padrões faciais,</text>
+<text x="54.0" y="319.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">observações</text>
+<rect x="480.0" y="100.0" width="250.0" height="368.0" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
+<text x="494.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Equipamento da casa</tspan></text>
 <text x="494.0" y="149.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo]</text>
-<rect x="480.0" y="229.7" width="250.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
-<text x="494.0" y="257.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Mediador e filas</tspan></text>
-<text x="494.0" y="278.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo]</text>
-<rect x="480.0" y="359.3" width="250.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
-<text x="494.0" y="387.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Juiz</tspan></text>
-<text x="494.0" y="408.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo, visão-linguagem]</text>
-<rect x="480.0" y="489.0" width="250.0" height="197.3" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
-<text x="494.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma</tspan><tspan font-weight="700" font-style="italic"> Connected Home</tspan></text>
-<text x="494.0" y="538.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo existente]</text>
-<text x="494.0" y="561.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Servidor MCP, eventos, dispositivos</text>
-<rect x="880.0" y="100.0" width="270.0" height="712.2" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
-<text x="894.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Serviço</tspan><tspan font-weight="700" font-style="italic"> ThingTracker</tspan></text>
+<text x="494.0" y="172.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Visão, rostos, memória, presença,</text>
+<text x="494.0" y="190.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">regras e modelo de linguagem</text>
+<rect x="40.0" y="530.0" width="250.0" height="67.6" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="54.0" y="557.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">Router</tspan><tspan font-weight="700"> Wi-Fi</tspan></text>
+<text x="54.0" y="579.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[entidade externa]</text>
+<rect x="40.0" y="659.6" width="250.0" height="67.6" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="54.0" y="687.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Sensor da porta e atuadores</tspan></text>
+<text x="54.0" y="708.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[entidades externas]</text>
+<rect x="880.0" y="100.0" width="270.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
+<text x="894.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Retransmissão e mediador</tspan></text>
 <text x="894.0" y="149.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo]</text>
-<text x="894.0" y="172.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Comparação, seguimento, presença,</text>
-<text x="894.0" y="190.3" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">regras e avisos, por casa</text>
-<rect x="1300.0" y="229.7" width="230.0" height="67.7" rx="0" fill="#FAFBFC"/>
-<text x="1314.0" y="257.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL</tspan></text>
-<text x="1314.0" y="278.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[arquivo]</text>
-<rect x="1300.0" y="359.3" width="230.0" height="67.7" rx="0" fill="#FAFBFC"/>
-<text x="1314.0" y="387.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Miniaturas</tspan></text>
-<text x="1314.0" y="408.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[arquivo de objetos]</text>
-<rect x="1300.0" y="489.0" width="230.0" height="67.6" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
-<text x="1314.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Notificações</tspan></text>
-<text x="1314.0" y="538.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo existente]</text>
-<rect x="1700.0" y="100.0" width="270.0" height="67.7" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
-<text x="1714.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Modelo de linguagem</tspan></text>
-<text x="1714.0" y="149.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo]</text>
-<rect x="1700.0" y="489.0" width="270.0" height="323.3" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
-<text x="1714.0" y="516.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Aplicação Altice</tspan></text>
-<text x="1714.0" y="538.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo existente]</text>
-<rect x="1700.0" y="874.2" width="270.0" height="67.6" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
-<text x="1714.0" y="902.0" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Família</tspan></text>
-<text x="1714.0" y="923.5" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[entidade externa]</text>
-<line x1="40" y1="359.3" x2="290" y2="359.3" stroke="#333333" stroke-width="1.6"/>
-<line x1="40" y1="427.0" x2="290" y2="427.0" stroke="#333333" stroke-width="1.6"/>
-<line x1="1300" y1="229.7" x2="1530" y2="229.7" stroke="#333333" stroke-width="1.6"/>
-<line x1="1300" y1="297.3" x2="1530" y2="297.3" stroke="#333333" stroke-width="1.6"/>
-<line x1="1300" y1="359.3" x2="1530" y2="359.3" stroke="#333333" stroke-width="1.6"/>
-<line x1="1300" y1="427.0" x2="1530" y2="427.0" stroke="#333333" stroke-width="1.6"/>
-<path d="M165.0 167.7 V219.7" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="174.0" y="202.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">vídeo, rede da casa</text>
-<path d="M173.0 297.3 V349.3" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="182.0" y="332.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">guarda</text>
-<path d="M157.0 359.3 V307.3" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="148.0" y="332.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">compara</text>
-<path d="M290.0 256.5 H470.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="314.0" y="249.5" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F1 regiões e rótulos</text>
-<path d="M480.0 270.5 H300.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="314.0" y="286.5" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F2 pedidos, vídeo do rosto</text>
-<path d="M605.0 229.7 V177.7" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="614.0" y="202.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">regiões</text>
-<path d="M730.0 133.8 H870.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="754.0" y="126.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">caixas e vetores</text>
-<path d="M880.0 263.5 H740.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="754.0" y="279.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">pedidos às casas,</text>
-<text x="754.0" y="294.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">fotografias a</text>
-<text x="754.0" y="309.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">analisar</text>
-<path d="M290.0 522.8 H470.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="314.0" y="515.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F3 telemóveis no Wi-Fi</text>
-<path d="M290.0 645.4 H470.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="314.0" y="638.4" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F4 porta</text>
-<path d="M480.0 659.4 H300.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="314.0" y="675.4" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F5 comandos</text>
-<path d="M730.0 580.6 H870.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="754.0" y="558.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">eventos: porta,</text>
-<text x="754.0" y="573.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi</text>
-<path d="M880.0 594.6 H740.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="754.0" y="610.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">chamadas MCP</text>
-<path d="M1150.0 256.5 H1290.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1174.0" y="249.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">grava</text>
-<path d="M1300.0 270.5 H1160.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1174.0" y="286.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">lê, compara</text>
-<path d="M730.0 386.1 H870.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="754.0" y="379.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">veredicto</text>
-<path d="M880.0 400.1 H740.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="754.0" y="416.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">clipe de 2 a 3 s</text>
-<path d="M1150.0 393.1 H1290.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1174.0" y="386.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">miniaturas</text>
-<path d="M1150.0 522.8 H1290.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1174.0" y="515.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">avisos</text>
-<path d="M1150.0 126.8 H1690.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="1174.0" y="119.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F6 texto</text>
-<path d="M1700.0 140.8 H1160.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="1174.0" y="156.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F7 regra, resposta</text>
-<path d="M1530.0 522.8 H1690.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="1554.0" y="515.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F9 avisos</text>
-<path d="M1700.0 652.4 H1160.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="1174.0" y="645.4" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F8 frases, perguntas, fotografias, vídeo do rosto, “Sim”</text>
-<path d="M1150.0 780.2 H1690.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
-<text x="1174.0" y="773.2" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F10 respostas, miniaturas</text>
-<path d="M1843.0 812.2 V864.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1852.0" y="847.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">mostra</text>
-<path d="M1827.0 874.2 V822.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1818.0" y="847.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">usa</text>
-<text x="40.0" y="987.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">* Só existe se o modelo de linguagem não for alojado pela Altice. Azul: fluxos que atravessam uma fronteira de confiança, descritos na tabela.</text>
-<rect x="40.0" y="1023.4" width="1930.0" height="28.8" rx="4" fill="#EEF1F6"/>
-<text x="48.0" y="1042.2" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Fluxo</tspan></text>
-<text x="118.0" y="1042.2" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">De → para</tspan></text>
-<text x="498.0" y="1042.2" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">O que leva</tspan></text>
-<text x="1598.0" y="1042.2" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Proteção</tspan></text>
-<line x1="40" y1="1052.2" x2="1970" y2="1052.2" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1071.0" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F1</tspan></text>
-<text x="118.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">agente da casa → mediador (casa → Altice)</text>
-<text x="498.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">A região que mudou (no máximo 640 × 640, cerca de 1 por segundo com movimento) ou a pedida numa verificação; raramente, 2 a 3 s da região para o juiz; os rótulos dos rostos (o nome da pessoa ou</text>
-<text x="498.0" y="1087.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">“rosto desconhecido”) com as caixas. Nunca vídeo contínuo nem padrões faciais</text>
-<text x="1598.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">mTLS, um certificado por casa</text>
-<line x1="40" y1="1097.8" x2="1970" y2="1097.8" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1116.6" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F2</tspan></text>
-<text x="118.0" y="1116.6" font-size="12" font-weight="400" fill="#333333" text-anchor="start">mediador → agente da casa (Altice → casa)</text>
-<text x="498.0" y="1116.6" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Pedidos de verificação ativa e de atualização; o vídeo do rosto no registo de uma pessoa, reencaminhado sem ficar guardado; máscaras; ordens para apagar padrões</text>
-<text x="1598.0" y="1116.6" font-size="12" font-weight="400" fill="#333333" text-anchor="start">mTLS</text>
-<line x1="40" y1="1126.6" x2="1970" y2="1126.6" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1145.4" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F3</tspan></text>
-<text x="118.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">router</tspan> → plataforma (casa → Altice)</text>
-<text x="498.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Que telemóveis da família estão no Wi-Fi e quando entram ou saem (ferramenta MCP proposta)</text>
-<text x="1598.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">O canal de gestão do<tspan font-style="italic"> router</tspan> da Altice (a confirmar)</text>
-<line x1="40" y1="1155.4" x2="1970" y2="1155.4" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1174.2" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F4</tspan></text>
-<text x="118.0" y="1174.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">sensor da porta → plataforma (casa → Altice)</text>
-<text x="498.0" y="1174.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Porta aberta ou fechada, como hoje</text>
-<text x="1598.0" y="1174.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">O canal da central (LTE), como hoje</text>
-<line x1="40" y1="1184.2" x2="1970" y2="1184.2" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1203.0" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F5</tspan></text>
-<text x="118.0" y="1203.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">plataforma → atuadores (Altice → casa)</text>
-<text x="498.0" y="1203.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Comandos depois de um “Sim”: luz, tomada, sirene</text>
-<text x="1598.0" y="1203.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Como hoje</text>
-<line x1="40" y1="1213.0" x2="1970" y2="1213.0" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1231.8" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F6</tspan></text>
-<text x="118.0" y="1231.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">serviço → modelo de linguagem</text>
-<text x="498.0" y="1231.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Só texto: a frase ou a pergunta, os nomes dos objetos, lugares e dispositivos, linhas da memória. Os clipes do juiz ficam na Altice</text>
-<text x="1598.0" y="1231.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">TLS; contrato sem treino com os dados, DPA e processamento na</text>
-<text x="1598.0" y="1248.6" font-size="12" font-weight="400" fill="#333333" text-anchor="start">UE</text>
-<line x1="40" y1="1258.6" x2="1970" y2="1258.6" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1277.4" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F7</tspan></text>
-<text x="118.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">modelo de linguagem → serviço</text>
-<text x="498.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Só texto: a regra estruturada, que o serviço valida, ou a resposta. O modelo nunca decide</text>
-<text x="1598.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">TLS</text>
-<line x1="40" y1="1287.4" x2="1970" y2="1287.4" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1306.2" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F8</tspan></text>
-<text x="118.0" y="1306.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">aplicação → serviço (telemóvel → Altice)</text>
-<text x="498.0" y="1306.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Frases, perguntas, fotografias de objetos, o vídeo do rosto, “Sim”</text>
-<text x="1598.0" y="1306.2" font-size="12" font-weight="400" fill="#333333" text-anchor="start">HTTPS, com a sessão da aplicação Altice</text>
-<line x1="40" y1="1316.2" x2="1970" y2="1316.2" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1335.0" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F9</tspan></text>
-<text x="118.0" y="1335.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">notificações → aplicação (Altice → telemóvel)</text>
-<text x="498.0" y="1335.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Avisos: título, mensagem, cartões de ação, ligação à miniatura</text>
-<text x="1598.0" y="1335.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">O serviço de notificações da aplicação</text>
-<line x1="40" y1="1345.0" x2="1970" y2="1345.0" stroke="#E1E4E8" stroke-width="1"/>
-<text x="48.0" y="1363.8" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F10</tspan></text>
-<text x="118.0" y="1363.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">serviço → aplicação (Altice → telemóvel)</text>
-<text x="498.0" y="1363.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Respostas e miniaturas, por ligações assinadas de curta duração</text>
-<text x="1598.0" y="1363.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">HTTPS</text>
-<line x1="40" y1="1373.8" x2="1970" y2="1373.8" stroke="#E1E4E8" stroke-width="1"/>
-<text x="40.0" y="1403.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Nunca atravessam a fronteira da casa: o vídeo contínuo e os padrões faciais. Método: diagrama de fluxo de dados com fronteiras de confiança, como no Microsoft SDL e no OWASP.</text></svg>
+<rect x="880.0" y="229.7" width="270.0" height="238.3" rx="26" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.8"/>
+<text x="894.0" y="257.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Serviço</tspan><tspan font-weight="700" font-style="italic"> ThingTracker</tspan></text>
+<text x="894.0" y="278.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo, só texto]</text>
+<text x="894.0" y="302.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Contas, permissões, metadados, registo</text>
+<text x="894.0" y="319.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">de eventos</text>
+<rect x="1300.0" y="400.3" width="230.0" height="67.7" rx="0" fill="#FAFBFC"/>
+<text x="1314.0" y="428.1" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">PostgreSQL</tspan></text>
+<text x="1314.0" y="449.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[arquivo, só texto]</text>
+<rect x="880.0" y="530.0" width="270.0" height="197.3" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
+<text x="894.0" y="557.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma</tspan><tspan font-weight="700" font-style="italic"> Connected Home</tspan></text>
+<text x="894.0" y="579.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo existente]</text>
+<text x="894.0" y="602.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Servidor MCP, eventos, dispositivos</text>
+<rect x="1300.0" y="530.0" width="230.0" height="67.6" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
+<text x="1314.0" y="557.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Notificações</tspan></text>
+<text x="1314.0" y="579.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo existente]</text>
+<rect x="1700.0" y="100.0" width="270.0" height="497.6" rx="26" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.8"/>
+<text x="1714.0" y="127.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Aplicação Altice</tspan></text>
+<text x="1714.0" y="149.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[processo existente]</text>
+<rect x="1700.0" y="659.6" width="270.0" height="67.6" rx="2" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="1714.0" y="687.4" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Família</tspan></text>
+<text x="1714.0" y="708.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[entidade externa]</text>
+<line x1="40" y1="229.7" x2="290" y2="229.7" stroke="#333333" stroke-width="1.6"/>
+<line x1="40" y1="338.3" x2="290" y2="338.3" stroke="#333333" stroke-width="1.6"/>
+<line x1="1300" y1="400.3" x2="1530" y2="400.3" stroke="#333333" stroke-width="1.6"/>
+<line x1="1300" y1="468.0" x2="1530" y2="468.0" stroke="#333333" stroke-width="1.6"/>
+<path d="M290.0 133.8 H470.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="314.0" y="126.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">vídeo, rede da casa</text>
+<path d="M290.0 277.0 H470.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="314.0" y="270.0" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">lê, compara</text>
+<path d="M480.0 291.0 H300.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="314.0" y="307.0" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">guarda</text>
+<path d="M730.0 126.8 H870.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="754.0" y="119.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F1 só texto</text>
+<path d="M880.0 140.8 H740.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="754.0" y="156.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F2 pedidos,</text>
+<text x="754.0" y="171.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">comandos</text>
+<path d="M1023.0 167.7 V219.7" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1032.0" y="202.7" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">eventos, avisos</text>
+<path d="M1007.0 229.7 V177.7" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="998.0" y="195.2" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">pedidos da</text>
+<text x="998.0" y="210.2" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">aplicação</text>
+<path d="M1150.0 427.1 H1290.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1174.0" y="420.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">grava</text>
+<path d="M1300.0 441.1 H1160.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1174.0" y="457.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">lê</text>
+<path d="M290.0 563.8 H870.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="314.0" y="556.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F3 telemóveis no Wi-Fi</text>
+<path d="M290.0 686.4 H870.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="314.0" y="679.4" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F4 porta</text>
+<path d="M880.0 700.4 H300.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="314.0" y="716.4" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F5 comandos</text>
+<path d="M1023.0 468.0 V520.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1032.0" y="503.0" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">chamadas MCP</text>
+<path d="M1007.0 530.0 V478.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="998.0" y="503.0" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">eventos: porta, Wi-Fi</text>
+<path d="M1150.0 563.8 H1290.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1174.0" y="556.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">avisos</text>
+<path d="M1530.0 563.8 H1690.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="1554.0" y="556.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F9 avisos</text>
+<path d="M1700.0 133.8 H1160.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="1174.0" y="126.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F8 fotografias de registo, cifradas</text>
+<path d="M1700.0 270.0 H1160.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="1174.0" y="263.0" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F6 frases, perguntas, “Sim”</text>
+<path d="M1150.0 298.0 H1690.0" fill="none" stroke="#0084D6" stroke-width="1.6" marker-end="url(#m0084D6)"/>
+<text x="1174.0" y="314.0" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">F7 respostas, lista de objetos</text>
+<path d="M1843.0 597.6 V649.6" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1852.0" y="632.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">mostra</text>
+<path d="M1827.0 659.6 V607.6" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1818.0" y="632.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">usa</text>
+<text x="40.0" y="773.2" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Azul: fluxos que atravessam uma fronteira de confiança, descritos na tabela. Um modelo de linguagem externo (o<tspan font-style="italic"> ChatGPT</tspan> ou o<tspan font-style="italic"> Claude</tspan> do próprio cliente, só texto) é uma opção futura, não incluída.</text>
+<rect x="40.0" y="808.8" width="1930.0" height="28.8" rx="4" fill="#EEF1F6"/>
+<text x="48.0" y="827.5" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Fluxo</tspan></text>
+<text x="118.0" y="827.5" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">De → para</tspan></text>
+<text x="498.0" y="827.5" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">O que leva</tspan></text>
+<text x="1598.0" y="827.5" font-size="12" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Proteção</tspan></text>
+<line x1="40" y1="837.5" x2="1970" y2="837.5" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="856.3" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F1</tspan></text>
+<text x="118.0" y="856.3" font-size="12" font-weight="400" fill="#333333" text-anchor="start">equipamento da casa → retransmissão (casa → Altice)</text>
+<text x="498.0" y="856.3" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Só texto: eventos estruturados (“livro, secretária, 18h02”), avisos (título, mensagem, cartões de ação), rótulos (o nome da pessoa ou “desconhecido”) e o estado das regras. Nunca imagens, vídeo,</text>
+<text x="498.0" y="873.1" font-size="12" font-weight="400" fill="#333333" text-anchor="start">assinaturas visuais nem padrões faciais</text>
+<text x="1598.0" y="856.3" font-size="12" font-weight="400" fill="#333333" text-anchor="start">mTLS, um certificado por casa</text>
+<line x1="40" y1="883.1" x2="1970" y2="883.1" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="901.9" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F2</tspan></text>
+<text x="118.0" y="901.9" font-size="12" font-weight="400" fill="#333333" text-anchor="start">retransmissão → equipamento da casa (Altice → casa)</text>
+<text x="498.0" y="901.9" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Eventos da porta e do Wi-Fi, pedidos da aplicação (frases, perguntas, “Sim”), comandos; as fotografias de registo, cifradas de ponta a ponta, que a Altice não consegue ler</text>
+<text x="1598.0" y="901.9" font-size="12" font-weight="400" fill="#333333" text-anchor="start">mTLS; cifra de ponta a ponta nas fotografias</text>
+<line x1="40" y1="911.9" x2="1970" y2="911.9" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="930.7" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F3</tspan></text>
+<text x="118.0" y="930.7" font-size="12" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">router</tspan> → plataforma (casa → Altice)</text>
+<text x="498.0" y="930.7" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Que telemóveis da família estão no Wi-Fi e quando entram ou saem (ferramenta MCP proposta)</text>
+<text x="1598.0" y="930.7" font-size="12" font-weight="400" fill="#333333" text-anchor="start">O canal de gestão do<tspan font-style="italic"> router</tspan> da Altice (a confirmar)</text>
+<line x1="40" y1="940.7" x2="1970" y2="940.7" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="959.5" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F4</tspan></text>
+<text x="118.0" y="959.5" font-size="12" font-weight="400" fill="#333333" text-anchor="start">sensor da porta → plataforma (casa → Altice)</text>
+<text x="498.0" y="959.5" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Porta aberta ou fechada, como hoje</text>
+<text x="1598.0" y="959.5" font-size="12" font-weight="400" fill="#333333" text-anchor="start">O canal da central (LTE), como hoje</text>
+<line x1="40" y1="969.5" x2="1970" y2="969.5" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="988.3" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F5</tspan></text>
+<text x="118.0" y="988.3" font-size="12" font-weight="400" fill="#333333" text-anchor="start">plataforma → atuadores (Altice → casa)</text>
+<text x="498.0" y="988.3" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Comandos depois de um “Sim”: luz, tomada, sirene</text>
+<text x="1598.0" y="988.3" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Como hoje</text>
+<line x1="40" y1="998.3" x2="1970" y2="998.3" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1017.1" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F6</tspan></text>
+<text x="118.0" y="1017.1" font-size="12" font-weight="400" fill="#333333" text-anchor="start">aplicação → serviço (telemóvel → Altice)</text>
+<text x="498.0" y="1017.1" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Frases, perguntas, “Sim”; seguem para casa por F2</text>
+<text x="1598.0" y="1017.1" font-size="12" font-weight="400" fill="#333333" text-anchor="start">HTTPS, com a sessão da aplicação Altice</text>
+<line x1="40" y1="1027.1" x2="1970" y2="1027.1" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1045.9" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F7</tspan></text>
+<text x="118.0" y="1045.9" font-size="12" font-weight="400" fill="#333333" text-anchor="start">serviço → aplicação (Altice → telemóvel)</text>
+<text x="498.0" y="1045.9" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Respostas e a lista de objetos, em texto</text>
+<text x="1598.0" y="1045.9" font-size="12" font-weight="400" fill="#333333" text-anchor="start">HTTPS</text>
+<line x1="40" y1="1055.9" x2="1970" y2="1055.9" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1074.7" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F8</tspan></text>
+<text x="118.0" y="1074.7" font-size="12" font-weight="400" fill="#333333" text-anchor="start">aplicação → equipamento da casa</text>
+<text x="498.0" y="1074.7" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Fotografias de registo: diretamente no Wi-Fi da casa ou pela retransmissão, cifradas de ponta a ponta. O equipamento da casa constrói a assinatura visual</text>
+<text x="1598.0" y="1074.7" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Cifra de ponta a ponta</text>
+<line x1="40" y1="1084.7" x2="1970" y2="1084.7" stroke="#E1E4E8" stroke-width="1"/>
+<text x="48.0" y="1103.5" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F9</tspan></text>
+<text x="118.0" y="1103.5" font-size="12" font-weight="400" fill="#333333" text-anchor="start">notificações → aplicação (Altice → telemóvel)</text>
+<text x="498.0" y="1103.5" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Avisos em texto: título, mensagem, cartões de ação</text>
+<text x="1598.0" y="1103.5" font-size="12" font-weight="400" fill="#333333" text-anchor="start">O serviço de notificações da aplicação</text>
+<line x1="40" y1="1113.5" x2="1970" y2="1113.5" stroke="#E1E4E8" stroke-width="1"/>
+<text x="40.0" y="1143.5" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Nunca atravessam a fronteira da casa: imagens, vídeo, assinaturas visuais e padrões faciais. Método: diagrama de fluxo de dados com fronteiras de confiança, como no Microsoft SDL e no OWASP.</text></svg>

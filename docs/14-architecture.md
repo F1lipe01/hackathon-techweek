@@ -1,6 +1,6 @@
 # ThingTracker · architecture
 
-Version 3, Fri 20 Nov 2026. Audience: the Altice Labs jury and engineers, and our team. The **final design**, decided on 20 Nov, is fully local: it is stated in the next section. Sections 1 to 18 keep the detailed design of 19 Nov (what runs where, which component decides what, with which signal and which threshold); where one of them places vision, a language model, fingerprints or pictures at Altice, it describes the alternative evaluated, not chosen, because images would leave the home. Section 16 says, item by item, what the prototype does today.
+Version 3, Fri 20 Nov 2026. Audience: the Altice Labs jury and engineers, and our team. The **final design**, decided on 20 Nov, is fully local: it is stated in the next section, and the figures show it. Sections 1 to 18 keep the detailed design of 19 Nov (what runs where, which component decides what, with which signal and which threshold); where one of them places vision, a language model, fingerprints or pictures at Altice, it describes the alternative evaluated, not chosen, because images would leave the home. Section 16 says, item by item, what the prototype does today.
 
 The views follow three standards: the C4 model for context, containers and components ([c4model.com](https://c4model.com)); arc42 for the runtime view (the sequences, section 6 of arc42) and the deployment view (section 7) ([arc42.org](https://arc42.org)); and the data-flow diagram with trust boundaries used in threat modelling by the Microsoft Security Development Lifecycle ([Threat Modeling Tool](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool)) and by OWASP ([Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)). Every figure is built by `docs/architecture/build_views.py --lang en`, which measures each text against its box and stops if one does not fit.
 
@@ -110,7 +110,7 @@ Figure 3 shows where each part runs, the hardware, the numbers at 500,000 homes,
 
 ![Deployment](architecture/implantacao.en.png)
 
-**Figure 3** – Deployment: the home agent on the router, ThingTracker at Altice's datacentre, the phone, and the options considered.
+**Figure 3** – Deployment: the home device with all the perception and inference, the Altice platform with text only, the phone, the costs, and the options considered.
 
 ### 5.1 Alternative evaluated, not chosen: hybrid on Altice's own L4 servers
 
@@ -377,11 +377,11 @@ Figures 9 and 10 show the two databases: the small one in the router and the per
 
 ![Data model: home](architecture/er-casa.en.png)
 
-**Figure 9** – The router's encrypted SQLite, kept by the home agent: people's labels, face templates, cameras and masks, the outbox and settings. It holds no images.
+**Figure 9** – The home device's encrypted SQLite: people's labels, face templates, cameras and masks, things, fingerprints, sightings, rules, presence, the outbox and settings. Images, fingerprints and face templates exist only here.
 
 ![Data model: platform](architecture/er-plataforma.en.png)
 
-**Figure 10** – The platform's PostgreSQL with pgvector: one database, every row belonging to one customer, with row-level security.
+**Figure 10** – The platform's PostgreSQL, text only: one database, every row belonging to one customer, with row-level security.
 
 | Data | Where | Retention |
 |---|---|---|

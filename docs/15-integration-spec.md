@@ -69,7 +69,7 @@ Figure 1 shows the messages exchanged when the rule is met: the door, the phone,
 
 ![Sequence: the book left behind](architecture/seq-livro-esquecido.en.png)
 
-**Figure 1** – The book left behind: messages between the door sensor and router, the home agent, the Altice platform, the vision workers, the ThingTracker service and the app.
+**Figure 1** – The book left behind: messages between the home device, the door sensor and router, the Altice platform and the app.
 
 In the final design, the language model and the rules engine run on the home device: the app sends the sentence there (through the relay when the family is away), and the platform keeps the resulting scenario as text. The steps below keep the names of the design of 19 Nov.
 

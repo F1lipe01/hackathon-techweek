@@ -1,113 +1,113 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 1245" width="1380" height="1245" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequence: empty home and open door"><title>Sequence: empty home and open door</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1380" height="1245" fill="#FFFFFF"/><line x1="120.0" y1="102.77499999999999" x2="120.0" y2="1191.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="315.0" y1="102.77499999999999" x2="315.0" y2="1191.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="515.0" y1="102.77499999999999" x2="515.0" y2="1191.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="720.0" y1="102.77499999999999" x2="720.0" y2="1191.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="945.0" y1="102.77499999999999" x2="945.0" y2="1191.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="1215.0" y1="102.77499999999999" x2="1215.0" y2="1191.175" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<rect x="32.0" y="20.0" width="176.0" height="82.8" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="44.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Door sensor and</tspan></text>
-<text x="44.0" y="64.9" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">router</tspan></text>
-<text x="44.0" y="86.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">in the home, on Altice</text>
-<rect x="232.0" y="20.0" width="166.0" height="82.8" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="244.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Home agent</tspan></text>
-<text x="244.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">on the router</text>
-<rect x="422.0" y="20.0" width="186.0" height="82.8" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="434.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice platform</tspan></text>
-<text x="434.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">events and MCP server</text>
-<rect x="632.0" y="20.0" width="176.0" height="82.8" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="644.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Vision workers</tspan></text>
-<text x="644.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">OWLv2, L4 GPUs</text>
-<rect x="832.0" y="20.0" width="226.0" height="82.8" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="844.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">ThingTracker service</tspan></text>
-<text x="844.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">presence and rules, per home</text>
-<rect x="1082.0" y="20.0" width="266.0" height="82.8" rx="12" fill="#FFF6EA" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="1094.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice app</tspan></text>
-<text x="1094.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">on the phone</text>
-<rect x="12.0" y="142.8" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="690.0" y="161.8" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">State: OCCUPIED. Active rules: “When nobody is home, offer to turn off what is still on” and “Tell me if the door is left open with nobody around”.</text>
-<rect x="144.1" y="183.5" width="346.9" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="317.5" y="196.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">door opened and closed; both family phones leave the Wi-Fi</text>
-<path d="M132.0 205.0 H501.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="120.0" cy="204.97499999999997" r="11" fill="#0084D6"/>
-<text x="120.0" y="209.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">1</tspan></text>
-<rect x="602.5" y="231.5" width="255.0" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="730.0" y="244.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">door.opened</tspan>, <tspan font-family="Menlo, monospace" font-size="11.2">door.closed</tspan>, <tspan font-family="Menlo, monospace" font-size="11.2">wifi.left</tspan> × 2</text>
-<path d="M527.0 253.0 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="515.0" cy="252.97499999999997" r="11" fill="#0084D6"/>
-<text x="515.0" y="257.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">2</tspan></text>
-<rect x="795.0" y="297.0" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="316.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">OCCUPIED → LEAVING. No person seen since</text>
-<text x="945.0" y="333.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">the door closed; it still has to confirm that</text>
-<text x="945.0" y="350.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">nobody stayed still</text>
-<rect x="490.1" y="370.5" width="279.7" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="630.0" y="383.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">refresh: the regions where people were last seen</text>
-<path d="M933.0 392.0 H329.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="391.97499999999997" r="11" fill="#0084D6"/>
-<text x="945.0" y="396.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">3</tspan></text>
-<rect x="450.2" y="418.5" width="134.7" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="517.5" y="431.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">regions (urgent queue)</text>
-<path d="M327.0 440.0 H706.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="315.0" cy="439.97499999999997" r="11" fill="#0084D6"/>
-<text x="315.0" y="444.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">4</tspan></text>
-<rect x="799.4" y="466.5" width="66.2" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="832.5" y="479.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">no person</text>
-<path d="M732.0 488.0 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="720.0" cy="487.97499999999997" r="11" fill="#0084D6"/>
-<text x="720.0" y="492.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">5</tspan></text>
-<rect x="795.0" y="532.0" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="551.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">After T_leave, nobody on the cameras: LEAVING</text>
-<text x="945.0" y="568.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">→ EMPTY. On, according to <tspan font-family="Menlo, monospace" font-size="11.2">get_home_devices</tspan>:</text>
-<text x="945.0" y="585.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">the lights (on the plug) and the air conditioner</text>
-<rect x="961.3" y="605.5" width="237.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="618.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">alert: “Nobody is home and 2 appliances</text>
-<rect x="993.6" y="622.5" width="172.7" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="635.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">are on”, with two “Yes” cards</text>
-<path d="M957.0 644.0 H1201.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="643.9749999999999" r="11" fill="#0084D6"/>
-<text x="945.0" y="648.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">6</tspan></text>
-<rect x="1009.1" y="670.5" width="141.8" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="683.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Yes”: turn off the lights</text>
-<path d="M1203.0 692.0 H959.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="1215.0" cy="691.9749999999999" r="11" fill="#0084D6"/>
-<text x="1215.0" y="696.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">7</tspan></text>
-<rect x="612.5" y="718.5" width="235.0" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="730.0" y="731.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: plug off</text>
-<path d="M933.0 740.0 H529.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="739.9749999999999" r="11" fill="#0084D6"/>
-<text x="945.0" y="744.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">8</tspan></text>
-<rect x="984.1" y="766.5" width="191.8" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="779.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Yes”: turn off the air conditioner</text>
-<path d="M1203.0 788.0 H959.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="1215.0" cy="787.9749999999999" r="11" fill="#0084D6"/>
-<text x="1215.0" y="792.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">9</tspan></text>
-<rect x="584.7" y="814.5" width="290.6" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="730.0" y="827.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: air conditioner off</text>
-<path d="M933.0 836.0 H529.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="835.9749999999999" r="11" fill="#0084D6"/>
-<text x="945.0" y="840.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">10</tspan></text>
-<rect x="12.0" y="880.0" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="690.0" y="899.0" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Another day, the front door is left open</text>
-<rect x="283.7" y="920.7" width="67.6" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="317.5" y="933.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">door open</text>
-<path d="M132.0 942.2 H501.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="120.0" cy="942.175" r="11" fill="#0084D6"/>
-<text x="120.0" y="946.5" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">11</tspan></text>
-<rect x="687.8" y="968.7" width="84.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="730.0" y="981.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">door.opened</tspan></text>
-<path d="M527.0 990.2 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="515.0" cy="990.175" r="11" fill="#0084D6"/>
-<text x="515.0" y="994.5" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">12</tspan></text>
-<rect x="795.0" y="1034.2" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="1053.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Door open for T_door (5 s in the demo, 2 min in</text>
-<text x="945.0" y="1070.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">production, a proposal), with nobody on any</text>
-<text x="945.0" y="1087.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">camera since it opened</text>
-<rect x="959.7" y="1107.7" width="240.6" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="1120.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">alert: “The front door is open and nobody</text>
-<rect x="972.8" y="1124.7" width="214.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="1137.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">is around”, with the door banner and</text>
-<rect x="1047.9" y="1141.7" width="64.2" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="1154.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“See live”</text>
-<path d="M957.0 1163.2 H1201.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="1163.175" r="11" fill="#0084D6"/>
-<text x="945.0" y="1167.5" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">13</tspan></text>
-<text x="20.0" y="1217.2" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Grey: in the home. Blue: Altice. Orange: the phone. Production timings are proposals, to tune in a pilot.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1300 1348" width="1300" height="1348" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequence: empty home and open door"><title>Sequence: empty home and open door</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1300" height="1348" fill="#FFFFFF"/><line x1="190.0" y1="83.175" x2="190.0" y2="1293.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="485.0" y1="83.175" x2="485.0" y2="1293.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="775.0" y1="83.175" x2="775.0" y2="1293.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="1110.0" y1="83.175" x2="1110.0" y2="1293.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="32.0" y="20.0" width="316.0" height="63.2" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="44.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Home device</tspan></text>
+<text x="44.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">vision, presence and rules</text>
+<rect x="372.0" y="20.0" width="226.0" height="63.2" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="384.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Door sensor and router</tspan></text>
+<text x="384.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">in the home, on Altice</text>
+<rect x="622.0" y="20.0" width="306.0" height="63.2" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="634.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice platform</tspan></text>
+<text x="634.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">events, MCP server, notifications</text>
+<rect x="952.0" y="20.0" width="316.0" height="63.2" rx="12" fill="#FFF6EA" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="964.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice app</tspan></text>
+<text x="964.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">on the phone</text>
+<rect x="12.0" y="123.2" width="1276.0" height="32.2" rx="8" fill="#EEF1F6"/>
+<text x="650.0" y="142.2" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">State: OCCUPIED. Active rules: “When nobody is home, offer to turn off what is still on” and “Tell me if the door is left open with nobody around”.</text>
+<rect x="499.8" y="163.9" width="260.5" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="176.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">door opened and closed; both family phones</text>
+<rect x="583.5" y="180.9" width="92.9" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="193.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">leave the Wi-Fi</text>
+<path d="M497.0 202.4 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="485.0" cy="202.375" r="11" fill="#0084D6"/>
+<text x="485.0" y="206.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">1</tspan></text>
+<rect x="332.8" y="228.9" width="299.4" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="241.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">door.opened</tspan>, <tspan font-family="Menlo, monospace" font-size="11.2">door.closed</tspan>, <tspan font-family="Menlo, monospace" font-size="11.2">wifi.left</tspan> × 2, as text</text>
+<path d="M763.0 250.4 H204.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="250.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="254.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">2</tspan></text>
+<rect x="40.0" y="294.4" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="190.0" y="313.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">OCCUPIED → LEAVING. No person seen since</text>
+<text x="190.0" y="330.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">the door closed; it still has to confirm that</text>
+<text x="190.0" y="347.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">nobody stayed still</text>
+<rect x="40.0" y="385.4" width="300.0" height="50.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="190.0" y="404.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Refresh: reads the cameras where people were</text>
+<text x="190.0" y="421.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">last seen, on the home network. No person</text>
+<rect x="347.3" y="441.9" width="270.4" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="454.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">which appliances are on? (<tspan font-family="Menlo, monospace" font-size="11.2">get_home_devices</tspan>)</text>
+<path d="M202.0 463.4 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="190.0" cy="463.375" r="11" fill="#0084D6"/>
+<text x="190.0" y="467.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">3</tspan></text>
+<rect x="351.1" y="489.9" width="262.8" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="502.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">the lights (on the plug) and the air conditioner</text>
+<path d="M763.0 511.4 H204.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="511.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="515.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">4</tspan></text>
+<rect x="40.0" y="555.4" width="300.0" height="50.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="190.0" y="574.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">After T_leave, nobody on the cameras: LEAVING</text>
+<text x="190.0" y="591.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">→ EMPTY, with 2 appliances on</text>
+<rect x="357.2" y="611.9" width="250.5" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="624.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">alert, text only, with the 2 proposed actions</text>
+<path d="M202.0 633.4 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="190.0" cy="633.375" r="11" fill="#0084D6"/>
+<text x="190.0" y="637.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">5</tspan></text>
+<rect x="798.6" y="659.9" width="287.9" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="672.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">push: “Nobody is home and 2 appliances are on”,</text>
+<rect x="879.8" y="676.9" width="125.5" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="689.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">with two “Yes” cards</text>
+<path d="M787.0 698.4 H1096.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="698.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="702.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">6</tspan></text>
+<rect x="871.6" y="724.9" width="141.8" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="737.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Yes”: turn off the lights</text>
+<path d="M1098.0 746.4 H789.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="1110.0" cy="746.375" r="11" fill="#0084D6"/>
+<text x="1110.0" y="750.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">7</tspan></text>
+<rect x="512.5" y="772.9" width="235.0" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="785.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: plug off</text>
+<path d="M763.0 794.4 H499.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="794.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="798.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">8</tspan></text>
+<rect x="846.6" y="820.9" width="191.8" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="833.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Yes”: turn off the air conditioner</text>
+<path d="M1098.0 842.4 H789.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="1110.0" cy="842.375" r="11" fill="#0084D6"/>
+<text x="1110.0" y="846.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">9</tspan></text>
+<rect x="526.8" y="868.9" width="206.5" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="881.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: air</text>
+<rect x="584.7" y="885.9" width="90.6" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="898.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">conditioner off</text>
+<path d="M763.0 907.4 H499.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="907.375" r="11" fill="#0084D6"/>
+<text x="775.0" y="911.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">10</tspan></text>
+<rect x="12.0" y="951.4" width="1276.0" height="32.2" rx="8" fill="#EEF1F6"/>
+<text x="650.0" y="970.4" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Another day, the front door is left open</text>
+<rect x="596.2" y="992.1" width="67.6" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="1004.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">door open</text>
+<path d="M497.0 1013.6 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="485.0" cy="1013.575" r="11" fill="#0084D6"/>
+<text x="485.0" y="1017.9" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">11</tspan></text>
+<rect x="440.3" y="1040.1" width="84.4" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="1052.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">door.opened</tspan></text>
+<path d="M763.0 1061.6 H204.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="1061.575" r="11" fill="#0084D6"/>
+<text x="775.0" y="1065.9" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">12</tspan></text>
+<rect x="40.0" y="1105.6" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="190.0" y="1124.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Door open for T_door (5 s in the demo, 2 min in</text>
+<text x="190.0" y="1141.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">production, a proposal), with nobody on any</text>
+<text x="190.0" y="1158.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">camera since it opened</text>
+<rect x="339.9" y="1179.1" width="285.2" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="482.5" y="1191.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">alert, text only: “front door open, nobody around”</text>
+<path d="M202.0 1200.6 H761.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="190.0" cy="1200.575" r="11" fill="#0084D6"/>
+<text x="190.0" y="1204.9" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">13</tspan></text>
+<rect x="788.6" y="1227.1" width="307.7" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="1239.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">push: “The front door is open and nobody is around”,</text>
+<rect x="838.4" y="1244.1" width="208.2" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="942.5" y="1256.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">with the door banner and “See live”</text>
+<path d="M787.0 1265.6 H1096.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="775.0" cy="1265.575" r="11" fill="#0084D6"/>
+<text x="775.0" y="1269.9" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">14</tspan></text>
+<text x="20.0" y="1319.6" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Grey: in the home. Blue: Altice. Orange: the phone. Production timings are proposals, to tune in a pilot.</text></svg>

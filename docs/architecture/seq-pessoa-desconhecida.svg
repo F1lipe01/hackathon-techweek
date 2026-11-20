@@ -1,85 +1,65 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1015" width="1400" height="1015" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequência: pessoa desconhecida"><title>Sequência: pessoa desconhecida</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1400" height="1015" fill="#FFFFFF"/><line x1="115.0" y1="83.175" x2="115.0" y2="960.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="325.0" y1="83.175" x2="325.0" y2="960.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="540.0" y1="83.175" x2="540.0" y2="960.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="765.0" y1="83.175" x2="765.0" y2="960.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="1035.0" y1="83.175" x2="1035.0" y2="960.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="1280.0" y1="83.175" x2="1280.0" y2="960.575" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<rect x="32.0" y="20.0" width="166.0" height="63.2" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1350 917" width="1350" height="917" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequência: pessoa desconhecida"><title>Sequência: pessoa desconhecida</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1350" height="917" fill="#FFFFFF"/><line x1="150.0" y1="83.175" x2="150.0" y2="862.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="460.0" y1="83.175" x2="460.0" y2="862.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="820.0" y1="83.175" x2="820.0" y2="862.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="1165.0" y1="83.175" x2="1165.0" y2="862.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<rect x="32.0" y="20.0" width="236.0" height="63.2" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
 <text x="44.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Câmara</tspan></text>
 <text x="44.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Sala 1, rede da casa</text>
-<rect x="222.0" y="20.0" width="206.0" height="63.2" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="234.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Agente da casa</tspan></text>
-<text x="234.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">no<tspan font-style="italic"> router</tspan>, com<tspan font-style="italic"> YuNet</tspan> e<tspan font-style="italic"> SFace</tspan></text>
-<rect x="452.0" y="20.0" width="176.0" height="63.2" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="464.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Servidores de visão</tspan></text>
-<text x="464.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start"><tspan font-style="italic">OWLv2</tspan>, GPU L4</text>
-<rect x="652.0" y="20.0" width="226.0" height="63.2" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="664.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Serviço</tspan><tspan font-weight="700" font-style="italic"> ThingTracker</tspan></text>
-<text x="664.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">presença e regras, por casa</text>
-<rect x="902.0" y="20.0" width="266.0" height="63.2" rx="12" fill="#FFF6EA" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="914.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Aplicação Altice</tspan></text>
-<text x="914.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">no telemóvel</text>
-<rect x="1192.0" y="20.0" width="176.0" height="63.2" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
-<text x="1204.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Servidor MCP</tspan></text>
-<text x="1204.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">plataforma Altice</text>
-<rect x="12.0" y="123.2" width="1376.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="700.0" y="142.2" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Estado: VAZIA desde as 14h10 (nenhum telemóvel da família no Wi-Fi). Regra ativa: “Toca o alarme quando entrar alguém que não seja da família”, com a escolha “perguntar primeiro”.</text>
-<rect x="133.2" y="163.9" width="173.5" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="220.0" y="176.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">imagens RTSP, só na rede da</text>
-<rect x="201.8" y="180.9" width="36.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="220.0" y="193.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">casa</text>
-<path d="M127.0 202.4 H311.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="115.0" cy="202.375" r="11" fill="#0084D6"/>
-<text x="115.0" y="206.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">1</tspan></text>
-<rect x="175.0" y="246.4" width="300.0" height="84.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="325.0" y="265.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Movimento: recorta a região que mudou.<tspan font-style="italic"> YuNet</tspan></text>
-<text x="325.0" y="282.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">encontra um rosto;<tspan font-style="italic"> SFace</tspan> dá 0,21 contra o</text>
-<text x="325.0" y="299.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">padrão mais parecido, abaixo de 0,363: “rosto</text>
-<text x="325.0" y="316.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">desconhecido”</text>
-<rect x="342.2" y="336.9" width="180.5" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="432.5" y="349.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">região + “rosto desconhecido”</text>
-<rect x="355.1" y="353.9" width="154.8" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="432.5" y="366.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">e a sua caixa (fila urgente)</text>
-<path d="M337.0 375.4 H526.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="325.0" cy="375.375" r="11" fill="#0084D6"/>
-<text x="325.0" y="379.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">2</tspan></text>
-<rect x="557.0" y="401.9" width="191.0" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="652.5" y="414.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">uma pessoa; o rosto está dentro</text>
-<rect x="612.3" y="418.9" width="80.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="652.5" y="431.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">da sua caixa</text>
-<path d="M552.0 440.4 H751.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="540.0" cy="440.375" r="11" fill="#0084D6"/>
-<text x="540.0" y="444.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">3</tspan></text>
-<rect x="615.0" y="484.4" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="765.0" y="503.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">3 análises seguidas (cerca de 3 s) com o mesmo</text>
-<text x="765.0" y="520.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">rosto desconhecido: VAZIA → INCERTA, e a regra</text>
-<text x="765.0" y="537.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">cumpre-se</text>
-<rect x="778.6" y="557.9" width="242.8" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="900.0" y="570.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso urgente: “Está alguém que não é da</text>
-<rect x="795.3" y="574.9" width="209.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="900.0" y="587.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">família na Sala 1”, com o recorte da</text>
-<rect x="874.7" y="591.9" width="50.5" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="900.0" y="604.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">pessoa</text>
-<path d="M777.0 613.4 H1021.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="765.0" cy="613.375" r="11" fill="#0084D6"/>
-<text x="765.0" y="617.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">4</tspan></text>
-<rect x="885.0" y="657.4" width="300.0" height="50.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="1035.0" y="676.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Cartões do aviso: “Tocar a sirene”, “Ligar à</text>
-<text x="1035.0" y="693.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">polícia (112)” e “Ver em direto”</text>
-<rect x="822.6" y="713.9" width="154.7" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="900.0" y="726.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Sim” em “Tocar a sirene”</text>
-<path d="M1023.0 735.4 H779.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="1035.0" cy="735.375" r="11" fill="#0084D6"/>
-<text x="1035.0" y="739.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">5</tspan></text>
-<rect x="838.7" y="761.9" width="367.5" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1022.5" y="774.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: <tspan font-family="Menlo, monospace" font-size="11.2">sirenSwitch</tspan> da câmara ligado</text>
-<path d="M777.0 783.4 H1266.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="765.0" cy="783.375" r="11" fill="#0084D6"/>
-<text x="765.0" y="787.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">6</tspan></text>
-<rect x="885.0" y="827.4" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="1035.0" y="846.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Ligar à polícia (112)” abre a chamada no</text>
-<text x="1035.0" y="863.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">telemóvel e é a pessoa quem liga. O sistema</text>
-<text x="1035.0" y="880.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">nunca marca o número</text>
-<rect x="12.0" y="918.4" width="1376.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="700.0" y="937.4" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Rosto da família (semelhança ≥ 0,363): nenhum aviso, e INCERTA → OCUPADA. Rosto não visível: a aplicação pergunta “Está alguém na Sala 1. É alguém conhecido?”, sem alarme, e só sugere o 112 se a resposta for “não”.</text>
-<text x="20.0" y="986.6" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Cinzento: em casa. Azul: Altice. Laranja: telemóvel. Os tempos de produção são propostas, a afinar num piloto.</text></svg>
+<rect x="292.0" y="20.0" width="336.0" height="63.2" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="304.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Equipamento da casa</tspan></text>
+<text x="304.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">visão, rostos com<tspan font-style="italic"> YuNet</tspan> e<tspan font-style="italic"> SFace</tspan>, regras</text>
+<rect x="652.0" y="20.0" width="336.0" height="63.2" rx="12" fill="#EEF3FB" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="664.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Plataforma Altice</tspan></text>
+<text x="664.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">retransmissão, notificações, servidor MCP</text>
+<rect x="1012.0" y="20.0" width="306.0" height="63.2" rx="12" fill="#FFF6EA" stroke="#C9CED6" stroke-width="1.0"/>
+<text x="1024.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Aplicação Altice</tspan></text>
+<text x="1024.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">no telemóvel</text>
+<rect x="12.0" y="123.2" width="1326.0" height="32.2" rx="8" fill="#EEF1F6"/>
+<text x="675.0" y="142.2" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Estado: VAZIA desde as 14h10 (nenhum telemóvel da família no Wi-Fi). Regra ativa: “Toca o alarme quando entrar alguém que não seja da família”, com a escolha “perguntar primeiro”.</text>
+<rect x="203.3" y="163.9" width="203.4" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="305.0" y="176.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">imagens RTSP, só na rede da casa</text>
+<path d="M162.0 185.4 H446.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="150.0" cy="185.375" r="11" fill="#0084D6"/>
+<text x="150.0" y="189.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">1</tspan></text>
+<rect x="310.0" y="229.4" width="300.0" height="84.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="460.0" y="248.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Movimento: o detetor encontra uma pessoa.</text>
+<text x="460.0" y="265.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-style="italic">YuNet</tspan> encontra o rosto dentro da sua caixa;</text>
+<text x="460.0" y="282.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-style="italic">SFace</tspan> dá 0,21 contra o padrão mais parecido,</text>
+<text x="460.0" y="299.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">abaixo de 0,363: “rosto desconhecido”</text>
+<rect x="310.0" y="337.4" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="460.0" y="356.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">3 análises seguidas (cerca de 3 s) com o mesmo</text>
+<text x="460.0" y="373.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">rosto desconhecido: VAZIA → INCERTA, e a regra</text>
+<text x="460.0" y="390.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">cumpre-se</text>
+<rect x="502.4" y="410.9" width="275.2" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="640.0" y="423.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso urgente, só texto: “desconhecido, Sala 1”</text>
+<path d="M472.0 432.4 H806.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="460.0" cy="432.375" r="11" fill="#0084D6"/>
+<text x="460.0" y="436.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">2</tspan></text>
+<rect x="843.6" y="458.9" width="297.7" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="992.5" y="471.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">notificação urgente no telemóvel: “Está alguém que</text>
+<rect x="913.0" y="475.9" width="158.9" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="992.5" y="488.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">não é da família na Sala 1”</text>
+<path d="M832.0 497.4 H1151.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="820.0" cy="497.375" r="11" fill="#0084D6"/>
+<text x="820.0" y="501.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">3</tspan></text>
+<rect x="1015.0" y="541.4" width="300.0" height="50.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="1165.0" y="560.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Cartões do aviso: “Tocar a sirene”, “Ligar à</text>
+<text x="1165.0" y="577.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">polícia (112)” e “Ver em direto”</text>
+<rect x="915.1" y="597.9" width="154.7" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="992.5" y="610.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Sim” em “Tocar a sirene”</text>
+<path d="M1153.0 619.4 H834.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="1165.0" cy="619.375" r="11" fill="#0084D6"/>
+<text x="1165.0" y="623.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">4</tspan></text>
+<rect x="260.7" y="645.9" width="448.6" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="485.0" y="658.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">servidor MCP, <tspan font-family="Menlo, monospace" font-size="11.2">update_device_capabilities</tspan>: <tspan font-family="Menlo, monospace" font-size="11.2">sirenSwitch</tspan> da câmara ligado</text>
+<path d="M808.0 667.4 H164.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="820.0" cy="667.375" r="11" fill="#0084D6"/>
+<text x="820.0" y="671.7" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">5</tspan></text>
+<rect x="1015.0" y="711.4" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="1165.0" y="730.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">“Ligar à polícia (112)” abre a chamada no</text>
+<text x="1165.0" y="747.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">telemóvel e é a pessoa quem liga. O sistema</text>
+<text x="1165.0" y="764.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">nunca marca o número</text>
+<rect x="12.0" y="802.4" width="1326.0" height="50.4" rx="8" fill="#EEF1F6"/>
+<text x="675.0" y="821.4" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Rosto da família (semelhança ≥ 0,363): nenhum aviso, e INCERTA → OCUPADA. Rosto não visível: a aplicação pergunta “Está alguém na Sala 1. É alguém conhecido?”, sem alarme, e só sugere o 112 se a resposta for</text>
+<text x="675.0" y="839.6" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">“não”.</text>
+<text x="20.0" y="888.8" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Cinzento: em casa. Azul: Altice. Laranja: telemóvel. Os tempos de produção são propostas, a afinar num piloto.</text></svg>

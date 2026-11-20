@@ -1,6 +1,6 @@
 # Arquitetura do _ThingTracker_
 
-Versão 3, de 20 de novembro de 2026. Destina-se ao júri e aos engenheiros da Altice Labs. A solução final, decidida a 20 de novembro, faz toda a perceção e toda a inferência em casa e é apresentada na secção seguinte. As secções 1 a 18 mantêm o desenho detalhado de 19 de novembro, com o local onde corre cada parte, o componente que decide cada coisa e o sinal e o limiar em que se baseia; sempre que uma delas coloca na Altice a visão, um modelo de linguagem, as assinaturas visuais ou as imagens, descreve a alternativa avaliada e não escolhida, porque as imagens sairiam de casa. A secção 16 indica, ponto a ponto, o que o protótipo já faz.
+Versão 3, de 20 de novembro de 2026. Destina-se ao júri e aos engenheiros da Altice Labs. A solução final, decidida a 20 de novembro, faz toda a perceção e toda a inferência em casa, é apresentada na secção seguinte e é a que as figuras mostram. As secções 1 a 18 mantêm o desenho detalhado de 19 de novembro, com o local onde corre cada parte, o componente que decide cada coisa e o sinal e o limiar em que se baseia; sempre que uma delas coloca na Altice a visão, um modelo de linguagem, as assinaturas visuais ou as imagens, descreve a alternativa avaliada e não escolhida, porque as imagens sairiam de casa. A secção 16 indica, ponto a ponto, o que o protótipo já faz.
 
 As vistas seguem três referências. O modelo C4 (c4model.com) organiza o contexto, os contentores e os componentes; o arc42 (arc42.org) orienta a vista de execução, com as sequências, e a vista de implantação; o diagrama de fluxo de dados com fronteiras de confiança segue a prática de modelação de ameaças do _Microsoft Security Development Lifecycle_ e da OWASP. Todas as figuras são geradas por `docs/architecture/build_views.py`, que verifica se cada texto cabe na respetiva caixa e interrompe a geração quando algum não cabe.
 
@@ -110,7 +110,7 @@ A Figura 3 mostra onde corre cada parte, o equipamento, os números para 500 000
 
 ![Implantação](../architecture/implantacao.png)
 
-**Figura 3** – Implantação: o agente da casa no _router_, o _ThingTracker_ no centro de dados da Altice, o telemóvel e as opções consideradas.
+**Figura 3** – Implantação: o equipamento da casa, com toda a perceção e toda a inferência, a plataforma Altice, apenas com texto, o telemóvel, os custos e as opções consideradas.
 
 ### 5.1 Alternativa avaliada e não escolhida: híbrida, nos servidores _L4_ da Altice
 
@@ -377,11 +377,11 @@ As Figuras 9 e 10 apresentam as duas bases de dados, a pequena, no _router_, e a
 
 ![Modelo de dados: casa](../architecture/er-casa.png)
 
-**Figura 9** – O _SQLite_ cifrado do _router_, gerido pelo agente da casa, com os nomes das pessoas, os padrões faciais, as câmaras e as máscaras, a fila de saída e as definições, sem nenhuma imagem.
+**Figura 9** – O _SQLite_ cifrado do equipamento da casa, com os nomes das pessoas, os padrões faciais, as câmaras e as máscaras, os objetos, as assinaturas visuais, as observações, as regras, a presença, a fila de saída e as definições. As imagens, as assinaturas visuais e os padrões faciais só existem aqui.
 
 ![Modelo de dados: plataforma](../architecture/er-plataforma.png)
 
-**Figura 10** – O _PostgreSQL_ com _pgvector_ da plataforma: uma base de dados em que cada linha pertence a um cliente, com segurança ao nível da linha.
+**Figura 10** – O _PostgreSQL_ da plataforma, apenas com texto: uma base de dados em que cada linha pertence a um cliente, com segurança ao nível da linha.
 
 | Dados | Onde ficam | Retenção |
 |---|---|---|

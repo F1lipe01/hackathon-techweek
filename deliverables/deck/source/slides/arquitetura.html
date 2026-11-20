@@ -1,12 +1,12 @@
 <section id="arquitetura" data-transition="fade">
 <div class="ebrow"><p class="eyebrow">Adoção pela Altice</p></div>
 <h2 class="title">Encaixa no que a Altice já tem</h2>
-<!-- n0 16,260,228,150  n1 300  n2 584  n3 868  n4 1152  n5 1436 ; LLM 812,66,340,140 ; row mid y 335 -->
+<!-- n0 16,260,228,150  n1 300  n2 584  n3 868  n4 1152  n5 1436 ; LLM 812,66,340,140 ; faces 16,66,512,140 ; presence 1168,66,212 ; row mid y 335 ; .arch holds 24 pinned children, the cap -->
 <div class="arch" style="margin-top:auto;margin-bottom:auto">
-<div class="grp" style="left:0;top:206px;width:544px;height:224px"></div>
+<div class="grp" style="left:0;top:20px;width:544px;height:410px"></div>
 <div class="grp" style="left:568px;top:20px;width:828px;height:410px"></div>
 <div class="grp" style="left:1420px;top:206px;width:244px;height:224px"></div>
-<p class="gl" style="left:20px;top:216px;width:400px">Em casa</p>
+<p class="gl" style="left:20px;top:30px;width:400px">Em casa</p>
 <p class="gl" style="left:588px;top:30px;width:400px">Plataforma Altice</p>
 <p class="gl" style="left:1440px;top:216px;width:210px">A família</p>
 <x-connector x1="244" y1="335" x2="300" y2="335" style="color:#8A97AA;border-width:3px"></x-connector>
@@ -17,10 +17,12 @@
 <x-connector x1="960" y1="206" x2="960" y2="260" style="color:#8A97AA;border-width:3px"></x-connector>
 <x-connector x1="1004" y1="260" x2="1004" y2="206" style="color:#8A97AA;border-width:3px"></x-connector>
 <div class="node" style="left:812px;top:66px;width:340px;height:140px;--t:500ms"><p class="nn">Modelo de linguagem</p><p class="nd">transforma frases em regras e respostas</p></div>
+<div class="node" style="left:16px;top:66px;width:512px;height:140px;--t:150ms"><p class="nn">Rostos (opcional)</p><p class="nd">em casa: os padrões nunca saem</p></div>
+<div class="node" style="left:1168px;top:66px;width:212px;height:176px;--t:550ms"><p class="nn">Presença</p><p class="nd">telemóveis no <i>Wi-Fi</i>, porta e câmaras</p></div>
 <div class="node" style="left:16px;top:260px;width:228px;height:150px;--t:0ms"><p class="nn">Câmara</p><p class="nd">a do kit, já em casa</p></div>
 <div class="node" style="left:300px;top:260px;width:228px;height:150px;--t:100ms"><p class="nn">Movimento</p><p class="nd">deteção simples, em casa</p></div>
 <div class="node key" style="left:584px;top:260px;width:228px;height:150px;--t:200ms"><p class="nn">Visão</p><p class="nd"><i>OWLv2</i> e <i>DINOv2</i></p></div>
-<div class="node" style="left:868px;top:260px;width:228px;height:150px;--t:300ms"><p class="nn">Memória</p><p class="nd">e regras: o quê, onde, quando</p></div>
+<div class="node" style="left:868px;top:260px;width:228px;height:150px;--t:300ms"><p class="nn">Memória</p><p class="nd">e regras: o código decide</p></div>
 <div class="node key" style="left:1152px;top:260px;width:228px;height:150px;--t:400ms"><p class="nn">MCP</p><p class="nd">as ferramentas que já existem</p></div>
 <div class="node end" style="left:1436px;top:260px;width:228px;height:150px;--t:500ms"><p class="nn">App e casa</p><p class="nd">aviso, luz, tomada</p></div>
 <div class="pulse" style="left:117px;top:322px"></div>
@@ -31,5 +33,6 @@
 Ideia-chave: adoção; a Altice não instala nada de novo.
 Abrir com: “A câmara do kit, a app de hoje com um separador novo, e o MCP.”
 Pontos (ditos, já não estão no diapositivo): o movimento deteta-se em casa e só sai a zona que mudou; nenhuma app nova e nenhum caminho novo; quatro ferramentas MCP para as Things. Dizer a palavra “adoção”.
+Os modelos só veem; quem decide é o código, com três sinais: as câmaras, a porta e os telemóveis no Wi-Fi. O modelo de linguagem só transforma frases em regras e escreve as mensagens.
 Passagem. 3 min: “E quanto custa?” 5 min: “E a privacidade?”</aside>
 </section>

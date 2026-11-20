@@ -20,3 +20,7 @@ Images appear as `/_blob/<id>` links, which only resolve inside the artifact.
 | 24 | 20 Nov | The new run of show: three films, open models, prototype versus proposal, repository; the old case slides kept as a reserve for questions |
 
 The run of show for the 3- and 5-minute pitches is in [docs/pt/21-pitch.md](../../docs/pt/21-pitch.md).
+
+## PowerPoint on the organisers' template
+
+The files submitted at 17:30 are `ThingTracker - Pitch 5 min.pptx` (and its PDF); `ThingTracker - Pitch 3 min.pptx` keeps only the 3-minute slides. Both are built on the Aveiro Tech City Hackathon template by `pptx/build_pptx.py` (python-pptx): the template's cover, black and white frames, one headline per slide, images, and the spoken lines and timings in the speaker notes, read from `source/slides/<id>.html`. The template itself is not stored here. Rebuild: `python pptx/build_pptx.py template.pptx BUILD_DIR "ThingTracker - Pitch 5 min.pptx" "ThingTracker - Pitch 3 min.pptx"` (needs ffmpeg and the films in `video/out/pitch/`).

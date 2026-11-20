@@ -4,13 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ThingTracker · prototype</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Montserrat for the copy of the Altice app, as in the real app -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="preconnect" href="https://api.fontshare.com">
-<link rel="preconnect" href="https://cdn.fontshare.com" crossorigin>
-<link href="https://api.fontshare.com/v2/css?f[]=switzer@400,500,600&display=swap" rel="stylesheet">
+<!-- Montserrat (the Altice app) and Switzer, served locally: the site works offline -->
+<link rel="stylesheet" href="/web/fonts/fonts.css">
 <link rel="stylesheet" href="/web/app.css">
 </head>
 <body>
@@ -58,6 +53,8 @@
     <li><span class="k">04 · App</span><b>Answers you</b><span class="d">Place, time and photo, on any tab.</span></li>
   </ol>
   </div></div>
+  <!-- the player of the pitch site (embed only): the camera's source, play and pause, the timeline (app.js: player) -->
+  <div class="player" id="player" aria-label="Camera player"></div>
 
   <!-- ======================= APP: a copy of the Altice app, plus the Things tab ======================= -->
   <section class="phone-wrap" aria-label="Altice app with the new Things tab">

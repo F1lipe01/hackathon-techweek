@@ -88,14 +88,16 @@ class ReplayCamera:
     def latest(self):
         return self.frame
 
-    def frames_forever(self):
-        last = 0
+    def frames_forever(self, max_fps=8):
+        """The page's live view: at most max_fps frames a second (full-size JPEGs at the take's 20 fps would load the
+        browser, and with it the machine the edge runs on). The edge reads frames on its own, through latest()."""
+        last, sent = 0, 0.0
         while True:
             with self._new:
                 self._new.wait(timeout=0.5)
                 n, f = self.frames, self.frame
-            if f and n != last:
-                last = n
+            if f and n != last and time.time() - sent >= 1 / max_fps:
+                last, sent = n, time.time()
                 yield f
             elif f and (self.ended or not self.started_at):
                 time.sleep(0.2)
@@ -119,6 +121,10 @@ class Replayer:
         self.h["setup"](self.cam.spec.get("setup", {}))
 
     def start(self):
+        """The take's starting state is set at its first second, then the take and its events run."""
+        if self.cam.started_at:
+            return False
+        self.setup()
         if not self.cam.start():
             return False
         threading.Thread(target=self._run, daemon=True).start()

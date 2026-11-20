@@ -50,7 +50,8 @@ DETECT_SCORE = 0.6          # YuNet's own confidence to report a face at all
 VISIBLE_SCORE = 0.8         # ... and to judge it (known or unknown); between the two, the face is "not_visible"
 MIN_FACE_PX = 40            # a face narrower than this in the original frame is too small to judge
 MAX_TURN = 0.75             # nose offset from the eyes' midpoint, over the eye distance: beyond it, too turned to judge
-MATCH_THRESHOLD = 0.30      # cosine to a template at or above which a face is that person (THRESHOLD_NOTE)
+MATCH_THRESHOLD = 0.40      # cosine to a template at or above which a face is that person (THRESHOLD_NOTE)
+UNKNOWN_BELOW = 0.25        # ... below which (to every template) it is "unknown"; in between, not sure: "not_visible"
 DIVERSE_COS = 0.92          # enrolment: a view this close to a kept one adds nothing
 THRESHOLD_NOTE = """
 Measured on 19 Nov 2026 on the lab take video/public/takes/scene2/face-take.mp4 (kit camera, 2304 x 1296), one frame
@@ -70,6 +71,12 @@ At 0.363, 2 of Filipe's 21 judged faces would be called unknown; at 0.30 none is
 (0.248) is still 0.05 below. This is one take with two people walking through: a check, not a measured accuracy. The
 rule on the server adds its own safety: it alarms only after several consecutive "unknown" faces and never while a
 family member is recognised.
+Revised the same night, after replaying the whole take through the edge (video/tools/proof_run.py face): faces looked
+for in looser person boxes are judged more often, and one of the other man's faces then scored 0.33 against Filipe,
+while some of Filipe's own judged faces score 0.31-0.36. On this camera the two overlap between about 0.30 and 0.36.
+So the answer has three zones: at or above 0.40 (MATCH_THRESHOLD) the person; below 0.25 (UNKNOWN_BELOW, every
+template) "unknown"; in between, not sure, answered as "not_visible" (why: "not sure"), which can neither raise nor
+silence an alarm. Filipe's median (0.489) stays known; every other-man face measured here (at most 0.248) stays unknown.
 """
 
 
@@ -176,7 +183,11 @@ class Faces:
             return {**out, "identity": "not_visible", "why": why}
         if best is None:
             return {**out, "identity": "unknown", "why": "no templates"}
-        return {**out, "identity": name or "unknown"}
+        if name:
+            return {**out, "identity": name}
+        if best >= UNKNOWN_BELOW:                        # between the zones: not sure, never a verdict
+            return {**out, "identity": "not_visible", "why": "not sure"}
+        return {**out, "identity": "unknown"}
 
     # ------------------------------------------------------------------ enrolment
     def _best_face(self, bgr, min_score=0.8):

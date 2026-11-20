@@ -45,11 +45,14 @@ OCCUPIED, LEAVING, EMPTY, UNSURE = "OCCUPIED", "LEAVING", "EMPTY", "UNSURE"
 # check_timeout_s  how long to wait for the edge's active check of a thing before calling it unsure
 # unknown_runs     consecutive analyses with an unknown face (or a person with no face) before a security rule acts
 # taken_misses     analyses in which a thing is missing from its place, after a person was near it, before "taken"
+# unknown_runs is 2: a verdict of "unknown" now needs a face clearly visible AND below 0.25 to every template
+# (faces.py), and at the kit camera's resolution a walking stranger's face is judged in only a few analyses, so two
+# such verdicts in one episode are already strong evidence (replayed lab take, video/tools/proof_run.py face).
 TIMINGS = {
     "demo": {"seen_now_s": 15, "face_recent_s": 120, "leaving_check_s": 10, "phone_lag_s": 30, "stale_s": 900,
-             "refresh_s": 30, "check_timeout_s": 15, "unknown_runs": 3, "taken_misses": 3},
+             "refresh_s": 30, "check_timeout_s": 15, "unknown_runs": 2, "taken_misses": 3},
     "prod": {"seen_now_s": 120, "face_recent_s": 30 * 60, "leaving_check_s": 5 * 60, "phone_lag_s": 5 * 60,
-             "stale_s": 4 * 3600, "refresh_s": 30, "check_timeout_s": 60, "unknown_runs": 3, "taken_misses": 3},
+             "stale_s": 4 * 3600, "refresh_s": 30, "check_timeout_s": 60, "unknown_runs": 2, "taken_misses": 3},
 }
 
 SCHEMA = """

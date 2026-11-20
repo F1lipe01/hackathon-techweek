@@ -231,10 +231,14 @@ def presence_unit():
           and s["unknown"] == 1, s["reason"])
     check("P4 ... and the security run counts consecutive analyses", pr.run(cam, "unknown")[0] == t["unknown_runs"],
           str(pr.run(cam, "unknown")))
+    later(1)
+    pr.analysis(cam, [{"identity": "not_visible"}])
+    check("P4b an analysis where the face cannot be judged does not break the run", pr.run(cam, "unknown")[0] == t["unknown_runs"])
     check("P5 ... and the state rests on the camera: a refresh is wanted after refresh_s", s["relies_on_camera"]
           and not pr.wants_refresh(cam) and (later(t["refresh_s"]) or pr.wants_refresh(cam)))
+    later(t["seen_now_s"] + 1)
     pr.analysis(cam, [])
-    check("P6 the camera looks again and sees nobody -> EMPTY, and the run resets",
+    check("P6 the camera sees nobody for seen_now_s -> EMPTY, and the run ends",
           pr.evaluate()["state"] == P.EMPTY and pr.run(cam, "unknown")[0] == 0)
     pr.analysis(cam, [{"identity": "filipe"}])
     s = pr.evaluate()
@@ -349,12 +353,34 @@ def vision():
         sim, box = edge.best_match(frame(kit, 10.0), book, vecs, det, emb, 0.62)
         check("the book on the desk in the kit camera's frame (kit-desk.mp4, 10 s) matches above 0.62", box is not None
               and sim >= 0.62, f"cosine {sim:.3f}")
-    # The wide lab take: the book lies flat across the room (about 116 x 40 px of a 2304 x 1296 frame), seen mostly by
-    # its edge, while the photos are close-ups of the cover. DINOv2 does not bridge that: printed, not asserted.
-    for t in (5.5, 33.25):
-        sim, box = edge.best_match(frame(book_take, t), book, vecs, det, emb, 0.62)
-        print(f"INFO  the book flat on the desk in book-full.mp4 at {t} s: cosine {sim:.3f} (below 0.62: too far and "
-              "too flat for a fingerprint made of cover photos)")
+    # The wide lab take: the book lies flat across the room (about 116 x 40 px of 2304 x 1296), on the region around the
+    # desk at full resolution, as the edge looks for things now. The phone photos alone do not reach it; camera views
+    # registered from another take of the same camera (book-grab.mp4, the registration rule) do.
+    W, H = 2304, 1296
+    BOOK = [0.628 * W, 0.7238 * H, 0.6727 * W, 0.7438 * H]
+    on_desk, gone = (3.0, 8.0, 15.0, 20.0, 25.0, 33.0), (40.0, 44.0)
+    phone = [edge.best_match(frame(book_take, t), book, vecs, det, emb, 0.62, box=BOOK)[0] for t in on_desk]
+    print(f"INFO  phone photos only, book on the desk in book-full.mp4 (region): cosine {min(phone):.3f}-{max(phone):.3f}, "
+          f"{sum(x >= 0.62 for x in phone)} of {len(phone)} at or above 0.62")
+    grab = takes / "takes" / "scene1" / "book-grab.mp4"
+    if grab.exists():
+        cap, frames_g, i = cv2.VideoCapture(str(grab)), [], 0
+        while True:
+            ok, bgr = cap.read()
+            if not ok:
+                break
+            if i % 10 == 0:                                  # every 0.5 s at 20 fps
+                frames_g.append(Image.fromarray(bgr[:, :, ::-1]))
+            i += 1
+        cap.release()
+        cam, _ = edge.camera_views(frames_g, BOOK, "yellow book", det, emb, need_overlap=False)
+        both = np.vstack([vecs, np.asarray(cam)]) if cam else vecs
+        hits = [edge.best_match(frame(book_take, t), book, both, det, emb, 0.62, box=BOOK)[0] for t in on_desk]
+        after = [edge.best_match(frame(book_take, t), book, both, det, emb, 0.62, box=BOOK)[0] for t in gone]
+        check(f"with {len(cam)} camera views from book-grab.mp4: the book on the desk in book-full.mp4 recognised in "
+              f"every sampled frame", cam and all(x >= 0.62 for x in hits), f"cosine {min(hits):.3f}-{max(hits):.3f}")
+        check("… and after he took it, nothing on the desk passes 0.62", all(x < 0.62 for x in after),
+              f"best {max(after):.3f}")
     other = emb([Image.new("RGB", (120, 60), (40, 90, 160))])[0]
     check("a plain blue patch does not match it", float((vecs @ other).max()) < 0.62, f"{float((vecs @ other).max()):.3f}")
 
@@ -524,24 +550,6 @@ def run(private, db):
     call("PATCH", f"/api/rules/{sec['id']}", {"cooldown_s": 0})
     phone(filipe, False)
     observe(people=0, persons=[])
-    for i in range(3):
-        observe(people=1, persons=[{"identity": "unknown", "score": 0.14, "crop_b64": JPEG}])
-        time.sleep(0.4)
-        if i == 1:
-            time.sleep(2.5)
-            check("an unknown face on 2 analyses -> no alert yet", not alert_for(sec["id"]))
-    a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == sec["id"], timeout=8)
-    check("an unknown face on 3 analyses, the family away -> alert, alarm on, police suggested, the person's picture",
-          a and (a.get("alarm") or {}).get("state") == "on" and (a.get("suggestion") or {}).get("number") == "112"
-          and a.get("picture") and call("GET", "/api/state")["alarm"].get("on"), a and f"{a['text']} | {a.get('evidence')}")
-    if a:
-        out = call("POST", f"/api/alerts/{a['id']}/alarm-off")
-        st = call("GET", "/api/state")
-        check("“Turn off the alarm” -> the alert's alarm is off, the simulated alarm is off, an event, no MCP call",
-              out["alert"]["alarm"]["state"] == "off" and not st["alarm"].get("on") and out["event"]["kind"] == "alarm"
-              and not out["event"]["action"]["calls"] and "never called" in out["event"]["action"]["result"],
-              out["event"]["text"])
-    observe(people=0, persons=[])
     for _ in range(3):
         observe(people=1, persons=[{"identity": "not_visible"}])
         time.sleep(0.4)
@@ -554,6 +562,25 @@ def run(private, db):
               out["alert"]["alarm"]["state"] == "on" and out["alert"]["ask"][0]["state"] == "done"
               and call("GET", "/api/state")["alarm"].get("on"), out["event"]["text"])
         call("POST", f"/api/alerts/{a2['id']}/alarm-off")
+    observe(people=0, persons=[])
+    for i in range(2):
+        observe(people=1, persons=[{"identity": "unknown", "score": 0.14, "crop_b64": JPEG}])
+        time.sleep(0.4)
+        if i == 0:
+            time.sleep(2.5)
+            check("one unknown-face verdict -> no alert yet", not any(e["kind"] == "alert" and e.get("rule_id") == sec["id"]
+                                                                       and e.get("unknown") for e in events()))
+    a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == sec["id"] and e.get("unknown"), timeout=8)
+    check("a second unknown-face verdict in the episode, the family away -> alert, alarm on, police, the picture",
+          a and (a.get("alarm") or {}).get("state") == "on" and (a.get("suggestion") or {}).get("number") == "112"
+          and a.get("picture") and call("GET", "/api/state")["alarm"].get("on"), a and f"{a['text']} | {a.get('evidence')}")
+    if a:
+        out = call("POST", f"/api/alerts/{a['id']}/alarm-off")
+        st = call("GET", "/api/state")
+        check("“Turn off the alarm” -> the alert's alarm is off, the simulated alarm is off, an event, no MCP call",
+              out["alert"]["alarm"]["state"] == "off" and not st["alarm"].get("on") and out["event"]["kind"] == "alarm"
+              and not out["event"]["action"]["calls"] and "never called" in out["event"]["action"]["result"],
+              out["event"]["text"])
     observe(people=0, persons=[])
     n_before = len([e for e in events() if e["kind"] == "alert" and e.get("rule_id") == sec["id"]])
     for _ in range(3):

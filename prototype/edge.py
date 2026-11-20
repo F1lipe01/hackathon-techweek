@@ -300,11 +300,20 @@ def analyse(img, things, fps, det, emb, args, faceid=None, places_mem=None, moti
         regs = thing_regions(img, [places_mem[t["id"]] for t in tq.values() if t["id"] in places_mem], motion_box)
         dets += det_regions(det, img, list(tq), regs, threshold=0.1)
     places = [(k, b) for q, s, b in dets for k, v in PLACES.items() if q == v and s >= 0.18]
-    people = [(s, b) for q, s, b in dets if q == PERSON and s >= 0.2]
+    # A person is a box of 0.2 or more. Faces are looked for in looser boxes too (0.15): on the lab's footage a walking
+    # person has a 0.2 box in about 40 % of frames but a 0.15 box in about 80 %, so far more faces get judged. A loose
+    # box counts as a person only when a judgeable face is found in it (faces only ever inside person-like boxes: a
+    # printed face on a carton in the lab scores 0.8 with YuNet on the whole frame).
+    people, faces_of = [], {}
     names = {t["id"]: t["name"] for t in things}
-    persons, boxes = [], []
-    for s, b in people[:6]:
+    for s, b in sorted([(s, b) for q, s, b in dets if q == PERSON and s >= 0.15], key=lambda c: -c[0])[:8]:
         face = faceid.look(img, b) if faceid else {"identity": "not_visible", "score": None}
+        if s >= 0.2 or face["identity"] != "not_visible":
+            people.append((s, b))
+            faces_of[len(people) - 1] = face
+    persons, boxes = [], []
+    for i, (s, b) in enumerate(people[:6]):
+        face = faces_of[i]
         who = face["identity"]
         p = {"box": norm_box(img, b), "identity": who, "score": face.get("score")}
         if who == "unknown":                              # only a face that matches nobody: kept if a rule fires
@@ -375,20 +384,52 @@ def active_check(server, task, things, fps, det, emb, args, frames=3, places_mem
     fp = fps.get(task["thing_id"])
     if not t or fp is None:
         return {"id": task["id"], "seen": False, "frames": 0, "note": "no fingerprint on this device"}
-    best = (0.0, None, None)
+    best, views = (0.0, None, None), []
     for i in range(int(task.get("frames") or frames)):
         img = Image.open(io.BytesIO(get(f"{server}/api/kit/frame.jpg"))).convert("RGB")
         sim, box = best_match(img, t, fp, det, emb, args.match, box=last)
         if box is not None and sim > best[0]:
             best = (sim, box, img)
+        views.append(region_around(img, last)[2] if last else img)
         time.sleep(0.4)
     sim, box, img = best
     if box is None:
-        return {"id": task["id"], "seen": False, "frames": frames, "score": round(sim, 2)}
+        out = {"id": task["id"], "seen": False, "frames": frames, "score": round(sim, 2)}
+        verdict = ask_judge(f"Is there a {task['query']} on the {task.get('place') or 'desk'} in these pictures?", views[:3])
+        if verdict:
+            out["judge"] = verdict
+        return out
     dets = det(img, list(PLACES.values()), threshold=0.18)
     places = [(k, b) for q, s, b in dets for k, v in PLACES.items() if q == v]
     return {"id": task["id"], "seen": True, "frames": frames, "score": round(sim, 2), "place": place_of(box, places),
             "crop_b64": crop_b64(img, box, pad=1.2, size=640)}
+
+
+JUDGE = os.environ.get("TT_JUDGE", "http://127.0.0.1:8767")
+
+
+def ask_judge(question, images):
+    """The local vision-language judge (prototype/judge.py), only for an ambiguous check: {"answer", "sentence", "ms"},
+    or None when it is not running. It never decides anything by itself (the server asks the family)."""
+    try:
+        get(f"{JUDGE}/health", timeout=1)
+    except Exception:
+        return None
+    b64 = []
+    for im in images:
+        c = im.copy()
+        c.thumbnail((640, 640))
+        buf = io.BytesIO()
+        c.save(buf, "JPEG", quality=85)
+        b64.append(base64.b64encode(buf.getvalue()).decode())
+    try:
+        req = urllib.request.Request(f"{JUDGE}/judge", data=json.dumps({"question": question, "images_b64": b64}).encode(),
+                                     headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            return json.loads(r.read())
+    except Exception as e:  # noqa: BLE001
+        print("judge failed:", e, flush=True)
+        return None
 
 
 def photo_fingerprint(images, query, det, emb):
@@ -493,6 +534,29 @@ def learn_from_video(server, video, thing_id, box, every, det, emb):
     places[thing_id] = [round(v, 1) for v in hint]
     save_places(places)
     return len(vecs)
+
+
+def second_look(server, persons, faceid, grow=0.4):
+    """Faces again, on a fresh frame, inside the person boxes the analysis just found (each grown by 40 %: a walking
+    person moves in the second OWLv2 takes). About 60 ms; it doubles the faces judged, and still never looks outside a
+    person's box. Posted as an analysis only when it judged a face."""
+    img = Image.open(io.BytesIO(get(f"{server}/api/kit/frame.jpg"))).convert("RGB")
+    out, judged = [], False
+    for p in persons:
+        x0, y0, x1, y1 = p["box"]
+        w, h = (x1 - x0) * grow / 2, (y1 - y0) * grow / 2
+        box = [max(0, (x0 - w) * img.width), max(0, (y0 - h) * img.height), min(img.width, (x1 + w) * img.width),
+               min(img.height, (y1 + h) * img.height)]
+        face = faceid.look(img, box)
+        q = {"box": p["box"], "identity": face["identity"], "score": face.get("score")}
+        if face["identity"] == "unknown":
+            q["crop_b64"] = crop_b64(img, box, pad=0.0, size=360)
+        judged |= face["identity"] != "not_visible"
+        out.append(q)
+    if judged:
+        post(f"{server}/api/edge/observe", {"people": len(out), "persons": out, "sightings": [], "second_look": True})
+        print("second look: " + ", ".join(q["identity"] + (f" {q['score']:.2f}" if q.get("score") is not None else "")
+                                          for q in out), flush=True)
 
 
 def run_snapshot(server, task, img, det):
@@ -602,8 +666,16 @@ def main():
                 analysed += 1
                 last_analysis = t0
                 post(f"{args.server}/api/edge/observe", payload)
-                found = ", ".join(f"{s['thing_id']}@{s['place']}" for s in payload["sightings"]) or "no things"
-                print(f"analysed in {ms:.0f} ms: {found}, {payload['people']} people", flush=True)
+                if faceid and faceid.ok and payload["persons"]:
+                    for _ in range(2):                    # two more looks at the faces, ~60 ms each
+                        second_look(args.server, payload["persons"], faceid)
+                        time.sleep(0.15)
+                found = ", ".join(f"{s['thing_id']}@{s['place']}" + (" in hand" if s.get("in_hand") else "")
+                                  for s in payload["sightings"]) or "no things"
+                who = ", ".join(p["identity"] + (f" {p['score']:.2f}" if p.get("score") is not None else "")
+                                for p in payload["persons"])
+                print(f"analysed in {ms:.0f} ms: {found}, {payload['people']} people" + (f" ({who})" if who else ""),
+                      flush=True)
         except Exception as e:
             print("analysis failed:", e, flush=True)
 

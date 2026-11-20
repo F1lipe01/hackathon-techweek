@@ -24,6 +24,12 @@ const browser = await chromium.launch({ executablePath: '/Applications/Google Ch
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 page.on('console', (m) => { if (m.type() === 'error') console.log('page:', m.text()); });
 await page.goto(`${BASE}/#things`, { waitUntil: 'load' });
+// for the recording only: the activity log in a third column beside the phone, so the camera, the app and every
+// event with its time are on screen together (newest first); the app itself is unchanged
+await page.addStyleTag({ content: `
+  .split { grid-template-columns: minmax(0, 1fr) var(--phone-w) 470px !important; grid-template-areas: "main phone activity" !important; }
+  .activity { padding-top: 0 !important; max-height: calc(100vh - 70px); overflow: hidden; align-self: start; }
+  .log { overflow: hidden; } .log li { font-size: 13px; } .sim-bar .pres { font-size: 13px; }` });
 await pause(2500);
 const cdp = await page.context().newCDPSession(page);
 const shots = [];

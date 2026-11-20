@@ -429,7 +429,11 @@ def edge_observe(payload: dict = Body(...)):
             if isinstance(p, dict) and p.get("identity") == "unknown" and p.get("crop_b64"):
                 _unknown_crop[camera] = (now_, p["crop_b64"])
         presence.analysis(camera, persons, forced=bool(payload.get("forced")))
-        track_handling(payload, camera, known, people)
+        if not payload.get("second_look"):
+            track_handling(payload, camera, known, people)
+        for r in store.active_rules():          # a run of face verdicts is judged at once, not at the next tick
+            if r.get("engine") == "local" and r.get("kind") == "someone_arrives" and r.get("unknown"):
+                check_security(r, now_)
     if "boxes" in payload:
         EDGE["boxes"], EDGE["boxes_at"] = payload["boxes"][:30], now_
     for kind, score in (payload.get("profile") or {}).items():
@@ -477,7 +481,7 @@ def edge_task(camera: str = ""):
         store.add_event("thing", f"Registration of {ENROL['name']} stopped: the camera did not see it well enough.")
         ENROL.clear()
     cam = clean_place(camera) or store.camera_room()
-    check = next(({"id": k, **{x: v[x] for x in ("thing_id", "query", "name", "frames")}} for k, v in CHECKS.items()
+    check = next(({"id": k, **{x: v.get(x) for x in ("thing_id", "query", "name", "frames", "place")}} for k, v in CHECKS.items()
                   if v.get("result") is None), None)
     photos = next(iter(photo_tasks().values()), None)
     snap = next(({"id": k, "alert_id": v["alert_id"]} for k, v in SNAPSHOTS.items() if not v.get("done")), None)
@@ -518,8 +522,10 @@ def edge_check(payload: dict = Body(...)):
     if payload.get("seen") and payload.get("crop_b64"):
         crop = f"{time.strftime('%Y%m%d-%H%M%S')}-{c['thing_id']}-check.jpg"
         (CROPS / crop).write_bytes(base64.b64decode(payload["crop_b64"]))
+    judge = payload.get("judge") if isinstance(payload.get("judge"), dict) else None
     c["result"] = {"seen": bool(payload.get("seen")), "place": thing_place(payload) if payload.get("seen") else "",
-                   "score": payload.get("score"), "frames": payload.get("frames"), "crop": crop, "at": time.time()}
+                   "score": payload.get("score"), "frames": payload.get("frames"), "crop": crop, "at": time.time(),
+                   "judge": judge and {k: str(judge.get(k, ""))[:200] for k in ("answer", "sentence", "ms")}}
     return {"ok": True}
 
 
@@ -1014,7 +1020,7 @@ def check_leave_without(r, p, now_):
                    else f"someone left (people at home: {p['count_before']} → {presence.s.get('count', 0)})")
             cid = f"c{int(now_ * 1000)}"
             CHECKS[cid] = {"thing_id": tid, "name": what, "query": (thing.get("description") or what).lower(),
-                           "frames": 3, "asked": now_, "result": None}
+                           "frames": 3, "asked": now_, "result": None, "place": last["zone_name"]}
             p.update(stage="check", check=cid, who=who, left=left, usual=last["zone_name"], room=last["room"],
                      due=now_ + T["check_timeout_s"])
             store.add_event("info", f"{r['title']}: {who}. Checking the {last['zone_name']} for the {what.lower()}.",
@@ -1035,8 +1041,18 @@ def check_leave_without(r, p, now_):
                         f"answer the check of the {p['usual']}: no alert.", rule_id=r["id"], thing_id=tid)
         return True
     if not res["seen"]:
+        j = res.get("judge")
+        if j and j.get("answer") in ("yes", "unsure"):
+            # the judge (a local vision-language model) thinks it may still be there, or cannot tell: never an alarm or
+            # an action, only a question to the family
+            fire(r, alarm=False, action="notify", thing_id=tid, title=f"Is your {what.lower()} still at home?",
+                 text=f"The camera could not confirm the {what.lower()} on the {p['usual']} after {p['who'].split(' (')[0]}. "
+                      f"The local judge {'thinks it is' if j['answer'] == 'yes' else 'cannot tell'}: “{j['sentence']}” Did you take it?",
+                 evidence=f"No match above the threshold ({res.get('score')}); judge: {j['answer']} in {j['ms']} ms.", judge=j)
+            return True
         store.add_event("unsure", f"{r['title']}: unsure. The {what.lower()} was not visible on the {p['usual']} after "
-                        f"{p['who'].split(' (')[0]}: maybe it went with them. No alert.", rule_id=r["id"], thing_id=tid)
+                        f"{p['who'].split(' (')[0]}: maybe it went with them. No alert."
+                        + (f" The local judge agrees: “{j['sentence']}”" if j else ""), rule_id=r["id"], thing_id=tid, judge=j)
         return True
     place = res["place"] if res["place"] not in ("", "room") else p["usual"]
     where = f"in the {p['room']}" if place == "room" else f"on the {place}"
@@ -1076,7 +1092,8 @@ def check_security(r, now_):
     for cam in list(presence.s["cameras"]):
         n, since = presence.run(cam, "unknown")
         if n >= need and r.get("episode", 0) < since:
-            store.update_rule(r["id"], episode=since)
+            store.update_rule(r["id"], episode=since, unknown_fired=now_)
+            r["unknown_fired"] = now_
             pic = person_picture(cam)
             if fam_home:
                 fire(r, alarm=False, action="notify", picture=pic, unknown=True, camera=cam,
@@ -1094,7 +1111,7 @@ def check_security(r, now_):
                               "Family face was seen.")
             continue
         n2, since2 = presence.run(cam, "no_face")
-        if n2 >= need and not fam_home and r.get("episode_noface", 0) < since2:
+        if n2 >= need and not fam_home and r.get("episode_noface", 0) < since2 and now_ - r.get("unknown_fired", 0) > 60:
             store.update_rule(r["id"], episode_noface=since2)
             fire(r, alarm=False, action="notify", title="Someone is home", camera=cam,
                  text="Someone is at home, and the camera has not seen their face. The family is away.",
@@ -1541,8 +1558,7 @@ def replay_event(e):
 if os.environ.get("TT_REPLAY"):
     from replay import Replayer, ReplayCamera   # noqa: E402
     kit = ReplayCamera(os.environ["TT_REPLAY"])
-    replayer = Replayer(kit, {"setup": replay_setup, "event": replay_event})
-    replayer.setup()
+    replayer = Replayer(kit, {"setup": replay_setup, "event": replay_event})   # its setup runs at the start
 
 
 @app.post("/api/replay/start")

@@ -80,6 +80,17 @@ DOCS = {
                         None, PT_TEAM, "Produto · Equipa IT-Porto", None),
     ("product", "en"): (ROOT / "docs" / "20-product.md", ENGLISH / "ThingTracker - Product (EN).pdf",
                         None, EN_TEAM, "Product · Team IT-Porto", None),
+    # the pitch's documents (20 Nov): the run of show, the cheat sheet, the engineering questions, what is real in the films
+    ("pitch", "pt"): (ROOT / "docs" / "pt" / "21-pitch.md", PORTUGUESE / "ThingTracker · Pitch.pdf",
+                      None, PT_TEAM, "Pitch · Equipa IT-Porto", None),
+    ("cheat-sheet", "pt"): (ROOT / "docs" / "pt" / "25-cola-pitch.md", PORTUGUESE / "ThingTracker · Cábula do pitch.pdf",
+                            None, PT_TEAM, "Cábula do pitch · Equipa IT-Porto", None),
+    ("questions", "pt"): (ROOT / "docs" / "pt" / "23-perguntas-engenharia.md", PORTUGUESE / "ThingTracker · Perguntas de engenharia.pdf",
+                          None, PT_TEAM, "Perguntas de engenharia · Equipa IT-Porto", None),
+    ("questions", "en"): (ROOT / "docs" / "23-engineering-qa.md", ENGLISH / "ThingTracker - Engineering Q&A (EN).pdf",
+                          None, EN_TEAM, "Engineering Q&A · Team IT-Porto", None),
+    ("what-is-real", "en"): (ROOT / "docs" / "24-what-is-real.md", ENGLISH / "ThingTracker - What is real (EN).pdf",
+                             None, EN_TEAM, "What is real · Team IT-Porto", None),
 }
 EN = False          # set by --lang en in main()
 KEEP_ROWS = 10      # a table of up to this many rows never splits across pages (6 for the documents other than the business case)

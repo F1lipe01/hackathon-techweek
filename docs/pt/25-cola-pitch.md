@@ -4,16 +4,22 @@ Uma página para o Filipe, a 20 de novembro de 2026. O guião completo está no 
 
 ## Ordem e tempos
 
-- 3 minutos, 6 diapositivos, até aos 2:27: capa · hoje e possível · _ThingTracker_ · o livro (filme de 25 s) · Altice (encaixa, 0,49 €, piloto) · fecho.
-- 5 minutos, 8 diapositivos, até aos 4:00: capa · hoje e possível · _ThingTracker_ · exemplos (os três filmes de 20 s, seguidos) · como funciona (com os modelos e as ferramentas) · viabilidade e replicação · começar (o piloto e o repositório) · fecho.
+- 3 minutos, 9 diapositivos, alvo aos 2:40: capa · introdução · a casa ligada (`casa`) · vigiar (`vigiar`) · _ThingTracker_ (`reveal`) · basta uma imagem (`basta`) · o livro (filme de 20 s) · Altice (encaixa, 0,49 €, piloto) · fecho.
+  - Alvo: `casa` aos 0:08, `vigiar` aos 0:28, `reveal` aos 0:48, `basta` aos 1:05, `livro` aos 1:25, `altice` aos 1:50, fecho aos 2:20.
+  - Com as frases atuais, a 2 palavras por segundo, acaba aos 3:44: é preciso cortar cerca de 130 palavras (guião, secção 6).
+- 5 minutos, 12 diapositivos: capa · introdução · `casa` · `vigiar` · `reveal` · `basta` · os olhos também se enganam (`ilusao`) · exemplos (os três filmes de 20 s, seguidos) · como funciona (com os modelos e as ferramentas) · viabilidade e replicação · começar (o piloto e o repositório) · fecho.
+  - Com as frases atuais, acaba aos 5:38: para ficar abaixo dos 4:30, é preciso cortar cerca de 70 s (guião, secção 7).
 - O anexo de diagramas é um ficheiro à parte, só para as perguntas.
 
 ## Abertura e fecho
 
-- Capa: “Boa tarde. Somos a equipa IT-Porto, do Instituto de Telecomunicações.”
-- Hoje e possível, por omissão: “Hoje, a câmara de casa só grava. Uma criança pega numa cápsula de detergente, e o telemóvel diz apenas ‘movimento detetado’. E depois? Com IA, a câmara percebe o que vê: onde ficaram as chaves, quem entrou em casa, o que ficou ligado. Cada família cria os seus avisos, com uma frase.”
-- Em alternativa, a primeira metade: “Onde deixaram as chaves esta manhã? A câmara de casa até as viu, mas só sabe gravar, e o telemóvel diz apenas ‘movimento detetado’. E depois?” (e, na segunda, “a criança em perigo” em vez de “onde ficaram as chaves”)
-- _ThingTracker_: “Por isso criámos o _ThingTracker_: a câmara que a Altice já vende capta as imagens, a IA percebe-as e a família recebe o aviso.”
+- Capa: passa-se logo, sem dizer nada.
+- Introdução: “Boa tarde. Somos a equipa IT-Porto, do Instituto de Telecomunicações.”
+- `casa`, logo a seguir à introdução: “Hoje, quase tudo em casa está ligado à internet: a fechadura da porta, o frigorífico, até a taça do cão. E isso já permite coisas muito úteis. Mas ainda falta uma peça. De todos estes aparelhos, há um que pode abrir uma realidade nova na casa inteligente. E é tão simples como uma câmara.”
+- `vigiar`: “Há anos que a câmara serve sobretudo para segurança. Deteta movimento, as mais avançadas avisam de uma intrusão, e deixa-nos ver a casa à distância. Mas a visão vale muito mais. É o principal sentido do corpo humano: é com ela que percebemos o mundo. E foi por isso que criámos…” Cuidado, o júri inclui a Altice: dizer “até hoje a câmara serviu sobretudo para segurança”, nunca “a câmara da Altice só deteta movimento”.
+- `reveal`: “…o _ThingTracker_. Uma câmara, ligada a todos os aparelhos da casa através do MCP da Altice. Funciona com os aparelhos do _kit_ que recebemos, e com todos os que vierem: o ar condicionado, os monitores de saúde, o frigorífico, qualquer máquina, o computador.”
+- `basta`: “Com uma única imagem, o nosso cérebro percebe logo o que se passa: uma criança com uma cápsula de detergente na boca; alguém de faca na mão à porta, às quatro da manhã; o meu avô, que hoje ainda não tomou os comprimidos; a carteira que ficou em casa. A IA já faz o mesmo. E em certas situações faz melhor: não se cansa, não se distrai, e está atenta às quatro da manhã. Nós mostramos um destes casos, com modelos abertos, a correr num portátil.” Não dizer uma percentagem dos casos, porque não há fonte; dizer “quase todos estes casos já são possíveis hoje”.
+- `ilusao`, só no de 5 minutos: “Um professor de visão por computador mostrou-nos imagens paradas que os nossos olhos veem a mexer. Os olhos humanos também se enganam. Uma câmara não se cansa e não se distrai.” Cuidado: há redes neuronais que também “veem” esta ilusão (Watanabe et al., _Frontiers in Psychology_, 2018); não dizer que a máquina nunca se engana.
 - Fecho: “O _ThingTracker_ já reconhece objetos nas imagens da câmara do _kit_, custa à Altice cerca de 49 cêntimos por casa e por mês, e usa a app e o MCP que a Altice já tem. Propomos começar já pelo piloto.” Pausa. “A câmara da casa, atenta ao que importa.” Silêncio.
 
 ## Antes dos filmes

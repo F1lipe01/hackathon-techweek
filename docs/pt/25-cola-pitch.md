@@ -2,10 +2,18 @@
 
 Uma página para o Filipe, a 20 de novembro de 2026. O guião completo está no documento [21](21-pitch.md) e as respostas longas no documento [23](23-perguntas-engenharia.md). Ronda intermédia, a partir das 16h00: 3 min de _pitch_ e 2 min de perguntas (duas ou três). Final, a partir das 18h00: 5 min e 3 min. A mensagem de adoção dirige-se a Pedro Almeida, responsável da Altice pela plataforma que o _ThingTracker_ estende.
 
-## Abertura (escolher uma) e fecho
+## Ordem e tempos
 
-- Abertura A: “Onde deixaram as chaves esta manhã?” (clique) “E as crianças, estão em segurança? A câmara que já têm em casa pode responder. O _ThingTracker_ põe a câmara que a Altice já vende a perceber o que vê, e a avisar a família quando é preciso.”
-- Abertura B: “Imaginem uma criança a pegar numa cápsula de detergente. A câmara da cozinha vê-a e os pais recebem logo um aviso, com a fotografia.” (clique) “Isto é o _ThingTracker_: a câmara que a Altice já vende, a perceber o que vê e a avisar a família.”
+- 3 minutos, até aos 2:43: capa · hoje · possível · _ThingTracker_ · conceitos · filme do livro (25 s) · como funciona · custos · começar · fecho.
+- 5 minutos, até aos 4:32: capa · hoje · possível · _ThingTracker_ · os três filmes (20 s cada) · como funciona · modelos · custos · replicação · começar · repositório · fecho.
+
+## Abertura e fecho
+
+- Capa: “Boa tarde. Somos a equipa IT-Porto, do Instituto de Telecomunicações.”
+- Hoje, por omissão: “Hoje, a câmara de casa só grava. Uma criança pega numa cápsula de detergente, e o telemóvel diz apenas ‘movimento detetado’. E depois?”
+- Hoje, em alternativa: “Onde deixaram as chaves esta manhã? A câmara de casa até as viu, mas só sabe gravar, e o telemóvel diz apenas ‘movimento detetado’. E depois?” (com esta, em “possível”, diz-se “a criança em perigo” em vez de “onde ficaram as chaves”)
+- Possível: “Com IA, a câmara percebe o que vê: onde ficaram as chaves, quem entrou em casa, o que ficou ligado. Cada família cria os seus avisos, com uma frase.”
+- _ThingTracker_: “Por isso criámos o _ThingTracker_: a câmara que a Altice já vende capta as imagens, a IA percebe-as e a família recebe o aviso.”
 - Fecho: “O _ThingTracker_ já reconhece objetos nas imagens da câmara do _kit_, custa à Altice cerca de 49 cêntimos por casa e por mês, e usa a app e o MCP que a Altice já tem. Propomos começar já pelo piloto.” Pausa. “A câmara da casa, atenta ao que importa.” Silêncio.
 
 ## Antes do primeiro filme
@@ -20,7 +28,7 @@ Uma página para o Filipe, a 20 de novembro de 2026. O guião completo está no 
 
 1. Na demonstração, um _MacBook_ faz de casa e de servidores da Altice: recebe o _stream_ real da câmara do _kit_, corre todos os modelos e lê os dispositivos do _kit_ pelo servidor MCP da Altice.
 2. Na proposta, sem _hardware_ novo, o processador do _router_ trata do movimento, da zona que mudou e dos rostos, que são opcionais e cujos padrões nunca saem de casa; os servidores da Altice correm os modelos de visão (_OWLv2_ e _DINOv2_ em GPU _L4_), os motores de presença e de regras e o modelo de linguagem, só para texto.
-3. Os modelos veem, o código decide, o modelo de linguagem só escreve; a presença resulta de três sinais: as câmaras, o sensor da porta e os telemóveis no Wi-Fi.
+3. Os modelos veem, o código decide (no _pitch_), e o modelo de linguagem só escreve (nas perguntas); quem está em casa sabe-se por três sinais: as câmaras, o sensor da porta e os telemóveis ligados ao Wi-Fi.
 
 ## Cinco números
 

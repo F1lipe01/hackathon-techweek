@@ -8,10 +8,10 @@ Parte-se do princípio de que tudo está disponível, ou seja, a aplicação Alt
 
 Usam-se cinco marcas ao longo do texto:
 - proposta, para uma decisão de produto nova, que a equipa ainda não validou;
-- pressuposto, para um valor por confirmar, escolhido para tornar a especificação concreta;
+- pressuposto, para um valor escolhido para tornar a especificação concreta, que o piloto confirma;
 - meta, para um objetivo a medir num piloto, que não é um resultado;
 - hipótese, para uma ideia de negócio ou um risco que ninguém validou ainda;
-- a verificar, para um ponto jurídico que não foi confirmado na fonte primária.
+- a verificar, para um ponto jurídico que não foi confirmado na fonte primária; todos estes pontos seguem para a revisão jurídica que antecede o piloto (secção 10, proposta 4).
 
 Tudo o que não provém dos documentos 14 a 18 nem do protótipo é proposta, mesmo nas frases em que a marca não se repete.
 
@@ -159,7 +159,7 @@ A Figura 2 e a tabela seguinte descrevem o registo de um membro adulto da famíl
 | 5 | Ana e Rui: “A Ana passa a ser reconhecida. Podes desligar em Definições → Privacidade” | Nada | Escreve a entrada no registo de auditoria (secção 5.5) |
 | 6 | Mais tarde, a Ana toca em “Deixar de ser reconhecida” | Apaga o padrão facial e confirma | Envia o pedido de apagamento, regista a confirmação e mantém só o registo do consentimento e da sua retirada, sem dados biométricos |
 
-A inscrição faz-se em frente à câmara de casa, e não com uma _selfie_ no telemóvel, para que nenhuma imagem do rosto atravesse a plataforma. O preço desta escolha é que um serviço local novo ou reposto obriga a repetir a inscrição das pessoas, ao contrário do que acontece com os objetos, cuja assinatura a plataforma guarda. O modelo de reconhecimento facial está por escolher e, como vários modelos publicados têm pesos de uso não comercial, a licença deve ser verificada antes, modelo a modelo (a verificar).
+A inscrição faz-se em frente à câmara de casa, e não com uma _selfie_ no telemóvel, para que nenhuma imagem do rosto atravesse a plataforma. O preço desta escolha é que um serviço local novo ou reposto obriga a repetir a inscrição das pessoas, ao contrário do que acontece com os objetos, cuja assinatura a plataforma guarda. Como vários modelos faciais publicados têm pesos só para uso não comercial, a licença verifica-se modelo a modelo: o protótipo usa o _YuNet_ (MIT) e o _SFace_ (Apache-2.0), verificados nas respetivas pastas do _OpenCV Zoo_ a 19 de novembro de 2026 (documento 14, secção 15). O documento 14 (secção 8.3) escolheu depois um vídeo curto de _selfie_, encaminhado para o agente da casa sem ficar guardado; a inscrição em frente à câmara continua a ser a alternativa que mantém todas as imagens do rosto fora da plataforma.
 
 Cada tipo de pessoa tem as suas particularidades:
 - Criança. Consente um dos titulares da responsabilidade parental e o outro recebe uma notificação (proposta). Guarda-se a faixa etária (0–2, 3–5, 6–9, 10–12 anos), porque o perigo de uma criança de dois anos não é o de uma de dez e o plano da secção 1.5 depende disso. Os avisos sobre crianças nunca levam a fotografia da criança (secção 6.3).
@@ -301,7 +301,7 @@ O modelo de linguagem recebe apenas as linhas de texto dos eventos encontrados (
 
 ### 2.5 O som como gatilho
 
-O som pode assinalar o que a imagem não mostra, como o latido das 4h, mas levanta uma questão jurídica. A Lei n.º 58/2019 proíbe a captação de som nos locais onde a videovigilância é admitida, salvo com as instalações encerradas ou com autorização prévia da CNPD (artigo 19.º, n.º 4), e falta verificar se a regra se aplica a uma casa particular (documento 18, secção 2.6). Até essa verificação, propõe-se que o som como gatilho esteja desligado por omissão, nunca seja usado nas câmaras exteriores e, no interior, só funcione se a família o ativar, depois de ler o que faz. Um pequeno classificador de sons, no serviço local, atribui apenas um tipo (latido, vidro partido, alarme de fumo) e um nível; o som nunca é gravado nem enviado. O classificador está por escolher, e a sua licença por verificar.
+O som pode assinalar o que a imagem não mostra, como o latido das 4h, mas levanta uma questão jurídica. A Lei n.º 58/2019 proíbe a captação de som nos locais onde a videovigilância é admitida, salvo com as instalações encerradas ou com autorização prévia da CNPD (artigo 19.º, n.º 4), e a aplicação da regra a uma casa particular fica para a revisão jurídica (documento 18, secção 2.6). Até lá, propõe-se que o som como gatilho esteja desligado por omissão, nunca seja usado nas câmaras exteriores e, no interior, só funcione se a família o ativar, depois de ler o que faz. Um pequeno classificador de sons, no serviço local, atribui apenas um tipo (latido, vidro partido, alarme de fumo) e um nível; o som nunca é gravado nem enviado. O classificador escolhe-se no piloto, com a mesma verificação de licença dos modelos de visão (pressuposto).
 
 ### 2.6 Exportar para as autoridades
 
@@ -393,7 +393,7 @@ O administrador é o titular do contrato MEO. Um cuidador tem sempre um prazo de
 |---|---|---|---|
 | Informação | “A Mimi foi à taça da comida”; “Chegou uma encomenda” | Só na atividade da aplicação, sem notificação, salvo escolha em contrário | Não se aplicam |
 | Aviso | “Saíste sem o livro”; “Ninguém passou na cozinha até ao meio-dia” | Notificação | Respeita as horas de silêncio de cada membro |
-| Urgente | “A criança está junto ao fogão”; “Uma pessoa no jardim às 3h” | Notificação crítica, com som, e passagem a outro contacto | Ignora as horas de silêncio, na medida em que o sistema operativo do telemóvel o permita (a verificar) |
+| Urgente | “A criança está junto ao fogão”; “Uma pessoa no jardim às 3h” | Notificação crítica, com som, e passagem a outro contacto | Ignora as horas de silêncio, na medida em que o sistema operativo do telemóvel o permita (pressuposto) |
 
 ### 4.3 Quem recebe cada aviso
 
@@ -613,7 +613,7 @@ O caso de negócio propõe 3,99 € por mês para as casas que já têm câmara 
 
 A linha do tempo da casa, inicialmente pensada como uma destas ideias, passou a ser uma funcionalidade central (secção 2). As restantes são as seguintes.
 
-1. “Onde vi pela última vez…” na MEO Box. No comando com microfone, diz-se “onde estão as chaves?” e a televisão mostra um cartão com a resposta e a miniatura. A aplicação da _box_ chama o Serviço _ThingTracker_ com a conta da casa, e os avisos de nível “informação” podem surgir como uma faixa discreta no ecrã (“Chegou uma encomenda à porta”). As capacidades da MEO Box estão por confirmar (a verificar com a Altice).
+1. “Onde vi pela última vez…” na MEO Box. No comando com microfone, diz-se “onde estão as chaves?” e a televisão mostra um cartão com a resposta e a miniatura. A aplicação da _box_ chama o Serviço _ThingTracker_ com a conta da casa, e os avisos de nível “informação” podem surgir como uma faixa discreta no ecrã (“Chegou uma encomenda à porta”). As capacidades da MEO Box são um pressuposto, a verificar com a Altice.
 2. A voz numa coluna inteligente. A coluna serve para perguntar (“onde está a carteira?”) e para avisar na divisão certa (“A placa está ligada e não está ninguém na cozinha”). O reconhecimento de voz é feito pela própria coluna, que envia ao serviço apenas o texto, e a resposta regressa como texto para ser dita.
 3. Sugestões automáticas a partir do perfil e do uso. Além das sugestões por perfil que o protótipo já faz (criança, cão, gato, pessoa idosa que vive só), o sistema propõe regras a partir das perguntas repetidas (“Perguntaste quatro vezes esta semana onde estavam os óculos. Queres que te avise se saíres sem eles?”) e dos hábitos observados (as chaves estão sempre na mesa da entrada, pelo que se propõe “avisa-me se as chaves não estiverem na mesa da entrada às 23h”).
 4. Emprestar uma _thing_ à casa da avó. Como as assinaturas ficam na plataforma, associadas ao cliente, emprestar uma _thing_ significa enviá-la, com prazo, para o serviço local de outra casa, desde que o titular dessa casa aceite. O cão que passa as férias na casa da avó leva a assinatura e as regras (“O Bobi está na casa da avó até domingo”); a bengala ou o estojo do aparelho auditivo da avó podem ser acompanhados na casa da filha durante uma visita. No fim do prazo, a assinatura é apagada na casa que a recebeu.
@@ -685,16 +685,16 @@ A linha do tempo da casa, inicialmente pensada como uma destas ideias, passou a 
     O código decide de que _thing_ se fala e confronta a resposta com a memória da casa; uma resposta que a contradiga é substituída por uma frase construída a partir da memória, como já acontece no protótipo.
 
 21. Quem é o responsável pelo tratamento dos dados?
-    Fixa-se com os juristas da Altice antes do piloto (secção 5.9). A família pode estar abrangida pela isenção doméstica, a Altice será responsável pelo tratamento ou subcontratante, e o fornecedor do modelo de linguagem é subcontratante da Altice (secção 5.9).
+    É a proposta 4 da secção 10, fixada com os juristas da Altice antes do piloto (secção 5.9). A família pode estar abrangida pela isenção doméstica, a Altice será responsável pelo tratamento ou subcontratante, e o fornecedor do modelo de linguagem é subcontratante da Altice (secção 5.9).
 
 22. E o Regulamento da IA?
-    A identificação biométrica à distância é de risco elevado; a verificação de identidade, que confirma que alguém é quem afirma ser, está excluída dessa categoria (a verificar). Também está por verificar se distinguir “criança” de “adulto” conta como categorização biométrica (artigo 3.º, n.º 40). Por isso, propõe-se lançar sem reconhecimento e estudar o modo de verificação.
+    A identificação biométrica à distância é de risco elevado; a verificação de identidade, que confirma que alguém é quem afirma ser, está excluída dessa categoria (a verificar). Saber se distinguir “criança” de “adulto” conta como categorização biométrica (artigo 3.º, n.º 40) fica também para a revisão jurídica. Por isso, propõe-se lançar sem reconhecimento e estudar o modo de verificação.
 
 23. A linha do tempo não é uma gravação da vida da família?
     Não guarda vídeo, mas eventos, com a hora, a câmara e o recorte do que os causou, durante 30 dias, salvo os que a família fixar. Só um alarme justifica guardar imagens completas, o som nunca é gravado e a exportação para as autoridades exige a confirmação de um adulto e fica registada (secção 2). Ao cancelar o serviço, tudo se apaga em 30 dias (pressuposto).
 
 24. O que é preciso da Altice para lançar?
-    Os sete elementos do documento 15 (secção 9), à cabeça a API de eventos e as notificações _push_, e ainda as ferramentas da secção 7.5, a confirmação da NPU dos _routers_ e uma via de atualização remota dos modelos.
+    Os oito elementos do documento 15 (secção 9), à cabeça a API de eventos e as notificações _push_, e ainda as ferramentas da secção 7.5, a confirmação da NPU dos _routers_ e uma via de atualização remota dos modelos.
 
 25. Como se mede o sucesso?
     No piloto, pelas metas de qualidade da secção 6.4; no lançamento, pela adesão, pela percentagem de casas com uso semanal, pelos falsos avisos, pelos contactos de apoio e pelo abandono, face aos valores do caso de negócio.

@@ -970,11 +970,273 @@ PITCH_NOTES = {
                "diagramas de arquitetura e 107 testes, todos a passar.”\nPonto de controlo: o fecho começa até aos 3:40.",
 }
 
-THREE_MIN = [("capa", sl_capa), ("intro", sl_intro), ("hoje", sl_hoje), ("thingtracker", sl_thingtracker),
-             ("livro", sl_livro), ("altice", sl_altice), ("fecho", sl_fecho)]
-FIVE_MIN = [("capa", sl_capa), ("intro", sl_intro), ("hoje", sl_hoje), ("thingtracker", sl_thingtracker),
-            ("exemplos", sl_exemplos), ("como", sl_como), ("viabilidade", sl_viabilidade), ("comecar", sl_comecar),
-            ("fecho", sl_fecho)]
+# ---------- the narrative (20 Nov): the motivation first, ThingTracker revealed in the middle ----------
+# A: the home is already connected; B: until now the camera only watched; C: ThingTracker; D: one image is enough;
+# E (5 min only): the eyes can be fooled. The photos are placeholders: the team picks each one. Each placeholder says
+# what its image is for and what to search for.
+
+from PIL import ImageFont
+
+_FONTS = {}
+FIT_PROBLEMS = []
+PH_FILL_D, PH_FILL_W = RGBColor(0x1E, 0x1E, 0x1E), RGBColor(0xED, 0xED, 0xED)
+PH_LINE_D, PH_LINE_W = RGBColor(0x6B, 0x6F, 0x75), RGBColor(0x9A, 0xA0, 0xA6)
+CHIP = RGBColor(0x2A, 0x2C, 0x31)
+LIGHT = RGBColor(0xD0, 0xD4, 0xD8)
+LOGO_LIGHT = REPO / "assets" / "brand" / "logo" / "thingtracker-light.png"
+DEV = REPO / "assets" / "devices"
+
+
+def _font(size, bold=False):
+    k = (size, bold)
+    if k not in _FONTS:
+        f = "/System/Library/Fonts/Supplemental/Arial Bold.ttf" if bold else "/System/Library/Fonts/Supplemental/Arial.ttf"
+        _FONTS[k] = ImageFont.truetype(f, size * 10)  # measured at 10x
+    return _FONTS[k]
+
+
+def text_width(words, size, bold=False):
+    return _font(size, bold).getlength(words) / 720
+
+
+def text_height(words, size, width, bold=False, leading=1.2):
+    """Height in inches of words wrapped at width (inches) in Arial; Google Slides never shrinks text to fit."""
+    f, maxw, lines = _font(size, bold), width * 720, 0
+    for para in words.split("\n"):
+        cur = ""
+        for w in para.split():
+            t = (cur + " " + w).strip()
+            if f.getlength(t) <= maxw:
+                cur = t
+            else:
+                lines, cur = lines + 1, w
+        lines += 1
+    return lines * size * leading / 72
+
+
+def placeholder(s, z, nome, purpose, search, dark=True, pad=0.12, reserve_bottom=0.0, purpose_size=11, search_size=9):
+    """Where a photo goes: the image's name, what it is for, what to search for. All of it must fit inside."""
+    x, y, w, h = z
+    box(s, x, y, w, h, fill=PH_FILL_D if dark else PH_FILL_W, line=PH_LINE_D if dark else PH_LINE_W, line_w=1.0,
+        dash=True, name=f"Placeholder · {nome}")
+    iw, head_h = w - 2 * pad, 0.17
+    text(s, x + pad, y + pad, iw, head_h, f"IMAGEM · {nome.upper()}", size=8, bold=True, color=NEON if dark else GREEN_D,
+         name="Placeholder label")
+    search = "Procurar: " + search
+    p_h, s_h = text_height(purpose, purpose_size, iw), text_height(search, search_size, iw)
+    py = y + pad + head_h + 0.06
+    text(s, x + pad, py, iw, p_h, purpose, size=purpose_size, color=WHITE if dark else INK, name="Placeholder purpose")
+    sy = py + p_h + 0.06
+    text(s, x + pad, sy, iw, s_h, search, size=search_size, color=MUTED_D if dark else MUTED_W, name="Placeholder search")
+    need = sy + s_h - y + pad + reserve_bottom
+    if need > h + 0.005:
+        FIT_PROBLEMS.append(f"{nome}: needs {need:.2f}\" of {h:.2f}\"")
+
+
+def chip(s, x, y, words, size=11, h=0.28, fill=CHIP, color=WHITE):
+    w = text_width(words, size, True) + 0.24
+    box(s, x, y, w, h, fill=fill, shape=MSO_SHAPE.ROUNDED_RECTANGLE, name=f"Chip · {words}")
+    text(s, x, y, w, h, words, size=size, bold=True, color=color, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE,
+         wrap=False)
+    return w
+
+
+def line_between(s, x1, y1, x2, y2, color, width=1.0):
+    c = s.shapes.add_connector(1, Inches(x1), Inches(y1), Inches(x2), Inches(y2))
+    c.line.color.rgb = color
+    c.line.width = Pt(width)
+    c.name = "Line"
+    return c
+
+
+def sl_casa(prs):
+    """A. Six connected things; the sixth, the camera, is the punchline (green outline)."""
+    s = new_slide(prs, L_BLACK)
+    title(s, "A casa já está toda ligada")
+    y0 = content_top(True)
+    cw, ih = (CW - 2 * GAP) / 3, (CONTENT_Y1 - y0 - GAP) / 2
+    tiles = [("Porta", "Uma fechadura inteligente na porta: a casa já obedece a aparelhos ligados.",
+              "smart lock door"),
+             ("Frigorífico", "Um frigorífico com ecrã: até a cozinha está ligada à internet.", "smart fridge touchscreen"),
+             ("Taça do cão", "Comedouro automático com um cão: o exemplo inesperado, que faz sorrir.",
+              "automatic pet feeder dog"),
+             ("Luz", "Uma lâmpada inteligente acesa, controlada pelo telemóvel.", "smart bulb phone app"),
+             ("Ar condicionado", "Um ar condicionado de parede, com o comando na mão.", "air conditioner remote home"),
+             ("Câmara", "Uma câmara de interior numa estante: a peça que falta.",
+              "indoor home security camera shelf")]
+    for i, (lab, purpose, search) in enumerate(tiles):
+        r, c = divmod(i, 3)
+        x, y = CONTENT_X0 + c * (cw + GAP), y0 + r * (ih + GAP)
+        placeholder(s, (x, y, cw, ih), lab, purpose, search, reserve_bottom=0.36)
+        chip(s, x + 0.12, y + ih - 0.12 - 0.28, lab)
+        if i == 5:
+            box(s, x, y, cw, ih, line=NEON, line_w=2.25, name="A peça que falta")
+    return s
+
+
+def sl_vigiar(prs):
+    """B. What the camera has been (watching) against what vision is (understanding)."""
+    s = new_slide(prs, L_BLACK)
+    title(s, "Até hoje, a câmara serviu para vigiar")
+    y0 = content_top(True)
+    lw = round((CW - GAP) * 0.6, 3)
+    rx, rw = CONTENT_X0 + lw + GAP, CW - lw - GAP
+    placeholder(s, (CONTENT_X0, y0, lw, CONTENT_Y1 - y0), "vigilância",
+                "Uma vista de videovigilância a preto e branco, uma grelha de câmaras num monitor ou num telemóvel: "
+                "o que a câmara é hoje.", "cctv monitor grid, security camera app phone", reserve_bottom=0.36)
+    cx = CONTENT_X0 + 0.12
+    for t in ["Movimento", "Intrusão", "Ver em direto"]:
+        cx += chip(s, cx, CONTENT_Y1 - 0.12 - 0.28, t) + 0.10
+    words = "A visão é o sentido com que percebemos o mundo."
+    ch = text_height(words, 12, rw)
+    ih = CONTENT_Y1 - y0 - CAPTION_GAP - ch
+    placeholder(s, (rx, y0, rw, ih), "olho", "Um olho humano em grande plano, a cores: a visão é como percebemos o mundo.",
+                "human eye macro")
+    text(s, rx, y0 + ih + CAPTION_GAP, rw, ch, words, size=12, color=WHITE, name="Caption")
+    return s
+
+
+def sl_reveal(prs):
+    """C. The reveal, on white: the logo and its line; the camera in the middle of the kit's real devices."""
+    s = new_slide(prs, L_WHITE)
+    grey = RGBColor(0x9A, 0xA0, 0xA6)
+    # left: the logo and one line, centred in the area above the "A seguir" row
+    area0, area1 = CONTENT_Y0_NO_TITLE, 4.05
+    lw, logo_w = 4.15, 3.9
+    logo_h = logo_w * 414 / 2400
+    line = "Uma câmara que percebe o que vê, ligada a toda a casa pelo MCP da Altice."
+    lh = text_height(line, 18, lw)
+    y = area0 + (area1 - area0 - (logo_h + 0.25 + lh)) / 2
+    picture(s, LOGO_LIGHT, CONTENT_X0, y, w=logo_w, alt="ThingTracker")
+    text(s, CONTENT_X0, y + logo_h + 0.25, lw, lh, line, size=18, color=INK)
+    # right: the hub
+    cx, cy, rx, ry, d, cd = 7.225, 2.40, 1.95, 0.95, 0.62, 1.05
+    head = "Hoje · kit Altice"
+    text(s, cx - 1.0, area0, 2.0, 0.18, head, size=10, bold=True, color=GREEN_D, align=PP_ALIGN.CENTER)
+    import math
+    devices = [(0, "climate-sensor.png", "Temperatura"), (60, "smart-plug.png", "Tomada"),
+               (120, "smart-bulb.png", "Lâmpada"), (180, "contact-sensor.png", "Sensor da porta"),
+               (240, "gateway.jpg", "Central"), (300, "smoke-alarm.png", "Fumo")]
+    pos = [(a, f, lab, cx + rx * math.cos(math.radians(a)), cy + ry * math.sin(math.radians(a))) for a, f, lab in devices]
+    for _, _, _, px, py in pos:
+        line_between(s, cx, cy, px, py, grey)
+    for a, f, lab, px, py in pos:
+        z = (px - d / 2, py - d / 2, d, d)
+        box(s, *z, fill=TILE_L, shape=MSO_SHAPE.OVAL, name=f"Device · {lab}")
+        if f.endswith(".jpg"):
+            pic = pic_cover(s, jpg(DEV / f), z, alt=lab)
+            pic.auto_shape_type = MSO_SHAPE.OVAL
+        else:
+            picture(s, DEV / f, z[0] + 0.09, z[1] + 0.09, fit=(d - 0.18, d - 0.18), alt=lab)
+        ly = py - d / 2 - 0.03 - 0.16 if 180 < a < 360 else py + d / 2 + 0.03
+        text(s, px - 0.6, ly, 1.2, 0.16, lab, size=9, color=MUTED_W, align=PP_ALIGN.CENTER)
+    box(s, cx - cd / 2, cy - cd / 2, cd, cd, fill=WHITE, line=GREEN_D, line_w=2.0, shape=MSO_SHAPE.OVAL, name="Camera")
+    picture(s, ASSETS / "kit-camera.png", cx - cd / 2 + 0.14, cy - cd / 2 + 0.14, fit=(cd - 0.28, cd - 0.28),
+            alt="A câmara do kit")
+    pw = text_width("MCP da Altice", 9, True) + 0.2
+    py0 = cy + cd / 2 + 0.07
+    box(s, cx - pw / 2, py0, pw, 0.22, fill=GREEN_D, shape=MSO_SHAPE.ROUNDED_RECTANGLE, name="MCP")
+    text(s, cx - pw / 2, py0, pw, 0.22, "MCP da Altice", size=9, bold=True, color=WHITE, align=PP_ALIGN.CENTER,
+         anchor=MSO_ANCHOR.MIDDLE, wrap=False)
+    # bottom: what comes next
+    ry0, rh = 4.30, 0.42
+    text(s, CONTENT_X0, ry0, 0.95, rh, "A seguir", size=11, bold=True, color=GREEN_D, anchor=MSO_ANCHOR.MIDDLE)
+    nxt = ["Ar condicionado", "Monitor de saúde", "Frigorífico", "Máquina de lavar", "Computador"]
+    bx0 = CONTENT_X0 + 0.95
+    bw = (CONTENT_X1 - bx0 - 4 * 0.12) / 5
+    for i, n in enumerate(nxt):
+        bx = bx0 + i * (bw + 0.12)
+        box(s, bx, ry0, bw, rh, fill=PH_FILL_W, line=grey, dash=True, shape=MSO_SHAPE.ROUNDED_RECTANGLE,
+            name=f"Next · {n}")
+        text(s, bx, ry0, bw, rh, n, size=10, color=INK, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
+def sl_basta(prs):
+    """D. Four images a person reads in one second; the child is our real photo, the rest are placeholders."""
+    s = new_slide(prs, L_BLACK)
+    title(s, "Basta uma imagem para perceber")
+    y0 = content_top(True)
+    n, cap_h = 4, 0.3
+    cw = (CW - (n - 1) * GAP) / n
+    ih = cw * 5 / 4
+    top = y0 + (CONTENT_Y1 - y0 - (ih + CAPTION_GAP + cap_h)) / 2
+    items = [("Criança em perigo", None, None, None),
+             ("Faca à porta, às 4h", "faca à porta",
+              "Uma pessoa encapuzada à porta de casa, de noite, vista de cima como por uma câmara; junta-se um carimbo "
+              "“04:12”.", "hooded person door night"),
+             ("Comprimidos por tomar", "comprimidos",
+              "Mãos de uma pessoa idosa e uma caixa semanal de comprimidos com o dia de hoje ainda cheio.",
+              "weekly pill organizer elderly hands"),
+             ("Carteira esquecida", "carteira",
+              "Uma carteira e chaves na mesa da entrada, com a porta a fechar-se ao fundo.", "wallet keys entryway table")]
+    for i, (capt, nome, purpose, search) in enumerate(items):
+        x = CONTENT_X0 + i * (cw + GAP)
+        z = (x, top, cw, ih)
+        if nome is None:
+            pic_cover(s, jpg(ASSETS / "crianca2-cena-deck.jpg"), z, cx=0.5, cy=0.5,
+                      alt="Uma criança na cozinha com uma cápsula de detergente na boca; rosto desfocado")
+        else:
+            placeholder(s, z, nome, purpose, search)
+        text(s, x, top + ih + CAPTION_GAP, cw, cap_h, capt, size=13, bold=True, color=WHITE, wrap=False, name="Caption")
+        if text_width(capt, 13, True) > cw:
+            FIT_PROBLEMS.append(f"caption {capt!r} wider than {cw:.2f}\"")
+    return s
+
+
+def sl_ilusao(prs):
+    """E (5 min only). A still image the eyes see moving; the camera's honest advantage."""
+    s = new_slide(prs, L_BLACK)
+    title(s, "Os olhos também se enganam")
+    y0 = content_top(True)
+    lw = round((CW - GAP) * 0.6, 3)
+    placeholder(s, (CONTENT_X0, y0, lw, CONTENT_Y1 - y0), "ilusão",
+                "Uma imagem parada que os olhos veem a mexer (ilusão de movimento periférico). Usar uma de domínio "
+                "público da Wikimedia Commons; as “Rotating Snakes” de Kitaoka precisam de autorização.",
+                "peripheral drift illusion wikimedia commons")
+    words = "A câmara não se cansa, não se distrai e está atenta às 4 da manhã."
+    rx, rw = CONTENT_X0 + lw + GAP, CW - lw - GAP
+    sh = text_height(words, 26, rw, bold=True)
+    text(s, rx, y0 + (CONTENT_Y1 - y0 - sh) / 2, rw, sh, words, size=26, bold=True, color=WHITE)
+    return s
+
+
+PITCH_NOTES.update({
+    "casa": "A CASA JÁ ESTÁ TODA LIGADA. 3 min: sim · 5 min: sim. Cerca de 20 s.\n"
+            "Dizer: “Hoje, quase tudo em casa está ligado à internet: a fechadura da porta, o frigorífico, até a taça do "
+            "cão. E isso já permite coisas muito úteis. Mas ainda falta uma peça. De todos estes aparelhos, há um que pode "
+            "abrir uma realidade nova na casa inteligente. E é tão simples como uma câmara.”",
+    "vigiar": "ATÉ HOJE, A CÂMARA SERVIU PARA VIGIAR. 3 min: sim · 5 min: sim. Cerca de 20 s.\n"
+              "Dizer: “Há anos que a câmara serve sobretudo para segurança. Deteta movimento, as mais avançadas avisam de "
+              "uma intrusão, e deixa-nos ver a casa à distância. Mas a visão vale muito mais. É o principal sentido do "
+              "corpo humano: é com ela que percebemos o mundo. E foi por isso que criámos…”\n"
+              "Cuidado: o júri inclui a Altice. Dizer “até hoje a câmara serviu sobretudo para segurança”, nunca “a "
+              "câmara da Altice só deteta movimento”.",
+    "reveal": "THINGTRACKER. 3 min: sim · 5 min: sim. Cerca de 17 s.\n"
+              "Dizer: “…o ThingTracker. Uma câmara, ligada a todos os aparelhos da casa através do MCP da Altice. Funciona "
+              "com os aparelhos do kit que recebemos, e com todos os que vierem: o ar condicionado, os monitores de saúde, "
+              "o frigorífico, qualquer máquina, o computador.”",
+    "basta": "BASTA UMA IMAGEM PARA PERCEBER. 3 min: sim · 5 min: sim. Cerca de 20 s.\n"
+             "Dizer: “Com uma única imagem, o nosso cérebro percebe logo o que se passa: uma criança com uma cápsula de "
+             "detergente na boca; alguém de faca na mão à porta, às quatro da manhã; o meu avô, que hoje ainda não tomou "
+             "os comprimidos; a carteira que ficou em casa. A IA já faz o mesmo. E em certas situações faz melhor: não se "
+             "cansa, não se distrai, e está atenta às quatro da manhã. Nós mostramos um destes casos, com modelos abertos, "
+             "a correr num portátil.”\n"
+             "Não dizer “99 % dos casos”: não há fonte. Dizer “quase todos estes casos já são possíveis hoje”.",
+    "ilusao": "OS OLHOS TAMBÉM SE ENGANAM. 3 min: não · 5 min: sim. Cerca de 15 s.\n"
+              "Dizer: “Um professor de visão por computador mostrou-nos imagens paradas que os nossos olhos veem a mexer. "
+              "Os olhos humanos também se enganam. Uma câmara não se cansa e não se distrai.”\n"
+              "Cuidado: há redes neuronais que também “veem” esta ilusão (Watanabe et al., Frontiers in Psychology, 2018). "
+              "Não dizer que a máquina nunca se engana.",
+})
+
+NARRATIVE = [("casa", sl_casa), ("vigiar", sl_vigiar), ("reveal", sl_reveal), ("basta", sl_basta),
+             ("ilusao", sl_ilusao)]
+THREE_MIN = [("capa", sl_capa), ("intro", sl_intro), ("casa", sl_casa), ("vigiar", sl_vigiar), ("reveal", sl_reveal),
+             ("basta", sl_basta), ("livro", sl_livro), ("altice", sl_altice), ("fecho", sl_fecho)]
+FIVE_MIN = [("capa", sl_capa), ("intro", sl_intro), ("casa", sl_casa), ("vigiar", sl_vigiar), ("reveal", sl_reveal),
+            ("basta", sl_basta), ("ilusao", sl_ilusao), ("exemplos", sl_exemplos), ("como", sl_como),
+            ("viabilidade", sl_viabilidade), ("comecar", sl_comecar), ("fecho", sl_fecho)]
 ANNEX = [("anexo-implantacao", "Anexo · Onde corre cada parte", "implantacao.png"),
          ("anexo-presenca", "Anexo · Quem está em casa", "presenca-estados.png"),
          ("anexo-contentores", "Anexo · Os contentores", "c4-2-contentores.png"),
@@ -989,7 +1251,8 @@ def build_decks(template, outdir):
     out = Path(outdir)
     JPEG_DIR = out / "_jpeg"
     JPEG_DIR.mkdir(parents=True, exist_ok=True)
-    for name, slides in [("ThingTracker - Pitch 3 min.pptx", THREE_MIN), ("ThingTracker - Pitch 5 min.pptx", FIVE_MIN)]:
+    for name, slides in [("ThingTracker - Pitch 3 min.pptx", THREE_MIN), ("ThingTracker - Pitch 5 min.pptx", FIVE_MIN),
+                         ("ThingTracker - Narrativa A-E.pptx", NARRATIVE)]:
         prs = open_template(template)
         for key, make in slides:
             set_notes(make(prs), PITCH_NOTES[key])

@@ -6,7 +6,7 @@ State on **Wed 18 Nov 2026**. The charts are built from [the model](16-business-
 
 - **Who pays:** households pay their operator a small monthly fee; Altice Labs supplies ThingTracker on its Cognitive Home platform.
 - **How many:** about 19,000 MEO homes in the expected case, 1.2 % of MEO's fixed-broadband homes.
-- **Per home:** €3.99 a month leaves about €1.74 after the AI, the servers, support and the cost of winning the customer.
+- **Per home:** €3.99 a month leaves about €1.74 after the language model, the servers, support and the cost of winning the customer, and about €1.25 once the vision models run on Altice's own servers (about €0.49, [document 17](17-operator-costs.md)).
 - **The condition:** no box in every home. The heavy vision models run on Altice's own servers or on hardware already in the home (document 17); with a box per home, the add-on loses money.
 - **Price:** a fraction of today's camera alarm plans in Portugal, which start at €34.99 a month.
 
@@ -24,7 +24,7 @@ MEO has about 1.58 million homes with fixed broadband (ANACOM, Q4 2025). About o
 
 Figure 2 – Each subscriber leaves about €1.74 a month
 
-Figure 2 shows what is left of the monthly fee after the costs. The language model costs about €0.43 per home a month, because it is called only when a sensor is created, a question is asked or a case is unclear. The cameras are analysed by open-source models: light ones at home, on the router, and OWLv2 and DINOv2 on Altice's own L4 servers, whose cost is worked out in document 17. The other costs are our assumptions.
+Figure 2 shows what is left of the monthly fee after the costs. The language model costs about €0.43 per home a month, because it is called only when a sensor is created, a question is asked or a case is unclear. The cameras are analysed by open-source models: light ones at home, on the router, and OWLv2 and DINOv2 on Altice's own L4 servers, whose cost is worked out in document 17. With vision at about €0.49, the margin is about €1.25 (document 17, section 9). The other costs are our assumptions.
 
 ## 3. Where the AI runs decides the case
 
@@ -32,7 +32,7 @@ Figure 2 shows what is left of the monthly fee after the costs. The language mod
 
 Figure 3 – Where the AI runs decides the case
 
-The local vision models are the heavy part. If they run on a router, gateway or camera already in the home, every subscriber leaves money; with a box per home, the add-on loses money (Figure 3). The architecture's hybrid route avoids the box: only the light models run at home, and OWLv2 and DINOv2 run on Altice's own servers (document 17). Whether Altice's home hardware has spare capacity is still the first question for Altice, because it would move vision into the home (see *What we need from Altice* below).
+The local vision models are the heavy part. If they run on a router, gateway or camera already in the home, every subscriber leaves money; with a box per home, the add-on loses money (Figure 3). The architecture's hybrid route avoids the box: only the light models run at home, and OWLv2 and DINOv2 run on Altice's own servers (document 17). Whether Altice's home hardware has spare capacity is the first item to confirm with Altice, because it would move vision into the home (see *What we need from Altice* below).
 
 ## 4. Price
 
@@ -113,7 +113,7 @@ Caveats: ANACOM counts accesses, not homes, and Eurostat counts individuals. MEO
 
 ### D4. Unit economics per home per month
 
-Perception runs locally, and only when there is motion or sound. The cloud is called only for these three kinds of call:
+Vision runs only when there is motion or sound, and its cost is in document 17. The language model in the cloud is called only for these three kinds of call:
 
 | Call | Model | Measured cost per call | Calls a month, low / base / high (**ASSUMPTION**) |
 |---|---|---|---|
@@ -121,7 +121,7 @@ Perception runs locally, and only when there is motion or sound. The cloud is ca
 | Question | Sonnet 5.5 | $0.002546 [A17] | 30 / 60 / 150 |
 | Ambiguous event | Haiku 5.5 | $0.0003077 [A18] | 60 / 300 / 900 |
 
-The total is **$0.10 / $0.43 / $1.78** [C01]. It includes three ASSUMPTIONS:
+The total is **$0.10 / $0.43 / $1.78** [C01], used as €0.10 / €0.43 / €1.78 below. It includes three ASSUMPTIONS:
 - a per-call factor of 1.0 / 1.5 / 2.0, since only one call of each kind was measured;
 - a data-residency uplift of 1.00 / 1.10 / 1.25;
 - an exchange rate of 1 USD = 1 EUR.
@@ -174,9 +174,9 @@ The base funnel scenario (1.2 %) falls between the 1 % and 2 % rows. Bundle reve
 | SFR Maison Sécurisée (built by Altice Labs) | Hub, 2 motion detectors, a camera, a door/window detector (docs/12 §2) | Same camera; ThingTracker adds an information use |
 | Altice Cognitive Home | Reliable Security with alerts and video playback ([02-challenge](02-challenge.md)); Family Care; Aging in place. Brochure: scenarios "will be powered by generative AI to enable the automatic generation of scenario scripts" (docs/12 §5) | **High** for the rule builder (docs/12 §5, row F); **none** for lost & found (row G) |
 
-**Differentiation.** The camera remembers where and when each thing was last seen, without storing video. Perception is local and limited to the zones the user draws. Actions reach the customer's own devices through Altice's MCP, and four new MCP tools let any assistant query that memory. Lead with the object memory, not the rule builder.
+**Differentiation.** The camera remembers where and when each thing was last seen, without storing video. Video stays at home, only the region that changed is analysed, and the areas the family masks are never analysed ([document 14](14-architecture.md)). Actions reach the customer's own devices through Altice's MCP, and four new MCP tools let any assistant query that memory. Lead with the object memory, not the rule builder.
 
-docs/12 did not survey camera vendors, so **we do not claim that no home camera keeps a last-seen memory of objects.** That scan is still to do.
+docs/12 did not survey camera vendors, so **we do not claim that no home camera keeps a last-seen memory of objects.** A survey of camera vendors is a next step before any such claim.
 
 ### D7. Replication
 

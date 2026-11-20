@@ -13,7 +13,7 @@ export const VideoAt: React.FC<{ src: string; second: number; style?: React.CSSP
   </Freeze>
 );
 
-/** The colleague's Android phone: a plain dark body drawn in CSS around a 392 x 850 screen recording. */
+/** The team's Android phone: a plain dark body drawn in CSS around a 392 x 850 screen recording. */
 export const ANDROID = { screenW: 392, screenH: 850, bezel: 13, radius: 50 } as const;
 
 export const AndroidPhone: React.FC<{ scale: number; children: React.ReactNode }> = ({ scale, children }) => {

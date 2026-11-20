@@ -1,6 +1,6 @@
 """Book recognition on the region around the desk, at the camera's full resolution (the architecture's "only the region
 that changed leaves the home", up to 640 x 480 here), with two fingerprints:
-  phone : the book's fingerprint in the prototype's database (from the colleague's phone photos);
+  phone : the book's fingerprint in the prototype's database (from the team's phone photos);
   camera: 8 views registered from another take of the same camera (book-grab.mp4), by edge.enrol_step's rule
           (OWLv2 at 0.06, a tight crop, DINOv2, a view kept only when its cosine to every kept view is below 0.97).
 Recognition as edge.analyse(): OWLv2 "a photo of yellow book" (the thing's own query) at 0.1, the 4 best candidates,

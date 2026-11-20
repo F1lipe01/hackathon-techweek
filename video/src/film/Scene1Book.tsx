@@ -39,7 +39,7 @@ const LINK = 130;                                  // link-person on screen from
 const D = LINK - 58;                               // everything after it comes this much later than in v12
 const T = {
   glide: 30, tapIcon: 80, grow: 82, s1: 118,      // the app opens; add-book from 1.38 s at 1.25×
-  cam: 246,                                        // the colleague's viewfinder, 8 shutter presses
+  cam: 246,                                        // the phone's viewfinder, 8 shutter presses
   s3: 380,                                         // add-book from 7.44 s at 1.4×: the photos, the name
   s4: 514,                                         // link-person (from its Save, 27.43 s, at 1.4×): added, "Link to Mushahid?", Yes, "Belongs to Mushahid"
   s5: 514 + LINK,                                  // add-book from 16.6 s at 1.5×: the scenario, saved, Done
@@ -234,7 +234,7 @@ const Notice: React.FC<{ at: number }> = ({ at: a }) => {
 };
 
 /* ------------------------------------------------------------------ 1: the app, the photos */
-const SHOT = [1.3, 7.83, 11.17, 16.2, 23.03, 27.27, 31.8, 36.1];   // the colleague's 8 shutter presses
+const SHOT = [1.3, 7.83, 11.17, 16.2, 23.03, 27.27, 31.8, 36.1];   // the 8 shutter presses
 const SEG = 16, BEFORE = 0.35, PRESS = Math.round(BEFORE * 30);
 const S4_END = S5 + Math.floor(((36.26 - 13.7) / 1.5) * 30) - 2;   // add-book ends at 36.27 s
 const SAVE_F = Math.round(at(7.44, T.s3, 1.4, 13.459));             // Save pressed: link-person takes over from its own Save (27.425 s)
@@ -275,7 +275,7 @@ const ScreenA: React.FC = () => {
 const GRID: Rect = { x: 150, y: 420, w: 844, h: 472 };
 const slot = (j: number): Rect => ({ x: GRID.x + 24 + (j % 4) * 202, y: GRID.y + 56 + Math.floor(j / 4) * 202, w: 190, h: 190 });
 const r4 = (r: { x: number; y: number }, w: number, h: number): Rect => ({ x: r.x, y: r.y, w: w * KS * OVER, h: h * KS * OVER });
-const CAM_W = Math.round((392 * SCR_H) / 850);   // the colleague's camera recording (392 × 850), to cover the screen
+const CAM_W = Math.round((392 * SCR_H) / 850);   // the phone's camera recording (392 × 850), to cover the screen
 const CAM_K = CAM_W / 392, CAM_X = (SCR_W - CAM_W) / 2;
 const VIEWFINDER = r4(scr(CX.right, CAM_X + 100 * CAM_K, 125 * CAM_K), 292 * CAM_K, 410 * CAM_K);   // where the photos were cut from its preview
 const APP_SLOTS: [number, number, number, number][] = [[114, 618, 231, 232], [362, 618, 232, 232], [612, 618, 231, 232], [861, 618, 231, 232],

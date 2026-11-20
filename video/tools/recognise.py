@@ -3,7 +3,7 @@
     prototype/.venv-vision/bin/python video/tools/recognise.py
 
 It imports the edge service's classes (prototype/edge.py runs its loop only under __main__) and replays:
-  1. registration (edge.enrol_step) on the photos the colleague took in the phone recording (each shutter press is
+  1. registration (edge.enrol_step) on the photos taken in the phone recording (each shutter press is
      found from the camera app's own shutter animation): OWLv2 "a photo of book" at threshold 0.06, the best box,
      the size check, a tight crop, DINOv2, and a view kept only when its cosine to every kept view is below 0.97,
      until 8 views. For comparison it also replays the same rule on every frame at 2 per second (the edge loop's
@@ -115,7 +115,7 @@ def main():
     emb = edge.Embedder(det.dev)
     print("models on", det.dev, flush=True)
 
-    # 1. Registration, as enrol_step does it, on the photos the colleague took
+    # 1. Registration, as enrol_step does it, on the photos taken in the phone recording
     presses = shutter_presses(PHONE)
     print("shutter presses at", presses, flush=True)
     views, fp, log = enrol(det, emb, presses, save=True)
@@ -188,7 +188,7 @@ def main():
         controls.append({"label": label, "query": q, "box": [r(x, 1) for x in b], "owl_score": r(s, 3), "score": r(sim, 3)})
         print(f"control {label}: box {[round(x) for x in b]} owl {s:.2f} similarity {sim:.3f}", flush=True)
 
-    # the wallet the colleague left next to the book at the end of the phone recording (a different camera)
+    # the wallet left next to the book at the end of the phone recording (a different camera)
     wal = None
     for tw in (38.0, 38.5, 39.0, 39.5):
         img = frame_at(PHONE, tw).crop(PREVIEW)

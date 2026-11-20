@@ -1,5 +1,5 @@
 """The book's recognition over film 1's take, with the prototype's own models and matching rule (real model output for the
-film's "livro" box, and an honest measure of how often the book is recognised on the ceiling camera).
+film's "livro" box, and a measure of how often the book is recognised on the ceiling camera).
 
     prototype/.venv-vision/bin/python video/tools/book_track.py video/public/takes/scene1/book-full.mp4 out.json [--every 0.5]
 

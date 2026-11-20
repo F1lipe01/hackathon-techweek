@@ -1,4 +1,4 @@
-// 1 · Registo: the colleague's phone recording, three clean passages at real speed (no fingers on the lens), in a
+// 1 · Registo: the team's phone recording, three clean passages at real speed (no fingers on the lens), in a
 // modern phone over the bright home. At each photo the phone holds the captured frame and that photo's crop glides,
 // in one eased move, into its slot of the fingerprint (R.views3).
 import React from "react";

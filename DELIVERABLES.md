@@ -17,8 +17,8 @@ Open question for the organisers: the rules mention an official slide template, 
 
 | Round | When | Format | Script |
 |---|---|---|---|
-| Intermediate | Fri 20 Nov, afternoon | 3 min + 1 min Q&A | [docs/pt/21-pitch.md](docs/pt/21-pitch.md), section 3 |
-| Final (if selected) | Fri 20 Nov, 18:00–19:30 | 5 min + 3 min Q&A | same file, section 4 |
+| Intermediate | Fri 20 Nov, from 16:00 | 3 min + 2 min Q&A; 3 finalists per challenge | [docs/pt/21-pitch.md](docs/pt/21-pitch.md), section 6 |
+| Final (if selected) | Fri 20 Nov, from 18:00 | 5 min + 3 min Q&A | same file, section 7 |
 
 Every team prepares the full pitch: finalists are only revealed on stage.
 

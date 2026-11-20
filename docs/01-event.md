@@ -29,7 +29,7 @@ The **participant guide** is not filed here yet. It holds the evaluation criteri
 | Thu 19 Nov | Organisers set up the venue | |
 | Fri 20 Nov, 08:30–20:00 | **In-person day** at Fábrica Centro Ciência Viva | Attendance mandatory |
 | Fri 20 Nov, 09:30 | Coding time starts | |
-| Fri 20 Nov, 16:30–17:30 | Intermediate pitches done; finalists selected | Up to 6 per challenge |
+| Fri 20 Nov, from 16:00 | Intermediate pitches to the challenge's mentors and jury; finalists selected | 3 per challenge (participants' guide) |
 | Fri 20 Nov, 17:30 | **Executive summary (PDF) + presentation (PPT) + repo link due** | Coffee break |
 | Fri 20 Nov, 18:00–19:30 | Final pitches on stage | Finalists only |
 | Fri 20 Nov, 20:00 | Winners announced + cocktail | |
@@ -40,10 +40,10 @@ Two rounds, **different criteria**. These are the official criteria and weights 
 
 | | Intermediate | Final |
 |---|---|---|
-| When | Fri 20 Nov, pitches in the afternoon; finalists chosen 16:30–17:30 | Fri 20 Nov, 18:00–19:30 |
+| When | Fri 20 Nov, from 16:00 | Fri 20 Nov, from 18:00 |
 | Judged by | Mentors **and** jurors | Jury (5 members) |
-| Format | 3 min pitch + **1 min** Q&A | 5 min pitch + 3 min Q&A |
-| Who | Every team | **Up to 6** teams per challenge |
+| Format | 3 min pitch + **2 min** Q&A | 5 min pitch + 3 min Q&A |
+| Who | Every team | **3** teams per challenge |
 
 **Intermediate criteria** — each scored 1–10, weight 25 %:
 
@@ -65,9 +65,9 @@ Two rounds, **different criteria**. These are the official criteria and weights 
 | Presentation of the solution | 10 % |
 | Documentation (deliverables) of the solution | 10 % |
 
-What the criteria tell us to optimise for: it is not just the demo. Half the final score is **adoption by Altice + replicability** — i.e. would Altice actually ship this, and would it work beyond our one kit. Build and pitch for that.
+What the criteria tell us to optimise for: it is not just the demo. Two fifths of the final score (40 %) is **adoption by Altice + replicability** — i.e. would Altice actually ship this, and would it work beyond our one kit. Build and pitch for that.
 
-> **Discrepancy to confirm.** The written rules and the FAQ both say the intermediate selects **up to six** teams per challenge, with a **3 + 1** min pitch. At the kick-off Rui said only the **3** best teams advance, with **3 + 2** min. The written documents (version vf1) are the formal rule; the kick-off was later and verbal. With only 7 teams in our challenge, "up to 6 advance" would mean almost everyone does. Worth a one-line check with the mentors.
+> **Resolved on 20 Nov.** The official participants' guide (Drive, read 20 Nov) settles it: **3** finalists per challenge and a **3 + 2** min intermediate pitch, from 16:00; the presentation is due as PPT (PDF accepted) by 17:30 via Google Drive and must mention the tools used. The earlier note: the written rules and the FAQ both said the intermediate selects **up to six** teams per challenge, with a **3 + 1** min pitch. At the kick-off Rui said only the **3** best teams advance, with **3 + 2** min. The written documents (version vf1) are the formal rule; the kick-off was later and verbal. With only 7 teams in our challenge, "up to 6 advance" would mean almost everyone does. Worth a one-line check with the mentors.
 
 - The whole team does not need to be at the intermediate pitch. Some can pitch while the rest keep working.
 - Time is enforced: when it runs out you finish your sentence and stop.

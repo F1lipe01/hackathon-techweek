@@ -331,31 +331,37 @@ def v_capa():
             "nomes": (x, y + 1.33, w, 0.25)}
 
 
-def v_afirmacao():
-    y0 = CONTENT_Y0_NO_TITLE
-    third = (CONTENT_Y1 - y0) / 3
+def v_afirmacao(has_title=True):
+    """The one-line title, then the statement at the top of the content zone, then the sub-line."""
+    y0 = content_top(has_title)
     tw = (CW - GAP) * 2 / 3
-    return {"frase": (CONTENT_X0, y0, tw, third), "subfrase": (CONTENT_X0, y0 + third + GAP, tw, 0.5),
+    fh = 1.3
+    return {"frase": (CONTENT_X0, y0, tw, fh), "subfrase": (CONTENT_X0, y0 + fh + GAP, tw, 0.6),
             "imagem": (CONTENT_X0 + tw + GAP, y0, CW - tw - GAP, CONTENT_Y1 - y0)}
 
 
-def v_imagem(has_title=False):
+def v_imagem(has_title=True, strip_w=4.2):
     y0 = content_top(has_title)
-    return {"imagem": (CONTENT_X0, y0, CW, CONTENT_Y1 - y0), "faixa": (CONTENT_X0, CONTENT_Y1 - STRIP_H, 4.2, STRIP_H)}
+    return {"imagem": (CONTENT_X0, y0, CW, CONTENT_Y1 - y0),
+            "faixa": (CONTENT_X0, CONTENT_Y1 - STRIP_H, strip_w, STRIP_H)}
 
 
-def v_duas_colunas(has_title=True):
+def v_duas_colunas(has_title=True, cap_h=0.25, band_h=0.0):
+    """Two equal columns; with band_h, a band across both at the bottom of the content zone, GAP under the captions."""
     y0 = content_top(has_title)
+    y1 = CONTENT_Y1 - (band_h + GAP if band_h else 0)
     cw = (CW - GAP) / 2
-    lab_h, cap_h = 0.22, 0.25
+    lab_h = 0.22
     z = {}
     for i, k in enumerate(["esq", "dir"]):
         x = CONTENT_X0 + i * (cw + GAP)
         img_y = y0 + lab_h + CAPTION_GAP
-        img_h = CONTENT_Y1 - img_y - CAPTION_GAP - cap_h
+        img_h = y1 - img_y - CAPTION_GAP - cap_h
         z[f"{k}-rotulo"] = (x, y0, cw, lab_h)
         z[f"{k}-imagem"] = (x, img_y, cw, img_h)
         z[f"{k}-legenda"] = (x, img_y + img_h + CAPTION_GAP, cw, cap_h)
+    if band_h:
+        z["faixa"] = (CONTENT_X0, CONTENT_Y1 - band_h, CW, band_h)
     return z
 
 
@@ -385,11 +391,10 @@ def v_numero(has_title=True):
             "imagem": (CONTENT_X0 + nw + GAP, y0, CW - nw - GAP, CONTENT_Y1 - y0)}
 
 
-def v_grelha(n=3, rows=1, ratio=16 / 9, has_title=True):
+def v_grelha(n=3, rows=1, ratio=16 / 9, has_title=True, cap_h=0.25):
     y0 = content_top(has_title)
     cw = (CW - (n - 1) * GAP) / n
     ih = cw / ratio
-    cap_h = 0.25
     cell = ih + CAPTION_GAP + cap_h
     total = rows * cell + (rows - 1) * GAP
     if total > CONTENT_Y1 - y0:  # too tall: shrink the images, keep the ratio
@@ -490,29 +495,29 @@ def gv_capa(prs):
 def gv_afirmacao(prs):
     s = new_slide(prs, L_BLACK)
     g = Guide(s, True)
-    g.frame("afirmacao", False)
-    z = v_afirmacao()
-    g.words(z["frase"], "frase · Arial Bold 40 pt · terço de cima", "Uma frase grande, no terço de cima", 40, bold=True)
+    g.frame("afirmacao", True, "Como começamos")
+    z = v_afirmacao(True)
+    g.words(z["frase"], "frase · Arial Bold 38 pt", "Uma frase grande, no topo da zona", 38, bold=True)
     g.words(z["subfrase"], "subfrase (opcional) · 16 pt", "Uma linha pequena, se for precisa", 16, color=g.muted)
     g.image(z["imagem"], "imagem ou recorte (opcional)", "imagem ou recorte")
-    return s, "Afirmação: sem título. Uma frase grande (Arial Bold 40 pt) no terço de cima da zona de conteúdo, uma " \
-              "subfrase opcional e, à direita, uma imagem ou um recorte opcional. Sem imagem, a frase pode ocupar toda a largura."
+    return s, "Afirmação: o título numa linha e, por baixo, uma frase grande (Arial Bold 36 a 40 pt) no topo da zona de " \
+              "conteúdo, uma subfrase opcional e, à direita, uma imagem ou um recorte opcional."
 
 
 def gv_imagem(prs):
     s = new_slide(prs, L_BLACK)
     g = Guide(s, True)
-    g.frame("imagem", False)
-    z = v_imagem(False)
-    g.image(z["imagem"], "imagem ou fotograma · preenche a zona (cover) · com título, começa em y 1,50",
+    g.frame("imagem", True, "O livro esquecido")
+    z = v_imagem(True)
+    g.image(z["imagem"], "imagem ou fotograma · preenche a zona por baixo do título (cover)",
             "imagem ou fotograma do filme")
     fx, fy, fw, fh = z["faixa"]
     band = box(s, fx, fy, fw, fh, fill=RGBColor(0, 0, 0))
     _alpha(band, 60)
     text(s, fx + 0.14, fy, fw - 0.2, fh, "Legenda opcional, faixa escura, 12 pt", size=12, color=WHITE, anchor=MSO_ANCHOR.MIDDLE)
     g.outline(z["faixa"], "faixa de legenda", inside=False, align=PP_ALIGN.LEFT)
-    return s, "Imagem: uma imagem ou um fotograma enche a zona de conteúdo (cover); título opcional (com título, a " \
-              "imagem começa em y 1,50). Legenda opcional numa faixa escura translúcida, em baixo à esquerda, 12 pt. Para os filmes."
+    return s, "Imagem: o título numa linha e, por baixo, uma imagem ou um fotograma que enche a zona de conteúdo (cover). " \
+              "Legenda opcional numa faixa escura translúcida, em baixo à esquerda, 12 pt. Para os filmes."
 
 
 def gv_duas_colunas(prs):
@@ -611,9 +616,333 @@ def build_guide(template, out):
     return out
 
 
+# ---------- the pitch slides, on the variants ----------
+
+DIAG = REPO / "docs" / "architecture"
+TILE_D = RGBColor(0x17, 0x19, 0x1C)
+TILE_L = RGBColor(0xF0, 0xF2, 0xF0)
+
+
+def pic_cover(slide, path, z, cx=0.5, cy=0.5, alt=None):
+    """Fill the zone with the image, cropped around (cx, cy) (object-fit: cover)."""
+    x, y, w, h = z
+    with Image.open(path) as im:
+        iw, ih = im.size
+    pic = slide.shapes.add_picture(str(path), Inches(x), Inches(y), Inches(w), Inches(h))
+    r, t = iw / ih, w / h
+    if r > t:
+        keep = t / r
+        left = min(max(cx - keep / 2, 0), 1 - keep)
+        pic.crop_left, pic.crop_right = left, 1 - keep - left
+    else:
+        keep = r / t
+        top = min(max(cy - keep / 2, 0), 1 - keep)
+        pic.crop_top, pic.crop_bottom = top, 1 - keep - top
+    if alt:
+        pic._element.nvPicPr.cNvPr.set("descr", alt)
+    return pic
+
+
+def phone(slide, path, z, margin=0.12, alt=None):
+    """A phone screenshot: fitted, rounded corners, soft shadow, no drawn frame."""
+    x, y, w, h = z
+    pic = picture(slide, path, x + margin, y + margin, fit=(w - 2 * margin, h - 2 * margin), alt=alt)
+    pic.auto_shape_type = MSO_SHAPE.ROUNDED_RECTANGLE
+    geom = pic._element.spPr.find(qn("a:prstGeom"))
+    av = geom.find(qn("a:avLst"))
+    if av is None:
+        av = geom.makeelement(qn("a:avLst"), {})
+        geom.append(av)
+    av.append(av.makeelement(qn("a:gd"), {"name": "adj", "fmla": "val 12000"}))
+    spPr = pic._element.spPr
+    eff = spPr.makeelement(qn("a:effectLst"), {})
+    sh = eff.makeelement(qn("a:outerShdw"), {"blurRad": str(Inches(0.14)), "dist": str(Inches(0.04)),
+                                             "dir": "5400000", "algn": "t", "rotWithShape": "0"})
+    clr = sh.makeelement(qn("a:srgbClr"), {"val": "000000"})
+    clr.append(clr.makeelement(qn("a:alpha"), {"val": "45000"}))
+    sh.append(clr)
+    eff.append(sh)
+    spPr.append(eff)
+    return pic
+
+
+def tile(slide, z, dark=True):
+    return box(slide, *z, fill=TILE_D if dark else TILE_L)
+
+
+def notification(slide, x, y, w, h=0.95):
+    """The kit camera's notification today, as words on a card (no icon)."""
+    box(slide, x, y, w, h, fill=RGBColor(0x2A, 0x2C, 0x31), shape=MSO_SHAPE.ROUNDED_RECTANGLE, name="Notification")
+    text(slide, x + 0.2, y + 0.16, w - 1.0, 0.2, "Câmara · Sala", size=10, color=MUTED_D)
+    text(slide, x + w - 0.8, y + 0.16, 0.6, 0.2, "agora", size=10, color=MUTED_D, align=PP_ALIGN.RIGHT)
+    text(slide, x + 0.2, y + 0.42, w - 0.3, 0.35, "Movimento detetado", size=15, bold=True, color=WHITE, wrap=False)
+
+
+def label(slide, z, words, dark=True):
+    x, y, w, h = z
+    text(slide, x, y, w, h, words, size=12, bold=True, color=NEON if dark else GREEN_D, anchor=MSO_ANCHOR.BOTTOM)
+
+
+def cap(slide, z, words, dark=True, size=11):
+    x, y, w, h = z
+    text(slide, x, y, w, h, words, size=size, color=MUTED_D if dark else MUTED_W, name="Caption")
+
+
+def sl_capa(prs):
+    s = new_slide(prs, L_COVER)
+    z = v_capa()
+    picture(s, LOGO, *z["nome"][:2], w=z["nome"][2], alt="ThingTracker")
+    text(s, *z["linha"], "A câmara da casa, atenta ao que importa.", size=14, color=WHITE)
+    text(s, *z["equipa"], "Desafio #3 · Altice Labs · Equipa IT-Porto", size=11, bold=True, color=NEON)
+    text(s, *z["nomes"], "Filipe Peixoto · Simon Ranjith · Mushahid Hussain", size=11, color=RGBColor(0xD0, 0xD4, 0xD8))
+    return s
+
+
+def sl_hoje(prs):
+    s = new_slide(prs, L_BLACK)
+    title(s, "Hoje só grava. Com IA, percebe o que vê")
+    z = v_duas_colunas(True)
+    label(s, z["esq-rotulo"], "Hoje")
+    ex, ey, ew, eh = z["esq-imagem"]
+    tile(s, z["esq-imagem"])
+    picture(s, ASSETS / "kit-camera.png", ex + 0.12, ey + 0.15, fit=(1.45, eh - 0.3), alt="A câmara do kit")
+    notification(s, ex + 1.7, ey + (eh - 0.95) / 2, ew - 1.85)
+    cap(s, z["esq-legenda"], "A câmara do _kit_ só avisa que houve movimento")
+    label(s, z["dir-rotulo"], "Com o _ThingTracker_")
+    pic_cover(s, ASSETS / "frame-livro-ia.png", z["dir-imagem"], cx=0.6, cy=0.45,
+              alt="Imagem do laboratório com as caixas do sistema: o livro reconhecido a 0,94, a pessoa, a porta e o alarme")
+    cap(s, z["dir-legenda"], "Reconhece o livro, a família, a casa vazia")
+    return s
+
+
+def sl_thingtracker(prs):
+    s = new_slide(prs, L_WHITE)
+    title(s, "Por isso criámos o _ThingTracker_", dark=False)
+    z = v_fluxo(4, True)
+    steps = [("kit-camera.png", "Câmara", "cut", "A câmara do kit"),
+             ("frame-livro-camera.png", "Imagem", "cover", "Uma imagem da câmara, sem caixas"),
+             ("frame-livro-ia.png", "IA reconhece", "cover", "A mesma imagem com as caixas do sistema"),
+             ("alert-last.png", "Aviso na app", "phone", "O aviso na app: o livro ficou em casa")]
+    for i, (f, lab, kind, alt) in enumerate(steps, 1):
+        zi = z[f"passo{i}-imagem"]
+        if kind == "cover":
+            pic_cover(s, ASSETS / f, zi, cx=0.62, cy=0.42, alt=alt)
+        else:
+            tile(s, zi, dark=False)
+            if kind == "cut":
+                picture(s, ASSETS / f, zi[0] + 0.12, zi[1] + 0.12, fit=(zi[2] - 0.24, zi[3] - 0.24), alt=alt)
+            else:
+                phone(s, ASSETS / f, zi, margin=0.1, alt=alt)
+        x, y, w, h = z[f"passo{i}-rotulo"]
+        text(s, x, y, w, h, lab, size=12, bold=True, color=INK, align=PP_ALIGN.CENTER)
+        if i < 4:
+            ax, ay, al, _ = z[f"seta{i}"]
+            _arrow(s, ax, ay, al, RGBColor(0x5F, 0x63, 0x68))
+    return s
+
+
+def sl_livro(prs):
+    s = new_slide(prs, L_BLACK)
+    words = "O livro esquecido · reconhecido em 68 de 68 imagens, a 0,93"
+    z = v_imagem(False, strip_w=5.3)
+    pic_cover(s, ASSETS / "frame-livro-ia.png", z["imagem"], cx=0.6, cy=0.42,
+              alt="Imagem do filme: o livro reconhecido na mesa, a 0,94, depois de a porta fechar")
+    fx, fy, fw, fh = z["faixa"]
+    band = box(s, fx, fy, fw, fh, fill=RGBColor(0, 0, 0))
+    _alpha(band, 62)
+    text(s, fx + 0.14, fy, fw - 0.2, fh, words, size=12, color=WHITE, anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
+def sl_altice(prs):
+    s = new_slide(prs, L_BLACK)
+    title(s, "Porque a Altice")
+    z = v_grelha(3, 1, 4 / 3, True, cap_h=0.42)
+    tile(s, z["imagem1"])
+    x, y, w, h = z["imagem1"]
+    picture(s, ASSETS / "kit-camera.png", x + 0.2, y + 0.2, fit=(w - 0.4, h - 0.4), alt="A câmara do kit")
+    cap(s, z["legenda1"], "A câmara, a app e o MCP que já existem")
+    tile(s, z["imagem2"])
+    text(s, *z["imagem2"], "≈ 0,49 €", size=44, bold=True, color=NEON, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+    cap(s, z["legenda2"], "por casa e por mês")
+    tile(s, z["imagem3"])
+    phone(s, ASSETS / "alert-nobody.png", z["imagem3"], margin=0.15,
+          alt="O aviso na app: ninguém em casa, com dois cartões para desligar")
+    cap(s, z["legenda3"], "Começa com um piloto em casas de colaboradores da MEO")
+    return s
+
+
+def sl_fecho(prs):
+    s = new_slide(prs, L_BLACK)
+    title(s, "Em resumo")
+    z = v_fecho(True)
+    x, y, w, h = z["pontos"]
+    for i, t in enumerate(["Reconhece o que importa em cada casa", "Cerca de 0,49 € por casa e por mês",
+                           "Usa a câmara, a app e o MCP da Altice"]):
+        box(s, x + 0.05, y + i * 0.42 + 0.1, 0.16, 0.16, fill=NEON)
+        text(s, x + 0.35, y + i * 0.42, w - 0.35, 0.34, t, size=18, bold=True, color=WHITE)
+    px, py, pw, ph = z["pedido"]
+    box(s, px, py, pw, ph, fill=NEON)
+    text(s, px + 0.2, py, pw - 0.3, ph, "Propomos um piloto já", size=16, bold=True, color=INK, anchor=MSO_ANCHOR.MIDDLE)
+    ax, ay, aw, ah = z["assinatura"]
+    picture(s, LOGO, ax, ay + 0.04, h=0.3, alt="ThingTracker")
+    text(s, ax + 2.0, ay, aw - 2.0, ah, "A câmara da casa, atenta ao que importa.", size=14, color=WHITE,
+         anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
+def sl_exemplos(prs):
+    s = new_slide(prs, L_BLACK)
+    title(s, "Três exemplos, filmados no laboratório")
+    z = v_grelha(3, 1, 16 / 9, True, cap_h=0.42)
+    items = [("frame-livro-ia.png", "O livro esquecido", "O livro reconhecido na mesa, a 0,94"),
+             ("frame-filipe-ia.png", "A família reconhecida, o desconhecido avisado", "O Filipe reconhecido pelo sistema"),
+             ("frame-casa-vazia-ia.png", "Ninguém em casa: desligar e fechar", "Ninguém em casa, com as luzes e o ar condicionado ligados")]
+    for i, (f, c, alt) in enumerate(items, 1):
+        pic_cover(s, ASSETS / f, z[f"imagem{i}"], alt=alt)
+        cap(s, z[f"legenda{i}"], c)
+    return s
+
+
+# At 11 pt the list does not fit on one line across 9.1", so it breaks where the models end and the tools begin.
+MODELS_LINE = ["Modelos e ferramentas: _OWLv2_ e _DINOv2_ (Apache-2.0) · _YuNet_ (MIT) · _SFace_ (Apache-2.0) ·",
+               "_Qwen3-1.7B_ (Apache-2.0) · MCP da Altice · _Claude Code_"]
+
+
+def sl_como(prs):
+    s = new_slide(prs, L_WHITE)
+    title(s, "Como funciona", dark=False)
+    z = v_duas_colunas(True, cap_h=0.42, band_h=0.42)
+    label(s, z["esq-rotulo"], "Hoje, no protótipo", dark=False)
+    pic_cover(s, ASSETS / "frame-livro-ia.png", z["esq-imagem"], cx=0.6, cy=0.45,
+              alt="Imagem do laboratório com as caixas do sistema")
+    cap(s, z["esq-legenda"], "Um portátil faz de casa e de servidores da Altice", dark=False)
+    label(s, z["dir-rotulo"], "Proposta", dark=False)
+    box(s, *z["dir-imagem"], fill=WHITE, line=RGBColor(0xD3, 0xD7, 0xDC), line_w=0.75)
+    x, y, w, h = z["dir-imagem"]
+    picture(s, DIAG / "implantacao.png", x + 0.06, y + 0.06, fit=(w - 0.12, h - 0.12),
+            alt="Implantação: o agente da casa no router, o ThingTracker nos servidores da Altice")
+    cap(s, z["dir-legenda"], "_Router_ em casa + servidores da Altice · os modelos veem, o código decide", dark=False)
+    fx, fy, fw, fh = z["faixa"]
+    box(s, fx, fy, fw, fh, fill=TILE_L)
+    text(s, fx + 0.12, fy, fw - 0.24, fh, MODELS_LINE, size=11, color=INK, anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
+def sl_viabilidade(prs):
+    s = new_slide(prs, L_BLACK)
+    title(s, "Quanto custa à Altice")
+    z = v_numero(True)
+    text(s, *z["numero"], "≈ 0,49 €", size=96, bold=True, color=NEON, wrap=False)
+    text(s, *z["rotulo"], "por casa e por mês, com uma câmara", size=18, color=WHITE)
+    cap(s, z["fonte"], "Estimativa da equipa para 500 000 casas, com preços públicos (documento 17)", size=10)
+    x, y, w, h = z["imagem"]
+    picture(s, ASSETS / "kit-camera.png", x + w * 0.2, y + h * 0.15, fit=(w * 0.6, h * 0.7), alt="A câmara do kit")
+    return s
+
+
+def sl_comecar(prs):
+    s = new_slide(prs, L_BLACK)
+    title(s, "Como começamos")
+    z = v_afirmacao(True)
+    text(s, *z["frase"], "Um piloto em casas de colaboradores da MEO", size=36, bold=True, color=WHITE)
+    text(s, *z["subfrase"], "A câmara, a app e o MCP já existem · github.com/F1lipe01/hackathon-techweek", size=16,
+         color=MUTED_D)
+    tile(s, z["imagem"])
+    phone(s, ASSETS / "alert-nobody.png", z["imagem"], margin=0.25, alt="A app da Altice com o aviso do ThingTracker")
+    return s
+
+
+def sl_annex(prs, head, png):
+    s = new_slide(prs, L_WHITE)
+    title(s, head, dark=False)
+    picture(s, DIAG / png, CONTENT_X0, CONTENT_Y0, fit=(CW, CONTENT_Y1 - CONTENT_Y0), alt=head)
+    return s
+
+
+PITCH_NOTES = {
+    "capa": "CAPA. 3 min: sim · 5 min: sim.\nTempos: 0:00–0:05, 10 palavras.\n"
+            "Dizer: “Boa tarde. Somos a equipa IT-Porto, do Instituto de Telecomunicações.”",
+    "hoje": "HOJE E COM IA. 3 min: sim · 5 min: sim.\nTempos: 0:05–0:31, 52 palavras.\n"
+            "Dizer (a cena, por omissão): “Hoje, a câmara de casa só grava. Uma criança pega numa cápsula de detergente, e o "
+            "telemóvel diz apenas ‘movimento detetado’. E depois? Com IA, a câmara percebe o que vê: onde ficaram as chaves, "
+            "quem entrou em casa, o que ficou ligado. Cada família cria os seus avisos, com uma frase.”\n"
+            "Em alternativa (a pergunta): “Onde deixaram as chaves esta manhã? A câmara de casa até as viu, mas só sabe gravar, "
+            "e o telemóvel diz apenas ‘movimento detetado’. E depois?” e, na segunda metade, “a criança em perigo” em vez de "
+            "“onde ficaram as chaves”.",
+    "thingtracker": "O THINGTRACKER. 3 min: sim · 5 min: sim.\nTempos: 0:31–0:43, 24 palavras.\n"
+                    "Dizer: “Por isso criámos o ThingTracker: a câmara que a Altice já vende capta as imagens, a IA percebe-as "
+                    "e a família recebe o aviso.”",
+    "livro": "O LIVRO ESQUECIDO. 3 min: sim · 5 min: não.\nTempos: 0:43–0:52, 17 palavras; o filme passa de 0:53 a 1:18.\n"
+             "Dizer: “Filmámos no nosso laboratório, com a câmara do kit e o nosso protótipo; alguns momentos foram encenados.”\n"
+             "O filme passa daqui, em ecrã inteiro, a partir do ficheiro local: ThingTracker - pitch - o livro (25 s).mp4. "
+             "Ponto de controlo: o filme começa até aos 0:55.\n"
+             "Se o filme não arrancar em 3 s: “No filme, saio sem o livro; a porta fecha-se, a câmara confirma que o livro "
+             "ficou na secretária e o telemóvel avisa-me.”",
+    "altice": "PORQUE A ALTICE. 3 min: sim · 5 min: não.\nTempos: 1:19–2:00, 84 palavras.\n"
+              "Dizer: “Encaixa no que a Altice já tem: a câmara, a app e o MCP. A adoção não exige hardware novo: o router deteta "
+              "o movimento e os servidores da Altice tratam da visão. Os modelos veem, o código decide. Viabilidade: uns 49 "
+              "cêntimos por casa e por mês; num serviço de 3,99 €, ficam uns 1,25 € de margem. E começa com um piloto em casas "
+              "de colaboradores da MEO, em GPU alugadas, sem custo fixo.”\nPonto de controlo: o fecho começa até aos 2:05.",
+    "fecho": "FECHO. 3 min: sim · 5 min: sim.\nTempos. 3 min: 2:00–2:27. 5 min: 3:33–4:00. 50 palavras.\n"
+             "Dizer: “O ThingTracker já reconhece objetos nas imagens da câmara do kit, custa à Altice cerca de 49 cêntimos por "
+             "casa e por mês, e usa a app e o MCP que a Altice já tem. Propomos começar já pelo piloto.”\n"
+             "Pausa. Última frase, palavra por palavra: “A câmara da casa, atenta ao que importa.” Depois, silêncio; nunca "
+             "“alguma pergunta?”.",
+    "exemplos": "TRÊS EXEMPLOS. 3 min: não · 5 min: sim.\nTempos: 0:43–0:56, 26 palavras; os filmes passam de 0:57 a 2:00.\n"
+                "Dizer: “Filmámos no nosso laboratório, com a câmara do kit e o nosso protótipo; alguns momentos foram "
+                "encenados. Três exemplos: as coisas, a segurança e a energia.”\n"
+                "Os três filmes passam daqui, seguidos, sem nada dito entre eles: o livro (20 s), pessoa desconhecida (20 s), "
+                "ninguém em casa (20 s). Ponto de controlo: os filmes começam até aos 1:00.",
+    "como": "COMO FUNCIONA. 3 min: não · 5 min: sim.\nTempos: 2:00–2:38, 77 palavras.\n"
+            "Dizer: “No protótipo, este portátil faz de casa e de servidores da Altice. A adoção não exige hardware novo: o "
+            "router deteta o movimento e os servidores da Altice tratam da visão, com modelos open-source que permitem uso "
+            "comercial. O OWLv2 encontra pessoas e coisas, o DINOv2 reconhece as coisas de cada família, o YuNet e o SFace "
+            "tratam dos rostos e o Qwen3 escreve regras e mensagens. Os modelos veem, o código decide.”\n"
+            "A faixa de baixo cumpre a menção obrigatória das ferramentas utilizadas. Ponto de controlo: este diapositivo "
+            "começa até aos 2:05.",
+    "viabilidade": "QUANTO CUSTA À ALTICE. 3 min: não · 5 min: sim.\nTempos: 2:38–3:05, 53 palavras.\n"
+                   "Dizer: “Viabilidade: uns 49 cêntimos por casa e por mês; num serviço de 3,99 €, ficam uns 1,25 € de margem. "
+                   "Para a replicação, basta uma câmara, uma app e uma interface como o MCP: serve outros operadores, outros "
+                   "países, lares de idosos e alojamento local.”",
+    "comecar": "COMO COMEÇAMOS. 3 min: não · 5 min: sim.\nTempos: 3:05–3:33, 57 palavras.\n"
+               "Dizer: “Para começar: um piloto em casas de colaboradores da MEO, com a câmara, a app e o MCP que já existem, e "
+               "GPU alugadas, sem custo fixo. Depois, os clientes, a 3,99 € por mês. E está tudo no repositório: o código, 12 "
+               "diagramas de arquitetura e 107 testes, todos a passar.”\nPonto de controlo: o fecho começa até aos 3:40.",
+}
+
+THREE_MIN = [("capa", sl_capa), ("hoje", sl_hoje), ("thingtracker", sl_thingtracker), ("livro", sl_livro),
+             ("altice", sl_altice), ("fecho", sl_fecho)]
+FIVE_MIN = [("capa", sl_capa), ("hoje", sl_hoje), ("thingtracker", sl_thingtracker), ("exemplos", sl_exemplos),
+            ("como", sl_como), ("viabilidade", sl_viabilidade), ("comecar", sl_comecar), ("fecho", sl_fecho)]
+ANNEX = [("anexo-implantacao", "Anexo · Onde corre cada parte", "implantacao.png"),
+         ("anexo-presenca", "Anexo · Quem está em casa", "presenca-estados.png"),
+         ("anexo-contentores", "Anexo · Os contentores", "c4-2-contentores.png"),
+         ("anexo-fronteiras", "Anexo · O que sai de casa", "dfd-fronteiras.png"),
+         ("anexo-livro", "Anexo · O livro esquecido", "seq-livro-esquecido.png"),
+         ("anexo-pessoa", "Anexo · A pessoa desconhecida", "seq-pessoa-desconhecida.png"),
+         ("anexo-casa-vazia", "Anexo · A casa vazia", "seq-casa-vazia.png")]
+
+
+def build_decks(template, outdir):
+    out = Path(outdir)
+    for name, slides in [("ThingTracker - Pitch 3 min.pptx", THREE_MIN), ("ThingTracker - Pitch 5 min.pptx", FIVE_MIN)]:
+        prs = open_template(template)
+        for key, make in slides:
+            set_notes(make(prs), PITCH_NOTES[key])
+        prs.save(out / name)
+    prs = open_template(template)
+    for sid, head, png in ANNEX:
+        set_notes(sl_annex(prs, head, png), notes_from_source(sid) or "Só para perguntas.")
+    prs.save(out / "ThingTracker - Anexo (perguntas).pptx")
+    return out
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     if cmd == "guide" and len(sys.argv) == 4:
         print("wrote", build_guide(sys.argv[2], sys.argv[3]))
+    elif cmd == "decks" and len(sys.argv) == 4:
+        print("wrote into", build_decks(sys.argv[2], sys.argv[3]))
     else:
         sys.exit(__doc__)

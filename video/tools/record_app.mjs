@@ -542,6 +542,98 @@ const TAKES = {
       await hideFinger();
       await pause(2400);
     }); },
+  // the book demo v5: link-person, then the suggested scenario created (with the alarm added) and saved.
+  'link-scenario': () => { Object.assign(C, { on: false });
+    return take('link-scenario', '16:30', async ({ page, tap, hideFinger, mark }) => {
+      const typeIn = async (sel, text) => {
+        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); }, [sel, ch]); await pause(55 + Math.random() * 35); }
+      };
+      const addSel = '.ahead [data-act="add-thing"], header [data-act="add-thing"], [data-act="add-thing"]';
+      await pause(1300);
+      mark('things');
+      await tap(addSel);
+      mark('add-1');
+      await pause(1100);
+      await tap('[data-act="pick-thing"][data-name="Person"]');
+      mark('person-method');
+      await pause(1300);
+      let chooser = page.waitForEvent('filechooser');
+      await tap('[data-act="person-photo"]:not([data-capture])');
+      mark('choose-photo');
+      await hideFinger();
+      let fc = await chooser;
+      await pause(600);
+      await fc.setFiles(process.env.REC_PERSON);
+      await page.waitForSelector('#pname', { state: 'visible' });
+      mark('person-photo');
+      await pause(1100);
+      await tap('#pname'); await hideFinger();
+      await typeIn('#pname', 'Mushahid');
+      mark('named');
+      await pause(600);
+      await tap('[data-act="save-person-photo"]');
+      mark('save-person');
+      await hideFinger();
+      await page.waitForSelector('.person-added', { state: 'visible', timeout: 30000 });
+      mark('person-added');
+      await pause(1800);
+      await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+      mark('person-done');
+      await hideFinger();
+      await pause(1400);
+      await tap(addSel);
+      mark('add');
+      await pause(1100);
+      await tap('[data-act="pick-thing"][data-name="Book"]');
+      mark('method');
+      await pause(1300);
+      chooser = page.waitForEvent('filechooser');
+      await tap('[data-act="take-photos"]');
+      mark('take-photos');
+      await hideFinger();
+      fc = await chooser;
+      await pause(600);
+      await fc.setFiles(Array.from({ length: 8 }, (_, i) => join(IMG, `photos/final-${i + 1}.jpg`)));
+      await page.waitForSelector('#tname', { state: 'visible' });
+      mark('photos');
+      await pause(1500);
+      await tap('#tname'); await hideFinger();
+      await typeIn('#tname', 'Book');
+      await pause(400);
+      await tap('#tdesc'); await hideFinger();
+      await typeIn('#tdesc', 'yellow book');
+      await pause(500);
+      await tap('[data-act="save-thing"]');
+      mark('save-thing');
+      await hideFinger();
+      await page.waitForSelector('.link-card', { state: 'visible', timeout: 15000 });
+      mark('added');
+      await pause(2200);
+      await tap('[data-act="link-owner"]');
+      mark('link');
+      await hideFinger();
+      await page.waitForSelector('.owner-pair', { state: 'visible', timeout: 15000 });
+      mark('owned');
+      await pause(3200);
+      await tap('[data-act="owned-scenario"]');
+      mark('scenario');
+      await pause(900);
+      await tap('#scentext'); await hideFinger();
+      await page.evaluate(() => { const f = document.querySelector('#scentext'); f.setSelectionRange(f.value.length, f.value.length); });
+      await typeIn('#scentext', ' and sound the alarm');
+      mark('typed');
+      await pause(500);
+      await tap('[data-act="save-scenario"]');
+      mark('save-scenario');
+      await hideFinger();
+      await page.waitForSelector('.saved-ok', { state: 'visible', timeout: 30000 });
+      mark('saved');
+      await pause(2600);
+      await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+      mark('done');
+      await hideFinger();
+      await pause(2400);
+    }); },
   // scene 2, the end: the app's real state (the person and the scenario, made in add-person). The family's phones leave the
   // home Wi-Fi (simulated); the stand-in edge reports an unknown face in three analyses in a row, with the person crop
   // the real edge sends only for a face that matches nobody (the lab camera's frame of the stranger). The server's

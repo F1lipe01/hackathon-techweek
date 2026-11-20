@@ -775,7 +775,7 @@ function savedPage(r) {
   const t = state.things.find((x) => x.id === r.thing_id);
   const then = r.kind === 'nobody_devices_on' ? ['Ask you to turn them off'] : r.unknown || r.kind === 'door_open_nobody' ? [r.alarm ? 'Sound the alarm' : '', 'Send you a message'].filter(Boolean) : ['Send you a message', r.alarm ? 'Sound the alarm' : '', /^light_/.test(r.action || '') ? `Turn the light ${r.action.slice(6)}` : '',
     r.action === 'plug_off' ? 'Switch the plug off' : ''].filter(Boolean);
-  const when = r.kind === 'nobody_devices_on' ? 'Nobody is home and something is still on' : r.kind === 'door_open_nobody' ? 'The door is left open and nobody is home' : r.unknown ? 'Someone not in Family is seen at home' : r.kind === 'leave_without' ? `You leave home and the ${(t?.name || 'thing').toLowerCase()} stays` : r.sentence;
+  const when = r.kind === 'nobody_devices_on' ? 'Nobody is home and something is still on' : r.kind === 'door_open_nobody' ? 'The door is left open and nobody is home' : r.unknown ? 'Someone not in Family is seen at home' : r.kind === 'leave_without' ? `${ownerOf(t) ? `${ownerOf(t).name} leaves` : 'You leave'} home and the ${(t?.name || 'thing').toLowerCase()} stays` : r.sentence;
   push(() => `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
       <div class="saved-ok">${ICON_CHECK}</div><h3>Scenario saved</h3><p>It is on from now. You can change it in Menu&nbsp;›&nbsp;Scenarios.</p></div>
     <div class="scen-card"><div class="scen-title">${I.sensor}<b>${esc(r.title)}</b><span class="on">Active</span></div>

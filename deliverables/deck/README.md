@@ -17,5 +17,6 @@ Images appear as `/_blob/<id>` links, which only resolve inside the artifact.
 | 21 | 18 Nov | Smoother motion (one ease, 0,8–0,9 s); space balanced on every slide |
 | 22 | 18 Nov | From the pitch research: the real example moved up to slide 9; notes with speaker, timing and word budget; the close with a recap and an ask; contrast and 3-second check on every slide |
 | 23 | 19 Nov | Real numbers on the example (0,93 in 68 of 68 frames); the code decides, presence and faces on the architecture; privacy wording; a seven-slide appendix with the architecture diagrams for questions |
+| 24 | 20 Nov | The new run of show: three films, open models, prototype versus proposal, repository; the old case slides kept as a reserve for questions |
 
 The run of show for the 3- and 5-minute pitches is in [docs/pt/21-pitch.md](../../docs/pt/21-pitch.md).

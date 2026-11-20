@@ -9,7 +9,7 @@ Each case starts from a sentence the client says, or from a proposal the app mak
 For each case:
 - the sentence or the proposal;
 - what the camera looks for (the query to the OWLv2 detector, in English, or the registered thing, enrolled with 8 views and recognised by its DINOv2 visual fingerprint) and the place;
-- the shape of the rule, which runs at home;
+- the shape of the rule, which the rules engine evaluates with plain code;
 - the devices, marked "kit" (those in the challenge kit: camera, door contact sensor, smoke sensor, temperature and humidity sensor, smart plug, security hub and light) or "other IoT" (devices the kit does not have);
 - the action;
 - feasibility and limits.
@@ -17,7 +17,7 @@ For each case:
 Three terms used throughout:
 - Place: each camera is one place ("Kitchen 1", "Living room 1", "Garden 1"). There are no zones drawn inside a place; surfaces (the counter, the stove) are found by name in every frame.
 - Feasibility: "today" means the prototype already does it; "small extension" means a new detector query or a new rule kind, with no new hardware; "future" means a new model, or a device the Altice platform would still have to support.
-- Actions: alerts reach the phone through the app's notification service, because the MCP server has no notification tool (to confirm with Altice). Device actions (light, plug) go through the MCP, with `update_device_capabilities`. The siren follows the family's choice for each rule, made when the rule is created: ask first, or sound at once; arming the alarm always needs a "yes"; in the prototype neither is wired, and light and plug actions are simulated unless enabled.
+- Actions: alerts reach the phone through the app's notification service, because the MCP server has no notification or push tool ([document 10](10-mcp-in-practice.md)). Device actions (light, plug) go through the MCP, with `update_device_capabilities`. The siren follows the family's choice for each rule, made when the rule is created: ask first, or sound at once; arming the alarm always needs a "yes"; in the prototype neither is wired, and light and plug actions are simulated unless enabled.
 
 ## 1. Catalogue, in priority order
 
@@ -89,8 +89,8 @@ Of the 34 cases, 24 work with kit devices alone, and the 9 outdoor ones need an 
 - Sentence: "Tell me if the hob stays on with nobody in the kitchen for 15 minutes." Proposal, when the home has a connected hob or a cooking appliance on the plug.
 - The camera looks for: the absence of `"a person"` in Kitchen 1, without identifying anyone.
 - Rules: `on(hob) and nobody_for(Kitchen 1, 15 min)`; for countertop appliances, `power(Plug) > 500 W and nobody_for(Kitchen 1, 15 min)`; the smoke sensor stays as the last line of defence.
-- Devices: connected hob or oven (other IoT); plug with energy metering (kit), for an air fryer or a countertop electric oven, if its power fits the plug (to confirm); smoke sensor (kit).
-- Action: alert; switch the plug off through the MCP, after confirmation, or automatically if the client chose that when creating the rule; switch the hob off, if the manufacturer and the platform allow it (to confirm).
+- Devices: connected hob or oven (other IoT); plug with energy metering (kit), for an air fryer or a countertop electric oven, if its power fits the plug (assumption, §7); smoke sensor (kit).
+- Action: alert; switch the plug off through the MCP, after confirmation, or automatically if the client chose that when creating the rule; switch the hob off, if the manufacturer and the platform allow it (assumption, §7).
 - Feasibility: through the plug, small extension (the prototype already reads devices through the MCP and already has `nobody_for` and plug-off; they are not combined yet). Through the hob or oven, future, because it depends on the Altice platform supporting those appliances.
 - Limits: a slow stew may be intentional, so by default the rule alerts and does not cut power; a person in the dining room, outside the camera's view, counts as "nobody"; the power threshold must be set per appliance.
 
@@ -149,7 +149,7 @@ Of the 34 cases, 24 work with kit devices alone, and the 9 outdoor ones need an 
 - Sentence: "If there is a leak by the dishwasher, show me the kitchen and switch the dishwasher off."
 - The camera looks for: nothing specific; it sends the latest crop of the place for the user to judge. There is no claim that the camera sees water.
 - Rule: `state(Leak sensor) = alarm`, with the crop and who is at home.
-- Devices: leak sensor (other IoT; Altice Labs' Connected Home product page mentions water-leak alerts); plug (kit), if the appliance's power fits the plug (to confirm); solenoid valve (other IoT).
+- Devices: leak sensor (other IoT; Altice Labs' Connected Home product page mentions water-leak alerts); plug (kit), if the appliance's power fits the plug (assumption, §7); solenoid valve (other IoT).
 - Action: alert; switch the plug off or close the valve, after confirmation.
 - Feasibility: future, because the kit has no leak sensor; the rule itself is simple.
 - Limits: the camera adds little; Altice already sells this.
@@ -201,7 +201,7 @@ Of the 34 cases, 24 work with kit devices alone, and the 9 outdoor ones need an 
 - Sentence: "If the living room is below 18 °C and someone is in it, tell me." The family chooses the threshold.
 - The camera looks for: `"a person"`, in Living room 1.
 - Rule: `temperature(Sensor) < 18 °C and seen_in(person, Living room 1) for 15 min`.
-- Devices: temperature and humidity sensor (kit, read live through the MCP); plug (kit), with a heater, if its power fits the plug (to confirm).
+- Devices: temperature and humidity sensor (kit, read live through the MCP); plug (kit), with a heater, if its power fits the plug (assumption, §7).
 - Action: alert to the family; switch the plug on only after confirmation.
 - Feasibility: small extension. The MCP already gives the temperature; the prototype does not combine it with presence yet.
 - Limits: the sensor must be in the camera's room; switching a heater on remotely carries risk, so only with someone present and after confirmation.
@@ -328,7 +328,7 @@ The following cases need an outdoor camera (other IoT): at the door, in the gard
 - Sentence: "Tell me if the gate is left open with the dog in the garden."
 - The camera looks for: `"a dog"` or `"a child"`, in Garden 1. The gate's state comes from a contact sensor or, without one, from a visual check of a crop of the gate by the language model.
 - Rule: `state(Gate sensor) = open and seen_in(dog, Garden 1)`.
-- Devices: outdoor camera (other IoT); contact sensor on the gate (other IoT, the kit's type, if within the hub's range, to confirm); light (kit).
+- Devices: outdoor camera (other IoT); contact sensor on the gate (other IoT, the kit's type, if within the hub's range: assumption, §7); light (kit).
 - Action: alert with a crop of the gate; amber light inside.
 - Feasibility: small extension.
 - Limits: the visual check depends on angle and light; the sensor is more reliable; a child in the garden with an adult beside them raises an alert.
@@ -348,7 +348,7 @@ The following cases need an outdoor camera (other IoT): at the door, in the gard
 - Sentence: "Tell me when a parcel is left at the door" or "when mail arrives". The idea proposed within the team adds an announcement on a speaker inside and the light turning blue.
 - The camera looks for: `"a cardboard box"` or `"a parcel"`, at Door 1 (outdoor).
 - Rules: `appears(parcel, Door 1) and stays 1 min` (new); for mail, `state(Mailbox) = open`.
-- Devices: outdoor camera at the door (other IoT; the kit camera is IP65 and could in principle sit at a covered entrance, an assumption to confirm with Altice); mailbox sensor (other IoT), or the kit's contact sensor on the mailbox flap if it is within the hub's range (to confirm); light (kit); smart speaker inside (other IoT).
+- Devices: outdoor camera at the door (other IoT; the kit camera is IP65 and could in principle sit at a covered entrance: assumption, §7); mailbox sensor (other IoT), or the kit's contact sensor on the mailbox flap if it is within the hub's range (assumption, §7); light (kit); smart speaker inside (other IoT).
 - Action: alert with a crop of the parcel, and only of the parcel; blue light (the prototype already has this action); speaker announcement: "A parcel has arrived at the door."
 - Feasibility: small extension (detecting an object class without enrolment, and an "appears" rule kind), plus new hardware.
 - Limits: the framing must leave out the street and the neighbours; night, rain and backlight reduce detection; a parcel disappearing is case E4.
@@ -361,7 +361,7 @@ The following cases need an outdoor camera (other IoT): at the door, in the gard
 - Devices: outdoor camera (other IoT); garage door motor (other IoT).
 - Action: alert "The car has arrived"; open the garage door only if the client turns this on and, preferably, after confirming on the phone.
 - Feasibility: the car is a small extension; the plate is future.
-- Limits and legal questions: a licence plate is personal data (EDPB, Guidelines 3/2019, para. 8), and the camera also reads visitors' plates; so reading plates is opt-in only, at the home's own garage entrance only, and after a legal assessment (to verify). A plate is easy to copy: opening the garage on the plate alone would be unsafe, hence the owner's phone presence as well.
+- Limits and legal questions: a licence plate is personal data (EDPB, Guidelines 3/2019, para. 8), and the camera also reads visitors' plates; so reading plates is opt-in only, at the home's own garage entrance only, and after a legal assessment (§7). A plate is easy to copy: opening the garage on the plate alone would be unsafe, hence the owner's phone presence as well.
 
 #### E7. Things left outside: the bike, the garden hose, the bin
 
@@ -415,8 +415,7 @@ The memory that finds things (the place, time and crop of each sighting) can als
 - Devices: camera (kit), whose microphone serves as a trigger; contact sensor (kit); security hub (kit), whose alarm history the MCP already reads (`get_home_security_alarm_history`); outdoor camera (other IoT), for the window.
 - Action: the app shows the list with the images; the family can pin events to keep them longer, and export them.
 - Feasibility: the prototype's timeline already keeps people and animals with place and time, without images; adding images to security events and an "unusual only" view are small extensions. Recognising a bark by its sound needs an audio model, and knowing what is unusual needs learning the home's pattern (like C2's usual hours): future. Today the prototype does not handle sound.
-- Limits: sound raises a legal question, because Article 19(4) of Lei n.º 58/2019 forbids capturing sound where video surveillance is allowed, except while the premises are closed or with the CNPD's prior authorisation; whether it applies to a private home is to verify (section 2.6). The outdoor camera follows the rules of section 2.6. Handing images to a neighbour or the authorities: to verify. With a dog that barks a lot almost everything is unusual, and the list only helps if it is short.
-- The story behind the case: a team member's neighbour was burgled; the team member's dog barked at 4 a.m., and that time helped the neighbour search the recordings of her own camera.
+- Limits: sound raises a legal question, because Article 19(4) of Lei n.º 58/2019 forbids capturing sound where video surveillance is allowed, except while the premises are closed or with the CNPD's prior authorisation; whether it applies to a private home is left to the legal review (section 2.6). The outdoor camera follows the rules of section 2.6. Handing images to a neighbour or the authorities: left to the legal review (§7). With a dog that barks a lot almost everything is unusual, and the list only helps if it is short.
 
 ### IoT ideas proposed within the team: where they fit
 
@@ -434,7 +433,7 @@ Nine ideas proposed within the team combine the camera with other devices. The t
 | Smoke, flame or water pooling seen: plug off or water shut-off valve | S10 | Query by name; visual check of a crop | Smoke and flame model with measured reliability; valve on the platform | Future |
 | Gestures: TV, light, coffee machine | V6 | Light and plug through the MCP | Gesture model | Future |
 
-All of these devices would have to exist on the Altice platform. The MCP write tool accepts power, brightness, colour temperature and colour today: enough for a valve, a sprinkler or a floodlight exposed as switches, but not for blinds or doors with a position (to confirm with Altice).
+All of these devices would have to exist on the Altice platform. The MCP write tool accepts power, brightness, colour temperature and colour today: enough for a valve, a sprinkler or a floodlight exposed as switches, but not for blinds or doors with a position (assumption, §7).
 
 ### Limits common to every case
 
@@ -470,7 +469,7 @@ Three facts bear on the number of cameras:
 |---|---|---|
 | What it is for | Kitchen safety, care, things, presence | Break-ins, people at night, parcels, the car, things left outside |
 | Cases | S1 to S10, C1 to C7, V1 to V6, T1, T2 | E1 to E9, part of T2 |
-| Care needed | Never in bedrooms or bathrooms | Only the property and, where strictly necessary, the access to it; neither the street nor the neighbours; a sign on display (to verify); motion only as the trigger, no sound (section 2.6) |
+| Care needed | Never in bedrooms or bathrooms | Only the property and, where strictly necessary, the access to it; neither the street nor the neighbours; a sign on display (wording left to the legal review, section 2.6); motion only as the trigger, no sound (section 2.6) |
 | Hardware | The kit camera | An outdoor camera (other IoT), or the kit camera at a covered entrance if Altice confirms it |
 
 ### 2.3 Where to put them
@@ -500,19 +499,19 @@ Three facts bear on the number of cameras:
 - People are detected as "a person" or "a child", without identification. Recognising family members is opt-in, turned on person by person, with consent, and done on the home device.
 - The client can set masks: areas of the image that are never analysed.
 - ThingTracker records no video; observations stay 30 days on the home device.
-- Retention of timeline events (proposal): 30 days by default, then deleted; events the family pins, for example those of an alarm, are kept longer, until the family deletes them or up to a maximum still to be set. For sound only the label is kept ("bark, 4:02"), never the audio. The log of actions taken in the home, planned in the architecture, is kept 90 days.
+- Retention of timeline events (proposal): 30 days by default, then deleted; events the family pins, for example those of an alarm, are kept longer, until the family deletes them or up to a maximum to be set in the pilot (§7). For sound only the label is kept ("bark, 4:02"), never the audio. The log of actions taken in the home, planned in the architecture, is kept 90 days.
 - Only the safety cases involving people (S7, E1, E2 and E4) send a photo of a person. The others send a crop of an object or no image at all (C6, for instance, never sends a photo).
 
 ### 2.6 Outdoor cameras in Portugal: privacy and the law
 
-This is not legal advice: it summarises the primary sources the team checked on 18 November 2026 and flags what remains to be verified.
+This is not legal advice: it summarises the primary sources the team checked on 18 November 2026 and flags what the legal review before any pilot must check.
 
 - What the camera may film. Lei n.º 58/2019, which implements the GDPR in Portugal, says in Article 19(2)(a) that cameras may not cover "vias públicas, propriedades limítrofes ou outros locais que não sejam do domínio exclusivo do responsável, exceto no que seja estritamente necessário para cobrir os acessos ao imóvel" (public roads, neighbouring properties or other places not under the controller's exclusive domain, except as strictly necessary to cover the access to the property; Diário da República, 1st series, no. 151, 8 August 2019).
 - When the GDPR applies. A camera that films only the home's own fenced garden is, in principle, covered by the household exemption of GDPR Article 2(2)(c); it stops being covered if it extends, even partly, to public space or a neighbour's property (European Data Protection Board, Guidelines 3/2019, version 2.0, paras. 12 and 13; Court of Justice of the EU, Ryneš, C-212/13, 11 December 2014).
-- Sound. Article 19(4) of the same law forbids capturing sound where video surveillance is allowed, except while the premises are closed or with the CNPD's prior authorisation. Because the solution uses sound as a trigger for analysis, outdoor cameras use motion only; whether the rule applies to a private home is still to verify. For the same reason, case T2 keeps only the sound's label, never the audio.
-- Signage. Article 19(1) refers to the requirements of Article 31 of Lei n.º 34/2013, which, according to secondary sources, include a sign on display; the current wording of that article and how it applies to a private home are to verify. Where the GDPR applies, Guidelines 3/2019 (section 7.1) make the warning sign the first layer of information.
+- Sound. Article 19(4) of the same law forbids capturing sound where video surveillance is allowed, except while the premises are closed or with the CNPD's prior authorisation. Because the solution uses sound as a trigger for analysis, outdoor cameras use motion only; whether the rule applies to a private home is left to the legal review. For the same reason, case T2 keeps only the sound's label, never the audio.
+- Signage. Article 19(1) refers to the requirements of Article 31 of Lei n.º 34/2013, which, according to secondary sources, include a sign on display; the current wording of that article and how it applies to a private home are left to the legal review. Where the GDPR applies, Guidelines 3/2019 (section 7.1) make the warning sign the first layer of information.
 - Plates and faces. A licence plate is personal data (Guidelines 3/2019, para. 8). Reading plates or recognising faces is opt-in only, after a legal assessment and a data protection impact assessment (DPIA).
-- The CNPD's own guidance for home cameras: to verify.
+- The CNPD's own guidance for home cameras: to be read in the legal review.
 
 What the product would do (team proposals):
 - When an outdoor camera is installed, the app asks the client to take the street and the neighbour's house out of the picture, and reminds them about the sign.
@@ -775,9 +774,9 @@ Cat.: catalogue case; Imp.: impact; Nov.: novelty; Feas.: feasibility; Crit.: cr
 #### T2. What happened at 4 a.m.? – 22
 
 - Impact 4: after a burglary, the family and the neighbours know where to look.
-- Novelty 5: the unusual (the dog barking at 4 a.m.) becomes information; it comes from a real story.
+- Novelty 5: the unusual (the dog barking at 4 a.m.) becomes information; it is based on a real event.
 - Feasibility 3: the timeline exists; the bark and "unusual" need new models (future), and the window needs the outdoor camera.
-- Demo 4: a night-time timeline films well, and the real story is quick to tell.
+- Demo 4: a night-time timeline films well, and the case is quick to explain.
 - Criteria 4: security is already in Altice's offer, but the timeline is new; sound raises a legal question.
 - Privacy (risk) 4: sound, an outdoor camera and images of people; for sound only the label is kept.
 
@@ -788,7 +787,7 @@ Cat.: catalogue case; Imp.: impact; Nov.: novelty; Feas.: feasibility; Crit.: cr
 | 1 | The child in danger (S2 + S5), with the "too late" epilogue (T1) | Opens with fear and with the new idea, a vague sentence the language model turns into rules; the epilogue shows the home's memory |
 | 2 | Knife on the counter and the cat (S1) | Pets; the mentors' own example |
 | 3 | Nobody in the kitchen by midday (C2) | Care for someone who lives alone; works today |
-| 4 | What happened at 4 a.m.? (T2) | Night and security, told through a true story |
+| 4 | What happened at 4 a.m.? (T2) | Night and security, with the home's memory |
 | 5 | Live: leaving without the book, and "where is the book?" (V1 and V2) | The proof: the yellow book, the kit's door sensor and the light turning red |
 
 Why, together, they tell the best story:
@@ -796,7 +795,7 @@ Why, together, they tell the best story:
 - Emotional arc: it starts with fear (the child), moves through tenderness (the cat, the grandmother) and the unease of the night (the dog that barked at 4 a.m.), and ends with proof that it works.
 - One thread: in every scene the camera sees something and the home understands what it means and remembers it; four of the five scenes need only the kit (T2 uses the outdoor camera for the window), and two already work in the prototype (C2 and V1).
 - The live demo closes: after four cases on video, the jury sees the real kit working.
-- Left out are well-scored cases that would repeat a theme: C3 (pills) repeats the older person and S3 (hob) repeats the kitchen; T1 and V2 come in as epilogues. The parcel at the door (E5), which left the 10, can come back as a light moment if the team prefers to end the video part with good news.
+- Left out are well-scored cases that would repeat a theme: C3 (pills) repeats the older person and S3 (hob) repeats the kitchen; T1 and V2 come in as epilogues. The parcel at the door (E5), which left the 10, is the alternative ending with good news.
 
 One storyboard line per scene (the on-screen text stays in Portuguese):
 1. Child in danger: first, the sentence "avisa-me se a criança estiver em perigo" and the three rules the model wrote (detergent, knife, stove); then, in the kitchen, the child (box "criança") reaches for a detergent pod (box "detergente") and the boxes turn red; on the phone: "A criança está junto a um detergente. Cozinha, 16h30." (The child is next to a detergent. Kitchen, 16:30), with the photo and the buttons "Ligar alarme" (turn the alarm on) and "Tudo bem" (all fine). Epilogue (T1): the mother asks "o que esteve perto dela esta tarde?" (what was near her this afternoon?) and sees the sequence, each step with its crop: "16h28, junto a um detergente; 16h29, junto a um copo" (16:28, next to a detergent; 16:29, next to a glass).
@@ -805,36 +804,38 @@ One storyboard line per scene (the on-screen text stays in Portuguese):
 4. What happened at 4 a.m.: at night the family asks "o que aconteceu esta noite?" (what happened tonight?); the timeline shows two unusual events, "4h02, sala: o cão ladrou, o que nunca faz a esta hora" (4:02, living room: the dog barked, which it never does at this time; the label only, no sound recorded) and "4h05, traseiras: uma pessoa junto à janela" (4:05, back of the house: a person at the window; box "pessoa", with the crop); the family pins both to keep them.
 5. Live, with the kit camera: the yellow book on the table (box "livro", recognised with a similarity of 0.70); the door opens (the kit sensor) and the light turns red; on the phone: "Saíste sem o livro. Está na mesa." (You left without the book. It is on the table); finally, the question "onde está o livro?" (where is the book?) and the answer with the photo.
 
-Before filming:
-- The report's Figure 1 shows the alert "A criança pôs um detergente na boca." (The child put a detergent in its mouth.) Today the camera can only say "next to"; "in the hand" or "in the mouth" needs a pose model (future). For the video, "junto a um detergente" (next to a detergent) is proposed, or a "conceito" caption.
-- The child appears as an illustration, or in a staged scene with the parents' agreement.
-- In T2, recognising the bark and "unusual" is future: in the video the scene is a concept. The true story is told without names.
-- The light turning red live needs the prototype's real actions switched on, with the team's approval, and the light connected to the platform (on 16 November it had not reported since 4 November; to confirm). Without that, the app shows the simulated MCP call.
-- The prototype waits 60 seconds after the door opens; in a 3-minute demo that wait should be shorter, and it is a parameter of the rule.
+Limits the scenes keep to (what each film shows as real, staged or envisioned is in [document 24](24-what-is-real.md)):
+- The report's Figure 1 shows the alert "A criança pôs um detergente na boca." (The child put a detergent in its mouth.) as the target. Today the camera can only say "next to"; "in the hand" or "in the mouth" needs a pose model (future).
+- A child appears only as an illustration, or in a staged scene with the parents' agreement.
+- In T2, recognising the bark and "unusual" is future, so the scene is a concept.
+- The prototype never switches real device actions on (`TT_LIVE_ACTIONS` is not set, [document 23](23-engineering-qa.md)), so the app shows the exact MCP call as a dry run; the kit light had not reported since 4 November ([document 11](11-project-baseline.md)).
+- The active check starts when the door closes; the prototype's demo timings are in seconds and its production timings in minutes (`TT_TIMINGS=prod`, `prototype/presence.py`).
 
 ## 6. Value proposition
 
 - For the family: the camera already in the home starts warning about dangers nobody is watching (the knife within the cat's reach, the forgotten stove, the grandmother who has not come into the kitchen, someone in the garden at night) and answers "where is it?".
 - For the family: every alert comes from a sentence or from a proposal accepted with one tap; the siren sounds at once only where the family chose it, otherwise after a "yes"; and no full image leaves the home for analysis.
 - For Altice and MEO, differentiation: the cameras and sensors they already sell become a new service, inside the app and the MCP that already exist.
-- For Altice and MEO, revenue: an add-on of €3.99 a month, of which about €1.74 per home remains, and about 19,000 MEO homes in the expected case (business-case assumptions).
+- For Altice and MEO, revenue: an add-on of €3.99 a month, of which about €1.74 per home remains before vision and about €1.25 after it ([document 17](17-operator-costs.md)), and about 19,000 MEO homes in the expected case (business-case assumptions).
 - For Altice Labs: a platform service for any operator, and a reason to sell more sensors (outdoor cameras, floodlights, connected hob, leak sensor, smart lock).
 
-## 7. Assumptions and open questions
+## 7. Assumptions and next steps for the pilot
 
-1. Two or three cameras per home is a team assumption, to validate with customers.
-2. Notification service: the MCP has no tool for alerts; which service the app uses is unknown.
-3. Siren: the MCP write tool accepts power, brightness, colour temperature and colour; how to sound the camera's or the hub's siren is still to confirm. It follows the family's choice for each rule: ask first, or sound at once.
-4. Other devices (connected hob or oven, leak sensor, smart lock, mailbox sensor, smart speaker, presence sensors): which ones the platform supports is unknown.
-5. Kit camera outdoors (IP65): to confirm with Altice.
-6. Maximum power of the kit plug: unknown.
-7. Detection reliability for knives, parcels and pill boxes at a distance: not measured.
+Each case rests on the assumptions below; each one names the step that settles it. Legal points go to the legal review that precedes any pilot.
+
+1. Cameras per home: two or three is a team assumption; the pilot measures it with customers.
+2. Notifications: the MCP has no notification or push tool ([document 10](10-mcp-in-practice.md)); alerts are assumed to use the app's own notification service, to agree with Altice ([document 15](15-integration-spec.md), section 9).
+3. Siren: the kit camera exposes a `sirenSwitch` capability ([document 10](10-mcp-in-practice.md)); it was never written, because the alarm and sirens stay simulated. The pilot tests it with Altice. It follows the family's choice for each rule: ask first, or sound at once.
+4. Other devices (connected hob or oven, leak sensor, smart lock, mailbox sensor, smart speaker, presence sensors): assumed to be supported by the platform; the pilot checks which ones are.
+5. Kit camera outdoors: it is rated IP65 ([document 4](04-kit-and-access.md)); an outdoor placement was not tested.
+6. Kit plug: an unbranded Schuko plug whose maximum power is not recorded ([document 4](04-kit-and-access.md)); the cases assume the appliance fits its rating, to check on the device.
+7. Detection reliability for knives, parcels and pill boxes at a distance: not measured; a pilot target.
 8. Legal review: outdoor camera framing and recognition of family members.
-9. Signage for outdoor cameras: the current wording of Article 31 of Lei n.º 34/2013 and how it applies to a private home are to verify.
-10. Sound outdoors: whether the ban in Article 19(4) of Lei n.º 58/2019 applies to a home is to verify; until then, outdoor cameras use motion only as the trigger.
+9. Signage for outdoor cameras: the current wording of Article 31 of Lei n.º 34/2013 and how it applies to a private home (legal review).
+10. Sound outdoors: whether the ban in Article 19(4) of Lei n.º 58/2019 applies to a home (legal review); until then, outdoor cameras use motion only as the trigger.
 11. Licence plates: opt-in, a DPIA and legal advice before any pilot.
-12. Devices from the IoT ideas proposed within the team (floodlights, blinds, sprinkler, pet door, garage door motor, thermostat, outdoor speaker): which ones the platform supports, and whether the MCP write tool is enough to drive them, is unknown.
-13. Timeline retention: 30 days by default and longer for pinned events is a proposal, and the maximum is still to be set.
-14. Sharing timeline images with neighbours or the authorities: to verify.
+12. Devices from the IoT ideas proposed within the team (floodlights, blinds, sprinkler, pet door, garage door motor, thermostat, outdoor speaker): which ones the platform supports, and whether the MCP write tool is enough to drive them, is checked with Altice in the pilot.
+13. Timeline retention: 30 days by default and longer for pinned events is a proposal; the maximum is set in the pilot.
+14. Sharing timeline images with neighbours or the authorities: legal review.
 
 Sources: Aveiro Tech City Hackathon 2026 participation rules, Articles 16 and 18; Lei n.º 58/2019, Article 19 (Diário da República, 1st series, no. 151, 8 August 2019); Regulation (EU) 2016/679 (GDPR), Article 2(2)(c); Court of Justice of the EU, Ryneš, C-212/13, 11 December 2014; European Data Protection Board, Guidelines 3/2019 on processing of personal data through video devices, version 2.0, 29 January 2020 (paras. 8, 12 and 13, section 7.1); the legal sources were read on 18 November 2026; INE, Census 2021, table Q1.04 (age bands summed by the team, see `docs/12-market-research.md`); Eurostat, `hlth_dhc140` (2025, read on 18 November 2026, see `docs/12-market-research.md`); Altice Labs' Connected Home product page (see `docs/02-challenge.md`); business case (`docs/16-business-case.md`); team measurements, 18 November 2026.

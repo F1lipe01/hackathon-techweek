@@ -23,4 +23,7 @@ The run of show for the 3- and 5-minute pitches is in [docs/pt/21-pitch.md](../.
 
 ## PowerPoint on the organisers' template
 
-The files submitted at 17:30 are `ThingTracker - Pitch 5 min.pptx` (and its PDF); `ThingTracker - Pitch 3 min.pptx` keeps only the 3-minute slides. Both are built on the Aveiro Tech City Hackathon template by `pptx/build_pptx.py` (python-pptx): the template's cover, black and white frames, one headline per slide, images, and the spoken lines and timings in the speaker notes, read from `source/slides/<id>.html`. The template itself is not stored here. Rebuild: `python pptx/build_pptx.py template.pptx BUILD_DIR "ThingTracker - Pitch 5 min.pptx" "ThingTracker - Pitch 3 min.pptx"` (needs ffmpeg and the films in `video/out/pitch/`).
+The pitch is a PPTX on the Aveiro Tech City Hackathon template (the template itself is not stored here). `pptx/build_pptx.py` holds the frame every slide follows: the template's header mark and partner logos at 60 %, fixed in place, one title position (x 0,45", y 0,80", 9,10" × 0,55", Arial Bold 26 pt, one line) and one content zone (x 0,45"–9,55", y 1,50"–4,85", or from 0,80" without a title), captions 0,08" under what they caption, 0,25" between blocks.
+
+- `ThingTracker - Pitch layout.pptx` (and PDF): the frame with every zone outlined, on black and white, with and without a title, and the cover. Build: `python pptx/build_pptx.py guide template.pptx "ThingTracker - Pitch layout.pptx"`.
+- `ThingTracker - Pitch 5 min.pptx` and `3 min.pptx` (20 Nov, morning) are the first draft, built before the frame; they are being rebuilt on it, with 8 and 6 slides and the appendix as a separate file.

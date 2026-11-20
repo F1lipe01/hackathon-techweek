@@ -390,12 +390,13 @@ def active_check(server, task, things, fps, det, emb, args, frames=3, places_mem
         sim, box = best_match(img, t, fp, det, emb, args.match, box=last)
         if box is not None and sim > best[0]:
             best = (sim, box, img)
-        views.append(region_around(img, last)[2] if last else img)
+        views.append(region_around(img, last, size=(320, 240))[2].resize((640, 480)) if last else img)   # tight: a 2B model
+        #   misses a 116 x 40 px book in a 640 x 480 region ("no" with it there), and sees it in 320 x 240 enlarged
         time.sleep(0.4)
     sim, box, img = best
     if box is None:
         out = {"id": task["id"], "seen": False, "frames": frames, "score": round(sim, 2)}
-        verdict = ask_judge(f"Is there a {task['query']} on the {task.get('place') or 'desk'} in these pictures?", views[:3])
+        verdict = ask_judge(f"Is there a {task['query']} on the {task.get('place') or 'desk'} in these pictures?", views[-1:])
         if verdict:
             out["judge"] = verdict
         return out

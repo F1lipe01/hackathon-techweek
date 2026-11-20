@@ -507,6 +507,15 @@ def run(private, db):
     call("DELETE", f"/api/rules/{r['id']}")
     phone(filipe, True)
 
+    r, chk = leave_case(phone_after=False, answer={"seen": False, "frames": 3, "score": 0.3,
+                                                   "judge": {"answer": "yes", "sentence": "yes", "ms": 1500}})
+    a = wait_for(lambda e: e["kind"] == "alert" and e.get("rule_id") == r["id"], timeout=10)
+    check("not visible, but the local judge says yes -> a question to the family: no alarm, no device action",
+          a and a["title"].startswith("Is your book") and not a.get("alarm") and not a["action"]["calls"]
+          and (a.get("judge") or {}).get("answer") == "yes", a and a["text"])
+    call("DELETE", f"/api/rules/{r['id']}")
+    phone(filipe, True)
+
     r, chk = leave_case(phone_after=False)
     u = wait_for(lambda e: e["kind"] == "unsure" and e.get("rule_id") == r["id"], timeout=12)
     check("Filipe leaves, the camera service never answers the check -> “unsure”, no alert", chk and u

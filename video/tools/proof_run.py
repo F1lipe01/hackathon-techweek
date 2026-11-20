@@ -67,6 +67,7 @@ def main():
     ap.add_argument("name", choices=["book", "face", "nobody"])
     ap.add_argument("--no-video", action="store_true")
     ap.add_argument("--tail", type=float, default=20.0, help="seconds to keep recording after the take ends")
+    ap.add_argument("--judge", action="store_true", help="also run the local vision-language judge (prototype/judge.py)")
     a = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     spec_path = PROTO / "replays" / f"{a.name}.json"
@@ -78,7 +79,10 @@ def main():
     logs = {k: open(OUT / f"{a.name}.{k}.out", "w") for k in ("server", "edge")}
     server = subprocess.Popen([str(PROTO / ".venv" / "bin" / "python"), str(PROTO / "server.py")], env=env,
                               stdout=logs["server"], stderr=subprocess.STDOUT)
-    edge = None
+    edge = judge = None
+    if a.judge:
+        judge = subprocess.Popen([str(PROTO / ".venv-vlm" / "bin" / "python"), str(PROTO / "judge.py")],
+                                 stdout=open(OUT / f"{a.name}.judge.out", "w"), stderr=subprocess.STDOUT)
     try:
         for _ in range(60):
             try:
@@ -116,7 +120,7 @@ def main():
                            check=True)
         rep = get("/api/replay")
     finally:
-        for p in (edge, server):
+        for p in (edge, server, judge):
             if p:
                 p.terminate()
                 try:

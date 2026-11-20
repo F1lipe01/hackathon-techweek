@@ -302,7 +302,7 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
 | Why not on every frame | Cost at 500,000 homes (document 17); *your* thing needs a fingerprint anyway; alarms must rest on rules that can be tested |
 | What it cannot do | See someone who has left the picture: "did someone leave the house?" comes from the door sensor and the phones |
 
-It replaces the earlier job "judge an unclear crop" of the text model. No model has been chosen yet; its licence is to be checked before it is named.
+It replaces the earlier job "judge an unclear crop" of the text model. The prototype uses Qwen2-VL-2B-Instruct (Apache-2.0) through MLX (`prototype/judge.py`), on one tight crop of the place; Qwen2.5-VL-3B was ruled out because of its Qwen Research licence. The model for Altice's servers is chosen in the pilot, with the same licence check.
 
 ### 8.7 Alerts and actions
 

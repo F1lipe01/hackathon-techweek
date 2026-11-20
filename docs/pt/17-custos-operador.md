@@ -4,7 +4,7 @@ Estado a 18 de novembro de 2026. Todos os valores resultam do _script_ [`deliver
 
 ## Em resumo
 
-- A pergunta. O caso de negócio apresenta o custo do modelo de linguagem por casa (cerca de 0,43 € por mês). Os mentores pediram também o custo para o operador dos modelos de visão, que depende do local onde correm. O mentor Hugo Dias objetou que um equipamento por casa, ou uma frota de servidores, é muito caro com 500 000 clientes, e que é por isso que as empresas recorrem aos _hyperscalers_.
+- A pergunta. O caso de negócio apresenta o custo do modelo de linguagem por casa (cerca de 0,43 € por mês). Este documento calcula o custo para o operador dos modelos de visão, que depende do local onde correm, e responde à objeção de que um equipamento por casa, ou uma frota de servidores, é muito caro com 500 000 clientes, e de que é por isso que as empresas recorrem aos _hyperscalers_.
 - Com imagens completas, a objeção confirma-se. Analisar todas as imagens com movimento, em resolução completa, custa à Altice 2,41 € por casa e por mês em servidores próprios, entre 3,93 € e 4,26 € em _GPU_ alugadas a pedido num _hyperscaler_ e entre 6,55 € e 8,64 € com uma caixa em cada casa. Com o serviço adicional a 3,99 €, nenhuma destas opções deixa margem.
 - A via recomendada custa cerca de 0,49 € por casa e por mês com uma câmara (0,98 € com duas). A deteção de movimento, que é barata, fica em casa, na câmara ou no _router_. Só a zona da imagem que mudou segue para os servidores da Altice, e o trabalho que não é urgente aguarda numa fila por um momento de menor carga, pelo que os servidores não são dimensionados para o pico da noite. Sobra cerca de 1,25 € por casa e por mês.
 - O pressuposto principal: 2 h de movimento por câmara e por dia, analisadas a 1 imagem por segundo, numa _GPU_ a 25 % da sua velocidade máxima. Cada um destes valores pode duplicar ou reduzir para metade o custo (secção 9).
@@ -81,7 +81,7 @@ O preço da memória fez subir o dos pequenos computadores: o _Raspberry Pi 5_ d
 | Total por mês | Amortização + energia + espaço + operação + rede | 1203 mil € | 2407 mil € |
 | Por casa / por câmara | Total ÷ 500 000 casas / ÷ câmaras | 2,41 € / 2,41 € | 4,81 € / 2,41 € |
 
-Dimensionadas para o pico, as placas só estão ocupadas, em média, 21 % do tempo. Essa capacidade parada é o custo real a que o mentor se referia.
+Dimensionadas para o pico, as placas só estão ocupadas, em média, 21 % do tempo. Essa capacidade parada é o custo real a que a objeção se refere.
 
 ## 6. Opção C: _GPU_ de um _hyperscaler_ numa região da UE, imagens completas
 
@@ -158,12 +158,14 @@ Sensibilidade (servidores _L4_ próprios, 1 câmara; via híbrida / imagens comp
 
 ## 10. Resposta à objeção
 
-- Uma caixa em cada casa é a opção mais cara: 100 a 140 M€ de equipamento para 500 000 casas e 6,55 € a 8,64 € por casa e por mês. Neste ponto, o mentor tem razão.
+- Uma caixa em cada casa é a opção mais cara: 100 a 140 M€ de equipamento para 500 000 casas e 6,55 € a 8,64 € por casa e por mês. Neste ponto, a objeção procede.
 - Os _hyperscalers_ são mais baratos do que servidores parados, mas não do que servidores ocupados. A sua vantagem é cobrarem a curva diária. O trabalho do _ThingTracker_ pode ser redistribuído (verificação de movimento em casa, só a zona alterada, fila para o que não é urgente), o que mantém ocupados os servidores próprios da Altice e reduz o custo para 0,49 € por casa e por mês, contra 1,53 € para a mesma via híbrida na AWS a pedido.
 - Os _hyperscalers_ são o ponto de partida certo. Com as 19 000 casas esperadas no caso de negócio, servidores próprios obrigariam a comprar à partida cerca de 55 placas; as _GPU_ a pedido na nuvem não têm custo fixo enquanto a taxa de adesão for desconhecida. A passagem para servidores próprios compensa à medida que a base cresce.
 - O melhor cenário continua a ser o equipamento que já está em casa. Se os _routers_ ou as câmaras da Altice tiverem uma _NPU_ capaz de correr um detetor, o custo desce para cerca de 0,36 € por casa e por mês (A1). É a primeira pergunta a colocar à Altice.
 
-## 11. O que falta confirmar
+## 11. Pressupostos a validar no piloto
+
+Os valores anteriores assentam em pressupostos que se substituem por medições antes ou durante o piloto:
 
 1. O débito: correr o _OWLv2_ e o _DINOv2_ com _TensorRT_ em FP16 numa _T4_ ou numa _L4_ e substituir o pressuposto de 25 %. Este valor altera todas as opções com servidores.
 2. A precisão na zona alterada a 640 × 640, face às imagens completas a 960.

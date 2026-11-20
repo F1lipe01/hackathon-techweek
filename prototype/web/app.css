@@ -664,3 +664,5 @@ body.phone-page .ios-status > * { visibility: hidden; }
 .card .ic.glow { border-radius: 50%; transition: box-shadow 300ms ease-out, background-color 300ms ease-out; }
 .card .ic.glow.blue { background: #d6ebfb; box-shadow: 0 0 0 4px rgb(0 132 214 / 0.18), 0 0 22px 4px rgb(0 132 214 / 0.55); }
 .card .ic.glow.red { background: #fde2e2; box-shadow: 0 0 0 4px rgb(220 38 38 / 0.16), 0 0 22px 4px rgb(220 38 38 / 0.5); }
+.card .ic.glow.white { background: #fffdf6; box-shadow: 0 0 0 4px rgb(255 214 120 / 0.25), 0 0 24px 6px rgb(255 236 190 / 0.95); }
+.card .ic.glow.orange { background: #ffe3c4; box-shadow: 0 0 0 4px rgb(255 128 0 / 0.2), 0 0 24px 6px rgb(255 140 20 / 0.6); }

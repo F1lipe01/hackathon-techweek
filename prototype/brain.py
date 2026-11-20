@@ -645,6 +645,17 @@ class Brain:
         answer = " ".join(sentences[:3])
         if not answer:
             return None  # the service failed: the template answers instead
+        # a small model sometimes copies the prompt's example ("I don't know your keys yet") for a question that names
+        # no thing at all ("Test"): say instead what the assistant can answer, from the code
+        low_q, low_a = question.lower(), answer.lower()
+        if not ids and not day and ("know your keys" in low_a or "conheço as tuas chaves" in low_a) \
+                and not any(w in low_q for w in ("key", "chave")):
+            return {"answer": ("Posso dizer-te onde estão as tuas coisas registadas, quem está em casa e o que a câmara viu. "
+                               "Também podes criar um sensor numa frase, por exemplo: “avisa-me se sair sem as chaves”."
+                               if lang == "pt" else
+                               "I can tell you where your registered things are, who is home and what the camera saw. "
+                               "You can also create a sensor in one sentence, like “tell me if I leave without my keys”."),
+                    "thing_id": ""}
         q = question.strip().rstrip("?").lower()
         if len(q) > 8 and answer.lower().startswith(q):        # the model repeated the question first
             answer = answer[len(q):].lstrip(" ?:.,-").strip() or answer

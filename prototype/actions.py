@@ -35,13 +35,16 @@ CALLS = {
     "light_blue": _calls(LIGHT, ON, rgb(0, 132, 214)),
     "light_green": _calls(LIGHT, ON, rgb(0, 200, 80)),
     "light_off": _calls(LIGHT, OFF),
+    # the bulb as the Altice app shows it: warm orange to white (the MCP has no colour temperature, so RGB)
+    "light_white": _calls(LIGHT, ON, {"type": "brightness", "value": 100}, rgb(255, 255, 255)),
+    "light_orange": _calls(LIGHT, ON, {"type": "brightness", "value": 100}, rgb(255, 128, 0)),
     "plug_off": _calls(PLUG, OFF),
     "plug_on": _calls(PLUG, ON),
 }
 
 LABELS = {
     "notify": "aviso no telemóvel", "light_red": "luz vermelha", "light_blue": "luz azul", "light_green": "luz verde",
-    "light_off": "desligar a luz", "plug_off": "desligar a tomada", "plug_on": "ligar a tomada",
+    "light_off": "desligar a luz", "light_white": "luz branca", "light_orange": "luz laranja", "plug_off": "desligar a tomada", "plug_on": "ligar a tomada",
     "alarm_on": "alarme (simulado)", "alarm_off": "desligar o alarme (simulado)",
 }
 # The alarm is ThingTracker's own simulated state, ALWAYS: no MCP call is ever built for it, live or not (AGENTS.md

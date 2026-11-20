@@ -46,7 +46,80 @@
 
 <!-- ============================================================ COMO FUNCIONA -->
 <section class="tab page" id="t-como" hidden aria-label="Como funciona">
-  <header class="phead"><p class="kicker">Como funciona</p><h1>Da frase ao alerta</h1></header>
+  <header class="phead"><p class="kicker">Como funciona</p><h1>Ao vivo, em ciclo</h1></header>
+  <figure class="fig flow-fig">
+  <svg viewBox="0 0 1200 500" role="img" aria-label="O ciclo do ThingTracker: câmara, movimento, deteção, reconhecimento, memória e regras, aplicação e luz; o registo no telemóvel e o assistente">
+    <defs>
+      <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6270"/></marker>
+      <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0084d6"/></marker>
+      <style>
+        .bx { fill: #fff; stroke: #d9dee6; stroke-width: 1.5; }
+        .bx.hl { stroke: #0084d6; stroke-width: 2; }
+        .t { font: 600 18px Switzer, Helvetica, Arial, sans-serif; fill: #0d1320; }
+        .s { font: 400 14px Switzer, Helvetica, Arial, sans-serif; fill: #5b6270; }
+        .n { font: 700 12px ui-monospace, Menlo, monospace; fill: #fff; }
+        .lb { font: 500 13px Switzer, Helvetica, Arial, sans-serif; fill: #5b6270; }
+        .lbb { font: 600 13px Switzer, Helvetica, Arial, sans-serif; fill: #0084d6; }
+        .ln { fill: none; stroke: #5b6270; stroke-width: 1.8; }
+        .lnb { fill: none; stroke: #0084d6; stroke-width: 2; }
+        .dash { stroke-dasharray: 6 5; }
+      </style>
+    </defs>
+    <!-- registration, on the phone -->
+    <rect class="bx hl" x="536" y="16" width="320" height="64" rx="14"/>
+    <text class="t" x="556" y="44">Telemóvel · registar</text>
+    <text class="s" x="556" y="66">pessoa: 1 foto · objeto: fotos ou câmara</text>
+    <path class="lnb dash" d="M696 80 V166" marker-end="url(#ahb)"/>
+    <text class="lbb" x="708" y="128">rosto e impressão visual, guardados em casa</text>
+
+    <!-- the live loop -->
+    <g>
+      <rect class="bx" x="40" y="170" width="160" height="100" rx="14"/><circle cx="62" cy="192" r="11" fill="#0084d6"/><text class="n" x="58" y="196">1</text>
+      <text class="t" x="80" y="198">Câmara</text><text class="s" x="58" y="226">webcam, ao vivo</text><text class="s" x="58" y="246">nada é gravado</text>
+
+      <rect class="bx" x="232" y="170" width="160" height="100" rx="14"/><circle cx="254" cy="192" r="11" fill="#0084d6"/><text class="n" x="250" y="196">2</text>
+      <text class="t" x="272" y="198">Movimento?</text><text class="s" x="250" y="226">filtro barato,</text><text class="s" x="250" y="246">2 vezes por segundo</text>
+
+      <rect class="bx" x="424" y="170" width="160" height="100" rx="14"/><circle cx="446" cy="192" r="11" fill="#0084d6"/><text class="n" x="442" y="196">3</text>
+      <text class="t" x="464" y="198">OWLv2</text><text class="s" x="442" y="226">encontra pessoas</text><text class="s" x="442" y="246">e objetos</text>
+
+      <rect class="bx hl" x="616" y="170" width="160" height="100" rx="14"/><circle cx="638" cy="192" r="11" fill="#0084d6"/><text class="n" x="634" y="196">4</text>
+      <text class="t" x="656" y="198">Quem? Qual?</text><text class="s" x="634" y="226">rosto: SFace</text><text class="s" x="634" y="246">objeto: DINOv2</text>
+
+      <rect class="bx" x="808" y="170" width="160" height="100" rx="14"/><circle cx="830" cy="192" r="11" fill="#0084d6"/><text class="n" x="826" y="196">5</text>
+      <text class="t" x="848" y="198">Memória</text><text class="s" x="826" y="226">e motor de regras</text><text class="s" x="826" y="246">decide o que fazer</text>
+
+      <rect class="bx" x="1000" y="170" width="160" height="100" rx="14"/><circle cx="1022" cy="192" r="11" fill="#0084d6"/><text class="n" x="1018" y="196">6</text>
+      <text class="t" x="1040" y="198">App e luz</text>
+      <circle cx="1026" cy="222" r="7" fill="#fff" stroke="#c9a65a" stroke-width="1.5"/><text class="s" x="1040" y="227">reconhecido</text>
+      <circle cx="1026" cy="246" r="7" fill="#ff8000"/><text class="s" x="1040" y="251">desconhecido</text>
+    </g>
+    <path class="ln" d="M200 220 H226" marker-end="url(#ah)"/>
+    <path class="ln" d="M392 220 H418" marker-end="url(#ah)"/><text class="lb" x="396" y="210">sim</text>
+    <path class="ln" d="M584 220 H610" marker-end="url(#ah)"/>
+    <path class="ln" d="M776 220 H802" marker-end="url(#ah)"/>
+    <path class="ln" d="M968 220 H994" marker-end="url(#ah)"/>
+    <!-- no movement: the camera rests -->
+    <path class="ln" d="M312 170 V128 H120 V164" marker-end="url(#ah)"/>
+    <text class="lb" x="140" y="120">não: fica em repouso</text>
+    <!-- the loop -->
+    <path class="ln" d="M1080 270 V330 H120 V276" marker-end="url(#ah)"/>
+    <text class="lb" x="480" y="322">repete, cerca de uma vez por segundo, enquanto há movimento</text>
+
+    <!-- the assistant -->
+    <path class="ln dash" d="M888 270 V396" marker-end="url(#ah)"/>
+    <rect class="bx" x="640" y="400" width="400" height="76" rx="14"/>
+    <text class="t" x="660" y="428">Assistente</text>
+    <text class="s" x="660" y="452">o código escolhe os factos na memória;</text>
+    <text class="s" x="660" y="470">o Qwen3-1.7B, local, escreve a resposta</text>
+    <path class="ln dash" d="M1040 438 H1120 V276" marker-end="url(#ah)"/>
+
+    <!-- reset -->
+    <text class="lb" x="40" y="430">↺ “Apagar pessoas e objetos”:</text>
+    <text class="lb" x="40" y="450">tudo volta ao início, para repetir</text>
+  </svg>
+  </figure>
+  <h2 class="sec">Um exemplo, do princípio ao fim</h2>
   <figure class="fig"><img src="/media/img/exemplo.png" alt="Exemplo: a regra, o registo visual, a deteção e o alerta" data-zoom></figure>
   <div class="models">
     <span><b>Movimento</b>só então correm os modelos</span><i>→</i>

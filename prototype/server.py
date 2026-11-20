@@ -1738,8 +1738,8 @@ def _edge_log_tail(n=4):
         return []
 
 
-# The kit's colour Light follows who the camera sees (the pitch site): blue with the name of a registered person,
-# red for a face that matches nobody, off when nobody has been in view for a while. It goes through actions.run like
+# The kit's colour Light follows who the camera sees (the pitch site): white with the name of a registered person,
+# orange for a face that matches nobody (the two ends of the bulb's range in the Altice app), off when nobody has been in view for a while. It goes through actions.run like
 # every device action (a dry run: the MCP calls are written down, not sent), and each change is an event the app shows.
 KIT_LIGHT = "00e038d4-0da7-45c2-b61f-f38c9ff9df82"
 LIGHT = {"state": "off", "who": None, "at": 0.0, "known_at": 0.0, "seen_at": 0.0}
@@ -1754,21 +1754,21 @@ def light_follows(persons):
         LIGHT["seen_at"] = now_
     if known:
         LIGHT["known_at"] = now_
-        want, who = "blue", known[0]
+        want, who = "white", known[0]
     elif unknown and now_ - LIGHT["known_at"] > 4:      # a face turned away for a moment is not a stranger
-        want, who = "red", None
+        want, who = "orange", None
     elif not persons and LIGHT["state"] != "off" and now_ - LIGHT["seen_at"] > 12:
         want, who = "off", None
     else:
         return
-    if (want, who) == (LIGHT["state"], LIGHT["who"]) or (want != "blue" and now_ - LIGHT["at"] < 3):
+    if (want, who) == (LIGHT["state"], LIGHT["who"]) or (want != "white" and now_ - LIGHT["at"] < 3):
         return
-    res = actions.run({"blue": "light_blue", "red": "light_red", "off": "light_off"}[want])
+    res = actions.run({"white": "light_white", "orange": "light_orange", "off": "light_off"}[want])
     LIGHT.update(state=want, who=who, at=now_)
-    status = {"blue": f"Blue · {who}", "red": "Red · not recognised", "off": "Off"}[want]
+    status = {"white": f"White · {who}", "orange": "Orange · not recognised", "off": "Off"}[want]
     with store.lock, store.db:
         store.db.execute("UPDATE devices SET status = ? WHERE id = ?", (status, KIT_LIGHT))
-    text = {"blue": f"Light turned blue: {who} recognised.", "red": "Light turned red: a face the camera does not know.",
+    text = {"white": f"Light turned white: {who} recognised.", "orange": "Light turned orange: a face the camera does not know.",
             "off": "Light off: nobody in view."}[want]
     store.add_event("device", text, light=want, action=res)
 
@@ -1947,8 +1947,8 @@ MEDIA = {   # what the site may serve from the repo, and nothing else (never the
     "proof-book.mp4": "video/out/proof/book.mp4",
     "proof-face-blurred.mp4": "video/out/proof/face (desfocado).mp4",
     "proof-nobody.mp4": "video/out/proof/nobody.mp4",
-    "film-livro.mp4": "video/out/ThingTracker - exemplo 1 - o livro (v12).mp4",
-    "film-pessoa.mp4": "video/out/ThingTracker - exemplo 2 - a pessoa desconhecida v6 (1080p preview).mp4",
+    "film-livro.mp4": "video/out/ThingTracker - exemplo 1 - o livro (v13).mp4",
+    "film-pessoa.mp4": "video/out/ThingTracker - exemplo 2 - a pessoa desconhecida (v7).mp4",
     "film-pessoas.mp4": "video/out/ThingTracker - exemplo 3 - as pessoas (rascunho 4).mp4",
     "demo-fallback.mp4": "video/out/demo/site-demo.mp4",
     "sumario-executivo.pdf": "deliverables/executive-summary/sumario-executivo-IT-Porto.pdf",

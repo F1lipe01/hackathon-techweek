@@ -7,6 +7,9 @@
 const $ = (id) => document.getElementById(id);
 const EMBED = new URLSearchParams(location.search).has('embed');
 if (EMBED) document.body.classList.add('embed');
+// on a real phone (/phone): the app alone, full screen; the phone's own status bar replaces the drawn one
+const PHONE = new URLSearchParams(location.search).has('phone');
+if (PHONE) document.body.classList.add('phone-page');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const hm = (ts) => new Date(ts * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 const ago = (ts) => {
@@ -111,6 +114,7 @@ function useSource(next) {
   stageMsg('Connecting to the kit camera… (about 5 s, waiting for a keyframe)');
   kitimg.onload = () => stageMsg('');
   kitimg.onerror = () => stageMsg('The kit camera is not answering. Is it powered and on the Wi-Fi?');
+  if (PHONE) return;                  // the phone shows the app only; the camera is on the Mac
   if (EMBED) { pollFrames(); return; }
   kitimg.src = '/api/kit/stream.mjpg?t=' + Date.now();
 }
@@ -1214,6 +1218,7 @@ const screenWrap = $('screenwrap');
 function fitDevice() {
   const z = screenWrap.clientWidth / 402;
   device.style.zoom = z;
+  if (PHONE) device.style.height = `${Math.round(screenWrap.clientHeight / z)}px`;   // the app fills the phone's screen
 }
 new ResizeObserver(fitDevice).observe(screenWrap);
 fitDevice();
@@ -1249,14 +1254,14 @@ if (EMBED) {
     const sig = JSON.stringify([src.id, take, playing, src.story, st.sources.map((x) => x.id)]);
     if (force || pl.dataset.sig !== sig) {
       pl.dataset.sig = sig;
-      const seg = `<div class="seg" role="group" aria-label="Fonte da câmara">${st.sources.map((x) => `<button type="button" data-src="${x.id}" aria-pressed="${x.id === src.id}">${x.kind === 'live' ? '<i class="live"></i>' : ''}${esc(x.name)}</button>`).join('')}</div>`;
+      const seg = st.sources.length < 2 ? '' : `<div class="seg" role="group" aria-label="Fonte da câmara">${st.sources.map((x) => `<button type="button" data-src="${x.id}" aria-pressed="${x.id === src.id}">${x.kind === 'live' ? '<i class="live"></i>' : ''}${esc(x.name)}</button>`).join('')}</div>`;
       pl.innerHTML = seg + (take
         ? `<button type="button" class="pb" data-act-p="${playing ? 'pause' : 'play'}" aria-label="${playing ? 'Pausa' : 'Reproduzir'}">${playing ? ICON.pause : ICON.play}</button>
            <button type="button" class="story" data-act-p="story" aria-pressed="${src.story}" title="Do início, com a porta e o telemóvel nos seus momentos">${src.story ? '● História a decorrer' : '↺ História do início'}</button>
            <div class="tl"><div class="marks">${src.marks.map((m) => `<i class="${m.what}" style="left:${((m.t - src.from) / (src.duration - src.from)) * 100}%"></i>`).join('')}</div>
              <input type="range" id="tl" min="${src.from}" max="${src.duration}" step="0.1" value="${src.t}" aria-label="Linha do tempo"></div>
            <span class="time" id="tltime"></span>`
-        : `<div class="livebadge"><b>● AO VIVO</b> Câmara do MacBook: os modelos procuram as coisas registadas e as pessoas, sem gravar nada.</div>`);
+        : `<div class="livebadge"><b>● AO VIVO</b> Câmara do MacBook · nada é gravado${st.phone_url ? `<span class="purl">Aplicação no telemóvel: <code>${esc(st.phone_url)}</code></span>` : ''}</div>`);
     }
     if (take) {
       const t = playing ? Math.min(src.duration, src.t + (performance.now() - P.at) / 1000) : src.t;

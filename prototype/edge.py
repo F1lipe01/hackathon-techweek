@@ -41,6 +41,8 @@ DATA = Path(os.environ.get("TT_DATA") or Path(__file__).resolve().parent / "data
 LOCAL_FP = DATA / "edge-fingerprints.json"   # the home device's own copy of the fingerprints
 EDGE_DB = DATA / "edge.db"                   # the home device's face templates (faces.py)
 ENROL_VIEWS = 8
+PT = os.environ.get("TT_LABELS") == "pt"     # the pitch site shows the boxes' labels in Portuguese
+num = (lambda x: f"{x:.2f}".replace(".", ",")) if PT else (lambda x: f"{x:.2f}")
 
 
 def get(url, timeout=15):
@@ -278,7 +280,8 @@ def enrol_step(img, task, det, emb, enrol, args):
             if all(float(v @ u) < 0.97 for u in enrol["vecs"]):      # a new angle, not the same view again
                 enrol["vecs"].append(v)
                 enrol["crops"].append(crop_b64(img, b, pad=0.15, size=240))
-            boxes.append({"box": norm_box(img, b), "label": f"Registering {task['name']} · view {len(enrol['vecs'])} of {ENROL_VIEWS}",
+            boxes.append({"box": norm_box(img, b), "label": f"A registar {task['name']} · vista {len(enrol['vecs'])} de {ENROL_VIEWS}" if PT
+                          else f"Registering {task['name']} · view {len(enrol['vecs'])} of {ENROL_VIEWS}",
                           "kind": "enrol", "score": round(s, 2)})
     done = len(enrol["vecs"]) >= ENROL_VIEWS
     payload = {"thing_id": tid, "got": len(enrol["vecs"]), "done": done}
@@ -319,8 +322,12 @@ def analyse(img, things, fps, det, emb, args, faceid=None, places_mem=None, moti
         if who == "unknown":                              # only a face that matches nobody: kept if a rule fires
             p["crop_b64"] = crop_b64(img, b, pad=0.15, size=360)
         persons.append(p)
-        label = (f"{names.get(who, who)} · face {face['score']:.2f}" if who not in ("unknown", "not_visible")
-                 else f"Unknown face {face['score']:.2f}" if who == "unknown" else "Person")
+        if PT:
+            label = (f"{names.get(who, who)} · {num(face['score'])}" if who not in ("unknown", "not_visible")
+                     else "Pessoa desconhecida" if who == "unknown" else "Pessoa")
+        else:
+            label = (f"{names.get(who, who)} · face {face['score']:.2f}" if who not in ("unknown", "not_visible")
+                     else f"Unknown face {face['score']:.2f}" if who == "unknown" else "Person")
         boxes.append({"box": norm_box(img, b), "label": label, "kind": "person", "score": round(s, 2)})
     profile = {k: max((s for q, s, b in dets if q == v), default=0.0) for k, v in PROFILE.items()}
     for k, v in PROFILE.items():
@@ -340,14 +347,16 @@ def analyse(img, things, fps, det, emb, args, faceid=None, places_mem=None, moti
                 sightings.append((t, s, b, f"recognised as yours ({sim:.2f})", float(sim)))
                 break
             if s >= 0.25:                                 # clearly that kind of object, but not this one
-                boxes.append({"box": norm_box(img, b), "label": f"A {t['name'].lower()}, not yours ({sim:.2f})",
+                boxes.append({"box": norm_box(img, b), "label": f"{t['name']}? Não é o registado ({num(sim)})" if PT
+                              else f"A {t['name'].lower()}, not yours ({sim:.2f})",
                               "kind": "other", "score": round(float(sim), 2)})
     out = []
     for t, s, b, note, sim in sightings:
         places_mem[t["id"]] = [round(v, 1) for v in b]
         place = place_of(b, places)
         holder = next((i for i, (ps, pb) in enumerate(people[:6]) if in_hand(b, pb)), None)
-        label = f"{t['name']} · yours {sim:.2f}" + (" · in hand" if holder is not None else "")
+        label = (f"{t['name']} · {num(sim)}" + (" · na mão" if holder is not None else "")) if PT else \
+            f"{t['name']} · yours {sim:.2f}" + (" · in hand" if holder is not None else "")
         boxes.append({"box": norm_box(img, b), "label": label, "kind": "thing", "score": round(sim or s, 2)})
         o = {"thing_id": t["id"], "score": round(s, 2), "place": place, "crop_b64": crop_b64(img, b), "note": note}
         if holder is not None:

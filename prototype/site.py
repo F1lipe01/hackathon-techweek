@@ -31,6 +31,7 @@ ROOT = HERE.parent
 DEMO = HERE / "data" / "demo"
 SOURCE = ROOT / "video" / "out" / "proof" / "book-data"     # the book's camera views, learnt by the real edge
 PORT = 8780
+SIM_THINGS = False          # the simulated things with a remembered place (keys, wallet...); off for the live demo
 
 ROOMS = [("living-room", "Living room"), ("kitchen", "Kitchen"), ("bedroom", "Bedroom"), ("entrance", "Entrance"),
          ("work-room", "Work Room")]
@@ -101,6 +102,14 @@ def build(fresh=False):
         except sqlite3.OperationalError:
             pass
     db.execute("DELETE FROM meta WHERE key IN ('alarm', 'photo_tasks', 'suggested')")
+    # the live demo starts with nobody and nothing registered: the presenter adds himself and an object on stage.
+    # Only the two device scenarios stay (power saving, the door left open); the book and security ones go.
+    for table in ("sightings", "fingerprints", "things"):
+        db.execute(f"DELETE FROM {table}")
+    for rid, data in db.execute("SELECT id, data FROM sensors").fetchall():
+        if json.loads(data).get("kind") not in ("nobody_devices_on", "door_open_nobody"):
+            db.execute("DELETE FROM sensors WHERE id = ?", (rid,))
+    db.execute("UPDATE sensors SET active = 0")          # paused at the start: with nobody registered the home reads empty
     db.execute("UPDATE home SET name = 'Hack 3'")
     db.executemany("INSERT OR REPLACE INTO rooms VALUES (?, ?)", ROOMS)
     for did, (room, status) in KIT_ROOMS.items():
@@ -111,7 +120,7 @@ def build(fresh=False):
         db.execute("INSERT OR REPLACE INTO devices VALUES (?, ?, ?, ?, ?, 0, ?)", (did, name, typ, room, status, now))
     db.execute("INSERT OR REPLACE INTO meta VALUES ('devices_source', ?)",
                (json.dumps("Demo home: the kit's devices (a copy) and simulated devices"),))
-    for tid, name, query, place, room, mins in THINGS:
+    for tid, name, query, place, room, mins in THINGS if SIM_THINGS else []:
         db.execute("INSERT OR REPLACE INTO things (id, name, query, created, fingerprint) VALUES (?, ?, ?, ?, NULL)",
                    (tid, name, query, now - 86400 * 3))
         db.execute("INSERT INTO sightings VALUES (?, ?, ?, ?, ?, ?, NULL)",
@@ -122,6 +131,10 @@ def build(fresh=False):
     for f in ("edge.db", "edge-fingerprints.json", "edge-places.json"):
         if (SOURCE / f).exists():
             shutil.copy2(SOURCE / f, DEMO / f)
+    with sqlite3.connect(DEMO / "edge.db") as edb:              # no face templates: nobody is known at the start
+        if edb.execute("SELECT 1 FROM sqlite_master WHERE name = 'face_templates'").fetchone():
+            edb.execute("DELETE FROM face_templates")
+    (DEMO / "edge-fingerprints.json").write_text("{}")
     tt = {"powers": {"plug": "Ceiling lights"},
           "state": {"bc891629-98bc-44f7-99a8-1aa61428a9bf": True, "ac": True},
           "integrations": [{"id": "ac", "name": "Air conditioner", "type": "ac", "room": "Living room", "on": True,
@@ -145,6 +158,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--fresh", action="store_true", help="rebuild the demo home first")
     ap.add_argument("--port", type=int, default=PORT)
+    ap.add_argument("--phone", action="store_true", help="also answer on the local network, for the app on a real phone")
     a = ap.parse_args()
     build(a.fresh)
     if not up("http://127.0.0.1:8766/health"):
@@ -152,10 +166,15 @@ def main():
         subprocess.Popen([str(HERE / ".venv-llm" / "bin" / "python"), str(HERE / "llm_local.py")],
                          stdout=open(DEMO / "llm.out", "a"), stderr=subprocess.STDOUT, start_new_session=True)
     env = {**os.environ, "TT_DATA": str(DEMO), "TT_PORT": str(a.port), "TT_DEMO": "1", "TT_TIMINGS": "demo",
-           "TT_REPLAY": str(HERE / "replays" / "book.json"), "TT_DEVICES_FILE": str(DEMO / "tt_devices.json")}
+           "TT_HOST": "0.0.0.0" if a.phone else "127.0.0.1"}
+    env.pop("TT_REPLAY", None)
     for k in ("TT_LIVE_ACTIONS", "TT_AI"):
         env.pop(k, None)
     print(f"ThingTracker site on http://127.0.0.1:{a.port}/site")
+    if a.phone:
+        ips = [subprocess.run(["ipconfig", "getifaddr", i], capture_output=True, text=True).stdout.strip() for i in ("en0", "en1", "bridge100")]
+        for ip in filter(None, ips):
+            print(f"on the phone: http://{ip}:{a.port}/phone")
     os.execve(str(HERE / ".venv" / "bin" / "python"), [str(HERE / ".venv" / "bin" / "python"), str(HERE / "server.py")], env)
 
 

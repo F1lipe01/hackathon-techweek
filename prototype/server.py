@@ -58,6 +58,23 @@ app = FastAPI(title="ThingTracker prototype")
 
 
 @app.middleware("http")
+async def private_networks_only(request, call_next):
+    """With TT_HOST=0.0.0.0 (prototype/site.py --phone) the site answers on the network for the presenter's phone:
+    only this machine and private networks (the phone's Personal Hotspot is 172.20.10.0/28) may ask. The webcam's
+    frames are never served to a public address."""
+    if os.environ.get("TT_HOST") == "0.0.0.0":
+        import ipaddress  # noqa: PLC0415
+        try:
+            ip = ipaddress.ip_address(request.client.host if request.client else "")
+            allowed = ip.is_loopback or ip.is_private or ip.is_link_local
+        except ValueError:
+            allowed = False
+        if not allowed:
+            return Response("Only on this machine or a private network.", status_code=403)
+    return await call_next(request)
+
+
+@app.middleware("http")
 async def no_cache_for_the_page(request, call_next):
     """The page changes often while we build it: never let the browser keep an old copy."""
     response = await call_next(request)
@@ -87,7 +104,7 @@ def _llm(fn, *args):
 #   state the app shows after a dry run is ThingTracker's own.
 # - an Air conditioner connected to the app directly, as a third-party integration: not part of the Altice kit, and
 #   simulated in this prototype (its state lives here; nothing is sent to it).
-TT_FILE = Path(os.environ.get("TT_DEVICES_FILE") or DATA / "tt_devices.json")
+TT_FILE = DATA / "tt_devices.json"      # TT_DATA moves it with the rest (TT_DEVICES_FILE is the MCP stand-in, not this)
 TT_DEFAULT = {"powers": {"plug": "Ceiling lights"}, "state": {},
               "integrations": [{"id": "ac", "name": "Air conditioner", "type": "ac", "room": "Work Room", "on": True,
                                 "via": "Third-party integration"}]}
@@ -1266,7 +1283,7 @@ def rules_engine():
 
 
 threading.Thread(target=rules_engine, daemon=True).start()
-if not os.environ.get("TT_REPLAY"):     # in a replay the door is the take's, never the live sensor
+if not (os.environ.get("TT_REPLAY") or DEMO_SITE):   # in a replay or the pitch site the door is simulated, never the live sensor
     threading.Thread(target=device_poller, daemon=True).start()
 
 # ---------------------------------------------------------------------- API
@@ -1603,15 +1620,17 @@ class Switch:
 
 
 SOURCES, CURRENT = {}, {"id": None}
-if DEMO_SITE and replayer:
+if DEMO_SITE:
+    # the pitch site is live: the MacBook's webcam is the camera, from the server's start (the lab takes stay
+    # available with TT_REPLAY, as before)
     from replay import WebcamCamera   # noqa: E402
-    SOURCES["book"] = {"name": "O livro", "kind": "take", "cam": kit, "replayer": replayer}
-    _nob = ReplayCamera(HERE / "replays" / "nobody.json")
-    SOURCES["nobody"] = {"name": "Ninguém em casa", "kind": "take", "cam": _nob,
-                         "replayer": Replayer(_nob, {"setup": replay_setup, "event": replay_event})}
+    if replayer:
+        SOURCES["book"] = {"name": "O livro", "kind": "take", "cam": kit, "replayer": replayer}
     SOURCES["webcam"] = {"name": "Webcam ao vivo", "kind": "live", "cam": WebcamCamera(), "replayer": None}
-    CURRENT["id"] = "book"
-    kit = Switch(kit)
+    CURRENT["id"] = "webcam"
+    kit = Switch(SOURCES["webcam"]["cam"])
+    replayer = None
+    SOURCES["webcam"]["cam"].start()
 
 
 @app.post("/api/replay/start")
@@ -1739,7 +1758,20 @@ def demo_status():
                                           "waiting": waiting, "error": MODELS["error"] if not alive else "",
                                           "edge_state": EDGE.get("state") if online else "offline"},
             "llm": _llm_up(), "replay": replayer.status() if replayer else None, "source": source,
-            "sources": [{"id": k, "name": v["name"], "kind": v["kind"]} for k, v in SOURCES.items()]}
+            "sources": [{"id": k, "name": v["name"], "kind": v["kind"]} for k, v in SOURCES.items()],
+            "phone_url": _phone_url()}
+
+
+def _phone_url():
+    """Where a phone on the same network opens the app (only when the site answers on the network: site.py --phone)."""
+    if os.environ.get("TT_HOST") != "0.0.0.0":
+        return None
+    import ipaddress  # noqa: PLC0415
+    for i in ("en0", "bridge100", "en1", "en2", "en3", "en4", "en5", "en6", "en7", "en8"):
+        ip = subprocess.run(["ipconfig", "getifaddr", i], capture_output=True, text=True).stdout.strip()
+        if ip and ipaddress.ip_address(ip).is_private:
+            return f"http://{ip}:{os.environ.get('TT_PORT', '8765')}/phone"
+    return None
 
 
 def _look(seconds=3.0):
@@ -1812,8 +1844,8 @@ def demo_models(payload: dict = Body(...)):
         log = open(DATA / "edge.out", "w")
         MODELS["proc"] = subprocess.Popen(
             [str(ROOT / "video" / "tools" / "heavy.sh"), str(HERE / ".venv-vision" / "bin" / "python"), str(HERE / "edge.py"),
-             "--server", f"http://127.0.0.1:{os.environ.get('TT_PORT', '8765')}", "--no-faces"],
-            env={**os.environ, "TT_DATA": str(DATA), "MAX_WAIT": "20"}, stdout=log, stderr=subprocess.STDOUT,
+             "--server", f"http://127.0.0.1:{os.environ.get('TT_PORT', '8765')}"],
+            env={**os.environ, "TT_DATA": str(DATA), "MAX_WAIT": "20", "TT_LABELS": "pt"}, stdout=log, stderr=subprocess.STDOUT,
             start_new_session=True)
         MODELS["started"] = time.time()
     return demo_status()
@@ -1841,6 +1873,12 @@ def demo_reset():
     tp = DATA / "tt_devices.pristine.json"
     if tp.exists():
         TT_FILE.write_text(tp.read_text())
+    # the people and things added during the demo leave the home device too: face templates and fingerprints
+    if EDGE_DB.exists():
+        with sqlite3.connect(EDGE_DB) as db:
+            if db.execute("SELECT 1 FROM sqlite_master WHERE name = 'face_templates'").fetchone():
+                db.execute("DELETE FROM face_templates")
+    (DATA / "edge-fingerprints.json").write_text("{}")
     store.add_event("info", "Demo home ready: the kit's devices (a copy) and simulated devices; the book's camera views "
                     "learnt by the real models. Nothing is sent to the real home.")
     return {"ok": True}
@@ -1904,6 +1942,12 @@ def media(name: str):
     return FileResponse(ROOT / rel)
 
 
+@app.get("/phone")
+def phone():
+    """The app alone, full screen, for a real phone on the same network (prototype/site.py --phone)."""
+    return Response(status_code=307, headers={"Location": "/?phone=1"})
+
+
 @app.get("/site")
 def site():
     return FileResponse(HERE / "web" / "site.html", headers={"Cache-Control": "no-store"})
@@ -1919,4 +1963,4 @@ def index():
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=int(os.environ.get("TT_PORT", "8765")))
+    uvicorn.run(app, host=os.environ.get("TT_HOST", "127.0.0.1"), port=int(os.environ.get("TT_PORT", "8765")))

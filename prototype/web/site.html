@@ -24,17 +24,16 @@
   <a class="brand" href="#demo"><svg aria-hidden="true"><use href="#mark"/></svg><span>ThingTracker</span><small>IT-Porto · Desafio 3 Altice Labs</small></a>
   <nav class="tabs" aria-label="Secções">
     <a href="#demo" data-tab="demo">Demo</a>
-    <a href="#casos" data-tab="casos">Casos de uso</a>
+    <a href="#videos" data-tab="videos">Vídeos</a>
     <a href="#como" data-tab="como">Como funciona</a>
     <a href="#docs" data-tab="docs">Documentos</a>
-    <a href="#videos" data-tab="videos">Vídeos</a>
   </nav>
   <div class="hctl" id="hctl">
     <label class="switch" title="OWLv2 e DINOv2 analisam a câmara ao vivo, neste portátil">
       <input type="checkbox" id="models" role="switch"><span class="track"><span class="knob"></span></span><span class="lbl" id="models-lbl">Ativar modelos</span>
     </label>
     <span class="chip warn" id="c-llm" hidden></span>
-    <button type="button" class="btn ghost icon" id="reset" title="Repor a demonstração" aria-label="Repor a demonstração"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="btn ghost" id="reset" title="Apaga as pessoas e os objetos registados, para repetir a demonstração"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v4h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Apagar pessoas e objetos</span></button>
   </div>
   <span class="offline" id="offline" title="Tudo corre neste portátil">Local · sem internet</span>
 </header>
@@ -43,14 +42,6 @@
 <!-- ============================================================ DEMO -->
 <section class="tab demo" id="t-demo" aria-label="Demonstração ao vivo">
   <div class="frame"><iframe id="app" src="/?embed=1" title="Emulador da aplicação Altice com o ThingTracker"></iframe></div>
-</section>
-
-<!-- ============================================================ CASOS DE USO -->
-<section class="tab page" id="t-casos" hidden aria-label="Casos de uso">
-  <header class="phead"><p class="kicker">Casos de uso</p><h1>A câmara deixa de só vigiar: passa a informar</h1></header>
-  <div class="shots" id="shown"></div>
-  <div class="cat-head"><h2 class="sec">Catálogo · <span id="cat-count"></span></h2><div class="legend"><span class="badge hoje">Hoje</span><span class="badge ext">Pequena extensão</span><span class="badge fut">Futuro</span></div></div>
-  <div class="pills" id="catalog"></div>
 </section>
 
 <!-- ============================================================ COMO FUNCIONA -->

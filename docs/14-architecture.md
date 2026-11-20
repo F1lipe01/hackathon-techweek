@@ -1,26 +1,53 @@
 # ThingTracker · architecture
 
-Version 2, Thu 19 Nov 2026. Audience: the Altice Labs jury and engineers, and our team. It describes the **target design** the team decided on 19 Nov: what runs where, which component decides what, with which signal and which threshold. Section 16 says, item by item, what the prototype does today.
+Version 3, Fri 20 Nov 2026. Audience: the Altice Labs jury and engineers, and our team. The **final design**, decided on 20 Nov, is fully local: it is stated in the next section. Sections 1 to 18 keep the detailed design of 19 Nov (what runs where, which component decides what, with which signal and which threshold); where one of them places vision, a language model, fingerprints or pictures at Altice, it describes the alternative evaluated, not chosen, because images would leave the home. Section 16 says, item by item, what the prototype does today.
 
 The views follow three standards: the C4 model for context, containers and components ([c4model.com](https://c4model.com)); arc42 for the runtime view (the sequences, section 6 of arc42) and the deployment view (section 7) ([arc42.org](https://arc42.org)); and the data-flow diagram with trust boundaries used in threat modelling by the Microsoft Security Development Lifecycle ([Threat Modeling Tool](https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool)) and by OWASP ([Threat Modeling Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html)). Every figure is built by `docs/architecture/build_views.py --lang en`, which measures each text against its box and stops if one does not fit.
 
+## Final design (20 Nov): fully local
+
+Privacy first: everything that looks at the home runs in the home.
+
+- **The home device does all the perception and inference.** It is the router, if it has an NPU, or a dedicated box such as a Raspberry Pi 5 with an AI accelerator or a Jetson Orin Nano Super. It handles:
+  - camera ingest on the local network;
+  - motion gating;
+  - vision: detection plus re-identification against the visual fingerprint (OWLv2 + DINOv2 in the prototype; lighter detectors such as YOLOv8n on small devices);
+  - optional face recognition (YuNet + SFace), with the templates kept on the device;
+  - the local memory (where and when each thing was seen);
+  - the rules engine;
+  - the language model (Qwen3-1.7B in the prototype), for sentence → rule and question → answer. It never decides.
+- **Images, video, visual fingerprints and face templates never leave the home.**
+- **Registration photos** go from the phone to the home device: directly on the home Wi-Fi, or through an end-to-end-encrypted relay that Altice cannot read. The device builds the fingerprint.
+- **The Altice platform is the control and data plane, text only.** It provides:
+  - accounts, identity and family permissions;
+  - the system of record for metadata: things, people (names only), ownership links, scenarios. This gives backup, sync across family phones, and restore if the box is replaced;
+  - the event log as structured text (for example "book, desk, 18:02");
+  - push notifications to the app;
+  - a relay so that the app reaches the home when the family is away;
+  - device actions through the Connected Home MCP.
+- **Why the cloud is still needed:** the phone is not always on the home network; notifications and device control are Altice platform services; and metadata needs backup and multi-user sync.
+- **External language models** (for example the user's own ChatGPT or Claude) are a possible future opt-in, text only. Not now.
+- **Cost:** the equipment is bought once: an indoor camera, about €45; a Raspberry Pi 5, about €200, or a Jetson Orin Nano Super, about €345; or a router with an NPU, about €15 more (an estimate). Over 5 years, that is €3.33 or €5.75 a month for the device. The models' energy costs cents a month: YOLOv8n below €0.01, OWLv2 up to €0.72 at 12 h of motion a day (a team estimate on a Jetson Orin Nano). Team price research of 20 Nov; the sources are in document 17. A box paid for by Altice does not pay back at €3.99 a month: it leaves −€4.81 to −€6.90 per home a month (document 17, section 9). The model works with the AI on the router, or with equipment the customer buys.
+- **Alternative evaluated, not chosen: vision on Altice's L4 GPUs** (the hybrid design of 19 Nov, about €0.49 per home a month, document 17). Images would leave the home: the region that changed, about once a second during motion.
+- **Open point.** How the app shows a picture in an alert or an answer (the unknown person, the last sighting) while images stay in the home, for example over the end-to-end-encrypted relay, is still to be designed.
+
 ## In short
 
-- **Hybrid.** At home, on hardware that is already there (the Altice router's CPU, no AI accelerator): the motion gate, privacy masks, cutting out the region that changed, and opt-in face recognition, so face templates never leave the home. At Altice: the vision models (OWLv2, DINOv2) on Altice's own L4 GPUs behind queues, and the ThingTracker service, where presence and the rules are worked out for each home.
-- **Video never leaves the home.** What leaves is the region that changed (at most 640 × 640 pixels, about once a second while there is motion), a region the service asks for in a check, face labels (a family member's name, "unknown face"), and, rarely, 2 to 3 s of a region for the judge.
+- **Fully local.** At home, on the home device: camera ingest, the motion gate, privacy masks, vision (detection and re-identification), opt-in face recognition, the memory, the rules engine and the language model. At Altice, text only: accounts, the metadata record, the event log, notifications, the relay and device actions through the MCP.
+- **Images never leave the home.** Video, pictures, visual fingerprints and face templates stay on the home device. What crosses to Altice is text: events, labels (a thing's name, a family member's name, "unknown face"), rules and commands.
 - **Three kinds of evidence, one decision maker.** Fast eyes at every motion (motion gate, OWLv2, DINOv2, faces); a vision-language judge called rarely, for an ambiguous moment; facts beyond the camera (the door sensor and the family's phones on the Wi-Fi) for "did someone leave?". The rules engine decides, with plain code.
-- **Cost at 500,000 homes:** about €0.49 per home a month for vision with one camera, on Altice's own L4 servers (document 17), plus about €0.43 for the language model (document 16). Both are estimates.
-- **Upgrade path:** if the router or the camera has an NPU that can run a detector, vision moves into the home and the cost falls to about €0.36 (document 17, option A1).
+- **Cost:** the home device is bought once (€3.33 or €5.75 a month over 5 years) and its energy costs cents a month. The earlier estimates, about €0.49 per home a month for vision on Altice's own L4 servers (document 17) and about €0.43 for a cloud language model (document 16), belong to the alternative evaluated, not chosen.
+- **The home device:** the router, if it has an NPU that can run a detector (about €15 more per router, an estimate; document 17, option A1); otherwise a dedicated box.
 
 ## 1. The idea in one paragraph
 
-A home camera is the richest sensor in the house, but today it only reports "motion detected". ThingTracker makes it a source of information. Open-source vision models find the things a family registered (a book, keys, a wallet) and the people in the picture; a cheap motion gate in the home decides when they run. A language model turns one sentence into a precise rule ("tell me if I leave home without my book") and answers questions from the memory ("where is my book?"). The rules run as plain code in the ThingTracker service, which combines what the cameras saw with what no camera can see: the door opening and closing, and the family's phones leaving or joining the home Wi-Fi. Actions reach the existing Altice devices (light, plug, siren) through Altice's MCP server, after a "Yes" in the app.
+A home camera is the richest sensor in the house, but today it only reports "motion detected". ThingTracker makes it a source of information. Open-source vision models find the things a family registered (a book, keys, a wallet) and the people in the picture; a cheap motion gate in the home decides when they run. A language model turns one sentence into a precise rule ("tell me if I leave home without my book") and answers questions from the memory ("where is my book?"). The rules run as plain code on the home device, which combines what the cameras saw with what no camera can see: the door opening and closing, and the family's phones leaving or joining the home Wi-Fi. Actions reach the existing Altice devices (light, plug, siren) through Altice's MCP server, after a "Yes" in the app.
 
 Three principles shape everything below:
 
 1. **Cheap eyes always, an expensive judge rarely.** Motion, detection, fingerprints and faces run at every motion; a vision-language model looks only at an ambiguous moment, and its "unsure" makes the system ask the family, never act.
 2. **The language model writes the rule; the rules engine decides.** The model is used when a sentence becomes a rule, not on every frame; alarms rest on rules that can be read and tested.
-3. **What stays home stays home.** Video and face templates never leave the house; the region that changed does, about once a second during motion, and is deleted after analysis, except the thumbnails kept for sightings.
+3. **What stays home stays home.** Images, video, visual fingerprints and face templates never leave the house; only text does (events, labels, rules, commands).
 
 ## 2. Requirements and constraints
 
@@ -31,8 +58,8 @@ Three principles shape everything below:
 | F3 | Create a sensor from one sentence | No settings screens | The language model compiles the sentence into a rule (§10) |
 | F4 | Know who is home | Correct for the empty-home rules | Presence engine over phones, door and cameras (§7) |
 | F5 | Act on the home's devices | Same path as the app | MCP tools, after a "Yes" (§8.7) |
-| N1 | Privacy | No video leaves the home; face templates never do | Hybrid split, DFD and data rules (§12) |
-| N2 | Cost at 500,000 homes | Vision under the €1.73 a month that the add-on can carry (document 17) | Motion gate at home, changed region only, a queue for what is not urgent: about €0.49 |
+| N1 | Privacy | No image, video, fingerprint or face template leaves the home | All perception on the home device; only text crosses to Altice; DFD and data rules (§12) |
+| N2 | Cost at 500,000 homes | Vision under the €1.73 a month that the add-on can carry (document 17) | No vision cost at Altice: the home device is bought once, on the router or by the customer. The alternative not chosen, vision at Altice: about €0.49 |
 | N3 | Latency, event to alert | A few seconds | Door event, urgent queue, rule; measured parts in §14 |
 | N4 | Adoption by Altice | No new app, no new device path | A tab in the existing app; MCP tools; platform scenarios |
 
@@ -60,6 +87,8 @@ Figure 2 shows the containers, the technology of each and what every arrow carri
 
 **Figure 2** – C4 level 2: ThingTracker's containers in the home and at Altice, and the existing systems they use.
 
+The table describes the hybrid design of 19 Nov. In the final design, the vision workers, the matching against fingerprints, the rules engine, the memory of sightings, the thumbnails and the language models run on the home device; at Altice stay the connection broker (now the relay), the app API, the metadata record, the event log and the MCP host, all text only.
+
 | Container | Where | Technology | Job | Scales by |
 |---|---|---|---|---|
 | Home agent | Router CPU | Python, OpenCV | Masks, motion gate, changed region, faces; reads on request; keeps the last 3 s in memory for the judge | One per home |
@@ -83,7 +112,9 @@ Figure 3 shows where each part runs, the hardware, the numbers at 500,000 homes,
 
 **Figure 3** – Deployment: the home agent on the router, ThingTracker at Altice's datacentre, the phone, and the options considered.
 
-### 5.1 The chosen design: hybrid on Altice's own L4 servers
+### 5.1 Alternative evaluated, not chosen: hybrid on Altice's own L4 servers
+
+Not chosen on 20 Nov: images would leave the home (the region that changed, about once a second during motion). It is kept here because it was costed in detail (document 17).
 
 **In the home**, on the equipment already there: the Altice router (CPU, no AI accelerator) runs the home agent; the kit cameras send RTSP on the home network only; the security hub and the door contact sensor report to the Altice platform, as today; the router knows which family phones are connected. One outbound, mutually authenticated connection (mTLS) carries everything ThingTracker sends from the home.
 
@@ -93,22 +124,24 @@ Figure 3 shows where each part runs, the hardware, the numbers at 500,000 homes,
 
 **Sizing at 500,000 homes (estimates, document 17).** About 1,427 L4 cards and €6.4 M of hardware, for about €0.49 per home a month with one camera (€0.98 with two), assuming 2 h of motion per camera a day, analysed at 1 frame per second, with GPUs at 25 % of their peak speed. An error of two times in any of these three assumptions doubles or halves the cost; the first item in document 17's list of checks is to measure the real throughput.
 
-### 5.2 The upgrade path: vision in the home (A1)
+### 5.2 The final design: vision in the home (A1, or a dedicated box)
 
-If Altice's routers or cameras have an NPU that can run a detector, OWLv2 and DINOv2 (or a lighter detector) move into the home agent, and only events, thumbnails and fingerprints leave the home. Document 17 estimates about €0.36 per home a month, from an assumed €15 router premium. Whether the router has such an NPU is the first item the pilot must confirm with Altice (§18).
+If Altice's routers or cameras have an NPU that can run a detector, OWLv2 and DINOv2 (or a lighter detector) run in the home agent, and only text leaves the home: events, labels, rules and commands. Document 17 estimates about €0.36 per home a month, from an assumed €15 router premium. Whether the router has such an NPU is the first item the pilot must confirm with Altice (§18). Otherwise the home device is a dedicated box bought by the customer: a light device, a Raspberry Pi 5 (about €200), or a heavy device, a Jetson Orin Nano Super (about €345), team price research of 20 Nov (document 17).
 
-### 5.3 The rejected options
+### 5.3 The options rejected on 19 Nov
+
+Option (a) was rejected on 19 Nov on the cost of a box paid for by Altice, with the Jetson's launch price. On 20 Nov it became the final design, with the box bought by the customer or the AI on the router, so that images never leave the home.
 
 | Option | What it means | Numbers (document 17 unless noted) | Why it was rejected |
 |---|---|---|---|
 | (a) Everything in the home, language model included | A box per home runs vision and a language model | Raspberry Pi 5 with AI HAT+ (€200) or Jetson Orin Nano Super (€269): €6.55 to €8.64 per home a month, €107.5 M to €142.0 M of hardware at 500,000 homes. The prototype's language model (Qwen3-1.7B, 4-bit) takes about 1 GB; a 4B model tried took 2.1 GB and was three times slower (team measurement, 18 Nov) | The add-on can carry at most €1.73 a month for vision; a box costs four to five times that. A language model needs more memory again, small models wrote Portuguese that was not always European, and every model update has to reach 500,000 boxes |
 | (b) Vision in Altice's cloud from full frames or video | Every camera sends frames or a stream to GPU servers | A continuous stream at 2 Mbps (assumption): 657 GB per camera a month, 1,000 Gbps at the peak for 500,000 cameras, €1.00 per home a month in network alone. Full frames during motion: 17.5 GB per camera a month; GPUs sized for the evening peak, €2.41 per home a month on Altice's servers, €3.93 to €4.26 on hyperscaler GPUs on demand | Costs more than the add-on can carry, and the whole picture of the home would leave it, all the time |
 
-The chosen design keeps the motion gate at home, which makes a central option possible at all: the changed region is about 8.8 GB per camera a month (40 KB per region, an assumption), against 657 GB for a stream.
+The hybrid design keeps the motion gate at home, which makes a central option possible at all: the changed region is about 8.8 GB per camera a month (40 KB per region, an assumption), against 657 GB for a stream.
 
 ### 5.4 Where things run in the demo
 
-In the demo, the team's MacBook plays every part at once. `edge.py` plays both the home agent (the motion gate and, since 19 Nov, the faces) and Altice's vision workers (OWLv2 and DINOv2, on the Mac's GPU). `server.py` plays the ThingTracker service, with the presence engine, the rules engine and SQLite standing in for PostgreSQL. `llm_local.py` plays the language-model servers, with Qwen3-1.7B through MLX. The phone screens are a browser on the same Mac. The camera stream reaches the Mac through the organisers' cloud relay; in the product, the stream never leaves the home network.
+In the demo, the team's MacBook plays every part at once. `edge.py` plays the home device's eyes: the motion gate, the faces (since 19 Nov) and the vision models (OWLv2 and DINOv2, on the Mac's GPU). `server.py` plays the home device's memory and rules engine and Altice's side, with the presence engine and SQLite standing in for PostgreSQL. `llm_local.py` plays the home device's language model, with Qwen3-1.7B through MLX. The phone screens are a browser on the same Mac. The camera stream reaches the Mac through the organisers' cloud relay; in the product, the stream never leaves the home network.
 
 ## 6. Components (C4 level 3)
 
@@ -294,7 +327,7 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
 
 | Item | Value |
 |---|---|
-| What it is | A vision-language model on Altice's GPU servers |
+| What it is | A vision-language model on the home device, since it looks at images (in the hybrid alternative, on Altice's GPU servers) |
 | When it is called | Only when a rule meets an ambiguous moment: "did the person take the book, or just move it?", or a left-behind check where the thing may be partly hidden |
 | Input | 2 to 3 s of the region (from the home agent's 3 s in memory, or a short burst it records on request) and the rule's question |
 | Output | Yes, no or unsure, with one sentence |
@@ -302,7 +335,7 @@ Every rule shows the user, in plain words, what it watches and what it will do. 
 | Why not on every frame | Cost at 500,000 homes (document 17); *your* thing needs a fingerprint anyway; alarms must rest on rules that can be tested |
 | What it cannot do | See someone who has left the picture: "did someone leave the house?" comes from the door sensor and the phones |
 
-It replaces the earlier job "judge an unclear crop" of the text model. The prototype uses Qwen2-VL-2B-Instruct (Apache-2.0) through MLX (`prototype/judge.py`), on one tight crop of the place; Qwen2.5-VL-3B was ruled out because of its Qwen Research licence. The model for Altice's servers is chosen in the pilot, with the same licence check.
+It replaces the earlier job "judge an unclear crop" of the text model. The prototype uses Qwen2-VL-2B-Instruct (Apache-2.0) through MLX (`prototype/judge.py`), on one tight crop of the place; Qwen2.5-VL-3B was ruled out because of its Qwen Research licence. The model for the home device is chosen in the pilot, with the same licence check.
 
 ### 8.7 Alerts and actions
 
@@ -312,11 +345,11 @@ An alert is a structured event: title, message, thumbnail, action cards, the doo
 
 | Path | Where it runs | What happens | Result |
 |---|---|---|---|
-| Phone photos | App → service → vision workers | 6 to 8 photos from different sides (or frames of a short video); OWLv2 finds the thing in each photo, using its English name as the query; DINOv2 makes a vector of each crop | Fingerprint of up to 8 vectors |
-| Shown to a camera | Home agent → vision workers | The user turns the thing slowly in front of a camera; each region goes through OWLv2 and DINOv2; a view is kept only if its cosine to every view already kept is below 0.97 (a new angle), until 8 | Fingerprint of 8 views |
-| The camera's proposals | Vision workers | The app shows what the cameras see ("Looking through your cameras…"); one tap picks a thing, then photos or the camera complete its views | As above |
+| Phone photos | App → home device (on the home Wi-Fi, or through an end-to-end-encrypted relay that Altice cannot read) | 6 to 8 photos from different sides (or frames of a short video); OWLv2 finds the thing in each photo, using its English name as the query; DINOv2 makes a vector of each crop | Fingerprint of up to 8 vectors |
+| Shown to a camera | Home device | The user turns the thing slowly in front of a camera; each region goes through OWLv2 and DINOv2; a view is kept only if its cosine to every view already kept is below 0.97 (a new angle), until 8 | Fingerprint of 8 views |
+| The camera's proposals | Home device | The app shows what the cameras see ("Looking through your cameras…"); one tap picks a thing, then photos or the camera complete its views | As above |
 
-The fingerprint goes to PostgreSQL (pgvector) for that customer, and the best crop becomes the thing's photo in object storage. A new or reset router needs no new registration of things, since their fingerprints live at Altice; face templates, which never leave the home, do need a new registration.
+The device builds the fingerprint and keeps it, with the thing's best crop as its photo; neither leaves the home. Altice keeps the thing's metadata as text (its name, owner and rules), so a replaced box gets back the list of things and the scenarios. Since fingerprints and face templates are not kept outside the home, a new box needs the views of things and faces registered again. (In the hybrid alternative, fingerprints lived in PostgreSQL with pgvector at Altice.)
 
 ## 10. The sensor language
 
@@ -369,7 +402,7 @@ Figure 11 is the data-flow diagram with trust boundaries: the home, Altice, the 
 
 **Figure 11** – Data flow with trust boundaries, and what each flow that crosses a boundary carries.
 
-**What leaves the home, precisely.** The region that changed, at most 640 × 640 pixels, about once a second while there is motion; the region asked for in an active check or a refresh; rarely, 2 to 3 s of a region for the judge; face labels and boxes; events. The region can cover most of the picture when someone crosses the whole view. Video never leaves the home, and face templates never do. Regions and clips are deleted after analysis, except the thumbnails kept for sightings. The text model receives text only (the sentence or the question, the names of things, places and devices, memory lines); document 20 proposes replacing people's names with placeholders before sending them.
+**What leaves the home, precisely (final design).** Text only: events (for example "book, desk, 18:02"), labels (a thing's name, a family member's name, "unknown face"), rules and commands. Images, video, visual fingerprints and face templates never leave the home. In the hybrid alternative, not chosen, the region that changed (at most 640 × 640 pixels, about once a second while there is motion), the region asked for in an active check, and, rarely, 2 to 3 s of a region for the judge would have left the home. The text model receives text only (the sentence or the question, the names of things, places and devices, memory lines); document 20 proposes replacing people's names with placeholders before sending them.
 
 **Threats per boundary** (the main ones, for a first threat model):
 
@@ -404,11 +437,15 @@ Figure 12 shows the five flows in the Altice app: adding a thing, adding a perso
 | MCP device command (plug off) | about 1.3 s | Measured on 16 Nov (document 10) |
 | Local text model (Qwen3-1.7B, MLX) | answers 0.4 to 1.7 s, rules 1.5 to 3.2 s | Team measurement, 18 Nov |
 
-**Cost per home a month at 500,000 homes (estimates):** vision about €0.49 with one camera on Altice's own L4 servers (document 17); language model about €0.43 (document 16, base case, €0.10 to €1.78). The judge's cost is not yet estimated: it is called only at ambiguous moments, and its rate has to be measured in a pilot before it is costed.
+**Cost in the final design (estimates):** the home device is bought once, €3.33 or €5.75 a month over 5 years (about €200 or €345), or about €15 more for a router with an NPU; the models' energy costs cents a month (YOLOv8n below €0.01, OWLv2 up to €0.72 at 12 h of motion a day, a team estimate on a Jetson Orin Nano). Team price research of 20 Nov, sources in document 17.
+
+**Earlier estimates, for the alternative not chosen, per home a month at 500,000 homes:** vision about €0.49 with one camera on Altice's own L4 servers (document 17); a cloud language model about €0.43 (document 16, base case, €0.10 to €1.78). The judge's cost is not yet estimated: it is called only at ambiguous moments, and its rate has to be measured in a pilot before it is costed.
 
 ## 15. The language models
 
-The text model is called only by the ThingTracker service, for two jobs: compiling a sentence into a rule, and wording an answer from the memory. The judge (§8.6) is a vision-language model at Altice, called rarely. In MCP terms, no model connects to the MCP server: the model asks for a tool, and the service calls it.
+In the final design, the text model runs on the home device (Qwen3-1.7B in the prototype), for two jobs: compiling a sentence into a rule, and wording an answer from the memory. It never decides. The judge (§8.6) is a vision-language model on the home device too, since it looks at images, and is called rarely. In MCP terms, no model connects to the MCP server: the model asks for a tool, and the code calls it.
+
+External language models (for example the user's own ChatGPT or Claude) are a possible future opt-in, text only; not now. The table below is the earlier analysis, for a text model hosted by Altice or a provider.
 
 **Which text model:** any capable model, hosted by Altice (open weights) or under a contract that guarantees no training on our data, a data processing agreement (DPA) and processing in the EU. The prototype uses Qwen3-1.7B locally; Claude Haiku 5.5 and Sonnet 5.5 can be switched on. Checked at each provider's own terms and documentation on 18 Nov 2026:
 
@@ -432,7 +469,7 @@ The text model is called only by the ThingTracker service, for two jobs: compili
 
 ## 16. Prototype vs target
 
-Status on 20 Nov 2026, from the prototype's code, its end-to-end tests (`prototype/test_scenarios.py`) and the proof runs on the lab takes.
+Status on 20 Nov 2026, from the prototype's code, its end-to-end tests (`prototype/test_scenarios.py`) and the proof runs on the lab takes. The Target column is the hybrid design of 19 Nov; in the final design, the vision, matching, judge, rules engine and text model rows run on the home device, which the Mac plays in the demo, and the changed region is never sent.
 
 | Part | Target | Prototype | Status |
 |---|---|---|---|
@@ -464,7 +501,7 @@ Status on 20 Nov 2026, from the prototype's code, its end-to-end tests (`prototy
 
 | # | Decision | Alternatives | Why |
 |---|---|---|---|
-| D1 | **Hybrid: motion, regions and faces at home; vision at Altice** | A box per home; full frames or video to the cloud | Cost (§5.3): €0.49 against €6.55 to €8.64 or €2.41 to €4.26 per home a month; video and face templates stay home |
+| D1 | **Fully local (20 Nov): all perception and inference on the home device; Altice is the control and data plane, text only** | Hybrid, with vision on Altice's L4 GPUs (the decision of 19 Nov, about €0.49 per home a month); full frames or video to the cloud | Images, video, fingerprints and face templates never leave the home; the device is bought once (€3.33 or €5.75 a month over 5 years) or the AI is on the router |
 | D2 | **The language model compiles rules; the rules engine decides** | Ask a model yes or no on every frame (our first prototype) | Every-frame calls cost money, add seconds and give different answers; compiled rules are cheap, fast and testable |
 | D3 | **A judge for ambiguous moments only** | No judge; a judge on every frame | Some questions need to see a moment ("taken or moved?"); on every frame it would cost too much and alarms would rest on a model |
 | D4 | **Presence from phones, door and cameras** | Cameras only | Rooms without a camera and people who stay still; no camera sees someone who left the picture |
@@ -478,12 +515,12 @@ Status on 20 Nov 2026, from the prototype's code, its end-to-end tests (`prototy
 
 The design rests on seven assumptions about the Altice platform. Each is a next step for the pilot; the matching requests are in [document 15, section 9](15-integration-spec.md).
 
-1. **Vision at home.** Assumed: the router has a CPU and no AI accelerator, so vision runs on Altice's L4 servers (€0.49 per home a month, document 17). Next step: Altice says which routers or cameras have an NPU; with one, option A1 costs about €0.36 (§5.2).
+1. **Vision at home.** Decided on 20 Nov: vision runs on the home device. Next step: Altice says which routers or cameras have an NPU; with one, option A1 costs about €0.36 (§5.2); without one, the customer buys a dedicated box.
 2. **Events.** Known: the MCP server has no push and no general event feed, so the prototype polls `get_home_devices` every 4 s. Next step: an event API for the door and the Wi-Fi.
 3. **Phones on the Wi-Fi.** Known: no MCP tool exposes the router's clients, so the prototype simulates the phones. Next step: a read-only `get_home_wifi_clients` tool, and a way to keep recognising a phone that randomises its MAC address, designed with Altice.
 4. **Local video.** Known: the prototype reads the camera through the organisers' cloud relay. Next step: RTSP access from the router on the home network.
 5. **New MCP tools.** Known: the server has 18 tools and none deletes a scenario. Next step: the four Things tools, the `thingTracker` trigger and a tool to delete scenarios (document 15).
-6. **The language model.** Assumed: a model hosted by Altice or a provider under contract, with EU processing and a DPA (§16 and document 15). The prototype runs Qwen3-1.7B locally. Next step: Altice names the contract or the GPU capacity.
+6. **The language model.** Decided on 20 Nov: on the home device; the prototype runs Qwen3-1.7B locally. An external model (the user's own ChatGPT or Claude) is a possible future opt-in, text only. Next step: confirm the model's speed on the chosen home device.
 7. **The face video.** Decided: a short selfie video relayed to the home agent without being stored (§8.3). Next step: whether the app can upload it over the home Wi-Fi straight to the router, so that it never crosses the platform.
 
 ## Sources

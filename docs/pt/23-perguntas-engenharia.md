@@ -42,8 +42,9 @@ Resposta curta: “Os três papéis ao mesmo tempo: a casa, os servidores da Alt
 - [protótipo]:
   - o `edge.py` faz de agente da casa e de servidores de visão da Altice (_OWLv2_ e _DINOv2_ na GPU do _Mac_);
   - o `server.py` faz de serviço _ThingTracker_: app, API, motores de presença e de regras, com o _SQLite_ no lugar do _PostgreSQL_;
-  - o `llm_local.py` faz de servidores do modelo de linguagem (_Qwen3-1.7B_).
-- Na demonstração, o _stream_ da câmara do _kit_ chegou ao _Mac_ através do _relay_ na nuvem da organização. Isso deve-se à infraestrutura do _hackathon_, e não ao produto.
+  - o `llm_local.py` faz de servidores do modelo de linguagem (_Qwen3-1.7B_);
+  - o `judge.py`, opcional, faz de juiz de visão (_Qwen2-VL-2B_).
+- Nas gravações do laboratório, o _stream_ da câmara do _kit_ chegou ao _Mac_ através do _relay_ na nuvem da organização. Isso deve-se à infraestrutura do _hackathon_, e não ao produto.
 
 ### A3. Porque não uma caixa em cada casa, com tudo local?
 
@@ -113,7 +114,7 @@ Resposta curta: “Dois modelos: um encontra ‘um livro’ e o outro confirma q
   - o _DINOv2_ transforma cada caixa numa assinatura visual (384 números) e compara-a, por semelhança de cosseno, com as 8 vistas guardadas;
   - a partir de 0,62, conta como seu;
   - no laboratório, na câmara do _kit_, o livro obteve 0,70 e uma garrafa 0,10;
-  - `edge.py`, função `analyse` (a comparação com o limiar `--match`, 0,62 por omissão).
+  - `edge.py`, funções `analyse` e `best_match` (a comparação com o limiar `--match`, 0,62 por omissão).
 - Medido na gravação do filme 1, com a câmara no teto:
   - na região da secretária em resolução completa, o _OWLv2_ encontrou o livro em 68 de 68 imagens;
   - face a uma assinatura registada a partir da mesma câmara, o livro obteve uma mediana de 0,93 (0,79-0,96), os outros objetos 0,23 (máximo 0,28), e depois de o livro ser levado não houve candidatos;
@@ -304,7 +305,7 @@ Onde se mostra: o diagrama de fluxo de dados com fronteiras de confiança.
 
 Resposta curta: “Minimização desde a conceção: nenhum vídeo sai de casa, os rostos só com consentimento explícito e guardados em casa, e prazos de conservação limitados.”
 
-- O fornecedor do modelo de linguagem tem de garantir que não treina com os nossos dados, assinar um acordo de tratamento de dados (DPA) e tratar os dados na UE (documento 14, §15).
+- O fornecedor do modelo de linguagem tem de garantir que não treina com os nossos dados, assinar um acordo de tratamento de dados (DPA) e tratar os dados na UE (documento 14, §12 e §15).
 
 ## E. Integração com a Altice
 
@@ -312,7 +313,7 @@ Resposta curta: “Minimização desde a conceção: nenhum vídeo sai de casa, 
 
 Resposta curta: “Um separador _Things_, um botão de assistente, quatro ferramentas MCP para os objetos, uma para a presença no Wi-Fi, e o serviço.”
 
-- As ferramentas: `list_things`, `create_thing`, `get_thing_last_seen` e `get_thing_timeline`, mais a ferramenta proposta para a presença no Wi-Fi. As ações usam as 18 ferramentas que já existem (documento 14, §2, e documento [15](15-especificacao-integracao.md)).
+- As ferramentas: `list_things`, `create_thing`, `get_thing_last_seen` e `get_thing_timeline`, mais a ferramenta proposta para a presença no Wi-Fi. As ações usam as 18 ferramentas que já existem (documento [15](15-especificacao-integracao.md), §2 e §5).
 
 ### E1a. Como ligaram a porta à vossa app sem acesso ao nosso _backend_, à app ou à base de dados?
 
@@ -374,7 +375,7 @@ Resposta curta: “No laboratório, as luzes e o ar condicionado não estão lig
 
 Resposta curta: “Cerca de 0,49 € por mês para a visão, com uma câmara, e cerca de 0,43 € para o modelo de linguagem.”
 
-- São estimativas da equipa feitas com preços públicos (documentos [16](16-viabilidade-negocio.md) e [17](17-custos-operador.md)), a medir no piloto.
+- São estimativas da equipa feitas com preços públicos (documentos [16](16-viabilidade-negocio.md) e [17](17-custos-operador.md)), a medir no piloto. Os 0,43 € são o cenário base de um modelo de linguagem na nuvem; o modelo local do protótipo não tem custo por pedido.
 
 ### F2. Licenças?
 
@@ -397,10 +398,11 @@ Resposta curta: “As imagens são do laboratório real e da câmara do _kit_, a
 
 ### G2. O que podem mostrar ao vivo?
 
-Resposta curta: “As mesmas gravações dos filmes a passar pelo sistema real, sem montagem; e, se o _kit_ estiver instalado, a porta lida pelo MCP e um aviso disparado por uma regra.”
+Resposta curta: “As mesmas gravações dos filmes a passar pelo sistema real, sem montagem; os modelos a correr na _webcam_ do portátil; e, se o _kit_ estiver instalado, a porta lida pelo MCP e um aviso disparado por uma regra.”
 
 - as execuções sem montagem: a gravação de cada filme passada de novo pelo sistema real, com as regras a disparar, o estado de presença a mudar e os rostos avaliados (um rosto aparece desfocado, por privacidade);
-- ao vivo, só se o _kit_ estiver instalado: o sensor da porta lido pelo MCP, a presença a mudar e um aviso disparado por uma regra.
+- ao vivo, com a _webcam_ do portátil e a app no telemóvel do apresentador: o _OWLv2_ e o _DINOv2_ a correr sobre a imagem da câmara, numa casa de demonstração própria (`prototype/site.py`), sem gravar nada;
+- com o _kit_ instalado: o sensor da porta lido pelo MCP, a presença a mudar e um aviso disparado por uma regra.
 
 ### G3. O que está medido, e o que não está?
 

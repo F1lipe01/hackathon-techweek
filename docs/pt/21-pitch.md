@@ -248,14 +248,18 @@ Foram feitas na noite de 19 para 20 de novembro, com `video/tools/proof_run.py`.
 
 Como se mostra, em 30 s no máximo: o apresentador abre o vídeo no momento do aviso, ou o registo na linha do aviso, e diz “É a mesma gravação a passar pelo sistema, sem montagem: a porta e o telemóvel são reproduzidos a partir da gravação; a deteção, a presença e a decisão da regra são calculadas aqui, no momento.” Os vídeos das execuções mostram pessoas do laboratório: só se mostram com o acordo delas ou com os rostos desfocados (regra 6 do AGENTS.md); no vídeo dos rostos, um rosto já aparece desfocado.
 
-### 11.2 Ao vivo, só com o _kit_ instalado
+### 11.2 Ao vivo, com o _kit_ instalado
 
-Faz-se apenas se o _kit_ estiver instalado na sala e o ensaio no local correr bem duas vezes seguidas; caso contrário, ficam as execuções sem montagem.
+Faz-se apenas se o _kit_ estiver instalado na sala e o ensaio no local correr bem duas vezes seguidas; caso contrário, usa-se a _webcam_ do portátil (11.3) ou as execuções sem montagem.
 - Instalação: a câmara do _kit_ virada para uma mesa com o livro, nunca para o público (regra 6 do AGENTS.md); o sensor de contacto numa porta ou na tampa de uma caixa; a sessão MCP iniciada nesse dia (o _token_ dura cerca de 24 h); os três processos arrancados por ordem (`llm_local.py`, `server.py`, `edge.py`), sem a variável `TT_LIVE_ACTIONS` (ações em simulação).
 - Guião, em 30 s: o cenário “avisa-me se sair sem o livro” já criado; abre-se o sensor, tira-se do Wi-Fi, na página, o telemóvel de um membro da família (simulado, e diz-se) e fecha-se o sensor; o aviso chega à cópia da app em cerca de 10 s, porque o protótipo consulta a porta pelo MCP a cada 4 s (documento 23, A8).
 - Se houver um telemóvel com a app da Altice, a app notifica a abertura da porta; é uma função que a Altice já tem, não do _ThingTracker_ (documento 23, E2).
 - Nunca se liga ou desliga a tomada ou a lâmpada, nunca se toca no alarme e nunca se usam as ferramentas de escrita do MCP (regra 1 do AGENTS.md).
 - A câmara chega ao portátil pelo _relay_ da organização, pelo que a demonstração depende da rede da sala.
+
+### 11.3 Ao vivo, com a _webcam_ do portátil
+
+Não depende da rede da sala nem do _kit_: o site do _pitch_ (`prototype/site.py`) corre os modelos sobre a imagem da _webcam_ do portátil, numa casa de demonstração própria, com a app no telemóvel do apresentador (documento 23, G2).
 
 ## 12. Perguntas prováveis do júri
 

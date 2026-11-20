@@ -12,8 +12,9 @@ When it is called (prototype/edge.py): only when an active check of a thing ("is
 no match, on one tight crop of the place (320 x 240 around the thing's last box, enlarged to 640 x 480).
 Measured on the M1 Pro (20 Nov 2026), on the book take's desk: on a 640 x 480 region it answered "no" with the book
 there (the book is 116 x 40 px of it), about 3 s a call; on the tight crop "yes" with the book there and "no" after it
-was taken, 1.5 s a call; loads in about 2 s; 1.6 GB resident, 3.8 GB peak. Its sentence is usually just the word. It answers yes, no or unsure, with one sentence. It never acts: the server turns
-a "yes" or an "unsure" into a question to the family, and a "no" into a line in the activity.
+was taken, 1.5 s a call; loads in about 2 s; 1.6 GB resident, 3.8 GB peak.
+It answers yes, no or unsure, with one sentence (often just the word). It never acts: the server turns a "yes" or an
+"unsure" into a question to the family, and a "no" into a line in the activity.
 API: POST /judge {"question", "images_b64": [...]} -> {"answer": "yes"|"no"|"unsure", "sentence", "ms"}; GET /health.
 Memory: the machine has 16 GB shared with OWLv2, DINOv2 and Qwen3-1.7B; this model adds about 1.5 GB while loaded.
 """

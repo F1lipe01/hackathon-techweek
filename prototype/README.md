@@ -16,13 +16,24 @@ prototype/.venv/bin/python prototype/server.py             # 2. web app and API,
 prototype/.venv-vision/bin/python prototype/edge.py        # 3. camera service on the kit camera
 ```
 
-One-time setup:
+Optional: `prototype/.venv-vlm/bin/python prototype/judge.py` (the local vision-language judge, 127.0.0.1:8767).
+
+The pitch site runs all of it on one page, on a demo home of its own (`data/demo/`), with the laptop's webcam as the camera:
+
+```bash
+prototype/.venv/bin/python prototype/site.py               # http://127.0.0.1:8780/site  (--fresh rebuilds the demo home)
+```
+
+One-time setup (Apple silicon; `ffmpeg` on the PATH):
 
 ```bash
 python3 -m venv prototype/.venv && prototype/.venv/bin/pip install -r prototype/requirements.txt
 python3.13 -m venv prototype/.venv-llm && prototype/.venv-llm/bin/pip install mlx-lm
-python3 -m venv prototype/.venv-vision && prototype/.venv-vision/bin/pip install torch transformers pillow numpy
+python3 -m venv prototype/.venv-vision && prototype/.venv-vision/bin/pip install torch transformers pillow numpy opencv-python-headless
+python3 -m venv prototype/.venv-vlm && prototype/.venv-vlm/bin/pip install mlx-vlm      # optional, for judge.py
 ```
+
+The face models (YuNet and SFace, from opencv_zoo) are not in git: fetch them into `prototype/models/` and check their hashes as described in [AGENTS.md](../AGENTS.md). Without them the camera service reports every person as `not_visible`.
 
 The server reads `ANTHROPIC_API_KEY` and `CAMERA_RTSP_URL` from the repo's `.env`. Never print or commit that file.
 
@@ -33,10 +44,15 @@ The server reads `ANTHROPIC_API_KEY` and `CAMERA_RTSP_URL` from the repo's `.env
 | Part | File | What it does |
 |---|---|---|
 | Server | `server.py` | Serves the page and the API, keeps the home's memory, runs the rules engine, reads the door and sends actions. It is the only part that calls a language model (`brain.py`). |
-| Camera service | `edge.py` | The part that would run in the home. It stays idle until a cheap motion check sees a change, then runs OWLv2 (detection) and DINOv2 (visual fingerprints) for a few seconds. It registers a thing from 8 views and recognises it again. It sends the server small crops of things, never full frames, and never a picture of a person. |
+| Camera service | `edge.py` | The part that would run in the home. It stays idle until a cheap motion check sees a change, then runs OWLv2 (detection) and DINOv2 (visual fingerprints) for a few seconds. It registers a thing from 8 views and recognises it again. It sends the server small crops of things and, for people, who, where and when, never the full frame. Two exceptions, both for alerts: one picture of the room when no person is in view, and the crop of an unknown face, which the server keeps only if a security rule fires. |
+| Faces | `faces.py` | Opt-in, on the home device. YuNet finds a face inside a person box and SFace compares it with the family's templates, kept in the device's own `data/edge.db`. The server gets only the result: a person's id, `unknown` or `not_visible`. |
+| Presence | `presence.py` | Who is home, from three signals: the family's phones on the Wi-Fi (simulated: no MCP tool exposes the router's clients), the door's contact sensor, and the faces each camera sees. States OCCUPIED, LEAVING, EMPTY, UNSURE, with a count and the reason. Every rule about an empty home reads it. |
+| Judge | `judge.py` | Optional. Qwen2-VL-2B (4-bit, MLX, Apache-2.0). Asked only when an active check finds no match, on one tight crop of the place. Its "yes" or "unsure" becomes a question to the family; it never acts. |
+| Replay | `replay.py` | A recorded lab take stands in for the camera (`TT_REPLAY=prototype/replays/<name>.json`). Only the door, the phones and hand-switched devices are replayed, each labelled "Replayed" in the activity; detection, presence and rules run live. |
+| Pitch site | `site.py` | Builds the demo home and starts the server for the pitch page. |
 | Local text model | `llm_local.py` | Qwen3-1.7B (4-bit, MLX, Apache-2.0), offline and free. It writes the assistant's answers and turns sentences into rules. The code decides the facts; the model only writes the words. |
 | Kit camera | `kitcam.py` | Keeps one RTSP connection to the kit camera open while someone is watching and hands out the latest frame. |
-| Actions | `actions.py` | Calls the MCP through `mcp/client/chmcp.py`: device reads (`get_home_devices` only) and the light and plug actions. |
+| Actions | `actions.py` | Calls the MCP through `mcp/client/chmcp.py`: device reads (`get_home_devices` only) and the light and plug actions (dry runs by default). The alarm is always simulated. |
 | Database | `store.py` | One SQLite file, `data/home.db` (below). |
 | Web app | `web/` | The page: `index.html`, `app.js`, `app.css`. |
 
@@ -52,9 +68,12 @@ Claude is off by default. With `TT_AI=1`, Claude answers and compiles instead of
   - `fingerprints`: 8 DINOv2 vectors per thing;
   - `sightings`: where and when each thing was seen, with a small crop;
   - `presence`: where and when a person, child, dog or cat was seen, with no picture;
+  - `phones` and `presence_state`: the simulated Wi-Fi phones and the presence engine's state;
   - `sensors`: the rules;
   - `events`: the activity log and notifications;
   - `spend`: what Claude calls cost.
+
+The face templates live apart, in the home device's own `data/edge.db` (table `face_templates`), never in the server's database.
 
 Each camera stands for one place, named after its room ("Work Room", "Kitchen 1").
 
@@ -102,14 +121,23 @@ The only write tool the prototype uses is `update_device_capabilities`, on the k
 prototype/.venv/bin/python prototype/test_scenarios.py
 ```
 
-The test starts a private server on port 8775 with its own empty data folder, so it never touches the demo's database. It uses the same code and the same local model. It plays the camera service, the door (simulated, and the live path through a devices file) and the assistant, and prints PASS or FAIL for:
+The test starts a private server on port 8775 with its own empty data folder, so it never touches the demo's database. It uses the same code and the same local model (or the templates, if the model is not running). It plays the camera service, the door (simulated, and the live path through a devices file), the phones and the assistant, and prints PASS or FAIL for:
+- the presence engine;
 - each rule kind, firing and staying quiet;
+- leaving without a thing, someone who isn't Family, nobody home with devices on;
 - the suggested sensors;
 - the routing of questions and requests;
-- the red-light calls;
+- the red-light calls and the simulated alarm;
 - European Portuguese answers.
 
-It takes about 3 minutes. `--server http://127.0.0.1:8765` runs it on the live server instead, and writes test data into that server's database.
+On 20 Nov 2026, 107 of 107 checks passed in about 3 minutes.
+
+```bash
+prototype/.venv/bin/python prototype/test_scenarios.py --unit      # the presence engine alone, on a test clock: 21 checks, no server
+video/tools/heavy.sh prototype/.venv-vision/bin/python prototype/test_scenarios.py --vision   # the models on the lab footage (heavy)
+```
+
+`--server http://127.0.0.1:8765` runs it on the live server instead, and writes test data into that server's database.
 
 ## Switches
 
@@ -121,12 +149,15 @@ It takes about 3 minutes. `--server http://127.0.0.1:8765` runs it on the live s
 | `TT_LEAVE_ACTION` | `light_red` | The action of `leave_without` sensors when the sentence names none |
 | `TT_DOOR_POLL_S` | `4` | Seconds between device reads while the MCP is live |
 | `TT_PORT`, `TT_DATA` | `8765`, `data/` | Run a second server with its own data folder |
+| `TT_TIMINGS` | `demo` | `prod` switches the presence timings from seconds to minutes |
+| `TT_REPLAY` | — | A replay file (`prototype/replays/<name>.json`): a lab take stands in for the camera |
+| `TT_DEVICES_FILE` | — | Read the devices from a file in the shape of `get_home_devices` instead of the MCP (used by the test) |
 
 ## Other scripts
 
 | Script | What it does |
 |---|---|
-| `record.py` | Records a take: the kit camera's video plus the camera service's boxes, in `data/recordings/` |
+| `record.py` | Records a take: the kit camera's video plus the camera service's boxes, in `data/recordings/` (`--seconds 120 --name take`) |
 | `record_demo.mjs` | Records the scripted product video (`web/demo.html`) with headless Chrome |
 | `build_doc_pages.py` | Renders the team's documents for the page's document links (`web/docs/`, generated) |
 | `vision/benchmark.py` | Times the local vision models on one image |
@@ -134,7 +165,8 @@ It takes about 3 minutes. `--server http://127.0.0.1:8765` runs it on the live s
 ## Privacy
 
 - **Pictures of things:** only small crops of registered things reach the server.
-- **People and pets:** stored as who, place and time, with no picture.
+- **People and pets:** stored as who, place and time, with no picture. The exceptions are for alerts: a picture of the room with no person in view, and the crop of an unknown face, kept only when a security rule fires.
+- **Faces:** opt-in. The templates stay on the home device; the server receives only a person's id, `unknown` or `not_visible`.
 - **Recordings:** they stay on this machine. Use a take in a pitch only with the agreement of everyone in it, or blur them.
 - **Claude:** off by default. With it off, no image and no text goes to a cloud language model.
 

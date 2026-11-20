@@ -24,13 +24,14 @@ How it was checked: see the [verification log](#appendix--verification-log). The
    - living alone: door and plug activity;
    - fire: smoke sensor and plug.
 
-   Camera-dependent ideas, lost & found included, can't be shown today.
+   Camera-dependent ideas, lost & found included, could not be shown on 17 Nov: the camera had no power adapter. It ran from 18 Nov.
 5. **By weighted final score, after two rounds of AI-assisted advisor review:**
    1. **Casa Saudável**, a damp and cold engine for every home: 8.00
    2. **Casa que Cuida**, the same engine for a parent living alone, watching the home rather than the person: 7.60
    3. **Calor Certo**, a cold-home and cost coach: 7.10
 
-   Routine monitoring of older people was dropped: Altice's Family Care, Aging in place and eHealth Smart Assisted Living already cover it (§5). Recommended pitch: Casa Saudável, told through an older mother living alone. The team decides. Full write-up: [`deliverables/use-case-report/`](../deliverables/use-case-report/).
+   Routine monitoring of older people was dropped: Altice's Family Care, Aging in place and eHealth Smart Assisted Living already cover it (§5). Recommended pitch on 17 Nov: Casa Saudável, told through an older mother living alone. Full write-up: [`deliverables/use-case-report/`](../deliverables/use-case-report/).
+6. **Outcome.** On 18 Nov the team chose ThingTracker, the camera-led direction the mentors had pointed to at the kick-off ("don't underestimate the camera", [02-challenge.md](02-challenge.md)); see [AGENTS.md](../AGENTS.md) and [18-use-cases.md](18-use-cases.md). The figures on this page remain the evidence base for the cases on home conditions, people living alone and fire.
 
 ## 2. Who the customer is
 
@@ -67,13 +68,15 @@ Altice's own customer demographics are not public, and none are invented here.
 - **This overstates the reach.** ANACOM counts accesses, not households of this type, and 36 % of people aged 65–74 have never used the internet (§3.3). Altice's real customer base is not public.
 - **Use it only to show the order of scale** in Q&A. Don't put it on a slide as a fact.
 
-### Open questions for the mentors
+### What the public sources do not answer
 
-1. Who is Connected Home aimed at today: families, people living alone, older people, SOHO? Which segment do MEO and SFR want to grow?
-2. What do current users actually use it for: security, energy, automation? Which features go unused?
-3. Who pays in a care scenario: the older person, or an adult child on a family plan?
-4. Can the platform send notifications or keep event history for a third-party service? The MCP does neither ([10-mcp-in-practice.md](10-mcp-in-practice.md)).
-5. Are humidity, temperature and the plug part of the standard bundle that operators sell, or only of the hackathon kit?
+Altice's customer data is not public, so these points are assumptions or next steps for a pilot with Altice:
+
+1. **Target segment** (families, people living alone, older people, SOHO) and the segment MEO and SFR want to grow: to agree with Altice before a pilot.
+2. **What current users use Connected Home for**, and which features go unused: to measure in the pilot.
+3. **Who pays.** The business case assumes the household pays its operator a monthly add-on fee ([16-business-case.md](16-business-case.md), D1); in a care scenario, the payer (the older person or an adult child) is to be tested in the pilot.
+4. **Notifications and event history.** The MCP offers neither ([10-mcp-in-practice.md](10-mcp-in-practice.md)). The prototype polls the devices and keeps its own log; [15-integration-spec.md](15-integration-spec.md) specifies the events and tools the platform would add.
+5. **Whether humidity, temperature and plug devices are in the standard bundle** that operators sell, or only in the hackathon kit: to confirm with Altice.
 
 ## 3. Problem evidence
 
@@ -193,11 +196,11 @@ Eurostat `isoc_iiot_use`, individuals who used a connected home system or device
 | Official, Portuguese or peer-reviewed household survey | **None found** | — | — | — |
 | Kit dependency | Needs the camera, which has no power adapter today; the MCP has no vision; one fixed view | 17 Nov 2026 | [10-mcp-in-practice.md](10-mcp-in-practice.md) | — |
 
-**Inference:** judged fairly, the idea is appealing, and the mentors did say "don't underestimate the camera". The evidence is US vendor marketing, though, and it can't be shown today. If the team wants it, back it with a small survey of our own and fix the camera first.
+**Inference:** judged fairly, the idea is appealing, and the mentors did say "don't underestimate the camera". The evidence is US vendor marketing, though. The team chose this direction on 18 Nov (ThingTracker), once the camera ran; a survey of Portuguese households is a next step for the pilot.
 
 ## 4. Kit-fit matrix
 
-From [10-mcp-in-practice.md](10-mcp-in-practice.md) and [11-project-baseline.md](11-project-baseline.md).
+From [10-mcp-in-practice.md](10-mcp-in-practice.md) and [11-project-baseline.md](11-project-baseline.md). "Today" means 17 Nov. Later, the camera ran from 18 Nov (lost & found became ThingTracker), and the prototype reads the real door's open and closed changes through the read-only MCP ([15-integration-spec.md](15-integration-spec.md), [AGENTS.md](../AGENTS.md)).
 
 **Cross-cutting MCP limits:**
 - current state only, so history means polling and keeping our own log;
@@ -211,7 +214,7 @@ From [10-mcp-in-practice.md](10-mcp-in-practice.md) and [11-project-baseline.md]
 | Cold & energy | Temperature ✓; plug metering fields exist (W/V/A, daily counter) but are **untested with a load**, and the counter's unit is unknown; window contact ✓ | same | Plug → heater, **off only** (heaters must not be switched on remotely); `post_timer_device` (untested) | **Observe today; act (off) today** | Tariff can't be set via MCP (we hold it); one plug = one appliance |
 | Older person alone | Temperature/humidity ✓; smoke ✓; `lastCommunicationTime` ✓ (the bulb has really been silent since 04 Nov); door/plug activity possible but **routine monitoring dropped** (it duplicates Family Care) | same, polled | Messages to family: **our own channel** (not in the MCP) | **Observe today; alert channel is ours** | How the platform reports a powered-off hub is untested; consent and GDPR design |
 | Burglary / away | Door contact ✓; alarm state ✓ | `get_home_security_status`, `patch_home_security_status`, alarm history | Arm/disarm (**untested**, mislabelled read-only, Home mode has a 0 s delay); plug for presence simulation | **Partly** | Arming risky in a demo; camera siren offline |
-| Home fire | Smoke ✓; tamper, battery ✓; freshness ✓ | same + alarm history | Plug cut-off ✓ at the next poll (≤ 60 s); at once only via a native scenario, if a smoke trigger works (**untested**) | **Observe + act today** | Real smoke can't be produced in a demo; what the test button does is unknown (ask mentors) |
+| Home fire | Smoke ✓; tamper, battery ✓; freshness ✓ | same + alarm history | Plug cut-off ✓ at the next poll (≤ 60 s); at once only via a native scenario, if a smoke trigger works (**untested**) | **Observe + act today** | Real smoke can't be produced in a demo; what the test button does was not tested |
 | Lost & found | Camera ✗ (no 12 V adapter) | none for vision | — | **Not possible today** | Camera power; vision model and object memory are ours; one fixed view |
 
 ## 5. Overlap with Altice's existing offer
@@ -281,7 +284,7 @@ The one-line reasoning for each score in candidates 1–5 is in the use-case rep
 
 ## 7. Shortlist
 
-Ranked by final score. **The team decides.**
+Ranked by final score on 17 Nov. The team later chose ThingTracker (§1, item 6).
 
 | # | Candidate | Final | Intermediate | Why it is on the list | Biggest risk |
 |---|---|---|---|---|---|
@@ -312,20 +315,22 @@ Each sentence uses a verified value with its source and year. Values are copied 
 15. A Maison Sécurisée da SFR, em França, foi desenvolvida integralmente pela Altice Labs (Altice Labs, 2024).
 16. O RASI 2025 atribui parte da descida dos furtos em residência à tecnologia de segurança residencial e a "mais teletrabalho, menos ausências prolongadas" (RASI 2025, p. 84).
 
-## 9. Questions for the checkpoint
+## 9. Questions for the checkpoint, and where they ended
 
-| # | Question | Why we ask |
-|---|---|---|
-| 1 | Which customer segment do MEO and SFR want to grow? In a care scenario, who pays: the older person or a family member? | Decides who the product talks to (§2) |
-| 2 | What does **Family Care** detect today, and with which sensors? Would a home-health module (cold, damp, smoke) on top of it be new to you? | Our top candidate overlaps it (§5) |
-| 3 | Is there a platform API for **events or push notifications** we may use, or should we poll? | The MCP has neither history nor notifications ([10-mcp-in-practice.md](10-mcp-in-practice.md)) |
-| 4 | Can you **delete scenarios** we create in our home? | No delete tool, so each test is permanent |
-| 5 | Can we press the **smoke sensor's test button** without triggering the hub alarm or emergency contacts? | Needed for a fire demo (D, and A's smoke check) |
-| 6 | May we test **arming the alarm** in the lab? | The tool is mislabelled read-only, and Home mode has a 0 s delay |
-| 7 | Can we put our own **dehumidifier or heater** on the plug at the venue? | Needed for live action in B and C |
-| 8 | Status of the **camera power adapter** and the **Light** re-pairing | Decides whether G is possible, and whether the bulb can show status |
-| 9 | Are we free to use outside data (**IPMA**) and an external **LLM API**? Any data-residency constraints? | Architecture and privacy questions in Q&A |
-| 10 | Finalists: up to 6 or 3? Q&A: 1 or 2 minutes? Is the 18 Nov report the Sumário Executivo template, resubmitted on the 20th? | Open since the kick-off ([07-open-questions.md](07-open-questions.md)) |
+Prepared on 17 Nov for the mentor checkpoint of 18 Nov. The last column gives each point's outcome, or the assumption the project works with.
+
+| # | Question | Why we asked | Outcome |
+|---|---|---|---|
+| 1 | Which customer segment do MEO and SFR want to grow? In a care scenario, who pays: the older person or a family member? | Decides who the product talks to (§2) | Assumption: the household pays its operator a monthly add-on ([16-business-case.md](16-business-case.md), D1); the segment is agreed with Altice for a pilot (§2) |
+| 2 | What does **Family Care** detect today, and with which sensors? Would a home-health module (cold, damp, smoke) on top of it be new to you? | Our top candidate overlapped it (§5) | Not pursued: the team chose ThingTracker, which builds on the camera rather than on home conditions |
+| 3 | Is there a platform API for **events or push notifications** we may use, or should we poll? | The MCP has neither history nor notifications ([10-mcp-in-practice.md](10-mcp-in-practice.md)) | The prototype polls the devices; the events and tools the platform would add are specified in [15-integration-spec.md](15-integration-spec.md) |
+| 4 | Can you **delete scenarios** we create in our home? | No delete tool, so each test is permanent | Not needed: the prototype creates no scenarios and never calls the MCP write tools ([AGENTS.md](../AGENTS.md), rule 1) |
+| 5 | Can we press the **smoke sensor's test button** without triggering the hub alarm or emergency contacts? | Needed for a fire demo | Not pursued: the chosen direction has no fire demo |
+| 6 | May we test **arming the alarm** in the lab? | The tool is mislabelled read-only, and Home mode has a 0 s delay | Not tested: in the prototype the alarm is always simulated and the Altice alarm is never called ([AGENTS.md](../AGENTS.md)) |
+| 7 | Can we put our own **dehumidifier or heater** on the plug at the venue? | Needed for live action in B and C | Not pursued: device actions in the prototype are dry runs |
+| 8 | Status of the **camera power adapter** and the **Light** re-pairing | Decides whether G is possible, and whether the bulb can show status | Both online from 18 Nov ([JOURNAL.md](../JOURNAL.md)) |
+| 9 | Are we free to use outside data (**IPMA**) and an external **LLM API**? Any data-residency constraints? | Architecture and privacy questions in Q&A | IPMA is not used. The prototype's assistant runs on a local text model, with Claude optional and off by default ([AGENTS.md](../AGENTS.md)); the production options that keep processing in the EU are compared in [14-architecture.md](14-architecture.md) §15 |
+| 10 | Finalists: up to 6 or 3? Q&A: 1 or 2 minutes? Is the 18 Nov report the Sumário Executivo template, resubmitted on the 20th? | Open since the kick-off | 3 finalists and 3 + 2 min (participants' guide); the report uses the Sumário Executivo template, submitted on 18 Nov and resubmitted on 20 Nov ([01-event.md](01-event.md)) |
 
 ## Appendix — verification log
 

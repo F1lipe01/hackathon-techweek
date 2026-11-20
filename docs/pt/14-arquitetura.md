@@ -53,7 +53,7 @@ Três princípios orientam tudo o que se descreve a seguir:
 
 | # | Requisito | Objetivo | Como se cumpre |
 |---|---|---|---|
-| F1 | Seguir os objetos que o utilizador nomeia e distingui-los de objetos semelhantes | “As suas chaves”, e não “quaisquer chaves” | O _OWLv2_ encontra os candidatos e os vetores do _DINOv2_ são comparados com as 8 vistas do objeto (§6 e §9) |
+| F1 | Seguir os objetos que o utilizador nomeia e distingui-los de objetos semelhantes | “As suas chaves”, e não “quaisquer chaves” | O _OWLv2_ encontra os candidatos e os vetores do _DINOv2_ são comparados com as 8 fotos do objeto (§6 e §9) |
 | F2 | Responder a “onde está X?” com o lugar, a hora e uma fotografia | Resposta em ≤ 3 s | Última observação no _PostgreSQL_; o modelo de linguagem só redige a resposta |
 | F3 | Criar um sensor a partir de uma frase | Sem ecrãs de configuração | O modelo de linguagem compila a frase numa regra (§10) |
 | F4 | Saber quem está em casa | Fiável para as regras de casa vazia | Motor de presença sobre os telemóveis, a porta e as câmaras (§7) |
@@ -162,7 +162,7 @@ A Figura 4 detalha o agente da casa, os servidores de visão e o serviço _Thing
 | 7 | Filas de visão | Altice | Regiões e pedidos | Urgente ou em lote | Urgente: verificações ativas, atualizações, registos, clipes para o juiz e casas com uma regra de segurança ativa; em lote, o resto | Trabalho por ordem |
 | 8 | Deteção | Servidores de visão | Região | Caixas dos objetos registados da casa, de “a person” e de superfícies (secretária, mesa) | Pontuações do _OWLv2_ (no protótipo, 0,1 para propor e 0,2 para uma pessoa) | Caixas |
 | 9 | Vetores | Servidores de visão | Caixas | Nada | _DINOv2 small_: 384 números por candidato | Caixas e vetores |
-| 10 | Comparação | Serviço | Vetores e assinaturas no _pgvector_ | Se um candidato é o objeto registado | Semelhança ≥ 0,62 com a mais próxima das 8 vistas | Objetos reconhecidos |
+| 10 | Comparação | Serviço | Vetores e assinaturas no _pgvector_ | Se um candidato é o objeto registado | Semelhança ≥ 0,62 com a mais próxima das 8 fotos | Objetos reconhecidos |
 | 11 | Seguimento | Serviço | Caixas entre análises | Na mão, levado ou mudado (§8.2) | Sobreposição de caixas; 3 análises sem o objeto | Observações, escritas só quando algo muda |
 | 12 | Motor de presença | Serviço | Telemóveis, porta, pessoas e rótulos dos rostos | OCUPADA, A SAIR, VAZIA ou INCERTA (§7) | Tempos na §7 | Estado, contagem e quem; pedidos de atualização |
 | 13 | Motor de regras | Serviço | Regras compiladas, presença, observações, eventos e temporizadores | Se uma regra se cumpre e se pede uma verificação ativa ou o juiz | Por regra (§8) | Aviso ou nada |
@@ -346,10 +346,10 @@ Um aviso é um evento estruturado, com título, mensagem, miniatura, cartões de
 | Caminho | Onde corre | O que acontece | Resultado |
 |---|---|---|---|
 | Fotografias do telemóvel | Aplicação → equipamento da casa (pelo Wi-Fi da casa ou por um _relay_ cifrado de ponta a ponta, que a Altice não consegue ler) | 6 a 8 fotografias de lados diferentes (ou imagens de um vídeo curto); o _OWLv2_ encontra o objeto em cada fotografia, usando o nome em inglês como termo de pesquisa, e o _DINOv2_ calcula o vetor de cada recorte | Assinatura visual com até 8 vetores |
-| Mostrado a uma câmara | Equipamento da casa | O utilizador roda o objeto devagar em frente a uma câmara; cada região passa pelo _OWLv2_ e pelo _DINOv2_, e uma vista só é guardada se a semelhança com todas as já guardadas for inferior a 0,97 (um ângulo novo), até haver 8 | Assinatura visual com 8 vistas |
-| Propostas da câmara | Equipamento da casa | A aplicação mostra o que as câmaras veem (“A procurar nas câmaras…”); a família escolhe o objeto com um toque, e as fotografias ou a câmara completam as vistas | Como acima |
+| Mostrado a uma câmara | Equipamento da casa | O utilizador roda o objeto devagar em frente a uma câmara; cada região passa pelo _OWLv2_ e pelo _DINOv2_, e uma foto só é guardada se a semelhança com todas as já guardadas for inferior a 0,97 (um ângulo novo), até haver 8 | Assinatura visual com 8 fotos |
+| Propostas da câmara | Equipamento da casa | A aplicação mostra o que as câmaras veem (“A procurar nas câmaras…”); a família escolhe o objeto com um toque, e as fotografias do telemóvel ou da câmara completam as 8 fotos | Como acima |
 
-O equipamento constrói a assinatura visual e guarda-a, com o melhor recorte como fotografia do objeto, e nenhuma das duas sai de casa. A Altice guarda os metadados do objeto em texto (o nome, o dono e as regras), pelo que uma caixa substituída recupera a lista de objetos e os cenários. Como as assinaturas visuais e os padrões faciais não ficam guardados fora de casa, uma caixa nova exige que se registem de novo as vistas dos objetos e os rostos. (Na alternativa híbrida, as assinaturas visuais ficavam no _PostgreSQL_ com _pgvector_, na Altice.)
+O equipamento constrói a assinatura visual e guarda-a, com o melhor recorte como fotografia do objeto, e nenhuma das duas sai de casa. A Altice guarda os metadados do objeto em texto (o nome, o dono e as regras), pelo que uma caixa substituída recupera a lista de objetos e os cenários. Como as assinaturas visuais e os padrões faciais não ficam guardados fora de casa, uma caixa nova exige que se registem de novo as fotos dos objetos e os rostos. (Na alternativa híbrida, as assinaturas visuais ficavam no _PostgreSQL_ com _pgvector_, na Altice.)
 
 ## 10. A linguagem de sensores
 

@@ -126,7 +126,7 @@ Resposta curta: “Dois modelos: um encontra ‘um livro’ e o outro confirma q
 
 - Pormenor:
   - o _OWLv2_ (vocabulário aberto) delimita numa caixa tudo o que se descreva por palavras, aqui `"a photo of a yellow book"`;
-  - o _DINOv2_ transforma cada caixa numa assinatura visual (384 números) e compara-a, por semelhança de cosseno, com as 8 vistas guardadas;
+  - o _DINOv2_ transforma cada caixa numa assinatura visual (384 números) e compara-a, por semelhança de cosseno, com as 8 fotos guardadas;
   - a partir de 0,62, conta como seu;
   - no laboratório, na câmara do _kit_, o livro obteve 0,70 e uma garrafa 0,10;
   - `edge.py`, funções `analyse` e `best_match` (a comparação com o limiar `--match`, 0,62 por omissão).
@@ -137,20 +137,20 @@ Resposta curta: “Dois modelos: um encontra ‘um livro’ e o outro confirma q
 
 ### B1a. As fotografias do telemóvel bastam para reconhecer o objeto?
 
-Resposta curta: “Com uma câmara no teto, não: dão uma primeira assinatura, mas são as vistas da própria câmara que a tornam fiável.”
+Resposta curta: “Com uma câmara no teto, não: dão uma primeira assinatura, mas são as fotos tiradas pela própria câmara que a tornam fiável.”
 
 - Pormenor:
   - a assinatura feita com as fotografias do telemóvel obteve 0,23 no livro visto do teto, porque os grandes planos são demasiado diferentes de um pequeno recorte visto de cima;
-  - por isso, da primeira vez que a câmara vê um candidato, a app pergunta “é este o teu livro?” e junta à assinatura as vistas da própria câmara (até 8);
+  - por isso, da primeira vez que a câmara vê um candidato, a app pergunta “é este o teu livro?” e junta à assinatura as fotos tiradas pela própria câmara (até 8);
   - só a análise da região em resolução completa, e não de uma imagem reduzida, permite encontrar o livro (68 de 68 imagens, contra 7 de 69).
 
 ### B2. Como se regista um objeto?
 
-Resposta curta: “Com fotografias do telemóvel, ou mostrando-o a uma câmara; o resultado são 8 vistas e uma assinatura.”
+Resposta curta: “Com fotografias do telemóvel, ou mostrando-o a uma câmara; o resultado são 8 fotos e uma assinatura.”
 
 - Pormenor:
-  - fotografias do telemóvel: seguem do telemóvel para o equipamento da casa, diretamente pelo Wi-Fi da casa ou por um _relay_ cifrado de ponta a ponta, que a Altice não consegue ler; no equipamento, o _OWLv2_ recorta o objeto em cada fotografia e o _DINOv2_ gera os vetores [protótipo: postos em fila para o agente, `server.py`, `edge.py`]. Chegam a 0,69 numa imagem do _kit_ tirada à altura da secretária, mas, com a câmara no teto, só as vistas da própria câmara reconhecem o livro (0,91-0,94), pelo que a app as acrescenta quando o utilizador confirma (B1a);
-  - mostrando-o à câmara: o agente guarda 8 vistas, cada uma suficientemente diferente das outras (cosseno abaixo de 0,97) (`edge.py`, `enrol_step`);
+  - fotografias do telemóvel: seguem do telemóvel para o equipamento da casa, diretamente pelo Wi-Fi da casa ou por um _relay_ cifrado de ponta a ponta, que a Altice não consegue ler; no equipamento, o _OWLv2_ recorta o objeto em cada fotografia e o _DINOv2_ gera os vetores [protótipo: postos em fila para o agente, `server.py`, `edge.py`]. Chegam a 0,69 numa imagem do _kit_ tirada à altura da secretária, mas, com a câmara no teto, só as fotos tiradas pela própria câmara reconhecem o livro (0,91-0,94), pelo que a app as acrescenta quando o utilizador confirma (B1a);
+  - mostrando-o à câmara: o agente guarda 8 fotos, cada uma suficientemente diferente das outras (cosseno abaixo de 0,97) (`edge.py`, `enrol_step`);
   - a assinatura fica no equipamento da casa; a plataforma guarda apenas o nome do objeto e o dono, em texto.
 
 ### B3. Como sabe que alguém pegou no livro?

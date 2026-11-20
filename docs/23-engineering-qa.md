@@ -105,7 +105,7 @@ Status markers:
 - **Short answer:** "Two models: one finds 'a book', the other checks it is yours."
 - **Detail:**
   - **OWLv2** (open vocabulary) boxes anything described in words, here "a photo of a yellow book";
-  - **DINOv2** turns each box into a fingerprint (384 numbers) and compares it with the 8 stored views by cosine similarity;
+  - **DINOv2** turns each box into a fingerprint (384 numbers) and compares it with the 8 stored photos by cosine similarity;
   - 0,62 or more counts as yours;
   - in the lab, on the kit camera, the book scored 0,70 and a bottle 0,10;
   - `edge.py`, `best_match`.
@@ -115,17 +115,17 @@ Status markers:
   - (`video/tools/book_region.py`).
 
 **B1a. Do phone photos alone recognise the thing?**
-- **Short answer:** "Not from a ceiling camera: they give a first fingerprint, and the camera's own views make it reliable."
+- **Short answer:** "Not from a ceiling camera: they give a first fingerprint, and the camera's own photos make it reliable."
 - **Detail:**
   - the phone-photo fingerprint scored 0,23 on the book from the ceiling, because close-ups look too different from a small crop seen from above;
-  - so the first time the camera sees a candidate, the app asks "is this your book?" and adds the camera's own views to the fingerprint (up to 8);
+  - so the first time the camera sees a candidate, the app asks "is this your book?" and adds the camera's own photos to the fingerprint (up to 8);
   - analysing the full-resolution region rather than a shrunk frame is what makes the book findable at all (68 of 68 frames, against 7 of 69).
 
 **B2. How do you register a thing?**
-- **Short answer:** "Photos from the phone, or showing it to a camera; the result is 8 views and a fingerprint."
+- **Short answer:** "Photos from the phone, or showing it to a camera; the result is 8 photos and a fingerprint."
 - **Detail:**
-  - **phone photos:** they go from the phone to the home device, directly on the home Wi-Fi or through an end-to-end-encrypted relay that Altice cannot read; on the device, OWLv2 crops the thing in each photo, then DINOv2 makes the vectors [prototype: queued to the edge, `server.py`, `edge.py`]. They reach 0,69 on a desk-level kit frame, but from the ceiling only the camera's own views recognise the book (0,91-0,94), so the app adds them on confirmation (B1a);
-  - **showing it to the camera:** the edge keeps 8 views, each different enough from the others (cosine below 0,97) (`edge.py` `enrol_step`);
+  - **phone photos:** they go from the phone to the home device, directly on the home Wi-Fi or through an end-to-end-encrypted relay that Altice cannot read; on the device, OWLv2 crops the thing in each photo, then DINOv2 makes the vectors [prototype: queued to the edge, `server.py`, `edge.py`]. They reach 0,69 on a desk-level kit frame, but from the ceiling only the camera's own photos recognise the book (0,91-0,94), so the app adds them on confirmation (B1a);
+  - **showing it to the camera:** the edge keeps 8 photos, each different enough from the others (cosine below 0,97) (`edge.py` `enrol_step`);
   - the fingerprint stays on the home device; the platform keeps only the thing's name and owner, as text.
 
 **B3. How does it know someone picked up the book?**
@@ -343,7 +343,7 @@ Status markers:
 **G3. What is measured, and what isn't?**
 - **Measured, in the lab on the kit camera:**
   - the book from phone photos at desk level: 0,70 against 0,62; a bottle at 0,10;
-  - the book from the ceiling with the camera's own views: found in 68 of 68 frames, median 0,93 (B1);
+  - the book from the ceiling with the camera's own photos: found in 68 of 68 frames, median 0,93 (B1);
   - faces: the registered team member at 0,54 and 0,63, a stranger at 0,17 and 0,14 (B5);
   - the scenarios end to end, with no camera: 106 checks in `prototype/test_scenarios.py`, all passing (20 Nov).
 - **Not measured:** accuracy and false alarms in real homes. The pilot is the place for that.

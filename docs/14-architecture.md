@@ -53,7 +53,7 @@ Three principles shape everything below:
 
 | # | Requirement | Target | How it is met |
 |---|---|---|---|
-| F1 | Track the things the user names, and tell them apart from similar things | "Your keys", not "any keys" | OWLv2 finds candidates; DINOv2 vectors are matched against the thing's 8 views (§6, §9) |
+| F1 | Track the things the user names, and tell them apart from similar things | "Your keys", not "any keys" | OWLv2 finds candidates; DINOv2 vectors are matched against the thing's 8 photos (§6, §9) |
 | F2 | Answer "where is X?" with place, time and a picture | Answer in ≤ 3 s | Last sighting in PostgreSQL; the language model only words the answer |
 | F3 | Create a sensor from one sentence | No settings screens | The language model compiles the sentence into a rule (§10) |
 | F4 | Know who is home | Correct for the empty-home rules | Presence engine over phones, door and cameras (§7) |
@@ -162,7 +162,7 @@ Figure 4 opens the home agent, the vision workers and the ThingTracker service, 
 | 7 | Vision queues | Altice | Regions, requests | Urgent or batch | Urgent: active checks, refreshes, registrations, clips for the judge, homes with an active safety rule. Batch: the rest | Ordered work |
 | 8 | Detection | Vision workers | Region | Boxes of the home's registered things, "a person" and surfaces (desk, table) | OWLv2 scores (prototype: 0.1 to propose, 0.2 for a person) | Boxes |
 | 9 | Vectors | Vision workers | Boxes | Nothing | DINOv2 small: 384 numbers per candidate | Boxes and vectors |
-| 10 | Matching | Service | Vectors, fingerprints in pgvector | Whether a candidate is *your* thing | Cosine ≥ 0.62 to the closest of its 8 views | Recognised things |
+| 10 | Matching | Service | Vectors, fingerprints in pgvector | Whether a candidate is *your* thing | Cosine ≥ 0.62 to the closest of its 8 photos | Recognised things |
 | 11 | Tracking | Service | Boxes across analyses | In hand, taken, moved (§8.2) | Box overlap; 3 analyses missing | Sightings, written only when something changes |
 | 12 | Presence engine | Service | Phones, door, people and face labels | OCCUPIED, LEAVING, EMPTY, UNSURE (§7) | Timings in §7 | State, count, who; refresh requests |
 | 13 | Rules engine | Service | Compiled rules, presence, sightings, events, timers | Whether a rule is met; whether to ask for an active check or the judge | Per rule (§8) | Alert or nothing |
@@ -346,10 +346,10 @@ An alert is a structured event: title, message, thumbnail, action cards, the doo
 | Path | Where it runs | What happens | Result |
 |---|---|---|---|
 | Phone photos | App → home device (on the home Wi-Fi, or through an end-to-end-encrypted relay that Altice cannot read) | 6 to 8 photos from different sides (or frames of a short video); OWLv2 finds the thing in each photo, using its English name as the query; DINOv2 makes a vector of each crop | Fingerprint of up to 8 vectors |
-| Shown to a camera | Home device | The user turns the thing slowly in front of a camera; each region goes through OWLv2 and DINOv2; a view is kept only if its cosine to every view already kept is below 0.97 (a new angle), until 8 | Fingerprint of 8 views |
-| The camera's proposals | Home device | The app shows what the cameras see ("Looking through your cameras…"); one tap picks a thing, then photos or the camera complete its views | As above |
+| Shown to a camera | Home device | The user turns the thing slowly in front of a camera; each region goes through OWLv2 and DINOv2; a photo is kept only if its cosine to every photo already kept is below 0.97 (a new angle), until 8 | Fingerprint of 8 photos |
+| The camera's proposals | Home device | The app shows what the cameras see ("Looking through your cameras…"); one tap picks a thing, then photos from the phone or the camera complete its 8 photos | As above |
 
-The device builds the fingerprint and keeps it, with the thing's best crop as its photo; neither leaves the home. Altice keeps the thing's metadata as text (its name, owner and rules), so a replaced box gets back the list of things and the scenarios. Since fingerprints and face templates are not kept outside the home, a new box needs the views of things and faces registered again. (In the hybrid alternative, fingerprints lived in PostgreSQL with pgvector at Altice.)
+The device builds the fingerprint and keeps it, with the thing's best crop as its photo; neither leaves the home. Altice keeps the thing's metadata as text (its name, owner and rules), so a replaced box gets back the list of things and the scenarios. Since fingerprints and face templates are not kept outside the home, a new box needs the photos of things and the faces registered again. (In the hybrid alternative, fingerprints lived in PostgreSQL with pgvector at Altice.)
 
 ## 10. The sensor language
 

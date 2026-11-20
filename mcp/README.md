@@ -7,7 +7,7 @@ A small Python client (standard library only) that logs in to the Connected Home
 ```bash
 python3 mcp/client/chmcp.py login                 # opens the browser; sign in with the team account
 python3 mcp/client/chmcp.py tools                 # list the tools and their parameters
-python3 mcp/client/chmcp.py call GET_HOME_STATUS_BRIEF '{}'
+python3 mcp/client/chmcp.py call get_home_status_brief '{}'
 python3 mcp/client/chmcp.py serve                 # stdio MCP proxy (see below)
 ```
 
@@ -19,7 +19,7 @@ Reasons for writing our own client:
 
 Tokens are saved to `mcp/client/.tokens.json` (gitignored, mode 600) and refreshed automatically. When the refresh token expires, run `login` again.
 
-**In Claude Code:** `claude mcp add connected-home -- python3 /absolute/path/mcp/client/chmcp.py serve` exposes the 16 tools as native tools. The proxy forwards `tools/list` and `tools/call` upstream, adding the token and API key.
+**In Claude Code:** `claude mcp add connected-home -- python3 /absolute/path/mcp/client/chmcp.py serve` exposes the server's tools (the 18 in `tools-schema.json`) as native tools. The proxy forwards `tools/list` and `tools/call` upstream, adding the token and API key. It forwards the write tools too (`update_device_capabilities`, `patch_home_security_status`, the scenario and timer tools): they change the real home, and are called only with the team's explicit approval (rule 1 in [AGENTS.md](../AGENTS.md)).
 
 ## Config templates for the guide's clients
 

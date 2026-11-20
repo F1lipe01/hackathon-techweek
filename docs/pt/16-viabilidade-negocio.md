@@ -2,10 +2,10 @@
 
 Dados atualizados a 18 de novembro de 2026. Os gráficos são gerados a partir do modelo de cálculo que acompanha este documento, no qual cada número tem uma fonte identificada ou está assinalado como pressuposto da equipa. Os detalhes e as fontes encontram-se no final.
 
-## Desenho final (20 de novembro): tudo local
+## Solução final (20 de novembro): tudo local
 
 - A decisão. Toda a perceção e toda a inferência correm no equipamento da casa, incluindo o modelo de linguagem (_Qwen3-1.7B_ no protótipo): no _router_, se tiver uma _NPU_, ou numa caixa dedicada, como um _Raspberry Pi 5_ com um acelerador de IA ou um _Jetson Orin Nano Super_. As imagens, o vídeo, as assinaturas visuais e os padrões faciais nunca saem de casa, e a plataforma da Altice recebe apenas texto.
-- O custo da opção escolhida. O equipamento é comprado uma única vez: uma câmara de interior por cerca de 45 €; um _Raspberry Pi 5_ por cerca de 200 € ou um _Jetson Orin Nano Super_ por cerca de 345 €; ou um _router_ com _NPU_ por cerca de mais 15 € (estimativa). Em 5 anos, o equipamento custa 3,33 € ou 5,75 € por mês. A eletricidade consumida pelos modelos custa cêntimos por mês: menos de 0,01 € com o _YOLOv8n_ e até 0,72 € com o _OWLv2_, com 12 h de movimento por dia (estimativa da equipa num _Jetson Orin Nano_). Os valores e as fontes, da pesquisa de preços da equipa de 20 de novembro, constam do documento 17, na secção “Desenho final”.
+- O custo da opção escolhida. O equipamento é comprado uma única vez: uma câmara de interior por cerca de 45 €; um _Raspberry Pi 5_ por cerca de 200 € ou um _Jetson Orin Nano Super_ por cerca de 345 €; ou um _router_ com _NPU_ por cerca de mais 15 € (estimativa). Em 5 anos, o equipamento custa 3,33 € ou 5,75 € por mês. A eletricidade consumida pelos modelos custa cêntimos por mês: menos de 0,01 € com o _YOLOv8n_ e até 0,72 € com o _OWLv2_, com 12 h de movimento por dia (estimativa da equipa num _Jetson Orin Nano_). Os valores e as fontes, da pesquisa de preços da equipa de 20 de novembro, constam do documento 17, na secção “Solução final”.
 - Quem compra o equipamento. Uma caixa paga pela Altice não se paga com a mensalidade de 3,99 € (o saldo fica entre −4,81 € e −6,90 € por casa e por mês, documento 17, secção 9). O caso funciona com a IA no _router_ ou com equipamento comprado pelo cliente.
 - A análise que se segue é a anterior (18 de novembro) e mantém-se como contexto. A visão nos servidores _L4_ da própria Altice (cerca de 0,49 € por casa e por mês) é a alternativa avaliada e não escolhida, porque as imagens sairiam de casa. O modelo de linguagem foi calculado como um serviço na nuvem pago por pedido (cerca de 0,43 € por casa e por mês); com o modelo no equipamento da casa, esse custo por pedido deixa de existir, e os valores seguintes não foram recalculados.
 
@@ -14,7 +14,7 @@ Dados atualizados a 18 de novembro de 2026. Os gráficos são gerados a partir d
 - As famílias pagam ao seu operador uma pequena mensalidade, e a Altice Labs fornece o _ThingTracker_ através da plataforma _Cognitive Home_.
 - No cenário esperado, aderem ao serviço cerca de 19 000 casas MEO, ou seja, 1,2 % das casas com banda larga fixa da operadora.
 - De uma mensalidade de 3,99 €, restam cerca de 1,74 € por casa, depois de descontados o IVA e os custos do modelo de linguagem, dos servidores, do apoio ao cliente e da angariação, e, na análise anterior, cerca de 1,25 € com os modelos de visão nos servidores da própria Altice (cerca de 0,49 €, documento 17).
-- A condição essencial é que a Altice não pague uma caixa dedicada para cada casa: os modelos correm no _router_ ou em equipamento comprado pelo cliente (ver o desenho final, acima). Com uma caixa dedicada paga pela Altice em cada casa, o serviço adicional dá prejuízo (documento 17).
+- A condição essencial é que a Altice não pague uma caixa dedicada para cada casa: os modelos correm no _router_ ou em equipamento comprado pelo cliente (ver a solução final, acima). Com uma caixa dedicada paga pela Altice em cada casa, o serviço adicional dá prejuízo (documento 17).
 - O preço proposto corresponde a uma fração do preço dos atuais planos de alarme com câmara em Portugal, que começam nos 34,99 € por mês.
 
 ## 1. O mercado

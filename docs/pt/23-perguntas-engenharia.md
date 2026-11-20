@@ -11,49 +11,59 @@ Marcas de estado:
 - [protótipo]: o que faz o código no portátil da demonstração;
 - [execução sem montagem]: o que se mostrou com as gravações dos próprios filmes, passadas de novo pelo sistema real na noite de 19 para 20 de novembro (`video/out/proof/`, [24-what-is-real.md](../24-what-is-real.md)).
 
+## Solução final (20 de novembro): tudo local, com a privacidade em primeiro lugar
+
+O equipamento da casa faz toda a perceção e toda a inferência; as imagens, o vídeo, as assinaturas visuais e os padrões faciais nunca saem de casa; a plataforma da Altice transporta apenas texto. A visão nos servidores da Altice, em GPU _L4_, foi uma alternativa avaliada e não escolhida ([14-arquitetura.md](14-arquitetura.md)).
+
 ---
 
 ## A. Onde corre cada parte
 
 ### A1. O que corre onde?
 
-Resposta curta: “Em casa vê-se, nos servidores da Altice decide-se, e o modelo de linguagem só escreve.”
+Resposta curta: “O equipamento da casa vê, lembra-se e decide; a plataforma da Altice só transporta texto; e o modelo de linguagem só escreve.”
 
-- Em casa [proposta]: o equipamento que a Altice já instala (câmara ou _router_, sem processador de IA), onde correm:
+- Em casa [proposta]: um único equipamento, que é o _router_, se tiver uma NPU, ou uma caixa dedicada, como um _Raspberry Pi 5_ com um acelerador de IA ou um _Jetson Orin Nano Super_. Nele correm:
+  - a receção das imagens da câmara, na rede local;
   - o filtro de movimento;
-  - as máscaras de privacidade;
-  - o recorte apenas da região que mudou;
-  - o reconhecimento facial, opcional;
-  - a lista de telemóveis da família ligados ao Wi-Fi, que o _router_ conhece.
-- Na Altice [proposta]:
-  - servidores de visão, alimentados por filas (_OWLv2_ e _DINOv2_ em GPU NVIDIA _L4_);
-  - o serviço _ThingTracker_, sem estado e atrás de um balanceador de carga, com o motor de presença e o motor de regras;
-  - _PostgreSQL_ com _pgvector_, uma _cache_ em _Redis_ e armazenamento de objetos para as miniaturas;
-  - um conjunto de servidores do modelo de linguagem, que recebe apenas texto;
-  - o servidor MCP e as notificações que já existem.
+  - a visão: deteção e reidentificação face à assinatura visual (_OWLv2_ e _DINOv2_ no protótipo; detetores mais leves, como o _YOLOv8n_, nos equipamentos pequenos);
+  - o reconhecimento facial, opcional (_YuNet_ e _SFace_, com os padrões guardados no equipamento);
+  - a memória local (onde e quando foi visto cada objeto);
+  - o motor de regras;
+  - o modelo de linguagem (_Qwen3-1.7B_ no protótipo), que transforma uma frase numa regra e uma pergunta numa resposta; nunca decide.
+- Na Altice [proposta], só texto:
+  - as contas, a identidade e as permissões da família;
+  - o registo de referência dos metadados (objetos, pessoas, só com o nome, ligações de posse, cenários), que dá cópia de segurança, sincronização entre os telemóveis da família e reposição, se a caixa for substituída;
+  - o registo de eventos em texto estruturado (por exemplo, “livro, secretária, 18:02”);
+  - as notificações para a app;
+  - um _relay_, para que a app chegue à casa quando a família está fora;
+  - as ações nos dispositivos, através do MCP do _Connected Home_.
+- Porque continua a ser precisa a nuvem: o telemóvel nem sempre está na rede da casa; as notificações e o controlo dos dispositivos são serviços da plataforma da Altice; e os metadados precisam de cópia de segurança e de sincronização entre vários utilizadores.
 - No telemóvel: a app da Altice, com o novo separador _Things_ e o botão do assistente.
 
 Onde se mostra: `docs/architecture/implantacao.png`.
 
 ### A2. O que fez o _MacBook_ na demonstração?
 
-Resposta curta: “Os três papéis ao mesmo tempo: a casa, os servidores da Altice e o modelo de linguagem.”
+Resposta curta: “Os dois papéis ao mesmo tempo: o equipamento da casa e a plataforma da Altice.”
 
 - [protótipo]:
-  - o `edge.py` faz de agente da casa e de servidores de visão da Altice (_OWLv2_ e _DINOv2_ na GPU do _Mac_);
-  - o `server.py` faz de serviço _ThingTracker_: app, API, motores de presença e de regras, com o _SQLite_ no lugar do _PostgreSQL_;
-  - o `llm_local.py` faz de servidores do modelo de linguagem (_Qwen3-1.7B_);
+  - o `edge.py` faz da parte de câmara do equipamento da casa: filtro de movimento, _OWLv2_ e _DINOv2_ na GPU do _Mac_, e rostos;
+  - o `server.py` faz da memória e dos motores de presença e de regras do equipamento da casa, e da app e da API da plataforma, com o _SQLite_;
+  - o `llm_local.py` faz do modelo de linguagem do equipamento da casa (_Qwen3-1.7B_);
   - o `judge.py`, opcional, faz de juiz de visão (_Qwen2-VL-2B_).
 - Nas gravações do laboratório, o _stream_ da câmara do _kit_ chegou ao _Mac_ através do _relay_ na nuvem da organização. Isso deve-se à infraestrutura do _hackathon_, e não ao produto.
 
 ### A3. Porque não uma caixa em cada casa, com tudo local?
 
-Resposta curta: “Porque exige um investimento inicial de 100 a 140 milhões de euros, para 500 000 casas.”
+Resposta curta: “Tudo local é a solução escolhida. O equipamento compra-se uma vez, no _router_ com NPU ou como equipamento comprado pelo cliente; uma caixa paga pela Altice não compensa.”
 
-- Pormenor:
-  - custos de operação de 6,55 a 8,64 € por casa e por mês (_Raspberry Pi 5_ com _AI HAT+_, ou _Jetson Orin Nano_);
-  - cada atualização dos modelos tem de chegar a 500 000 caixas;
-  - o modelo de linguagem precisaria de ainda mais memória.
+- Pormenor (pesquisa de preços da equipa, 20 de novembro):
+  - o equipamento compra-se uma vez: uma câmara de interior, ≈ 45 €; um _Raspberry Pi 5_, ≈ 200 €; um _Jetson Orin Nano Super_, ≈ 345 €; ou um _router_ com NPU, +15 € (uma estimativa);
+  - a 5 anos, o equipamento custa 3,33 ou 5,75 € por mês;
+  - com o serviço adicional a 3,99 €, uma caixa paga pela Altice deixa −4,81 a −6,90 € por casa e por mês (documento 17), e é por isso que a IA fica no _router_ ou em equipamento comprado pelo cliente;
+  - cada atualização dos modelos tem de chegar aos equipamentos das casas.
+- Análise anterior, mantida como contexto: com a Altice a comprar uma caixa para cada casa (um _Raspberry Pi 5_ com _AI HAT+_, ou um _Jetson Orin Nano Super_ ao preço de lançamento de 249 USD), paga em 36 meses, o investimento inicial seria de 100 a 140 milhões de euros para 500 000 casas, e a operação de 6,55 a 8,64 € por casa e por mês.
 
 Onde se mostra: [17-custos-operador.md](17-custos-operador.md) e o painel lateral de `docs/architecture/implantacao.png`.
 
@@ -64,33 +74,38 @@ Resposta curta: “Demasiado tráfego e demasiado risco para a privacidade, sem 
 - Pormenor [estimativa do diagrama]:
   - o vídeo contínuo a 2 Mbps dá cerca de 657 GB por câmara e por mês;
   - as imagens completas durante o movimento custam ainda 2,41 € por casa e por mês nos servidores da própria Altice, e 3,93 a 4,26 € em GPU de _hyperscalers_.
-- O caminho proposto envia apenas a região que mudou, cerca de uma vez por segundo enquanto há movimento: ≈ 0,49 € por casa e por mês com uma câmara, e 0,98 € com duas (documento 17).
+- O caminho proposto: nenhuma imagem sai de casa; o equipamento da casa analisa-a aí e envia à Altice apenas eventos em texto.
+- Alternativa avaliada e não escolhida: enviar apenas a região que mudou para as GPU _L4_ da Altice, cerca de uma vez por segundo enquanto há movimento, ≈ 0,49 € por casa e por mês com uma câmara, e 0,98 € com duas (documento 17). As imagens sairiam de casa.
 
 ### A5. Onde ficam os balanceadores de carga, e porquê aí?
 
-Resposta curta: “Na Altice, à frente do serviço sem estado e dos servidores de visão e de linguagem; em casa não há nada para distribuir.”
+Resposta curta: “Na Altice, à frente dos serviços da plataforma, que só tratam texto; em casa não há nada para distribuir.”
 
 - Pormenor [proposta]:
   - cada casa mantém uma única ligação de saída, em mTLS, para um corretor de ligações (MQTT, um tópico por casa);
   - os balanceadores de carga repartem as ligações das casas e os pedidos HTTPS da app por N instâncias do serviço;
-  - o estado de cada casa fica no _PostgreSQL_ e no _Redis_, pelo que qualquer instância pode servir qualquer casa;
-  - a visão e o modelo de linguagem ficam atrás de filas: primeiro as verificações urgentes das regras, e tudo o resto em lote, nas horas calmas, para que as GPU não sejam dimensionadas para o pico do fim do dia.
+  - os metadados de cada casa e o registo de eventos em texto ficam na base de dados da plataforma, pelo que qualquer instância pode servir qualquer casa;
+  - nenhum modelo de visão ou de linguagem corre na Altice, pelo que não há filas de GPU; as filas da solução anterior pertencem à alternativa da visão nos servidores, que não foi escolhida.
 
 Onde se mostra: `docs/architecture/implantacao.png`.
 
 ### A6. Como escala para 500 000 casas?
 
-Resposta curta: “Na horizontal, e os custos já estão contabilizados.”
+Resposta curta: “Cada casa traz a sua própria capacidade de cálculo; do lado da Altice, só passa texto.”
 
-- Pormenor: o documento 17 estima 1427 placas _L4_ (6,4 milhões de euros de _hardware_) para 500 000 casas com uma câmara, porque só o movimento desencadeia a análise e só se analisa a região que mudou.
+- Pormenor:
+  - a perceção e a inferência crescem com as casas, um equipamento em cada uma;
+  - a plataforma trata das contas, dos metadados, dos eventos em texto, das notificações e do _relay_, sem GPU para dimensionar;
+  - a estimativa anterior de 1427 placas _L4_ (6,4 milhões de euros de _hardware_) para 500 000 casas pertence à alternativa da visão nos servidores, que não foi escolhida (documento 17).
 
 ### A7. E se a internet falhar?
 
-Resposta curta: “O agente da casa guarda os eventos numa fila e envia-os quando a ligação voltar; o alarme de segurança não depende de nós.”
+Resposta curta: “O equipamento da casa continua a ver e a avaliar as regras, e guarda os eventos em texto numa fila até a ligação voltar; o alarme de segurança não depende de nós.”
 
 - [proposta]:
-  - o agente da casa guarda os eventos numa fila local (a “fila de saída” de `docs/architecture/implantacao.png`);
-  - as regras que precisam de visão ficam em pausa;
+  - o equipamento da casa guarda os eventos numa fila local (a “fila de saída” de `docs/architecture/implantacao.png`);
+  - a visão, a memória e as regras correm no equipamento da casa, pelo que não precisam de ligação;
+  - as notificações e as ações nos dispositivos passam pela plataforma da Altice, pelo que esperam pela ligação;
   - o alarme e o sensor da porta continuam a funcionar através da central de segurança da Altice, como hoje.
 
 ### A8. Quanto demora um aviso?
@@ -99,8 +114,8 @@ Resposta curta: “A meta é no máximo 3 segundos; no aviso da porta, o protót
 
 - Pormenor:
   - a meta, do evento à ação, é a do documento [20](20-produto.md), §6.4, e confirma-se no piloto;
-  - o tempo divide-se em movimento, envio da região, fila urgente de visão, regra e notificação;
-  - medido na GPU do _Mac_: _OWLv2_ 557 ms por imagem, com 10 objetos pedidos, e _DINOv2_ 22 ms por recorte (documento 14, §14);
+  - o tempo divide-se em movimento, visão no equipamento da casa, regra e notificação pela plataforma;
+  - medido na GPU do _Mac_: _OWLv2_ 557 ms por imagem, com 10 objetos pedidos, e _DINOv2_ 22 ms por recorte (documento 14, §14); num _Raspberry Pi 5_ ou num _Jetson_, ainda não foi medido;
   - os 10 s do protótipo resultam da consulta do sensor da porta pelo MCP a cada 4 s, da espera da regra (5 s) e do motor de regras (2 s) (documento 19, secção 6).
 
 ## B. Perceção: o que os modelos fazem, e só isso
@@ -134,9 +149,9 @@ Resposta curta: “Com uma câmara no teto, não: dão uma primeira assinatura, 
 Resposta curta: “Com fotografias do telemóvel, ou mostrando-o a uma câmara; o resultado são 8 vistas e uma assinatura.”
 
 - Pormenor:
-  - fotografias do telemóvel: o _OWLv2_ recorta o objeto em cada fotografia e o _DINOv2_ gera os vetores [protótipo: postos em fila para o agente, `server.py`, `edge.py`]. Chegam a 0,69 numa imagem do _kit_ tirada à altura da secretária, mas, com a câmara no teto, só as vistas da própria câmara reconhecem o livro (0,91-0,94), pelo que a app as acrescenta quando o utilizador confirma (B1a);
+  - fotografias do telemóvel: seguem do telemóvel para o equipamento da casa, diretamente pelo Wi-Fi da casa ou por um _relay_ cifrado de ponta a ponta, que a Altice não consegue ler; no equipamento, o _OWLv2_ recorta o objeto em cada fotografia e o _DINOv2_ gera os vetores [protótipo: postos em fila para o agente, `server.py`, `edge.py`]. Chegam a 0,69 numa imagem do _kit_ tirada à altura da secretária, mas, com a câmara no teto, só as vistas da própria câmara reconhecem o livro (0,91-0,94), pelo que a app as acrescenta quando o utilizador confirma (B1a);
   - mostrando-o à câmara: o agente guarda 8 vistas, cada uma suficientemente diferente das outras (cosseno abaixo de 0,97) (`edge.py`, `enrol_step`);
-  - a assinatura fica guardada, por cliente, na base de dados da plataforma.
+  - a assinatura fica no equipamento da casa; a plataforma guarda apenas o nome do objeto e o dono, em texto.
 
 ### B3. Como sabe que alguém pegou no livro?
 
@@ -223,13 +238,13 @@ Resposta curta: “Cada câmara é um lugar; o que nenhuma câmara vê fica a ca
 
 Resposta curta: “Não só pela câmara: têm de concordar três sinais.”
 
-- Pormenor [proposta]: uma máquina de estados por casa, no serviço _ThingTracker_, que junta:
+- Pormenor [proposta]: uma máquina de estados por casa, no equipamento da casa, que junta:
   - os telemóveis da família no Wi-Fi (o _router_ sabe quais são; o acesso é por uma nova ferramenta MCP, proposta à Altice);
   - o sensor da porta (eventos de abertura e fecho, que a plataforma já recebe);
   - as pessoas que as câmaras veem, com o nome, se o rosto estiver registado.
 - Estados:
   - OCUPADA: há um telemóvel em casa, ou alguém foi visto há pouco;
-  - A SAIR: a porta abriu e fechou, e o serviço verifica quem saiu;
+  - A SAIR: a porta abriu e fechou, e o equipamento verifica quem saiu;
   - VAZIA: todos os telemóveis fora, a porta abriu e fechou, e ninguém foi visto durante um tempo definido;
   - INCERTA: os sinais não concordam.
 - Tempos: valores em segundos na demonstração e em minutos em produção, estes propostos para afinar no piloto. Por exemplo, a fase A SAIR dura 10 s na demonstração e 5 min em produção, e uma pessoa vista conta como presente durante 15 s e 2 min, respetivamente (documento 14, §7; `presence.py`, `TIMINGS`).
@@ -280,16 +295,16 @@ Resposta curta: “Através do servidor MCP da Altice; a sirene segue a escolha 
 
 ### D1. Que base de dados?
 
-Resposta curta: “_SQLite_ no protótipo; em produção, _PostgreSQL_ com _pgvector_ na Altice, e um pequeno armazenamento local em casa.”
+Resposta curta: “_SQLite_ no protótipo; em produção, um armazenamento local no equipamento da casa para tudo o que é visual e para a memória, e a base de dados da plataforma, na Altice, para os metadados, em texto.”
 
 - Pormenor:
-  - na Altice, por cliente: objetos, assinaturas, regras, eventos, observações e presença, com _Redis_ para o estado em tempo real e armazenamento de objetos para as miniaturas (30 dias, valor proposto);
-  - em casa: os padrões faciais, cifrados, e a fila de saída dos eventos;
+  - em casa: as assinaturas visuais, os padrões faciais (cifrados), a memória das observações, as regras e a fila de saída dos eventos;
+  - na Altice, por cliente, só texto: objetos, pessoas (só o nome), ligações de posse, cenários e o registo de eventos, para cópia de segurança, sincronização entre os telemóveis da família e reposição, se a caixa for substituída;
   - [protótipo]: `store.py` (_SQLite_). O protótipo não tem _PostgreSQL_.
 
 ### D2. O vídeo é gravado ou enviado?
 
-Resposta curta: “Não. Só se envia a região que mudou, enquanto há movimento, e apaga-se depois da análise, exceto a miniatura de uma observação.”
+Resposta curta: “Não. As imagens, o vídeo, as assinaturas visuais e os padrões faciais nunca saem de casa: o equipamento da casa analisa a imagem aí, e só chegam à Altice eventos em texto.”
 
 - As gravações do laboratório usadas nos filmes foram feitas para os filmes, localmente, com o acordo das pessoas ou com desfocagem.
 
@@ -303,9 +318,9 @@ Onde se mostra: o diagrama de fluxo de dados com fronteiras de confiança.
 
 ### D4. RGPD?
 
-Resposta curta: “Minimização desde a conceção: nenhum vídeo sai de casa, os rostos só com consentimento explícito e guardados em casa, e prazos de conservação limitados.”
+Resposta curta: “Minimização desde a conceção: nenhuma imagem, vídeo, assinatura ou padrão facial sai de casa, os rostos só com consentimento explícito, e prazos de conservação limitados.”
 
-- O fornecedor do modelo de linguagem tem de garantir que não treina com os nossos dados, assinar um acordo de tratamento de dados (DPA) e tratar os dados na UE (documento 14, §12 e §15).
+- O modelo de linguagem corre no equipamento da casa, pelo que nenhum fornecedor recebe o texto da família. Um modelo externo (por exemplo, o _ChatGPT_ ou o _Claude_ do próprio utilizador) é uma opção futura possível, por escolha do utilizador e só com texto; não agora.
 
 ## E. Integração com a Altice
 
@@ -324,7 +339,7 @@ Resposta curta: “Não precisámos do vosso _backend_. Deram às equipas o serv
   - o acesso: o nosso cliente MCP (`mcp/client/chmcp.py`) inicia sessão com a conta da equipa através do _Keycloak_ da Altice (OAuth) e envia a chave da API em cada pedido (`chmcp.py:170-171`), com a versão 2025-06-18 do protocolo MCP;
   - a leitura da porta: a cada 4 s, o servidor chama a ferramenta de leitura `get_home_devices`, encontra o `contactSensor` e lê o `sensorState`, em que `"alarm"` significa aberta (`server.py`, `device_poller`). A base de dados do protótipo tem eventos reais da porta desde 19 de novembro;
   - nunca tocámos no _backend_, na app nem na base de dados da Altice. A app dos filmes é a nossa cópia dos ecrãs da app da Altice, a correr o nosso protótipo; em produção, a Altice acrescenta o separador _Things_ à sua própria app.
-- A limitação, dita com franqueza, e o pedido: o servidor MCP não envia eventos, pelo que fazemos consultas periódicas, o que explica parte dos cerca de 10 s do aviso da porta no protótipo. Em produção, o _ThingTracker_ corre dentro da plataforma da Altice e recebe os eventos dos sensores diretamente, ou por uma subscrição de eventos. Nunca chamamos as ferramentas de escrita: as ações correm em simulação, por regra da própria equipa.
+- A limitação, dita com franqueza, e o pedido: o servidor MCP não envia eventos, pelo que fazemos consultas periódicas, o que explica parte dos cerca de 10 s do aviso da porta no protótipo. Em produção, a parte do _ThingTracker_ que fica na plataforma corre dentro da plataforma da Altice, recebe os eventos dos sensores diretamente, ou por uma subscrição de eventos, e passa-os em texto ao equipamento da casa. Nunca chamamos as ferramentas de escrita: as ações correm em simulação, por regra da própria equipa.
 
 ### E1b. Como funciona o sensor da porta, e acrescentaram dispositivos?
 
@@ -351,7 +366,7 @@ Resposta curta: “A vossa app já notifica o telemóvel quando a porta abre. O 
   - a plataforma da Altice já notifica a app da Altice para os eventos dos dispositivos (sensor de contacto aberto ou fechado, movimento, fumo, estado do alarme), configurados por dispositivo na secção “Notificações” da app ([09-platform-capabilities.md](../09-platform-capabilities.md), [08-app-and-apk.md](../08-app-and-apk.md));
   - só a Altice pode enviar notificações para a app da Altice;
   - o servidor MCP não tem nenhuma ferramenta de notificações ([10-mcp-in-practice.md](../10-mcp-in-practice.md));
-  - em produção, o _ThingTracker_ corre dentro da plataforma da Altice e usa diretamente esse serviço de notificações. É uma das poucas coisas que pediríamos à Altice para acrescentar.
+  - em produção, a parte do _ThingTracker_ que fica na plataforma corre dentro da plataforma da Altice e usa diretamente esse serviço de notificações. É uma das poucas coisas que pediríamos à Altice para acrescentar.
 - [protótipo]: os avisos são disparados pelas regras e aparecem na nossa cópia da app; o “Sim” e “Desligar o alarme” chamam as ações (em simulação). A notificação no telemóvel, nos filmes, foi composta na montagem.
 - Se o _kit_ estiver montado para a demonstração: abre-se a porta e a app real da Altice notifica o telemóvel. Essa parte é uma funcionalidade que a Altice já tem.
 
@@ -373,9 +388,14 @@ Resposta curta: “No laboratório, as luzes e o ar condicionado não estão lig
 
 ### F1. Custo por casa?
 
-Resposta curta: “Cerca de 0,49 € por mês para a visão, com uma câmara, e cerca de 0,43 € para o modelo de linguagem.”
+Resposta curta: “O equipamento compra-se uma vez, 3,33 ou 5,75 € por mês a 5 anos, e a energia dos modelos custa cêntimos por mês.”
 
-- São estimativas da equipa feitas com preços públicos (documentos [16](16-viabilidade-negocio.md) e [17](17-custos-operador.md)), a medir no piloto. Os 0,43 € são o cenário base de um modelo de linguagem na nuvem; o modelo local do protótipo não tem custo por pedido.
+- Pormenor (pesquisa de preços da equipa, 20 de novembro; documentos [16](16-viabilidade-negocio.md) e [17](17-custos-operador.md)):
+  - uma câmara de interior, ≈ 45 € (a média de 3 modelos à venda em Portugal); um _Raspberry Pi 5_, ≈ 200 €; um _Jetson Orin Nano Super_, ≈ 345 €; ou um _router_ com NPU, +15 € (uma estimativa);
+  - energia: o _YOLOv8n_ fica abaixo de 0,01 € por mês, e o _OWLv2_ chega a 0,72 € com 12 h de movimento por dia (estimativa da equipa num _Jetson Orin Nano_);
+  - o modelo de linguagem corre no equipamento, sem custo por pedido;
+  - uma caixa paga pela Altice não compensa com o serviço adicional a 3,99 € por mês (−4,81 a −6,90 € por casa e por mês, documento 17), pelo que a IA fica no _router_ ou em equipamento comprado pelo cliente.
+- Alternativa avaliada e não escolhida: a visão nos servidores _L4_ da Altice, ≈ 0,49 € por casa e por mês com uma câmara, mais ≈ 0,43 € para um modelo de linguagem na nuvem. As imagens sairiam de casa.
 
 ### F2. Licenças?
 

@@ -2,7 +2,7 @@
 
 Estado a 18 de novembro de 2026. Todos os valores resultam do _script_ [`deliverables/opcost/model.py`](../../deliverables/opcost/model.py) (`python3 deliverables/opcost/model.py`), que imprime cada tabela. Os valores externos têm uma fonte numerada no fim; os restantes estão assinalados como PRESSUPOSTO, com a respetiva justificação. Tal como no [caso de negócio](16-viabilidade-negocio.md), considera-se 1 USD = 1 EUR e os preços não incluem IVA.
 
-## Desenho final (20 de novembro): tudo local
+## Solução final (20 de novembro): tudo local
 
 Decisão final da equipa: toda a perceção e toda a inferência correm no equipamento da casa, que é o _router_, se tiver uma _NPU_, ou uma caixa dedicada, como um _Raspberry Pi 5_ com um acelerador de IA ou um _Jetson Orin Nano Super_. As imagens, o vídeo, as assinaturas visuais e os padrões faciais nunca saem de casa. A plataforma da Altice recebe apenas texto: as contas, os metadados, o registo de eventos, as notificações, a ligação à casa a partir do exterior e as ações nos dispositivos através do _MCP_. A visão nos servidores da Altice (a via híbrida calculada mais abaixo, com cerca de 0,49 € por casa e por mês) é a alternativa avaliada e não escolhida, porque as imagens sairiam de casa.
 

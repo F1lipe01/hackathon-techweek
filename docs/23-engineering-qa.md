@@ -14,42 +14,50 @@ Status markers:
 - **[prototype]**: what the code on the demo laptop does;
 - **[proof run]**: shown on the films' own takes replayed through the real pipeline, on the night of 19-20 Nov (`video/out/proof/`, [24-what-is-real.md](24-what-is-real.md)).
 
+**Final design (20 Nov): fully local, privacy first.** The home device does all the perception and inference; images, video, visual fingerprints and face templates never leave the home; the Altice platform carries text only. Server-side vision on Altice's L4 GPUs was the alternative evaluated, not chosen ([14-architecture.md](14-architecture.md)).
+
 ---
 
 ## A. Where things run
 
 **A1. What runs where?**
-- **Short answer:** "The home sees, Altice's servers decide, and the language model only writes."
-- **At home [target]:** the hardware Altice already installs (camera or router, no AI chip), running:
+- **Short answer:** "The home device sees, remembers and decides; the Altice platform carries text only; the language model only writes."
+- **At home [target]:** one home device: the router, if it has an NPU, or a dedicated box such as a Raspberry Pi 5 with an AI accelerator or a Jetson Orin Nano Super. It runs:
+  - camera ingest on the local network;
   - the motion check;
-  - privacy masks;
-  - cutting out only the region that changed;
-  - face recognition, opt-in;
-  - the router's list of family phones on the Wi-Fi.
-- **At Altice [target]:**
-  - vision servers (OWLv2 and DINOv2 on NVIDIA L4 GPUs, fed by queues);
-  - the ThingTracker service, stateless behind a load balancer, running the presence engine and the rules engine;
-  - PostgreSQL with pgvector, a Redis cache, object storage for thumbnails;
-  - a language-model pool that receives text only;
-  - the existing MCP server and notifications.
+  - vision: detection plus re-identification against the visual fingerprint (OWLv2 and DINOv2 in the prototype; lighter detectors such as YOLOv8n on small devices);
+  - face recognition, opt-in (YuNet and SFace, templates kept on the device);
+  - the local memory (where and when each thing was seen);
+  - the rules engine;
+  - the language model (Qwen3-1.7B in the prototype), for sentence to rule and question to answer; it never decides.
+- **At Altice [target], text only:**
+  - accounts, identity and family permissions;
+  - the system of record for metadata (things, people's names only, ownership links, scenarios), for backup, sync across the family's phones, and restore if the box is replaced;
+  - the event log as structured text (for example "book, desk, 18:02");
+  - push notifications to the app;
+  - a relay so that the app reaches the home when the family is away;
+  - device actions through the Connected Home MCP.
+- **Why the cloud is still needed:** the phone is not always on the home network; notifications and device control are Altice platform services; metadata needs backup and multi-user sync.
 - **On the phone:** the Altice app, with the new *Things* tab and the assistant button.
 - **Diagram:** `implantacao.png`.
 
 **A2. What did the MacBook do in the demo?**
-- **Short answer:** "All three roles at once: the home, Altice's servers and the language model."
+- **Short answer:** "Both roles at once: the home device and the Altice platform."
 - **[prototype]:**
-  - `edge.py` plays the home agent and Altice's vision servers (OWLv2 and DINOv2 on the Mac's GPU);
-  - `server.py` plays the ThingTracker service: app, API, presence and rules engines, with SQLite standing in for PostgreSQL;
-  - `llm_local.py` plays the language-model pool (Qwen3-1.7B);
+  - `edge.py` plays the home device's camera side: motion check, OWLv2 and DINOv2 on the Mac's GPU, faces;
+  - `server.py` plays the home device's memory, presence and rules engines, and the platform's app and API, with SQLite;
+  - `llm_local.py` plays the home device's language model (Qwen3-1.7B);
   - `judge.py`, optional, plays the vision-language judge (Qwen2-VL-2B).
 - In the lab takes, the kit camera's stream reached the Mac through the organisers' cloud relay. That is a property of the hackathon setup, not of the product.
 
 **A3. Why not a box in every home, with everything local?**
-- **Short answer:** "Because it costs €100–140 M up front for 500 000 homes."
-- **Detail:**
-  - running costs of €6,55–8,64 per home a month (Raspberry Pi 5 with an AI HAT+, or a Jetson Orin Nano);
-  - every model update ships to 500 000 boxes;
-  - the language model would need even more memory.
+- **Short answer:** "Everything local is the chosen design. The device is bought once, on the router with an NPU or as equipment the customer buys; a box paid for by Altice does not pay back."
+- **Detail (team price research, 20 Nov):**
+  - the equipment is bought once: an indoor camera ≈ 45 €; a Raspberry Pi 5 ≈ 200 €; a Jetson Orin Nano Super ≈ 345 €; or a router with an NPU, +15 € (an estimate);
+  - over 5 years the device is 3,33 or 5,75 € a month;
+  - at the €3,99 add-on, a box paid for by Altice leaves −€4,81 to −€6,90 per home a month (docs/17), which is why the AI goes on the router, or on equipment the customer buys;
+  - every model update ships to the home devices.
+- **Earlier analysis, kept as context:** with Altice buying a box for every home (a Raspberry Pi 5 with an AI HAT+, or a Jetson Orin Nano Super at its 249 USD launch price), paid over 36 months: €100–140 M up front for 500 000 homes and €6,55–8,64 per home a month.
 - **Source:** [17-operator-costs.md](17-operator-costs.md); the side panel of `implantacao.png`.
 
 **A4. Why not send the video to the cloud?**
@@ -57,33 +65,38 @@ Status markers:
 - **Detail [estimate in the diagram]:**
   - continuous video at 2 Mbps is about 657 GB per camera a month;
   - full frames during motion still cost €2,41 per home a month on Altice's own servers, and €3,93–4,26 on hyperscaler GPUs.
-- **Our path** sends only the region that changed, about once a second while there is motion: **≈ €0,49 per home a month** with one camera, €0,98 with two (docs/17).
+- **Our path:** no image leaves the home; the home device analyses it there and sends Altice text events only.
+- **Alternative evaluated, not chosen:** sending only the region that changed to Altice's L4 GPUs, about once a second while there is motion, ≈ €0,49 per home a month with one camera, €0,98 with two (docs/17). Images would leave the home.
 
 **A5. Where are the load balancers, and why there?**
-- **Short answer:** "At Altice, in front of the stateless service and the vision and language pools; the home has nothing to balance."
+- **Short answer:** "At Altice, in front of the platform's text-only services; the home has nothing to balance."
 - **Detail [target]:**
   - each home keeps **one outbound** mTLS connection to a connection broker (MQTT, one topic per home);
   - the load balancers spread the homes' connections and the app's HTTPS calls across N service instances;
-  - per-home state lives in PostgreSQL and Redis, so any instance can serve any home;
-  - vision and the language model sit behind **queues**: urgent rule checks first, everything else batched at quiet hours, so the GPUs are not sized for the evening peak.
+  - per-home metadata and the text event log live in the platform's database, so any instance can serve any home;
+  - no vision or language model runs at Altice, so there are no GPU queues; the queues of the earlier design belong to the server-side vision alternative, not chosen.
 - **Diagram:** `implantacao.png`.
 
 **A6. How does it scale to 500 000 homes?**
-- **Short answer:** "Horizontally, and the costs are already counted."
-- **Detail:** the business case sizes 1 427 L4 cards (€6,4 M of hardware) for 500 000 homes with one camera, because only motion triggers analysis and only the changed region is analysed (docs/17).
+- **Short answer:** "Each home brings its own compute; Altice's side carries text only."
+- **Detail:**
+  - perception and inference grow with the homes, one device each;
+  - the platform handles accounts, metadata, text events, notifications and the relay, with no GPUs to size;
+  - the earlier sizing of 1 427 L4 cards (€6,4 M of hardware) for 500 000 homes belongs to the server-side vision alternative, not chosen (docs/17).
 
 **A7. What if the internet goes down?**
-- **Short answer:** "The home keeps its events in a queue and sends them when the link returns; the security alarm doesn't depend on us."
+- **Short answer:** "The home device keeps seeing and evaluating rules, and keeps its text events in a queue until the link returns; the security alarm doesn't depend on us."
 - **[target]:**
-  - the home agent buffers events (the "fila de saída" in `implantacao.png`);
-  - rules that need vision pause;
+  - the home device buffers events (the "fila de saída" in `implantacao.png`);
+  - vision, the memory and the rules run on the home device, so they need no link;
+  - notifications and device actions go through the Altice platform, so they wait for the link;
   - the alarm and the door sensor keep working through Altice's security hub, as today.
 
 **A8. How fast is an alert?**
 - **Short answer:** "The target is under 3 seconds; the prototype takes about 10 seconds on the door path."
 - **Detail:**
-  - the budget is: motion, then the region uploaded, then the urgent vision queue, then the rule, then the notification;
-  - measured on the Mac's GPU: OWLv2 0,57 s per frame, DINOv2 22 ms per crop (docs/14 §14);
+  - the budget is: motion, then vision on the home device, then the rule, then the notification through the platform;
+  - measured on the Mac's GPU: OWLv2 0,57 s per frame, DINOv2 22 ms per crop (docs/14 §14); not yet measured on a Raspberry Pi 5 or a Jetson;
   - the prototype's 10 s comes from polling the door sensor through MCP every 4 s, plus the rule's wait (docs/19 §6.4).
 
 ## B. Perception: what the models do, and only that
@@ -111,9 +124,9 @@ Status markers:
 **B2. How do you register a thing?**
 - **Short answer:** "Photos from the phone, or showing it to a camera; the result is 8 views and a fingerprint."
 - **Detail:**
-  - **phone photos:** OWLv2 crops the thing in each photo, then DINOv2 makes the vectors [prototype: queued to the edge, `server.py`, `edge.py`]. They reach 0,69 on a desk-level kit frame, but from the ceiling only the camera's own views recognise the book (0,91-0,94), so the app adds them on confirmation (B1a);
+  - **phone photos:** they go from the phone to the home device, directly on the home Wi-Fi or through an end-to-end-encrypted relay that Altice cannot read; on the device, OWLv2 crops the thing in each photo, then DINOv2 makes the vectors [prototype: queued to the edge, `server.py`, `edge.py`]. They reach 0,69 on a desk-level kit frame, but from the ceiling only the camera's own views recognise the book (0,91-0,94), so the app adds them on confirmation (B1a);
   - **showing it to the camera:** the edge keeps 8 views, each different enough from the others (cosine below 0,97) (`edge.py` `enrol_step`);
-  - the fingerprint is stored per customer in the platform's database.
+  - the fingerprint stays on the home device; the platform keeps only the thing's name and owner, as text.
 
 **B3. How does it know someone picked up the book?**
 - **Short answer:** "No model decides that: it is a rule on boxes."
@@ -181,13 +194,13 @@ Status markers:
 
 **C1. How do you know nobody is home?**
 - **Short answer:** "Not from the camera alone: three signals must agree."
-- **Detail [target]:** a state machine per home, in the ThingTracker service, fusing:
+- **Detail [target]:** a state machine per home, on the home device, fusing:
   - the family's **phones on the Wi-Fi** (the router knows; a new MCP tool proposed to Altice);
   - the **door sensor** (open and close events, which the platform already receives);
   - the **people the cameras see**, with a name if the face is registered.
 - **States** (in the PT diagram: OCUPADA, A SAIR, VAZIA, INCERTA):
   - OCCUPIED: a phone is home, or someone was seen recently;
-  - LEAVING: the door opened and closed, and the service checks who left;
+  - LEAVING: the door opened and closed, and the device checks who left;
   - EMPTY: all phones away, the door cycled, nobody seen for a set time;
   - UNSURE: the signals disagree.
 - **Timings:** demo values in seconds, production values in minutes, proposals to tune in a pilot (for example, LEAVING lasts 10 s in the demo and 5 min in production; docs/14 §7, `presence.py`).
@@ -225,14 +238,14 @@ Status markers:
 ## D. Data, security, privacy
 
 **D1. Which database?**
-- **Short answer:** "SQLite in the prototype; in production PostgreSQL with pgvector at Altice, and a small local store at home."
+- **Short answer:** "SQLite in the prototype; in production, a local store on the home device for everything visual and the memory, and the platform's database at Altice for metadata, as text."
 - **Detail:**
-  - **at Altice, per customer:** things, fingerprints, rules, events, sightings and presence, plus Redis for live state and object storage for thumbnails (30 days, proposed);
-  - **at home:** face templates, encrypted, and the outbound event queue;
+  - **at home:** visual fingerprints, face templates (encrypted), the memory of sightings, the rules and the outbound event queue;
+  - **at Altice, per customer, text only:** things, people (names only), ownership links, scenarios and the event log, for backup, sync across the family's phones and restore if the box is replaced;
   - **[prototype]:** `store.py` (SQLite). There is no PostgreSQL in the prototype.
 
 **D2. Is video recorded or sent?**
-- **Short answer:** "No. Only the region that changed is sent, while there is motion, and deleted after analysis, except the thumbnail of a sighting."
+- **Short answer:** "No. Images, video, visual fingerprints and face templates never leave the home: the home device analyses the picture there, and only text events reach Altice."
 - The lab recordings used in the films were made for the films, locally, with the people's agreement or blurred.
 
 **D3. Security?**
@@ -241,8 +254,8 @@ Status markers:
 - **Diagram:** the data-flow diagram with trust boundaries.
 
 **D4. GDPR?**
-- **Short answer:** "Minimisation by design: no video leaves, faces only with explicit consent and stored at home, and retention limits."
-- The language-model provider must guarantee no training on our data, a DPA and processing in the EU (docs/14 §12 and §15).
+- **Short answer:** "Minimisation by design: no image, video, fingerprint or face template leaves the home, faces only with explicit consent, and retention limits."
+- The language model runs on the home device, so no provider receives the family's text. An external model (for example the user's own ChatGPT or Claude) is a possible future opt-in, text only; not now.
 
 ## E. Altice integration
 
@@ -257,7 +270,7 @@ Status markers:
   - **the access:** our own MCP client (`mcp/client/chmcp.py`) signs in with the team account through Altice's Keycloak (OAuth) and sends the API key on every request (`chmcp.py:170-171`), MCP protocol 2025-06-18;
   - **reading the door:** every 4 s the server calls the read-only tool `get_home_devices`, finds the `contactSensor` and reads `sensorState`, where "alarm" means open (`server.py`, the door poll, `POLL_S`). Real door events are in the prototype's database from 19 Nov;
   - **never touched:** Altice's backend, app or database. The app in the films is our copy of the Altice app's screens, running our prototype; in production Altice adds the *Things* tab to its own app.
-- **The honest limit, and the request:** the MCP server has no push events, so we poll, which is part of the prototype's ~10 s door alert. In production ThingTracker runs inside Altice's platform and receives sensor events directly, or through an event subscription. We never call the write tools: actions are dry runs by our own rule.
+- **The honest limit, and the request:** the MCP server has no push events, so we poll, which is part of the prototype's ~10 s door alert. In production, ThingTracker's platform side runs inside Altice's platform and receives sensor events directly, or through an event subscription, and passes them to the home device as text. We never call the write tools: actions are dry runs by our own rule.
 
 **E1b. How does the door sensor work, and did you add devices?**
 - **Short answer:** "It's the kit's magnetic contact sensor, talking by radio to the kit's security hub. We added no device: Altice provisioned the kit, and a family adds devices the usual way, in the Altice app."
@@ -280,7 +293,7 @@ Status markers:
   - the Altice platform already notifies the Altice app for device events (contact sensor opened or closed, motion, smoke, alarm state), set per device in the app's "Notifications" section ([09-platform-capabilities.md](09-platform-capabilities.md), [08-app-and-apk.md](08-app-and-apk.md));
   - only Altice can send into the Altice app;
   - the MCP server has no notification tool ([10-mcp-in-practice.md](10-mcp-in-practice.md));
-  - in production, ThingTracker runs inside Altice's platform and uses that notification service directly. It is one of the few things we would ask Altice to add.
+  - in production, ThingTracker's platform side runs inside Altice's platform and uses that notification service directly. It is one of the few things we would ask Altice to add.
 - **[prototype]:** alerts are fired by the rules and appear inside our copy of the app; Yes and "Turn off the alarm" call the actions (dry runs). The phone notification in the films was composited.
 - **If the kit is set up for the demo:** open the door and the real Altice app notifies the phone. That part is Altice's existing feature.
 
@@ -299,8 +312,13 @@ Status markers:
 ## F. Costs and models
 
 **F1. Cost per home?**
-- **Short answer:** "About €0,49 a month for vision with one camera, and about €0,43 for the language model."
-- These are team estimates from public prices (docs/16, docs/17), to be measured in the pilot. The 0,43 € is the base case for a cloud language model; the prototype's local model has no cost per call.
+- **Short answer:** "The device is bought once, 3,33 or 5,75 € a month over 5 years, and the models' energy costs cents a month."
+- **Detail (team price research, 20 Nov; docs/16, docs/17):**
+  - an indoor camera ≈ 45 € (the average of 3 models on sale in Portugal); a Raspberry Pi 5 ≈ 200 €; a Jetson Orin Nano Super ≈ 345 €; or a router with an NPU, +15 € (an estimate);
+  - energy: YOLOv8n below 0,01 € a month, OWLv2 up to 0,72 € at 12 h of motion a day (a team estimate on a Jetson Orin Nano);
+  - the language model runs on the device, with no cost per call;
+  - a box paid for by Altice does not pay back at €3,99 a month (−€4,81 to −€6,90 per home a month, docs/17), so the AI goes on the router, or on equipment the customer buys.
+- **Alternative evaluated, not chosen:** vision on Altice's L4 servers, ≈ €0,49 per home a month with one camera, plus ≈ €0,43 for a cloud language model. Images would leave the home.
 
 **F2. Licences?**
 - **Short answer:** "All open and free for commercial use."

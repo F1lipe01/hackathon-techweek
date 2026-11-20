@@ -9,7 +9,7 @@ Raw material in the repo:
 
 ## 18 tools, not 16
 
-Names are lowercase on the real server (`get_home_devices`, not `GET_HOME_DEVICES`). Two tools are missing from the guide: **`get_device_timers`** and **`post_timer_device`**.
+The guide lists 16 tools ([03-mcp-connected-home.md](03-mcp-connected-home.md)); the live server has 18. Names are lowercase on the real server (`get_home_devices`, not `GET_HOME_DEVICES`). Two tools are missing from the guide: **`get_device_timers`** and **`post_timer_device`**.
 
 ### Read (12)
 
@@ -19,8 +19,8 @@ Names are lowercase on the real server (`get_home_devices`, not `GET_HOME_DEVICE
 | `get_home_detail_report` | — | **Same as `get_home`** (its description is a copy of the "brief" one) |
 | `get_home_status_brief` | — | Alarm state + device list with type and last-contact time (compact) |
 | `get_home_devices` | — | All devices with full capability states |
-| `get_home_rooms` | — | Rooms (none configured yet) |
-| `get_home_scenarios` | — | Scenarios (none yet) |
+| `get_home_rooms` | — | Rooms (none configured on 16 Nov) |
+| `get_home_scenarios` | — | Scenarios (none on 16 Nov) |
 | `get_scenario` | `scenarioId`* | One scenario |
 | `get_device_details` | `deviceId`*, `techInfo`, `vendor` | One device |
 | `get_device_timers` | `deviceId`* | Timers on a device |
@@ -50,9 +50,9 @@ Names are lowercase on the real server (`get_home_devices`, not `GET_HOME_DEVICE
 | `get_device_details` (with and without `techInfo`) | ✓ | Adds `pairedTime` and `categories`; **no event history** |
 | `get_device_timers` (Plug) | ✓ | Empty |
 | `get_device_recommendations` | ✓ | Device inventory (the model is meant to turn it into advice) |
-| `get_scenario` | — | Needs an existing scenario |
+| `get_scenario` | — | Not tested: the home has no scenario, and creating one is a write |
 | `update_device_capabilities` — power | ✓ | **Works by `deviceId` and by name** (see below) |
-| `update_device_capabilities` — brightness / colour | — | Needs the Light online |
+| `update_device_capabilities` — brightness / colour | — | Not tested live: the prototype logs the exact colour call as a dry run ([19-teste-real.md](19-teste-real.md)) |
 | `patch_home_security_status` | — | Not tested: the contact sensor reads open and Home mode has a 0 s delay, so arming could trigger the alarm |
 | `post_new_scenario`, `patch_scenario_activation`, `post_execute_scenario` | — | Not tested: **there is no delete-scenario tool**, so every test scenario stays in the home |
 | `post_timer_device` | — | Not tested |
@@ -73,7 +73,7 @@ The device's own `lastCommunicationTime` moved to about one second after each co
 
 ### Session lifetime
 
-The access token lasts **about 24 hours**; Keycloak reports the refresh token without a fixed expiry. Log in once a day, and again on Friday morning before the demo.
+The access token lasts **about 24 hours**; Keycloak reports the refresh token without a fixed expiry. Log in once a day.
 
 ### What the MCP does not expose
 
@@ -86,7 +86,7 @@ Compared with the app (see [09-platform-capabilities.md](09-platform-capabilitie
 
 - **`patch_home_security_status` is mislabelled `readOnlyHint: true`.** It arms and disarms the alarm. A client that auto-approves "read-only" tools would arm the house unprompted. Our agent must require explicit confirmation for it whatever the annotation says, as the guide's own example agent does.
 - **The Security hub exposes `factoryReset` and `restart` capabilities.** The write tool's schema only accepts power, brightness, temperature and colour, so they should not be reachable — but never attempt them.
-- **Readings can be stale.** Every device carries `lastCommunicationTime`. On 16 Nov the Light's was **04 Nov** and the Camera's **09 Nov** — their values (bulb "on, 100 %") were cached from provisioning, not live. Any agent should check freshness before trusting a value, and say so. This is a nice, honest behaviour to show in the demo.
+- **Readings can be stale.** Every device carries `lastCommunicationTime`. On 16 Nov the Light's was **04 Nov** and the Camera's **09 Nov** — their values (bulb "on, 100 %") were cached from provisioning, not live. Any agent should check freshness before trusting a value, and say so.
 
 ## The home, as the platform sees it (16 Nov, evening)
 

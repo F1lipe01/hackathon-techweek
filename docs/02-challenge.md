@@ -53,9 +53,9 @@ This matters for "surprise us". An idea that lands inside one of these rows is s
 
 | Resource | What it is | More |
 |---|---|---|
-| Hardware kit | An LTE IoT gateway, a camera, a climate sensor, a smoke alarm, a smart plug, a smart bulb and a small sensor that is probably a door contact. Already provisioned on Altice's platform. The kit is "the home" | [04-kit-and-access.md](04-kit-and-access.md) |
+| Hardware kit | An LTE IoT gateway, a camera, a climate sensor, a smoke alarm, a smart plug, a smart bulb and a door contact sensor. Already provisioned on Altice's platform. The kit is "the home" | [04-kit-and-access.md](04-kit-and-access.md) |
 | Mobile app | Shows and controls the kit's devices. Use it to check everything is online | [04-kit-and-access.md](04-kit-and-access.md) |
-| Connected Home MCP server | 16 tools to read and control the home: devices, rooms, security, scenarios | [03-mcp-connected-home.md](03-mcp-connected-home.md) |
+| Connected Home MCP server | 18 tools to read and control the home: devices, rooms, security, scenarios, timers (the guide lists 16) | [03-mcp-connected-home.md](03-mcp-connected-home.md), [10-mcp-in-practice.md](10-mcp-in-practice.md) |
 | Camera feed | RTSP stream from the kit's camera, to plug into any image-processing system | [04-kit-and-access.md](04-kit-and-access.md) |
 | Team account | Login used when the MCP client authenticates | `.env` |
 

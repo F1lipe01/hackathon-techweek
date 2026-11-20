@@ -1,6 +1,6 @@
 # Platform capability model
 
-What the Connected Home platform can actually do, reverse-engineered from the app's own UI string catalogs (`strings_enus.json`, `strings_ptpt.json`) inside the APK. This is static research from the app the organisers gave us — no credentials, no secrets, just the feature vocabulary. It tells us what the agent can read and drive through the MCP, and what each kit device likely exposes.
+What the Connected Home platform can actually do, reverse-engineered from the app's own UI string catalogs (`strings_enus.json`, `strings_ptpt.json`) inside the APK. This is static research from the app the organisers gave us — no credentials, no secrets, just the feature vocabulary. It tells us what the agent can read and drive through the MCP, and what each kit device exposes (confirmed live in [10-mcp-in-practice.md](10-mcp-in-practice.md)).
 
 Source: 2009 UI strings across sections — `deviceDetails` (233), `onboardDevice` (223), `addScenario` (120), `securitySettings` (73), `energy` (33), `cameraRecordings` (19), plus Wi-Fi/parental-control features that are out of scope for us.
 
@@ -12,7 +12,7 @@ Capabilities the platform models on devices (from `addScenario_triggerCard_*` an
 |---|---|---|---|
 | Power (on/off) | ✓ | ✓ | Plug, Light |
 | Brightness | ✓ | ✓ | Light |
-| Color | ✓ | ✓ | Light (if it is a colour bulb — to confirm) |
+| Color | ✓ | ✓ | Light (a colour bulb, confirmed through the MCP) |
 | Temperature value | ✓ | — | Temperature sensor |
 | Humidity value | ✓ | — | Temperature sensor |
 | Motion detected / motion-detection switch | ✓ | ✓ (switch) | Camera |
@@ -81,7 +81,7 @@ So "if humidity > 70 % then turn the plug on", or "every weekday at 08:00 set th
 ## What this means for our solution
 
 - The agent is not limited to on/off. It can **read** temperature, humidity, motion, contact state, smoke, battery, tamper and energy, and **act** by setting device capabilities, creating/executing scenarios, and arming/disarming security.
-- The richest real signals on our kit: **temperature + humidity** (live), **contact open/closed**, **smoke**, **security arm state**, and **plug energy**. The camera adds vision, but only once it is on Wi-Fi.
+- The richest real signals on our kit: **temperature + humidity** (live), **contact open/closed**, **smoke**, **security arm state**, and **plug energy**. The camera adds vision once it is on Wi-Fi.
 - The ficha asks us to go "beyond commands" and combine **context, intention, information and action**. The platform already supplies the information (sensor states, energy, events) and the action surface (capabilities, scenarios, security) — our value is the reasoning layer on top.
 
-See [08-app-and-apk.md](08-app-and-apk.md) for how this was extracted, and [03-mcp-connected-home.md](03-mcp-connected-home.md) for the 16 MCP tools these map onto.
+See [08-app-and-apk.md](08-app-and-apk.md) for how this was extracted, and [03-mcp-connected-home.md](03-mcp-connected-home.md) for the MCP tools these map onto (18 on the live server, [10-mcp-in-practice.md](10-mcp-in-practice.md)).

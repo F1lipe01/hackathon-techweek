@@ -49,7 +49,7 @@ Tested on 16 Nov: the Keycloak client only accepts the callbacks `http://mcp-red
 
 > **Connected and tested on 16 Nov.** The real server has **18** tools with lowercase names, a mislabelled security tool, and per-device data that this guide doesn't show. See [10-mcp-in-practice.md](10-mcp-in-practice.md). The section below is the guide as written.
 
-## The 16 tools
+## The tools as the guide lists them (16; the live server has 18)
 
 ### Home
 

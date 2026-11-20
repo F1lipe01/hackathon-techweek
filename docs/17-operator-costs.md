@@ -4,8 +4,8 @@ State on **Wed 18 Nov 2026**. Every number below is printed by [`deliverables/op
 
 ## In one minute
 
-- **The question.** The business case shows the cost per home of the language model (about €0.43 a month). The mentors asked for the operator's cost of the vision models, which depends on where they run. Hugo Dias objected that a device per home, or a fleet of servers, is very costly at 500,000 customers, which is why companies use hyperscalers.
-- **He is right about full frames.** Analysing every frame in motion at full resolution costs Altice €2.41 per home a month on its own servers, €3.93 to €4.26 on hyperscaler GPUs on demand, and €6.55 to €8.64 with a box in every home. With the €3.99 add-on, none of these leaves a margin.
+- **The question.** The business case shows the cost per home of the language model (about €0.43 a month). The mentors asked for the operator's cost of the vision models, which depends on where they run. They also objected that a device per home, or a fleet of servers, is very costly at 500,000 customers, which is why companies use hyperscalers.
+- **The objection holds for full frames.** Analysing every frame in motion at full resolution costs Altice €2.41 per home a month on its own servers, €3.93 to €4.26 on hyperscaler GPUs on demand, and €6.55 to €8.64 with a box in every home. With the €3.99 add-on, none of these leaves a margin.
 - **The recommended path costs about €0.49 per home a month** (one camera; €0.98 with two). The cheap motion check stays at home, on the camera or the router. Only the region that changed goes to Altice's servers, and work that is not urgent waits in a queue for a quiet moment, so the servers are not sized for the evening peak. That leaves about €1.25 per home a month.
 - **The key assumption:** 2 h of motion per camera a day, analysed at 1 frame per second, with a GPU running at 25 % of its peak speed. Each one doubles or halves the cost (section 9).
 - **If the router has an NPU that can run the models,** the cost falls to about €0.36 per home a month, but nothing yet shows that it can.
@@ -63,7 +63,7 @@ Hardware is amortised over 36 months, as in the business case. **ASSUMPTIONS:** 
 
 Arithmetic for A2: (€200 + €15) / 36 = €5.97, plus failures 3 % × (€200 + €30) / 12 = €0.57, so €6.55 a month. Electricity: (22 h × 3 W + 2 h × 8 W) × 30.4 days = 2.49 kWh × €0.2367 = €0.59, paid by the customer (watts are an **ASSUMPTION**; the Jetson's 7–25 W range is official [S6]).
 
-Memory prices have pushed small computers up: the Raspberry Pi 5 4 GB cost $60 at launch and $110 in April 2026 [S3]. **A box in every home costs €100–140 M up front at 500,000 homes, the strongest version of the mentor's objection.** Option A only works if the router or camera that Altice already installs can run the models.
+Memory prices have pushed small computers up: the Raspberry Pi 5 4 GB cost $60 at launch and $110 in April 2026 [S3]. **A box in every home costs €100–140 M up front at 500,000 homes, the strongest version of the objection.** Option A only works if the router or camera that Altice already installs can run the models.
 
 ## 5. Option B: Altice's own GPU servers in Portugal, full frames, sized for the peak
 
@@ -81,7 +81,7 @@ Memory prices have pushed small computers up: the Raspberry Pi 5 4 GB cost $60 a
 | **Total a month** | Depreciation + energy + space + operations + network | **€1,203 k** | **€2,407 k** |
 | **Per home / per camera** | Total ÷ 500,000 homes / ÷ cameras | **€2.41 / €2.41** | **€4.81 / €2.41** |
 
-Sized for the peak, the cards are busy only 21 % of the time on average. That idle capacity is the real cost the mentor pointed at.
+Sized for the peak, the cards are busy only 21 % of the time on average. That idle capacity is the real cost behind the objection.
 
 ## 6. Option C: hyperscaler GPUs in an EU region, full frames
 
@@ -158,7 +158,7 @@ The business case's add-on costs €3.99 a month (€3.24 net of 23 % VAT). Its 
 
 ## 10. Answer to the objection
 
-- **A box in every home is the most expensive option**: €100–140 M of hardware for 500,000 homes, and €6.55–8.64 per home a month. The mentor is right.
+- **A box in every home is the most expensive option**: €100–140 M of hardware for 500,000 homes, and €6.55–8.64 per home a month. The objection holds.
 - **Hyperscalers are cheaper than idle servers, not cheaper than busy ones.** Their advantage is paying for the daily curve. ThingTracker's work can be reshaped (motion check at home, only the changed region, a queue for what is not urgent), so Altice's own servers run busy and cost €0.49 per home a month, against €1.53 for the same hybrid on AWS on demand.
 - **Hyperscalers are the right start.** At the business case's expected 19,000 homes, own servers would mean buying about 55 cards up front; on-demand cloud GPUs carry no fixed cost while the take rate is unknown. The move to own servers pays off as the base grows.
 - **The best case is still hardware already in the home.** If Altice's routers or cameras have an NPU that can run a detector, the cost falls to about €0.36 per home a month (A1). That is the first question for Altice.

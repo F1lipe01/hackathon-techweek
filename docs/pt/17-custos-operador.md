@@ -63,7 +63,7 @@ O equipamento é amortizado em 36 meses, como no caso de negócio. PRESSUPOSTOS:
 
 Cálculo para A2: (200 € + 15 €) / 36 = 5,97 €, mais avarias, 3 % × (200 € + 30 €) / 12 = 0,57 €, o que dá 6,55 € por mês. Eletricidade: (22 h × 3 W + 2 h × 8 W) × 30,4 dias = 2,49 kWh × 0,2367 €/kWh = 0,59 €, a pagar pelo cliente (as potências são um PRESSUPOSTO; o intervalo de 7 a 25 W do _Jetson_ é oficial [S6]).
 
-O preço da memória fez subir o dos pequenos computadores: o _Raspberry Pi 5_ de 4 GB custava 60 $ no lançamento e 110 $ em abril de 2026 [S3]. Uma caixa em cada casa exige um investimento inicial de 100 a 140 M€ para 500 000 casas, que é a versão mais forte da objeção do mentor. A opção A só é viável se o _router_ ou a câmara que a Altice já instala conseguir correr os modelos.
+O preço da memória fez subir o dos pequenos computadores: o _Raspberry Pi 5_ de 4 GB custava 60 $ no lançamento e 110 $ em abril de 2026 [S3]. Uma caixa em cada casa exige um investimento inicial de 100 a 140 M€ para 500 000 casas, que é a versão mais forte da objeção. A opção A só é viável se o _router_ ou a câmara que a Altice já instala conseguir correr os modelos.
 
 ## 5. Opção B: servidores próprios da Altice em Portugal, imagens completas, dimensionados para o pico
 

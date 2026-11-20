@@ -7,8 +7,8 @@
     graficos/4-precos.svg/.png       Figura 4, monthly price against camera plans
     graficos/5-receita.svg/.png      Figura 5, MEO revenue by adoption
 
-Every number is read by row id from the model (docs/16-business-case-model.csv), as the committed English
-script (build_charts.py) does, and is then looked up in the Portuguese text (docs/pt/16-viabilidade-negocio.md).
+Every number is read by row id from the model (docs/16-business-case-model.csv), and is then looked up in the
+Portuguese text (docs/pt/16-viabilidade-negocio.md).
 If a chart value is not written in the text, the build stops: the text is the reference.
 
 Text is measured with the team's Lato (deliverables/executive-summary/.fonts) and wrapped inside its padding.

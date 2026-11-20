@@ -331,6 +331,24 @@ def v_capa():
             "nomes": (x, y + 1.33, w, 0.25)}
 
 
+INTRO_LOGO_H = 0.75
+
+
+def v_intro():
+    """No title. Logo, line, challenge and team, names: one block, left-aligned, centred in the content zone."""
+    y0 = CONTENT_Y0_NO_TITLE
+    logo_w = INTRO_LOGO_H * 2400 / 414
+    rows = [("logo", INTRO_LOGO_H, 0.0), ("linha", 0.36, 0.20), ("equipa", 0.26, 0.35), ("nomes", 0.26, 0.06)]
+    total = sum(h + gap for _, h, gap in rows)
+    y = y0 + (CONTENT_Y1 - y0 - total) / 2
+    z = {}
+    for k, h, gap in rows:
+        y += gap
+        z[k] = (CONTENT_X0, y, logo_w if k == "logo" else CW, h)
+        y += h
+    return z
+
+
 def v_afirmacao(has_title=True):
     """The one-line title, then the statement at the top of the content zone, then the sub-line."""
     y0 = content_top(has_title)
@@ -492,6 +510,21 @@ def gv_capa(prs):
     return s, "Capa: a marca grande e os desenhos do modelo; à esquerda, o nome do produto, a linha, o desafio e a equipa, e os nomes."
 
 
+def gv_intro(prs):
+    s = new_slide(prs, L_BLACK)
+    g = Guide(s, True)
+    g.frame("intro", False)
+    z = v_intro()
+    picture(s, LOGO, *z["logo"][:2], h=INTRO_LOGO_H, alt="ThingTracker")
+    g.outline(z["logo"], "logótipo · 0,75\"")
+    g.words(z["linha"], "linha · 22 pt", "A câmara da casa, atenta ao que importa.", 22)
+    g.words(z["equipa"], "desafio e equipa · 14 pt", "Desafio #3 · Altice Labs · Equipa IT-Porto", 14, bold=True, color=NEON)
+    g.words(z["nomes"], "nomes · 14 pt", "Filipe Peixoto · Simon Ranjith · Mushahid Hussain", 14,
+            color=RGBColor(0xD0, 0xD4, 0xD8))
+    return s, "Introdução: sem título. O logótipo (0,75\" de altura), a linha (22 pt), o desafio e a equipa (14 pt, verde) e " \
+              "os nomes (14 pt), num só bloco alinhado à esquerda e centrado na zona de conteúdo. Sem imagem nem ícones."
+
+
 def gv_afirmacao(prs):
     s = new_slide(prs, L_BLACK)
     g = Guide(s, True)
@@ -602,7 +635,7 @@ def gv_fecho(prs):
               "o nome do produto e a frase final."
 
 
-VARIANT_GUIDES = [gv_capa, gv_afirmacao, gv_imagem, gv_duas_colunas, gv_fluxo, gv_numero, gv_grelha, gv_fecho]
+VARIANT_GUIDES = [gv_capa, gv_intro, gv_afirmacao, gv_imagem, gv_duas_colunas, gv_fluxo, gv_numero, gv_grelha, gv_fecho]
 
 
 def build_guide(template, out):
@@ -688,13 +721,38 @@ def cap(slide, z, words, dark=True, size=11):
     text(slide, x, y, w, h, words, size=size, color=MUTED_D if dark else MUTED_W, name="Caption")
 
 
+JPEG_DIR = None  # set by build_decks: photos are embedded as JPEG (quality 88, at most 1920 px wide)
+
+
+def jpg(path):
+    """A photo or screenshot as JPEG; a picture with real transparency (the camera cutout) stays PNG."""
+    path = Path(path)
+    if JPEG_DIR is None:
+        return path
+    with Image.open(path) as im:
+        if "A" in im.getbands() and im.getchannel("A").getextrema()[0] < 255:
+            return path
+        out = JPEG_DIR / f"{path.stem}.jpg"
+        if not out.exists():
+            im = im.convert("RGB")
+            if im.width > 1920:
+                im = im.resize((1920, round(im.height * 1920 / im.width)), Image.LANCZOS)
+            im.save(out, quality=88)
+    return out
+
+
 def sl_capa(prs):
-    s = new_slide(prs, L_COVER)
-    z = v_capa()
-    picture(s, LOGO, *z["nome"][:2], w=z["nome"][2], alt="ThingTracker")
-    text(s, *z["linha"], "A câmara da casa, atenta ao que importa.", size=14, color=WHITE)
-    text(s, *z["equipa"], "Desafio #3 · Altice Labs · Equipa IT-Porto", size=11, bold=True, color=NEON)
-    text(s, *z["nomes"], "Filipe Peixoto · Simon Ranjith · Mushahid Hussain", size=11, color=RGBColor(0xD0, 0xD4, 0xD8))
+    """The template's cover exactly as delivered: none of our text on it."""
+    return new_slide(prs, L_COVER)
+
+
+def sl_intro(prs):
+    s = new_slide(prs, L_BLACK)
+    z = v_intro()
+    picture(s, LOGO, *z["logo"][:2], h=INTRO_LOGO_H, alt="ThingTracker")
+    text(s, *z["linha"], "A câmara da casa, atenta ao que importa.", size=22, color=WHITE)
+    text(s, *z["equipa"], "Desafio #3 · Altice Labs · Equipa IT-Porto", size=14, bold=True, color=NEON)
+    text(s, *z["nomes"], "Filipe Peixoto · Simon Ranjith · Mushahid Hussain", size=14, color=RGBColor(0xD0, 0xD4, 0xD8))
     return s
 
 
@@ -709,7 +767,7 @@ def sl_hoje(prs):
     notification(s, ex + 1.7, ey + (eh - 0.95) / 2, ew - 1.85)
     cap(s, z["esq-legenda"], "A câmara do _kit_ só avisa que houve movimento")
     label(s, z["dir-rotulo"], "Com o _ThingTracker_")
-    pic_cover(s, ASSETS / "frame-livro-ia.png", z["dir-imagem"], cx=0.6, cy=0.45,
+    pic_cover(s, jpg(ASSETS / "frame-livro-ia.png"), z["dir-imagem"], cx=0.6, cy=0.45,
               alt="Imagem do laboratório com as caixas do sistema: o livro reconhecido a 0,94, a pessoa, a porta e o alarme")
     cap(s, z["dir-legenda"], "Reconhece o livro, a família, a casa vazia")
     return s
@@ -726,13 +784,13 @@ def sl_thingtracker(prs):
     for i, (f, lab, kind, alt) in enumerate(steps, 1):
         zi = z[f"passo{i}-imagem"]
         if kind == "cover":
-            pic_cover(s, ASSETS / f, zi, cx=0.62, cy=0.42, alt=alt)
+            pic_cover(s, jpg(ASSETS / f), zi, cx=0.62, cy=0.42, alt=alt)
         else:
             tile(s, zi, dark=False)
             if kind == "cut":
                 picture(s, ASSETS / f, zi[0] + 0.12, zi[1] + 0.12, fit=(zi[2] - 0.24, zi[3] - 0.24), alt=alt)
             else:
-                phone(s, ASSETS / f, zi, margin=0.1, alt=alt)
+                phone(s, jpg(ASSETS / f), zi, margin=0.1, alt=alt)
         x, y, w, h = z[f"passo{i}-rotulo"]
         text(s, x, y, w, h, lab, size=12, bold=True, color=INK, align=PP_ALIGN.CENTER)
         if i < 4:
@@ -745,7 +803,7 @@ def sl_livro(prs):
     s = new_slide(prs, L_BLACK)
     words = "O livro esquecido · reconhecido em 68 de 68 imagens, a 0,93"
     z = v_imagem(False, strip_w=5.3)
-    pic_cover(s, ASSETS / "frame-livro-ia.png", z["imagem"], cx=0.6, cy=0.42,
+    pic_cover(s, jpg(ASSETS / "frame-livro-ia.png"), z["imagem"], cx=0.6, cy=0.42,
               alt="Imagem do filme: o livro reconhecido na mesa, a 0,94, depois de a porta fechar")
     fx, fy, fw, fh = z["faixa"]
     band = box(s, fx, fy, fw, fh, fill=RGBColor(0, 0, 0))
@@ -766,7 +824,7 @@ def sl_altice(prs):
     text(s, *z["imagem2"], "≈ 0,49 €", size=44, bold=True, color=NEON, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
     cap(s, z["legenda2"], "por casa e por mês")
     tile(s, z["imagem3"])
-    phone(s, ASSETS / "alert-nobody.png", z["imagem3"], margin=0.15,
+    phone(s, jpg(ASSETS / "alert-nobody.png"), z["imagem3"], margin=0.15,
           alt="O aviso na app: ninguém em casa, com dois cartões para desligar")
     cap(s, z["legenda3"], "Começa com um piloto em casas de colaboradores da MEO")
     return s
@@ -799,7 +857,7 @@ def sl_exemplos(prs):
              ("frame-filipe-ia.png", "A família reconhecida, o desconhecido avisado", "O Filipe reconhecido pelo sistema"),
              ("frame-casa-vazia-ia.png", "Ninguém em casa: desligar e fechar", "Ninguém em casa, com as luzes e o ar condicionado ligados")]
     for i, (f, c, alt) in enumerate(items, 1):
-        pic_cover(s, ASSETS / f, z[f"imagem{i}"], alt=alt)
+        pic_cover(s, jpg(ASSETS / f), z[f"imagem{i}"], alt=alt)
         cap(s, z[f"legenda{i}"], c)
     return s
 
@@ -814,7 +872,7 @@ def sl_como(prs):
     title(s, "Como funciona", dark=False)
     z = v_duas_colunas(True, cap_h=0.42, band_h=0.42)
     label(s, z["esq-rotulo"], "Hoje, no protótipo", dark=False)
-    pic_cover(s, ASSETS / "frame-livro-ia.png", z["esq-imagem"], cx=0.6, cy=0.45,
+    pic_cover(s, jpg(ASSETS / "frame-livro-ia.png"), z["esq-imagem"], cx=0.6, cy=0.45,
               alt="Imagem do laboratório com as caixas do sistema")
     cap(s, z["esq-legenda"], "Um portátil faz de casa e de servidores da Altice", dark=False)
     label(s, z["dir-rotulo"], "Proposta", dark=False)
@@ -849,7 +907,7 @@ def sl_comecar(prs):
     text(s, *z["subfrase"], "A câmara, a app e o MCP já existem · github.com/F1lipe01/hackathon-techweek", size=16,
          color=MUTED_D)
     tile(s, z["imagem"])
-    phone(s, ASSETS / "alert-nobody.png", z["imagem"], margin=0.25, alt="A app da Altice com o aviso do ThingTracker")
+    phone(s, jpg(ASSETS / "alert-nobody.png"), z["imagem"], margin=0.25, alt="A app da Altice com o aviso do ThingTracker")
     return s
 
 
@@ -861,8 +919,9 @@ def sl_annex(prs, head, png):
 
 
 PITCH_NOTES = {
-    "capa": "CAPA. 3 min: sim · 5 min: sim.\nTempos: 0:00–0:05, 10 palavras.\n"
-            "Dizer: “Boa tarde. Somos a equipa IT-Porto, do Instituto de Telecomunicações.”",
+    "capa": "Capa. Clicar logo para a apresentação.",
+    "intro": "INTRODUÇÃO. 3 min: sim · 5 min: sim.\nTempos: 0:00–0:05, 10 palavras.\n"
+             "Dizer: “Boa tarde. Somos a equipa IT-Porto, do Instituto de Telecomunicações.”",
     "hoje": "HOJE E COM IA. 3 min: sim · 5 min: sim.\nTempos: 0:05–0:31, 52 palavras.\n"
             "Dizer (a cena, por omissão): “Hoje, a câmara de casa só grava. Uma criança pega numa cápsula de detergente, e o "
             "telemóvel diz apenas ‘movimento detetado’. E depois? Com IA, a câmara percebe o que vê: onde ficaram as chaves, "
@@ -911,10 +970,11 @@ PITCH_NOTES = {
                "diagramas de arquitetura e 107 testes, todos a passar.”\nPonto de controlo: o fecho começa até aos 3:40.",
 }
 
-THREE_MIN = [("capa", sl_capa), ("hoje", sl_hoje), ("thingtracker", sl_thingtracker), ("livro", sl_livro),
-             ("altice", sl_altice), ("fecho", sl_fecho)]
-FIVE_MIN = [("capa", sl_capa), ("hoje", sl_hoje), ("thingtracker", sl_thingtracker), ("exemplos", sl_exemplos),
-            ("como", sl_como), ("viabilidade", sl_viabilidade), ("comecar", sl_comecar), ("fecho", sl_fecho)]
+THREE_MIN = [("capa", sl_capa), ("intro", sl_intro), ("hoje", sl_hoje), ("thingtracker", sl_thingtracker),
+             ("livro", sl_livro), ("altice", sl_altice), ("fecho", sl_fecho)]
+FIVE_MIN = [("capa", sl_capa), ("intro", sl_intro), ("hoje", sl_hoje), ("thingtracker", sl_thingtracker),
+            ("exemplos", sl_exemplos), ("como", sl_como), ("viabilidade", sl_viabilidade), ("comecar", sl_comecar),
+            ("fecho", sl_fecho)]
 ANNEX = [("anexo-implantacao", "Anexo · Onde corre cada parte", "implantacao.png"),
          ("anexo-presenca", "Anexo · Quem está em casa", "presenca-estados.png"),
          ("anexo-contentores", "Anexo · Os contentores", "c4-2-contentores.png"),
@@ -925,7 +985,10 @@ ANNEX = [("anexo-implantacao", "Anexo · Onde corre cada parte", "implantacao.pn
 
 
 def build_decks(template, outdir):
+    global JPEG_DIR
     out = Path(outdir)
+    JPEG_DIR = out / "_jpeg"
+    JPEG_DIR.mkdir(parents=True, exist_ok=True)
     for name, slides in [("ThingTracker - Pitch 3 min.pptx", THREE_MIN), ("ThingTracker - Pitch 5 min.pptx", FIVE_MIN)]:
         prs = open_template(template)
         for key, make in slides:

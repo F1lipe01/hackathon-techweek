@@ -4,7 +4,7 @@ This page records the ideas the team put on the table on 16 Nov, in order, befor
 
 ## 1. Whiteboard brainstorm
 
-Photo posted on Slack by Sofia Martins: [`sources/brainstorm/whiteboard.jpg`](../sources/brainstorm/whiteboard.jpg)
+Photo posted on Slack by Sofia Martins: `sources/brainstorm/whiteboard.jpg`
 
 - Lost & found
 - Elder assist
@@ -18,7 +18,7 @@ Photo posted on Slack by Sofia Martins: [`sources/brainstorm/whiteboard.jpg`](..
 
 ## 2. Direction from the Slack discussion
 
-Full thread: [`sources/slack/team-channel.md`](../sources/slack/team-channel.md)
+Full thread: `sources/slack/team-channel.md`
 
 **Ana Aguiar: an LLM as the interface to the home.** Her takeaway from MobiCom was that LLMs or agents will become the interface between humans and digital services, so an LLM interface to a connected home could be a good option. She asked what it would look like.
 

@@ -4,7 +4,7 @@ State on **Mon 16 Nov 2026, 20:45**. Verified facts only, each linked to where i
 
 ## 1. What is being judged
 
-**The brief** ([ficha](../sources/challenge/desafio3-ficha.pdf), [02-challenge.md](02-challenge.md)):
+**The brief** (ficha, [02-challenge.md](02-challenge.md)):
 
 - Open-ended: no predefined problem or type of application.
 - **The MCP tool must be integrated into the solution.**
@@ -12,7 +12,7 @@ State on **Mon 16 Nov 2026, 20:45**. Verified facts only, each linked to where i
 - Suggested areas: automation, accessibility, energy efficiency, comfort, security, entertainment, communication, daily routines, or unexpected uses.
 - Mentors at the kick-off: surprise us with a **useful everyday use case**, not with code; use the different sensors; don't underestimate the camera.
 
-**Scoring** ([rules](../sources/rules/normas-2026.pdf), Articles 16 and 18):
+**Scoring** (rules, Articles 16 and 18):
 
 | Criterion | Intermediate | Final |
 |---|---|---|
@@ -99,7 +99,7 @@ From Altice Labs' Connected Home product page ([02-challenge.md](02-challenge.md
 
 ## 7. Ideas raised so far, against the facts
 
-Sources: whiteboard ([photo](../sources/brainstorm/whiteboard.jpg)) and Slack ([05-ideas.md](05-ideas.md)). "Data available" refers to sections 3–5. Whether an idea is already in Altice's offer is from section 6.
+Sources: whiteboard (photo) and Slack ([05-ideas.md](05-ideas.md)). "Data available" refers to sections 3–5. Whether an idea is already in Altice's offer is from section 6.
 
 | Idea | Needs | Data available now | In Altice's offer |
 |---|---|---|---|

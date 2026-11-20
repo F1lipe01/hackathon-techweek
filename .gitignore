@@ -62,3 +62,6 @@ video/out/
 deliverables/deck/_jpeg/
 # A lab frame in which a person who did not agree to appear is not fully blurred (AGENTS.md rule 6)
 deliverables/deck/assets/frame-filipe-ia.png
+
+# Organiser material as received (private conversations, transcripts): kept locally, not published
+sources/

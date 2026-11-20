@@ -1,6 +1,6 @@
 # Hardware kit and access
 
-Sources: photos of the kit taken on 16 Nov ([`sources/kit/`](../sources/kit/)), challenge-room Q&A in the kick-off transcript (lines 164–293), Slack DM with Rui Mendes, team Slack.
+Sources: photos of the kit taken on 16 Nov (`sources/kit/`), challenge-room Q&A in the kick-off transcript (lines 164–293), organiser Q&A on Slack.
 
 ## The kit
 

@@ -2,7 +2,7 @@
 
 **Connected Homes Reimagined: a IA ao serviço da casa**
 
-The official challenge sheet (ficha) is filed at [`sources/challenge/desafio3-ficha.pdf`](../sources/challenge/desafio3-ficha.pdf). Key points from it:
+The official challenge sheet (ficha) is filed at `sources/challenge/desafio3-ficha.pdf`. Key points from it:
 
 - **Deliberately open.** There is no specific problem to solve and no predefined kind of application. Teams are asked to imagine new experiences, services and ways of interacting that become possible when AI can understand, reason about and act on the devices and their environment.
 - **The MCP tool is the main technical resource and must be integrated into the solution** ("deverá ser integrado na solução proposta").

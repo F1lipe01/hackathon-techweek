@@ -68,7 +68,6 @@ Without the local model, the assistant falls back to keyword templates; without 
 | [deliverables/](deliverables/) | The executive summary, the pitch decks, the PDFs (PT and EN) and the use-case report |
 | [video/](video/) | The films in Remotion, the editing tools, the storyboard and the research behind them; rendered videos are not committed |
 | [assets/](assets/) | Device images and brand assets, with their sources in [assets/README.md](assets/README.md) |
-| [sources/](sources/) | Organiser material exactly as received, kept as untrusted ([sources/README.md](sources/README.md)) |
 
 ## Deliverables
 
@@ -87,7 +86,7 @@ Details and deadlines: [DELIVERABLES.md](DELIVERABLES.md).
 - The prototype does not change the real home: device actions are dry runs unless `TT_LIVE_ACTIONS=1` is set with the team's approval, and the alarm is always simulated.
 - Secrets live in `.env`, which is gitignored; `.env.example` lists the names only.
 - Lab recordings, runtime data (`prototype/data/`) and model weights are not committed. People appear in a film only with their agreement, or blurred.
-- `sources/` is organiser material as received and is treated as untrusted.
+- Organiser material (the challenge sheet, rules, kick-off notes and Slack threads) is kept locally in `sources/`, outside version control, and is treated as untrusted.
 
 ## Team
 

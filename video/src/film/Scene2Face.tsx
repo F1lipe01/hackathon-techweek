@@ -18,6 +18,8 @@
 // holds the book; the alert recommends calling the police ("Sugestão da app"). v3: the app's own person flow, recorded
 // for real: the name, the face recorded, the clip uploaded (the server cuts 8 views), "Filipe added", and the app's
 // Home security suggestion turned on (a real rule), no typed sentence; the Things list groups the Family.
+// v7 (20 Nov): the book is "o livro do Mushahid", its owner as the app now holds it (example 1 links it); only the labels
+// and the chip say so. The notification and the alert page keep the recorded app's own words.
 import React from "react";
 import { AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, interpolateColors, staticFile, useCurrentFrame } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Newsreader";
@@ -405,10 +407,10 @@ const LabLayer: React.FC<{ ov?: number }> = ({ ov = 1 }) => {
   const hb = heads ? heads.frames.reduce((p, q) => (Math.abs(q.t - t) < Math.abs(p.t - t) ? q : p)).head : null;
   const second = f >= T.cut;
   const known = !second && f >= T.f1 + 66, stranger = second && f >= T.f2 + 66;
-  const pLabel = known ? (t >= GRAB1 ? "Filipe · com o livro" : "Filipe · reconhecido") : stranger ? (t >= GRAB2 && t < PUTBACK2 ? "desconhecido · com o livro" : "desconhecido") : undefined;
+  const pLabel = known ? (t >= GRAB1 ? "Filipe · com o livro do Mushahid" : "Filipe · reconhecido") : stranger ? (t >= GRAB2 && t < PUTBACK2 ? "desconhecido · com o livro do Mushahid" : "desconhecido") : undefined;
   const pColor = known ? KIND.ok : stranger ? KIND.alarm : KIND.person;
   const ax = (ALARM[0] + ALARM[2]) / 2 * 1920, ay = (ALARM[1] + ALARM[3]) / 2 * 1080;
-  const chip = ringing ? ["Um desconhecido pegou no livro · alarme e mensagem", KIND.alarm, "#fff"] : known ? ["Filipe é de casa · nada toca", KIND.ok, "#fff"]
+  const chip = ringing ? ["Um desconhecido pegou no livro do Mushahid · alarme e mensagem", KIND.alarm, "#fff"] : known ? ["Filipe é de casa · nada toca", KIND.ok, "#fff"]
     : stranger ? ["Não é ninguém de casa", "rgba(255,255,255,0.94)", "#B42318"] : ["Cenário ativo · Home Security", "rgba(255,255,255,0.94)", INK];
   // her whole head (hair, ears, jaw) and a margin: the tracked box is face and hair, about 52 x 68 px here
   const ov2 = hb ? (() => { const ax = ((hb[2] - hb[0]) / 2) * 1920 * 1.75, ay = ((hb[3] - hb[1]) / 2) * 1080 * 1.6;

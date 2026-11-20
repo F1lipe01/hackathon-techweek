@@ -10,6 +10,9 @@
 //      the alarm stops; a cut to his return: he takes the book and leaves; a green close.
 // A camera readout in the corner gives the time since the take began and the clock time (the camera's own clock).
 // The alarm and the notification are simulated (AGENTS.md rule 1).
+// v13 (20 Nov): after Save the app asks who the book belongs to (link-person, recorded with record_app.mjs: the same book,
+// the same 8 photos): "Link to Mushahid?", Yes, "Belongs to Mushahid"; then a page cut to the scenario. In the lab the
+// book is "o livro do Mushahid" (the thing's owner, as the app holds it); the man in the take is never named.
 import React from "react";
 import { AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, interpolateColors, staticFile, useCurrentFrame } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Newsreader";
@@ -32,15 +35,19 @@ type Rect = { x: number; y: number; w: number; h: number };
 const lerpRect = (a: Rect, b: Rect, u: number): Rect => ({ x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u), w: lerp(a.w, b.w, u), h: lerp(a.h, b.h, u) });
 
 /* ------------------------------------------------------------------ the timeline (30 fps) */
+const LINK = 130;                                  // link-person on screen from T.s4: added, who it belongs to, linked
+const D = LINK - 58;                               // everything after it comes this much later than in v12
 const T = {
   glide: 30, tapIcon: 80, grow: 82, s1: 118,      // the app opens; add-book from 1.38 s at 1.25×
   cam: 246,                                        // the colleague's viewfinder, 8 shutter presses
   s3: 380,                                         // add-book from 7.44 s at 1.4×: the photos, the name
-  s4: 514,                                         // add-book from 13.70 s at 1.5×: added, the scenario, saved, Done
-  test: 866, lab: 956,                             // "Vamos testar?" (held 3 s); the lab opens out of the page
-  phoneIn: 1342, notice: 1370, tap: 1434, aside: 1454, cut: 1580,
-  success: 1946, end: 2070,
+  s4: 514,                                         // link-person (from its Save, 27.43 s, at 1.4×): added, "Link to Mushahid?", Yes, "Belongs to Mushahid"
+  s5: 514 + LINK,                                  // add-book from 16.6 s at 1.5×: the scenario, saved, Done
+  test: 866 + D, lab: 956 + D,                     // "Vamos testar?" (held 3 s); the lab opens out of the page
+  phoneIn: 1342 + D, notice: 1370 + D, tap: 1434 + D, aside: 1454 + D, cut: 1580 + D,
+  success: 1946 + D, end: 2070 + D,
 };
+const S5 = T.s4 + D;                               // add-book's clock for its part after the link: frame = at(13.7, S5, 1.5, t)
 export const SCENE1_FRAMES = T.end + 120;   // the end card: the mark lands, the name is carried out of it, then "by Altice Labs"
 const at = (s0: number, f0: number, rate: number, t: number) => f0 + ((t - s0) / rate) * 30;
 
@@ -74,12 +81,14 @@ export const scr = (cx: number, sx: number, sy: number) => ({ x: phoneBox(cx).x 
 export const CX = { centre: 960, right: 1370, left: 560, cRight: 1300 };
 type CK = { at: number; s: number; x: number; y: number };
 const H0 = { s: 1, x: 960, y: 540 };
+const WHO = scr(CX.right, 603, 1000 + REC_Y);   // link-person: "Belongs to Mushahid", the book and his face, the suggestion
 const BTN = scr(CX.right, 603, 1366 + REC_Y), FIELDS = scr(CX.right, 603, 1560 + REC_Y), TXT = scr(CX.right, 603, 1000 + REC_Y), NOTE = scr(CX.cRight, 603, SB_H + 14 + px(273) / 2);
 const CAM: CK[] = [
   { at: 0, ...H0 }, { at: 196, ...H0 }, { at: 222, s: 2.0, ...BTN }, { at: 246, s: 2.0, ...BTN }, { at: 270, ...H0 },
   { at: 414, ...H0 }, { at: 434, s: 1.9, ...FIELDS }, { at: 484, s: 1.9, ...FIELDS }, { at: 502, ...H0 },
-  { at: 586, ...H0 }, { at: 606, s: 2.4, ...TXT }, { at: 712, s: 2.4, ...TXT }, { at: 730, ...H0 },
-  { at: 1372, ...H0 }, { at: 1394, s: 1.7, ...NOTE }, { at: 1424, s: 1.7, ...NOTE }, { at: 1446, ...H0 },
+  { at: T.s4 + 62, ...H0 }, { at: T.s4 + 80, s: 1.9, ...WHO }, { at: T.s5 - 14, s: 1.9, ...WHO }, { at: T.s5 + 4, ...H0 },
+  { at: 586 + D, ...H0 }, { at: 606 + D, s: 2.4, ...TXT }, { at: 712 + D, s: 2.4, ...TXT }, { at: 730 + D, ...H0 },
+  { at: 1372 + D, ...H0 }, { at: 1394 + D, s: 1.7, ...NOTE }, { at: 1424 + D, s: 1.7, ...NOTE }, { at: 1446 + D, ...H0 },
 ];
 /** The camera: eased moves between keys that come to rest (the team: the phone and the text stay still between moves). */
 const camAt = (f: number) => {
@@ -227,16 +236,20 @@ const Notice: React.FC<{ at: number }> = ({ at: a }) => {
 /* ------------------------------------------------------------------ 1: the app, the photos */
 const SHOT = [1.3, 7.83, 11.17, 16.2, 23.03, 27.27, 31.8, 36.1];   // the colleague's 8 shutter presses
 const SEG = 16, BEFORE = 0.35, PRESS = Math.round(BEFORE * 30);
-const S4_END = T.s4 + Math.floor(((36.26 - 13.7) / 1.5) * 30) - 2;   // add-book ends at 36.27 s
+const S4_END = S5 + Math.floor(((36.26 - 13.7) / 1.5) * 30) - 2;   // add-book ends at 36.27 s
+const SAVE_F = Math.round(at(7.44, T.s3, 1.4, 13.459));             // Save pressed: link-person takes over from its own Save (27.425 s)
+const LINK_SRC = 27.425, LINK_RATE = 1.4;
+const LINK_YES = { f: Math.round(at(LINK_SRC, SAVE_F, LINK_RATE, 30.504)), x: 201 * 3, y: 587.6 * 3 + REC_Y, press: true };   // link-person.marks.json
+const OWNED = Math.round(at(LINK_SRC, SAVE_F, LINK_RATE, 30.703));   // "Belongs to Mushahid"
 const tapF = (s0: number, f0: number, rate: number, t: readonly [number, number, number]) => ({ f: Math.round(at(s0, f0, rate, t[0])), x: t[1] * 3, y: t[2] * 3 + REC_Y, press: true });
-const A1 = (t: readonly [number, number, number]) => tapF(1.38, T.s1, 1.25, t), A3 = (t: readonly [number, number, number]) => tapF(7.44, T.s3, 1.4, t), A4 = (t: readonly [number, number, number]) => tapF(13.7, T.s4, 1.5, t);
+const A1 = (t: readonly [number, number, number]) => tapF(1.38, T.s1, 1.25, t), A3 = (t: readonly [number, number, number]) => tapF(7.44, T.s3, 1.4, t), A4 = (t: readonly [number, number, number]) => tapF(13.7, S5, 1.5, t);
 const rest = (w: Way, df: number, dx: number, dy: number): Way => ({ f: w.f + df, x: w.x + dx, y: w.y + dy });   // aside, off the text being typed
 const WAYS_A: Way[] = (() => {
   const name = A3(ADD_TAPS.name), what = A3(ADD_TAPS.what), text = A4(ADD_TAPS.text);
   return [{ f: 54, x: 860, y: 2050 }, { f: T.tapIcon, x: ICON[0] + ICON[2] / 2, y: ICON[1] + ICON[3] / 2, press: true }, { f: T.s1 + 10, x: 700, y: 1700 },
     A1(ADD_TAPS.add), A1(ADD_TAPS.pick), A1(ADD_TAPS.photos), { f: T.s3 + 16, x: 760, y: 2000 },
     name, rest(name, 16, 170, 300), what, rest(what, 16, 170, 300), A3(ADD_TAPS.save),
-    A4(ADD_TAPS.scen), text, rest(text, 20, 220, 520), A4(ADD_TAPS.saveScen), A4(ADD_TAPS.done), { f: T.test + 20, x: 760, y: 2100 }];
+    LINK_YES, rest(LINK_YES, 18, 170, 300), text, rest(text, 20, 220, 520), A4(ADD_TAPS.saveScen), A4(ADD_TAPS.done), { f: T.test + 20, x: 760, y: 2100 }];
 })();
 const ScreenA: React.FC = () => {
   const f = useCurrentFrame();
@@ -248,9 +261,12 @@ const ScreenA: React.FC = () => {
         <Sequence key={i} from={T.cam + i * SEG} durationInFrames={i === SHOT.length - 1 ? T.s3 - T.cam - i * SEG : SEG} layout="none">
           <AbsoluteFill style={{ background: "#000" }}><Rec src="footage/phone-photos.mp4" from={t - BEFORE} w={CAM_W} h={SCR_H} top={0} /></AbsoluteFill>
         </Sequence>)) : null}
-      {f >= T.s3 && f < T.s4 ? <Sequence from={T.s3} layout="none"><Rec src="app/add-book.mp4" from={7.44} rate={1.4} /></Sequence> : null}
+      {f >= T.s3 && f < SAVE_F + 1 ? <Sequence from={T.s3} layout="none"><Rec src="app/add-book.mp4" from={7.44} rate={1.4} /></Sequence> : null}
       <EmptySlots />
-      {f >= T.s4 && f < S4_END ? <Sequence from={T.s4} layout="none"><Rec src="app/add-book.mp4" from={13.7} rate={1.5} /></Sequence> : null}
+      {f >= SAVE_F && f < T.s5 + 4 ? <Sequence from={SAVE_F} layout="none"><Rec src="app/link-person.mp4" from={LINK_SRC} rate={LINK_RATE} /></Sequence> : null}
+      {/* a page cut to the scenario, softened like the app's own page change */}
+      {f >= T.s5 - 3 && f < S4_END ? <AbsoluteFill style={{ opacity: ez(f, T.s5 - 3, T.s5 + 3) }}><Sequence from={T.s5 - 3} layout="none">
+        <Rec src="app/add-book.mp4" from={16.6 - (3 / 30) * 1.5} rate={1.5} /></Sequence></AbsoluteFill> : null}
       {f >= S4_END ? <Img src={staticFile("phone/add-book-last.png")} style={{ position: "absolute", left: 0, top: REC_Y, width: SCR_W, height: 2622 }} /> : null}
       <Cursor ways={WAYS_A} show={[54, T.test + 4]} hide={[[T.grow - 2, T.s1 + 10], [T.cam - 1, T.s3 + 16]]} />
     </AbsoluteFill>
@@ -364,8 +380,8 @@ const LabLayer: React.FC = () => {
   const doorColor = open ? KIND.open : KIND.door;
   const ax = (ALARM[0] + ALARM[2]) / 2 * 1920, ay = (ALARM[1] + ALARM[3]) / 2 * 1080;
   const xfade = ez(f, T.cut - 3, T.cut + 5);              // the cut to his return, softened over 8 frames
-  const chip = f >= ALARM_OFF && !taken ? ["Alarme desligado na app", "rgba(255,255,255,0.94)", INK] : taken ? ["Saiu com o livro · o alarme não tocou", KIND.ok, "#fff"]
-    : left && f >= CLOSE ? ["A porta fechou e o livro ficou · alarme e mensagem", KIND.alarm, "#fff"] : ["Cenário ativo · Book left at home", "rgba(255,255,255,0.94)", INK];
+  const chip = f >= ALARM_OFF && !taken ? ["Alarme desligado na app", "rgba(255,255,255,0.94)", INK] : taken ? ["Saiu com o livro do Mushahid · o alarme não tocou", KIND.ok, "#fff"]
+    : left && f >= CLOSE ? ["A porta fechou e o livro do Mushahid ficou · alarme e mensagem", KIND.alarm, "#fff"] : ["Cenário ativo · Book left at home", "rgba(255,255,255,0.94)", INK];
   return (
     <AbsoluteFill style={{ width: 1920, height: 1080, background: "#000" }}>
       {f < T.cut + 6 ? <Sequence from={T.lab} layout="none"><OffthreadVideo src={staticFile(TAKE)} muted trimBefore={Math.round(A0 * 30)} style={{ position: "absolute", width: 1920, height: 1080 }} /></Sequence> : null}
@@ -377,8 +393,8 @@ const LabLayer: React.FC = () => {
         <polygon points={DOOR.map(([x, y]) => `${x * 1920},${y * 1080}`).join(" ")} fill={open ? "rgba(232,113,10,0.10)" : "none"} stroke={doorColor} strokeWidth={3} strokeLinejoin="round" opacity={0.9} />
       </svg>
       <Label x={DOOR[3][0] * 1920 + 8} y={DOOR[3][1] * 1080 - 14} kind="door" text={open ? "aberta" : "fechada"} color={doorColor} dark={!open} />
-      {person ? <Box b={person} kind="person" text={taken ? "com o livro" : undefined} color={taken ? KIND.ok : KIND.person} dark={!taken} /> : null}
-      {!taken && book ? <Box b={book.b} kind="thing" text={`${left && f >= CLOSE ? "livro · ficou na mesa" : "livro"} · ${book.s.toFixed(2).replace(".", ",")}`}
+      {person ? <Box b={person} kind="person" text={taken ? "com o livro do Mushahid" : undefined} color={taken ? KIND.ok : KIND.person} dark={!taken} /> : null}
+      {!taken && book ? <Box b={book.b} kind="thing" text={`${left && f >= CLOSE ? "livro do Mushahid · ficou na mesa" : "livro do Mushahid"} · ${book.s.toFixed(2).replace(".", ",")}`}
         color={left && f >= CLOSE && f < ALARM_OFF ? KIND.alarm : KIND.thing} pad={0.01} below /> : null}
       <Box b={AP} kind="device" text="ponto de acesso" color={KIND.device} brackets={false} />
       <Box b={ALARM} kind="device" text={ringing ? "alarme · a tocar" : "alarme"} color={ringing ? KIND.alarm : KIND.device} pad={0.008} brackets={false} />
@@ -433,7 +449,7 @@ const ScreenC: React.FC = () => (
 // OWLv2 ran over the lab take (video/tools/detect_take.py).
 const MODELS = [
   { from: Math.round(at(7.44, T.s3, 1.4, 13.46)), until: Math.round(at(13.7, T.s4, 1.5, 16.0)), name: "DINOv2", what: "impressão visual do livro" },
-  { from: Math.round(at(13.7, T.s4, 1.5, 24.92)), until: Math.round(at(13.7, T.s4, 1.5, 27.92)), name: "Qwen3-1.7B", what: "a frase passa a cenário" },
+  { from: Math.round(at(13.7, S5, 1.5, 24.92)), until: Math.round(at(13.7, S5, 1.5, 27.92)), name: "Qwen3-1.7B", what: "a frase passa a cenário" },
   { from: T.lab + 20, until: T.success, name: "OWLv2", what: "deteta pessoas e coisas" },
 ];
 const ModelsCard: React.FC = () => {
@@ -461,7 +477,7 @@ const ModelsCard: React.FC = () => {
 /* ------------------------------------------------------------------ typing: a key strike per word and per typed letter */
 // Twelve strikes cut from the team's typing recording (public/audio/sfx/ui/key-1..12.wav), rotated so neighbours differ.
 const SERIF_LINES: [string, number][] = [["Abre-se a app.", 44], ["Adiciona-se o livro.", 150], ["Fotografa-se de vários lados.", T.cam], ["Dá-se-lhe um nome.", T.s3 + 30],
-  ["E uma frase cria o cenário.", T.s4 + 40], ["Vamos testar?", T.test + 10], ["Desta vez, o alarme não tocou.", T.success + 28], ["O livro saiu com ele.", T.success + 52]];
+  ["Diz-se de quem é.", T.s4 + 2], ["E uma frase cria o cenário.", T.s5 - 2], ["Vamos testar?", T.test + 10], ["Desta vez, o alarme não tocou.", T.success + 28], ["O livro saiu com ele.", T.success + 52]];
 const WORD_KEYS = SERIF_LINES.flatMap(([text, from]) => text.split(" ").map((_, k) => from + 4 + 3 * k));   // as Line streams its words
 // the app: "Book" and "yellow book" at the recorder's pace (a letter every 55-90 ms, from about 0,26 s after the tap on the
 // field); the sentence spread evenly between its typing marks (add-book.marks.json: type 18.215 s, typed 23.732 s)
@@ -470,7 +486,7 @@ const typedAt = (start: number, n: number, step: number) => Array.from({ length:
 const APP_KEYS = [
   ...typedAt(ADD_TAPS.name[0] + 0.26, 4, 0.0725).map((t) => Math.round(at(7.44, T.s3, 1.4, t))),
   ...typedAt(ADD_TAPS.what[0] + 0.26, 11, 0.0725).map((t) => Math.round(at(7.44, T.s3, 1.4, t))),
-  ...typedAt(18.215, SENTENCE.length, (23.732 - 18.215) / SENTENCE.length).map((t) => Math.round(at(13.7, T.s4, 1.5, t))),
+  ...typedAt(18.215, SENTENCE.length, (23.732 - 18.215) / SENTENCE.length).map((t) => Math.round(at(13.7, S5, 1.5, t))),
 ];
 
 /* ------------------------------------------------------------------ the scene */
@@ -492,7 +508,8 @@ export const Scene1Book: React.FC = () => {
         <Line text="Fotografa-se de vários lados." from={T.cam} to={T.s3 + 4} top={190} />
         <PhotoCard />
         <Line text="Dá-se-lhe um nome." from={T.s3 + 30} to={T.s4} size={87} />
-        <Line text="E uma frase cria o cenário." from={T.s4 + 40} to={T.test + 6} />
+        <Line text="Diz-se de quem é." from={T.s4 + 2} to={T.s5 - 14} size={87} />
+        <Line text="E uma frase cria o cenário." from={T.s5 - 2} to={T.test + 6} />
         <Line text="Vamos testar?" from={T.test + 10} to={T.lab + 14} top={360} left={0} width={1920} align="center" size={104} />
       </AbsoluteFill>
       <LabFrame />
@@ -520,7 +537,7 @@ export const Scene1Book: React.FC = () => {
           0,37 s, throw 0,07 s, fast 0,15 s, riser-soft 0,43 s, bass-slow 1,12 s) */}
       <Audio src={staticFile("audio/music/bed-real-long.wav")} volume={(v) => 0.5 * interpolate(v, [0, 20, T.lab, T.lab + 30, ALARM_ON - 10, ALARM_ON, ALARM_OFF, ALARM_OFF + 20, T.success - 10, T.success + 20, T.end, T.end + 20, SCENE1_FRAMES - 16, SCENE1_FRAMES],
         [0, 1, 1, 0.85, 0.85, 0.5, 0.5, 0.85, 0.85, 1.1, 1.1, 1.3, 1.3, 0], clamp)} />
-      {[[209, "zoom-soft", 0.9], [424, "zoom-soft", 0.9], [596, "zoom-soft", 0.9], [1383, "zoom-soft", 0.9],
+      {[[209, "zoom-soft", 0.9], [424, "zoom-soft", 0.9], [T.s4 + 71, "zoom-soft", 0.9], [596 + D, "zoom-soft", 0.9], [1383 + D, "zoom-soft", 0.9],
         [T.glide + 18, "slow-gentle", 0.32], [T.test + 12, "fast", 0.08], [T.phoneIn + 4, "slow-gentle", 0.32], [T.aside + 15, "slow-gentle", 0.28], [T.cut + 14, "fast", 0.07],
         [T.s3 + 12, "fast", 0.07], [T.lab + 11, "riser-soft", 0.15], [T.success + 13, "riser-soft", 0.13],
         // the end card's sting: a rise into the mark as it lands, air as the name is carried out, a soft lift for "by Altice Labs"
@@ -537,8 +554,8 @@ export const Scene1Book: React.FC = () => {
       <Sequence from={T.notice} layout="none"><Audio src={staticFile("audio/sfx/scene1/buzz.wav")} volume={0.5} /></Sequence>
       {WORD_KEYS.map((a, i) => <Sequence key={`kw${i}`} from={a} layout="none"><Audio src={staticFile(`audio/sfx/ui/key-${((i * 7) % 12) + 1}.wav`)} volume={0.22} /></Sequence>)}
       {APP_KEYS.map((a, i) => <Sequence key={`ka${i}`} from={a} layout="none"><Audio src={staticFile(`audio/sfx/ui/key-${((i * 5) % 12) + 1}.wav`)} volume={0.15} /></Sequence>)}
-      {[Math.round(at(13.7, T.s4, 1.5, 27.921)), T.success + 40].map((a, i) => (
-        <Sequence key={`ok${i}`} from={a - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={i ? 0.5 : 0.35} /></Sequence>))}
+      {[Math.round(at(13.7, S5, 1.5, 27.921)), T.success + 40, OWNED].map((a, i) => (
+        <Sequence key={`ok${i}`} from={a - 9} layout="none"><Audio src={staticFile("audio/sfx/ui/ui-success.wav")} volume={[0.35, 0.5, 0.3][i]} /></Sequence>))}
     </AbsoluteFill>
   );
 };

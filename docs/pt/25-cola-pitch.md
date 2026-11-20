@@ -1,6 +1,6 @@
 # Folha de apoio do _pitch_
 
-Folha de uma página para o apresentador, para as rondas de 20 de novembro de 2026. O guião completo está no documento [21](21-pitch.md) e as respostas longas no documento [23](23-perguntas-engenharia.md). Ronda intermédia, a partir das 16h00: 3 min de _pitch_ e 2 min de perguntas (duas ou três). Final, a partir das 18h00: 5 min e 3 min. A mensagem de adoção dirige-se ao responsável da Altice pela plataforma que o _ThingTracker_ estende.
+Folha de apoio do apresentador, para as rondas de 20 de novembro de 2026. O guião completo está no documento [21](21-pitch.md) e as respostas longas no documento [23](23-perguntas-engenharia.md). Ronda intermédia, a partir das 16h00: 3 min de _pitch_ e 2 min de perguntas (duas ou três). Final, a partir das 18h00: 5 min e 3 min. A mensagem de adoção dirige-se ao responsável da Altice pela plataforma que o _ThingTracker_ estende.
 
 ## Ordem e tempos
 

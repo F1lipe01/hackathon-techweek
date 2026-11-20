@@ -24,12 +24,12 @@ Everything received or discussed so far is filed here: organiser material, kick-
 | **Wed 18 Nov afternoon** | Mandatory checkpoint with the Altice mentors | Book it with them on Slack |
 | **Wed 18 Nov, 19:00** | 1st deliverable: succinct 2-page report (PDF) | Via Google Form |
 | **Fri 20 Nov, 08:30–20:00** | In-person day, Fábrica Centro Ciência Viva de Aveiro | Attendance mandatory |
-| **Fri 20 Nov, afternoon → 16:30–17:30** | Intermediate pitches; finalists selected | 3 min + 1 min Q&A; **up to 6** per challenge advance |
+| **Fri 20 Nov, 16:00–17:30** | Intermediate pitches; finalists selected | 3 min + 2 min Q&A; **3** per challenge advance (participants' guide, confirmed by the organisers on 20 Nov) |
 | **Fri 20 Nov, 17:30** | Executive summary (PDF) + presentation (PPT) + repo link (optional) | Templates in `deliverables/` |
 | **Fri 20 Nov, 18:00–19:30** | Final pitches on stage, for the finalists | 5 min + 3 min Q&A |
 | **Fri 20 Nov, 20:00** | Winners announced + cocktail | |
 
-No extensions (late = possible disqualification), pitch time cut strictly. Full criteria and rules in [docs/01-event.md](docs/01-event.md). The kick-off said 3 finalists / 3+2 min; the written rules say up to 6 / 3+1 — confirm with mentors.
+No extensions (late = possible disqualification), pitch time cut strictly. Full criteria and rules in [docs/01-event.md](docs/01-event.md). Confirmed on 20 Nov (participants' guide and the organisers' Slack): 3 finalists per challenge, 3+2 min. The presentation is submitted as PPT or PDF by 17:30 and must mention the tools used.
 
 ## Map
 

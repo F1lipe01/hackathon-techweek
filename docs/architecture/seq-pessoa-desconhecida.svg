@@ -23,7 +23,7 @@
 <text x="1204.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Servidor MCP</tspan></text>
 <text x="1204.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">plataforma Altice</text>
 <rect x="12.0" y="123.2" width="1376.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="700.0" y="142.2" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Estado: VAZIA desde as 14h10 (nenhum telemóvel da Família no Wi-Fi). Regra ativa: “Toca o alarme quando entrar alguém que não seja da Família”, com a escolha “perguntar primeiro”.</text>
+<text x="700.0" y="142.2" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Estado: VAZIA desde as 14h10 (nenhum telemóvel da família no Wi-Fi). Regra ativa: “Toca o alarme quando entrar alguém que não seja da família”, com a escolha “perguntar primeiro”.</text>
 <rect x="133.2" y="163.9" width="173.5" height="17.0" rx="2" fill="#FFFFFF"/>
 <text x="220.0" y="176.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">imagens RTSP, só na rede da</text>
 <rect x="201.8" y="180.9" width="36.4" height="17.0" rx="2" fill="#FFFFFF"/>
@@ -56,8 +56,8 @@
 <text x="765.0" y="537.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">cumpre-se</text>
 <rect x="778.6" y="557.9" width="242.8" height="17.0" rx="2" fill="#FFFFFF"/>
 <text x="900.0" y="570.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso urgente: “Está alguém que não é da</text>
-<rect x="793.6" y="574.9" width="212.8" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="900.0" y="587.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Família na Sala 1”, com o recorte da</text>
+<rect x="795.3" y="574.9" width="209.4" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="900.0" y="587.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">família na Sala 1”, com o recorte da</text>
 <rect x="874.7" y="591.9" width="50.5" height="17.0" rx="2" fill="#FFFFFF"/>
 <text x="900.0" y="604.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">pessoa</text>
 <path d="M777.0 613.4 H1021.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
@@ -81,5 +81,5 @@
 <text x="1035.0" y="863.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">telemóvel e é a pessoa quem liga. O sistema</text>
 <text x="1035.0" y="880.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">nunca marca o número</text>
 <rect x="12.0" y="918.4" width="1376.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="700.0" y="937.4" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Rosto da Família (semelhança ≥ 0,363): nenhum aviso, e INCERTA → OCUPADA. Rosto não visível: a aplicação pergunta “Está alguém na Sala 1. É alguém conhecido?”, sem alarme, e só sugere o 112 se a resposta for “não”.</text>
+<text x="700.0" y="937.4" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Rosto da família (semelhança ≥ 0,363): nenhum aviso, e INCERTA → OCUPADA. Rosto não visível: a aplicação pergunta “Está alguém na Sala 1. É alguém conhecido?”, sem alarme, e só sugere o 112 se a resposta for “não”.</text>
 <text x="20.0" y="986.6" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Cinzento: em casa. Azul: Altice. Laranja: telemóvel. Os tempos de produção são propostas, a afinar num piloto.</text></svg>

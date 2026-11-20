@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1580 732" width="1580" height="732" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="C4, nível 1: contexto"><title>C4, nível 1: contexto</title><defs><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1580" height="732" fill="#FFFFFF"/><rect x="40.0" y="30.0" width="360.0" height="108.7" rx="12" fill="#FFFFFF" stroke="#003399" stroke-width="1.6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1580 749" width="1580" height="749" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="C4, nível 1: contexto"><title>C4, nível 1: contexto</title><defs><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1580" height="749" fill="#FFFFFF"/><rect x="40.0" y="30.0" width="360.0" height="108.7" rx="12" fill="#FFFFFF" stroke="#003399" stroke-width="1.6"/>
 <text x="54.0" y="57.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Família</tspan></text>
 <text x="54.0" y="79.3" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[pessoa]</text>
 <text x="54.0" y="102.8" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Regista objetos e pessoas, escreve regras numa frase,</text>
@@ -24,20 +24,21 @@
 <text x="1194.0" y="317.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistema existente · Altice]</text>
 <text x="1194.0" y="341.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Dispositivos, cenários, segurança e notificações; servidor</text>
 <text x="1194.0" y="358.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">MCP com 18 ferramentas</text>
-<rect x="40.0" y="565.8" width="360.0" height="108.6" rx="12" fill="#FFFFFF" stroke="#003399" stroke-width="1.6"/>
+<rect x="40.0" y="565.8" width="360.0" height="126.1" rx="12" fill="#FFFFFF" stroke="#003399" stroke-width="1.6"/>
 <text x="54.0" y="593.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Visita ou desconhecido</tspan></text>
 <text x="54.0" y="615.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[pessoa]</text>
 <text x="54.0" y="638.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Aparece nas imagens; sem registo nem consentimento,</text>
 <text x="54.0" y="656.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">nunca recebe um nome</text>
-<rect x="600.0" y="565.8" width="360.0" height="108.6" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2" stroke-dasharray="6 4"/>
+<rect x="600.0" y="565.8" width="360.0" height="126.1" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2" stroke-dasharray="6 4"/>
 <text x="614.0" y="593.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Modelos de linguagem e de visão-linguagem</tspan></text>
 <text x="614.0" y="615.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[o de texto pode ser de um fornecedor sob contrato]</text>
-<text x="614.0" y="638.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Compilam frases em regras e redigem respostas; o juiz vê,</text>
-<text x="614.0" y="656.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">raramente, 2 a 3 s de um momento duvidoso</text>
-<rect x="1180.0" y="565.8" width="360.0" height="108.6" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
+<text x="614.0" y="638.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Só escrevem texto (frases em regras, que o serviço valida,</text>
+<text x="614.0" y="656.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">e respostas); nunca decidem. O juiz vê, raramente, 2 a 3 s</text>
+<text x="614.0" y="673.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">de um momento duvidoso</text>
+<rect x="1180.0" y="565.8" width="360.0" height="126.1" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
 <text x="1194.0" y="593.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">Router</tspan><tspan font-weight="700"> e sensores do kit</tspan></text>
 <text x="1194.0" y="615.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[sistemas existentes · em casa]</text>
-<text x="1194.0" y="638.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi com os telemóveis da Família; sensor da porta; luz,</text>
+<text x="1194.0" y="638.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi com os telemóveis da família; sensor da porta; luz,</text>
 <text x="1194.0" y="656.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">tomada e sirene</text>
 <path d="M400.0 77.3 H590.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="408.0" y="55.3" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">usa: regista, pergunta, escreve</text>
@@ -73,4 +74,4 @@
 <text x="1343.0" y="519.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">(ferramenta proposta)</text>
 <path d="M220.0 565.8 V445.8" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="229.0" y="504.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">aparece nas imagens</text>
-<text x="40.0" y="714.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Notação C4 (c4model.com), nível 1. Azul: o sistema descrito; cinzento: sistemas existentes; contorno azul-escuro: pessoas; tracejado: pode ser externo à Altice.</text></svg>
+<text x="40.0" y="731.9" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Notação C4 (c4model.com), nível 1. Azul: o sistema descrito; cinzento: sistemas existentes; contorno azul-escuro: pessoas; tracejado: pode ser externo à Altice.</text></svg>

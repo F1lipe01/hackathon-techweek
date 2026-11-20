@@ -39,7 +39,7 @@
 <text x="58.0" y="513.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Keeps the last 3 s in memory only, for the judge</text>
 <text x="58.0" y="537.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Outbox: keeps events while offline; without internet there is no</text>
 <text x="58.0" y="554.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">image analysis</text>
-<text x="58.0" y="578.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi: the router knows which Family phones are connected</text>
+<text x="58.0" y="578.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi: the router knows which family phones are connected</text>
 <rect x="44.0" y="631.9" width="402.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="58.0" y="659.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Security hub and door contact sensor</tspan></text>
 <text x="58.0" y="683.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">MS-WES1AS (LTE) and MS-D3D; they report to the Altice platform,</text>
@@ -130,7 +130,7 @@
 <path d="M634.0 361.8 H456.0" fill="none" stroke="#0084D6" stroke-width="2" marker-end="url(#m0084D6)"/>
 <text x="456.0" y="378.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">requests: active check, refresh</text>
 <path d="M446.0 572.9 H624.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="456.0" y="549.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">Family phones on the Wi-Fi</text>
+<text x="456.0" y="549.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">family phones on the Wi-Fi</text>
 <text x="456.0" y="564.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">(proposed tool)</text>
 <path d="M446.0 675.5 H624.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="456.0" y="667.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">door open and closed, as today</text>

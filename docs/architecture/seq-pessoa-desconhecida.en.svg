@@ -25,7 +25,7 @@
 <text x="1204.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">MCP server</tspan></text>
 <text x="1204.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">Altice platform</text>
 <rect x="12.0" y="140.7" width="1376.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="700.0" y="159.7" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">State: EMPTY since 14:10 (no Family phone on the Wi-Fi). Active rule: “Sound the alarm when someone who isn’t Family comes in”, with the choice “ask first”.</text>
+<text x="700.0" y="159.7" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">State: EMPTY since 14:10 (no family phone on the Wi-Fi). Active rule: “Sound the alarm when someone who isn’t family comes in”, with the choice “ask first”.</text>
 <rect x="139.8" y="181.4" width="160.5" height="17.0" rx="2" fill="#FFFFFF"/>
 <text x="220.0" y="193.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">RTSP frames, on the home</text>
 <rect x="179.2" y="198.4" width="81.5" height="17.0" rx="2" fill="#FFFFFF"/>
@@ -55,10 +55,10 @@
 <text x="765.0" y="503.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">3 consecutive analyses (about 3 s) with the same</text>
 <text x="765.0" y="520.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">unknown face: EMPTY → UNSURE, and the rule</text>
 <text x="765.0" y="537.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">is met</text>
-<rect x="783.7" y="558.4" width="232.6" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="900.0" y="570.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">urgent alert: “Someone who isn’t Family</text>
-<rect x="784.0" y="575.4" width="232.0" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="900.0" y="587.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">is in Living room 1”, with the crop of the</text>
+<rect x="779.2" y="558.4" width="241.6" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="900.0" y="570.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">urgent alert: “Someone who isn’t family is</text>
+<rect x="790.2" y="575.4" width="219.5" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="900.0" y="587.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">in Living room 1”, with the crop of the</text>
 <rect x="875.7" y="592.4" width="48.7" height="17.0" rx="2" fill="#FFFFFF"/>
 <text x="900.0" y="604.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">person</text>
 <path d="M777.0 613.9 H1021.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
@@ -82,5 +82,5 @@
 <text x="1035.0" y="863.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">phone and the person places it. The system</text>
 <text x="1035.0" y="880.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">never dials</text>
 <rect x="12.0" y="918.9" width="1376.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="700.0" y="937.9" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">A Family face (similarity ≥ 0.363): no alert, and UNSURE → OCCUPIED. Face not visible: the app asks “Someone is in Living room 1. Do you know them?”, with no alarm, and suggests 112 only if the answer is “no”.</text>
+<text x="700.0" y="937.9" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">A family face (similarity ≥ 0.363): no alert, and UNSURE → OCCUPIED. Face not visible: the app asks “Someone is in Living room 1. Do you know them?”, with no alarm, and suggests 112 only if the answer is “no”.</text>
 <text x="20.0" y="987.1" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Grey: in the home. Blue: Altice. Orange: the phone. Production timings are proposals, to tune in a pilot.</text></svg>

@@ -80,8 +80,8 @@ def implantacao(lang):
               L("Guarda só em memória os últimos 3 s, para o juiz", "Keeps the last 3 s in memory only, for the judge"),
               L("Fila de saída: guarda os eventos enquanto não há internet; sem internet, não há análise de imagem",
                 "Outbox: keeps events while offline; without internet there is no image analysis"),
-              L("Wi-Fi: o _router_ sabe que telemóveis da Família estão ligados",
-                "Wi-Fi: the router knows which Family phones are connected")])]
+              L("Wi-Fi: o _router_ sabe que telemóveis da família estão ligados",
+                "Wi-Fi: the router knows which family phones are connected")])]
     # ---- Altice, column A: what faces the homes
     A, B, C, D = COLS
     lbh = stack(cv, A, ry, CW, [dict(
@@ -204,7 +204,7 @@ def implantacao(lang):
     cv.label(gx0 + 10, yb + 17, L("pedidos: verificação ativa, atualização", "requests: active check, refresh"), lw, below=True)
     yc = mid_overlap(router, plat)
     cv.arrow(gx0, yc, gx1, yc, BODY)
-    cv.label(gx0 + 10, yc - 8, L("telemóveis da Família no Wi-Fi (ferramenta proposta)", "Family phones on the Wi-Fi (proposed tool)"), lw, fill=BODY)
+    cv.label(gx0 + 10, yc - 8, L("telemóveis da família no Wi-Fi (ferramenta proposta)", "family phones on the Wi-Fi (proposed tool)"), lw, fill=BODY)
     yd = mid_overlap(hub, plat)
     cv.arrow(gx0, yd, gx1, yd, BODY)
     cv.label(gx0 + 10, yd - 8, L("porta aberta e fechada, como hoje", "door open and closed, as today"), lw, fill=BODY)
@@ -266,9 +266,9 @@ def presenca_estados(lang):
     uy = 24
     st = dict(pad=16, title_size=16, body_size=12.5, sw=2)
     u_body = [L("Os sinais não concordam: os telemóveis estão fora mas uma câmara vê uma pessoa (um estranho, uma visita ou alguém "
-                "da Família sem telemóvel), ou um telemóvel está em casa sem ninguém visto nem uso da porta há T_parado "
+                "da família sem telemóvel), ou um telemóvel está em casa sem ninguém visto nem uso da porta há T_parado "
                 "(um telemóvel esquecido?).",
-                "The signals disagree: the phones are away but a camera sees a person (a stranger, a guest, or Family without a "
+                "The signals disagree: the phones are away but a camera sees a person (a stranger, a guest, or family without a "
                 "phone), or a phone is home with nobody seen and no door use for T_stale (a phone left behind?)."),
             L("Nas regras: as que precisam de certeza perguntam à família em vez de agir; um rosto desconhecido em 3 análises "
               "seguidas continua a gerar o aviso de segurança.",
@@ -276,20 +276,20 @@ def presenca_estados(lang):
               "analyses still raises the security alert.")]
     uh = cv.box(U[0], uy, U[1] - U[0], L("INCERTA", "UNSURE"), u_body, stroke=WARN, title_color=WARN, **st)
     ry = uy + uh + 150
-    o_body = [L("Alguém da Família está em casa: um telemóvel da Família está no Wi-Fi, ou uma câmara viu uma pessoa há "
+    o_body = [L("Alguém da família está em casa: um telemóvel da família está no Wi-Fi, ou uma câmara viu uma pessoa há "
                 "menos de T_visto.",
-                "Someone from the Family is home: a Family phone is on the Wi-Fi, or a camera saw a person in the last T_seen."),
+                "Someone from the family is home: a family phone is on the Wi-Fi, or a camera saw a person in the last T_seen."),
               L("Nas regras: as de “casa vazia” esperam; um rosto desconhecido só dá alarme se a regra o pedir.",
                 "In the rules: “empty home” rules wait; an unknown face raises the alarm only if the rule asks for it.")]
     l_body = [L("A porta abriu e fechou. Durante T_saída, o serviço vê quem saiu: um telemóvel que sai do Wi-Fi, ou menos "
                 "pessoas nas câmaras.",
                 "The door opened and closed. For T_leave, the service checks who left: a phone that leaves the Wi-Fi, or fewer "
                 "people on the cameras."),
-              L("Se saiu alguém da Família, corre a verificação do objeto esquecido.",
-                "If a Family member left, the left-behind check runs.")]
-    e_body = [L("Todos os telemóveis da Família estão fora, a porta abriu e fechou, nenhum rosto da Família foi visto há menos de "
+              L("Se saiu alguém da família, corre a verificação do objeto esquecido.",
+                "If a family member left, the left-behind check runs.")]
+    e_body = [L("Todos os telemóveis da família estão fora, a porta abriu e fechou, nenhum rosto da família foi visto há menos de "
                 "T_rosto e nenhuma câmara vê uma pessoa, depois de atualizar os últimos lugares onde havia pessoas.",
-                "All Family phones are away, the door opened and closed, no Family face was seen in the last T_face, and no "
+                "All family phones are away, the door opened and closed, no family face was seen in the last T_face, and no "
                 "camera sees a person, after a refresh of the last places where people were."),
               L("Nas regras: as de “casa vazia” agem (propor desligar o que ficou ligado); uma pessoa vista passa a INCERTA.",
                 "In the rules: “empty home” rules act (offer to turn off what is on); a person seen moves the state to UNSURE.")]
@@ -313,8 +313,8 @@ def presenca_estados(lang):
     side(O[1] + 12, LV[0] - 12, y1 - 8, L("a porta abre e depois fecha", "the door opens, then closes"))
     y2 = ry + hl - 26
     cv.arrow(LV[0], y2, O[1], y2, INK)
-    side(O[1] + 12, LV[0] - 12, y2 + 18, L("passado T_saída, um telemóvel da Família continua em casa",
-                                          "after T_leave, a Family phone is still home"), below=True)
+    side(O[1] + 12, LV[0] - 12, y2 + 18, L("passado T_saída, um telemóvel da família continua em casa",
+                                          "after T_leave, a family phone is still home"), below=True)
     y3 = ry + 50
     cv.arrow(LV[1], y3, E[0], y3, INK)
     side(LV[1] + 12, E[0] - 12, y3 + 18, L("passado T_saída, telemóveis fora e ninguém nas câmaras",
@@ -323,8 +323,8 @@ def presenca_estados(lang):
     y4 = lb + 70
     assert y4 < ob - 20
     cv.arrow(E[0], y4, O[1], y4, INK)
-    cv.label((O[1] + E[0]) / 2, y4 - 8, L("chegada: um telemóvel da Família entra no Wi-Fi, ou um rosto da Família é reconhecido",
-                                          "arrival: a Family phone joins the Wi-Fi, or a Family face is recognised"),
+    cv.label((O[1] + E[0]) / 2, y4 - 8, L("chegada: um telemóvel da família entra no Wi-Fi, ou um rosto da família é reconhecido",
+                                          "arrival: a family phone joins the Wi-Fi, or a family face is recognised"),
              E[0] - O[1] - 40, size=12, fill=BODY, anchor="middle")
     # vertical: OCCUPIED <-> UNSURE, LEAVING -> UNSURE, EMPTY <-> UNSURE
     xo1, xo2 = O[0] + 150, O[0] + 210
@@ -332,8 +332,8 @@ def presenca_estados(lang):
     side(O[0], xo1 - 10, (ub + ry) / 2 - 20, L("telemóvel em casa, mas ninguém visto nem porta usada durante T_parado",
                                                "a phone is home, but nobody seen and no door use for T_stale"), w=xo1 - O[0] - 14)
     cv.arrow(xo2, ub, xo2, ry, INK)
-    side(xo2 + 12, O[1], (ub + ry) / 2 - 20, L("um telemóvel da Família entra no Wi-Fi, ou um rosto da Família é reconhecido",
-                                               "a Family phone joins the Wi-Fi, or a Family face is recognised"), w=O[1] - xo2 - 14)
+    side(xo2 + 12, O[1], (ub + ry) / 2 - 20, L("um telemóvel da família entra no Wi-Fi, ou um rosto da família é reconhecido",
+                                               "a family phone joins the Wi-Fi, or a family face is recognised"), w=O[1] - xo2 - 14)
     xl = (LV[0] + LV[1]) / 2
     cv.arrow(xl, ry, xl, ub, INK)
     side(xl + 12, LV[1], (ub + ry) / 2 - 4, L("telemóveis fora, mas uma pessoa é vista", "phones away, but a person is seen"),
@@ -349,28 +349,28 @@ def presenca_estados(lang):
     # ---- below: signals, the count and the timings
     by = ob + 40
     bw = (W - 80 - 2 * 24) / 3
-    sig = [L("Telemóveis: o _router_ diz que telemóveis da Família estão no Wi-Fi (ferramenta MCP proposta, `get_home_wifi_clients`; "
+    sig = [L("Telemóveis: o _router_ diz que telemóveis da família estão no Wi-Fi (ferramenta MCP proposta, `get_home_wifi_clients`; "
              "simulada no protótipo).",
-             "Phones: the router says which Family phones are on the Wi-Fi (a proposed MCP tool, `get_home_wifi_clients`; simulated "
+             "Phones: the router says which family phones are on the Wi-Fi (a proposed MCP tool, `get_home_wifi_clients`; simulated "
              "in the prototype)."),
            L("Porta: o sensor de contacto envia “aberta” e “fechada” à plataforma, como hoje.",
              "Door: the contact sensor sends “open” and “closed” to the platform, as today."),
            L("Câmaras: pessoas encontradas pelo _OWLv2_ e, com consentimento, o rótulo do rosto calculado em casa.",
              "Cameras: people found by OWLv2 and, with consent, the face label worked out in the home.")]
-    cnt = [L("Pessoas em casa = Família em casa (telemóvel no Wi-Fi, ou rosto visto há menos de T_rosto sem o telemóvel ter saído "
+    cnt = [L("Pessoas em casa = família em casa (telemóvel no Wi-Fi, ou rosto visto há menos de T_rosto sem o telemóvel ter saído "
              "depois) + visitas registadas vistas agora + rostos desconhecidos vistos agora.",
-             "People home = Family home (phone on the Wi-Fi, or face seen in the last T_face with no phone leaving since) + "
+             "People home = family home (phone on the Wi-Fi, or face seen in the last T_face with no phone leaving since) + "
              "registered guests seen now + unknown faces seen now."),
-           L("Uma pessoa sem rosto visível só se soma se não puder ser alguém da Família já contado; com a Família fora, o "
+           L("Uma pessoa sem rosto visível só se soma se não puder ser alguém da família já contado; com a família fora, o "
              "estado passa a INCERTA.",
-             "A person with no visible face is added only if they cannot be a Family member already counted; with the Family "
+             "A person with no visible face is added only if they cannot be a family member already counted; with the family "
              "away, the state becomes UNSURE."),
            L("Divisão sem câmara: cobrem-na os telemóveis. Pessoa parada: cobrem-na os telemóveis e a atualização periódica.",
              "A room without a camera: the phones cover it. A still person: the phones and the periodic refresh cover them.")]
     h1 = cv.box_h(bw, "X", sig, 16, 14.5, 12.5)
     h2 = cv.box_h(bw, "X", cnt, 16, 14.5, 12.5)
     rows = [("T_visto", "T_seen", L("uma pessoa vista conta como “agora”", "a person seen counts as “now”"), "15 s", "2 min"),
-            ("T_rosto", "T_face", L("um rosto da Família conta em casa", "a Family face counts as home"), "2 min", "30 min"),
+            ("T_rosto", "T_face", L("um rosto da família conta em casa", "a family face counts as home"), "2 min", "30 min"),
             ("T_saída", "T_leave", L("A SAIR espera por quem saiu", "LEAVING waits for a leaver"), "10 s", "5 min"),
             ("T_atraso", "T_lag", L("telemóvel sai do Wi-Fi após a porta", "a phone leaves the Wi-Fi after the door"), "30 s", "5 min"),
             ("T_telemóvel", "T_phone", L("ausência que conta como fora*", "absence that counts as away*"), L("simulado", "simulated"), "10 min"),
@@ -423,19 +423,19 @@ def seq_livro_esquecido(lang):
             (L("Serviço _ThingTracker_", "ThingTracker service"), L("presença e regras, por casa", "presence and rules, per home"), "altice"),
             (L("Aplicação Altice", "Altice app"), L("no telemóvel", "on the phone"), "phone")]
     rows = [
-        ("g", L("Estado: OCUPADA (o telemóvel do Filipe está no Wi-Fi). O livro foi visto pela última vez na secretária da Sala 1, às 18h02.",
-                "State: OCCUPIED (Filipe’s phone is on the Wi-Fi). The book was last seen on the desk in Living room 1, at 18:02.")),
+        ("g", L("Estado: OCUPADA (o telemóvel do dono do livro está no Wi-Fi). O livro foi visto pela última vez na secretária da Sala 1, às 18h02.",
+                "State: OCCUPIED (the book owner’s phone is on the Wi-Fi). The book was last seen on the desk in Living room 1, at 18:02.")),
         ("m", 0, 2, L("porta aberta (`sensorState: alarm`)", "door open (`sensorState: alarm`)")),
         ("m", 2, 4, L("`door.opened` (hoje: `get_home_devices` a cada 4 s)", "`door.opened` (today: `get_home_devices` every 4 s)")),
         ("m", 0, 2, L("porta fechada, 8 s depois", "door closed, 8 s later")),
         ("m", 2, 4, L("`door.closed`", "`door.closed`")),
         ("n", 4, 4, L("A porta abriu e fechou: OCUPADA → A SAIR. Espera até T_saída (10 s na demonstração, 5 min em produção) por quem saiu",
                       "The door opened and closed: OCCUPIED → LEAVING. Waits up to T_leave (10 s in the demo, 5 min in production) for whoever left")),
-        ("m", 0, 2, L("o telemóvel do Filipe saiu do Wi-Fi", "Filipe’s phone left the Wi-Fi")),
-        ("m", 2, 4, L("`wifi.left`: Filipe (evento proposto)", "`wifi.left`: Filipe (proposed event)")),
-        ("n", 4, 4, L("Saiu alguém da Família: verificação ativa do lugar habitual do livro, sem esperar por movimento",
-                      "A Family member left: an active check of the book’s usual place, without waiting for motion")),
-        ("m", 4, 1, L("envia a região da secretária: 3 imagens, 1 por segundo", "send the desk’s region: 3 frames, 1 a second")),
+        ("m", 0, 2, L("o telemóvel do dono do livro saiu do Wi-Fi", "the book owner’s phone left the Wi-Fi")),
+        ("m", 2, 4, L("`wifi.left`: o dono do livro (evento proposto)", "`wifi.left`: the book owner (proposed event)")),
+        ("n", 4, 4, L("Saiu alguém da família: verificação ativa do lugar habitual do livro, sem esperar por movimento",
+                      "A family member left: an active check of the book’s usual place, without waiting for motion")),
+        ("m", 4, 1, L("pede a região da secretária: 3 imagens, 1 por segundo", "asks for the desk’s region: 3 frames, 1 a second")),
         ("m", 1, 3, L("3 regiões, na fila urgente", "3 regions, on the urgent queue")),
         ("m", 3, 4, L("3 resultados: caixas de “livro” e vetores _DINOv2_", "3 results: “book” boxes and DINOv2 vectors")),
         ("n", 4, 4, L("Comparados com as 8 vistas do livro (_pgvector_): 0,70 ≥ 0,62 em 3 de 3 imagens. Regra “avisa-me se sair sem o "
@@ -452,9 +452,9 @@ def seq_livro_esquecido(lang):
                 "gives the alert; “no” does not; “unsure” makes the app ask the family, with no alarm.")),
         ("g", L("Uma chegada (a porta abre e fecha e um telemóvel entra no Wi-Fi) não inicia a verificação.",
                 "An arrival (the door opens and closes and a phone joins the Wi-Fi) does not start the check.")),
-        ("g", L("Sem sensor de porta, o mesmo teste começa quando um telemóvel da Família sai do Wi-Fi (passado T_telemóvel, por isso "
+        ("g", L("Sem sensor de porta, o mesmo teste começa quando um telemóvel da família sai do Wi-Fi (passado T_telemóvel, por isso "
                 "mais tarde) ou quando uma câmara que vê a porta de saída vê alguém sair por ela.",
-                "Without a door sensor, the same check starts when a Family phone leaves the Wi-Fi (after T_phone, so later) or "
+                "Without a door sensor, the same check starts when a family phone leaves the Wi-Fi (after T_phone, so later) or "
                 "when a camera that sees the exit door sees someone leave through it.")),
     ]
     sequence(lang, "seq-livro-esquecido", L("Sequência: o livro esquecido", "Sequence: the book left behind"), cols, rows, legend(lang),
@@ -472,9 +472,9 @@ def seq_pessoa_desconhecida(lang):
             (L("Aplicação Altice", "Altice app"), L("no telemóvel", "on the phone"), "phone"),
             (L("Servidor MCP", "MCP server"), L("plataforma Altice", "Altice platform"), "altice")]
     rows = [
-        ("g", L("Estado: VAZIA desde as 14h10 (nenhum telemóvel da Família no Wi-Fi). Regra ativa: “Toca o alarme quando entrar alguém "
-                "que não seja da Família”, com a escolha “perguntar primeiro”.",
-                "State: EMPTY since 14:10 (no Family phone on the Wi-Fi). Active rule: “Sound the alarm when someone who isn’t Family "
+        ("g", L("Estado: VAZIA desde as 14h10 (nenhum telemóvel da família no Wi-Fi). Regra ativa: “Toca o alarme quando entrar alguém "
+                "que não seja da família”, com a escolha “perguntar primeiro”.",
+                "State: EMPTY since 14:10 (no family phone on the Wi-Fi). Active rule: “Sound the alarm when someone who isn’t family "
                 "comes in”, with the choice “ask first”.")),
         ("m", 0, 1, L("imagens RTSP, só na rede da casa", "RTSP frames, on the home network only")),
         ("n", 1, 1, L("Movimento: recorta a região que mudou. _YuNet_ encontra um rosto; _SFace_ dá 0,21 contra o padrão mais "
@@ -485,17 +485,17 @@ def seq_pessoa_desconhecida(lang):
         ("m", 2, 3, L("uma pessoa; o rosto está dentro da sua caixa", "a person; the face is inside their box")),
         ("n", 3, 3, L("3 análises seguidas (cerca de 3 s) com o mesmo rosto desconhecido: VAZIA → INCERTA, e a regra cumpre-se",
                       "3 consecutive analyses (about 3 s) with the same unknown face: EMPTY → UNSURE, and the rule is met")),
-        ("m", 3, 4, L("aviso urgente: “Está alguém que não é da Família na Sala 1”, com o recorte da pessoa",
-                      "urgent alert: “Someone who isn’t Family is in Living room 1”, with the crop of the person")),
+        ("m", 3, 4, L("aviso urgente: “Está alguém que não é da família na Sala 1”, com o recorte da pessoa",
+                      "urgent alert: “Someone who isn’t family is in Living room 1”, with the crop of the person")),
         ("n", 4, 4, L("Cartões do aviso: “Tocar a sirene”, “Ligar à polícia (112)” e “Ver em direto”",
                       "The alert’s cards: “Sound the siren”, “Call the police (112)” and “See live”")),
         ("m", 4, 3, L("“Sim” em “Tocar a sirene”", "“Yes” on “Sound the siren”")),
         ("m", 3, 5, L("`update_device_capabilities`: `sirenSwitch` da câmara ligado", "`update_device_capabilities`: camera `sirenSwitch` on")),
         ("n", 4, 4, L("“Ligar à polícia (112)” abre a chamada no telemóvel e é a pessoa quem liga. O sistema nunca marca o número",
                       "“Call the police (112)” opens the call on the phone and the person places it. The system never dials")),
-        ("g", L("Rosto da Família (semelhança ≥ 0,363): nenhum aviso, e INCERTA → OCUPADA. Rosto não visível: a aplicação pergunta "
+        ("g", L("Rosto da família (semelhança ≥ 0,363): nenhum aviso, e INCERTA → OCUPADA. Rosto não visível: a aplicação pergunta "
                 "“Está alguém na Sala 1. É alguém conhecido?”, sem alarme, e só sugere o 112 se a resposta for “não”.",
-                "A Family face (similarity ≥ 0.363): no alert, and UNSURE → OCCUPIED. Face not visible: the app asks “Someone is in "
+                "A family face (similarity ≥ 0.363): no alert, and UNSURE → OCCUPIED. Face not visible: the app asks “Someone is in "
                 "Living room 1. Do you know them?”, with no alarm, and suggests 112 only if the answer is “no”.")),
     ]
     sequence(lang, "seq-pessoa-desconhecida", L("Sequência: pessoa desconhecida", "Sequence: an unknown person"), cols, rows, legend(lang),
@@ -517,7 +517,7 @@ def seq_casa_vazia(lang):
                 "porta ficar aberta sem ninguém por perto”.",
                 "State: OCCUPIED. Active rules: “When nobody is home, offer to turn off what is still on” and “Tell me if the "
                 "door is left open with nobody around”.")),
-        ("m", 0, 2, L("porta aberta e fechada; os 2 telemóveis da Família saem do Wi-Fi", "door opened and closed; both Family phones leave the Wi-Fi")),
+        ("m", 0, 2, L("porta aberta e fechada; os 2 telemóveis da família saem do Wi-Fi", "door opened and closed; both family phones leave the Wi-Fi")),
         ("m", 2, 4, L("`door.opened`, `door.closed`, `wifi.left` × 2", "`door.opened`, `door.closed`, `wifi.left` × 2")),
         ("n", 4, 4, L("OCUPADA → A SAIR. Nenhuma pessoa vista desde que a porta fechou; falta confirmar que ninguém ficou parado",
                       "OCCUPIED → LEAVING. No person seen since the door closed; it still has to confirm that nobody stayed still")),
@@ -590,12 +590,12 @@ def c4_1_contexto(lang):
                                           "Appears in the frames; without registration and consent, never gets a name")], **PERSON)),
         "llm": (1, 2, 1, dict(title=L("Modelos de linguagem e de visão-linguagem", "Language and vision-language models"),
                               sub=L("[o de texto pode ser de um fornecedor sob contrato]", "[the text model may be a provider under contract]"),
-                              body=[L("Compilam frases em regras e redigem respostas; o juiz vê, raramente, 2 a 3 s de um momento duvidoso",
-                                      "Compile sentences into rules and word answers; the judge rarely sees 2 to 3 s of an ambiguous moment")],
+                              body=[L("Só escrevem texto (frases em regras, que o serviço valida, e respostas); nunca decidem. O juiz vê, raramente, 2 a 3 s de um momento duvidoso",
+                                      "Write text only (sentences into rules, which the service checks, and answers); they never decide. The judge rarely sees 2 to 3 s of an ambiguous moment")],
                               dash="6 4", **EXTERNAL)),
         "router": (2, 2, 1, dict(title=L("_Router_ e sensores do kit", "Router and kit sensors"), sub=L("[sistemas existentes · em casa]", "[existing systems · in the home]"),
-                                 body=[L("Wi-Fi com os telemóveis da Família; sensor da porta; luz, tomada e sirene",
-                                         "Wi-Fi with the Family phones; door sensor; light, plug and siren")], **EXTERNAL)),
+                                 body=[L("Wi-Fi com os telemóveis da família; sensor da porta; luz, tomada e sirene",
+                                         "Wi-Fi with the family phones; door sensor; light, plug and siren")], **EXTERNAL)),
     })
     g.h2("family", "app", L("usa: regista, pergunta, escreve regras, diz “Sim”", "uses it: registers, asks, writes rules, says “Yes”"),
          L("mostra avisos e respostas", "shows alerts and answers"))
@@ -660,7 +660,8 @@ def c4_2_contentores(lang):
                              body=[L("Por cliente: objetos, assinaturas, regras, avisos, observações", "Per customer: things, fingerprints, rules, alerts, sightings")], **C)),
         "llm": (2, 4, 1, dict(title=L("Modelos de linguagem e de visão-linguagem", "Language and vision-language models"),
                               sub=L("[servidores GPU atrás de uma fila]", "[GPU servers behind a queue]"),
-                              body=[L("Texto e, raramente, clipes curtos para o juiz", "Text and, rarely, short clips for the judge")], **C)),
+                              body=[L("Só escrevem texto: frases em regras, que o serviço valida, e respostas; nunca decidem", "Write text only: sentences into rules, which the service checks, and answers; they never decide"),
+                                    L("Juiz: raramente, um clipe curto", "Judge: rarely, a short clip")], **C)),
         "store": (4, 4, 1, dict(title=L("Armazenamento de objetos", "Object storage"), sub=L("[compatível com S3]", "[S3-compatible]"),
                                 body=[L("Miniaturas, 30 dias (proposta)", "Thumbnails, 30 days (proposal)")], **C)),
     })
@@ -915,10 +916,10 @@ def dfd_fronteiras(lang):
     rows = [
         ("F1", L("agente da casa → mediador (casa → Altice)", "home agent → broker (home → Altice)"),
          L("A região que mudou (no máximo 640 × 640, cerca de 1 por segundo com movimento) ou a pedida numa verificação; raramente, "
-           "2 a 3 s da região para o juiz; os rótulos dos rostos (“Filipe”, “rosto desconhecido”) com as caixas. Nunca vídeo contínuo "
+           "2 a 3 s da região para o juiz; os rótulos dos rostos (o nome da pessoa ou “rosto desconhecido”) com as caixas. Nunca vídeo contínuo "
            "nem padrões faciais",
            "The changed region (at most 640 × 640, about 1 a second during motion) or the one asked for in a check; rarely, 2 to 3 s "
-           "of the region for the judge; the face labels (“Filipe”, “unknown face”) with their boxes. Never continuous video or face "
+           "of the region for the judge; the face labels (the person’s name or “unknown face”) with their boxes. Never continuous video or face "
            "templates"),
          L("mTLS, um certificado por casa", "mTLS, one certificate per home")),
         ("F2", L("mediador → agente da casa (Altice → casa)", "broker → home agent (Altice → home)"),
@@ -927,8 +928,8 @@ def dfd_fronteiras(lang):
            "Active-check and refresh requests; the face video when a person is registered, relayed without being stored; masks; "
            "orders to delete templates"), "mTLS"),
         ("F3", L("_router_ → plataforma (casa → Altice)", "router → platform (home → Altice)"),
-         L("Que telemóveis da Família estão no Wi-Fi e quando entram ou saem (ferramenta MCP proposta)",
-           "Which Family phones are on the Wi-Fi, and when they join or leave (proposed MCP tool)"),
+         L("Que telemóveis da família estão no Wi-Fi e quando entram ou saem (ferramenta MCP proposta)",
+           "Which family phones are on the Wi-Fi, and when they join or leave (proposed MCP tool)"),
          L("O canal de gestão do _router_ da Altice (a confirmar)", "Altice’s router management channel (to confirm)")),
         ("F4", L("sensor da porta → plataforma (casa → Altice)", "door sensor → platform (home → Altice)"),
          L("Porta aberta ou fechada, como hoje", "Door open or closed, as today"), L("O canal da central (LTE), como hoje", "The hub’s channel (LTE), as today")),
@@ -940,8 +941,8 @@ def dfd_fronteiras(lang):
            "Text only: the sentence or question, the names of things, places and devices, memory lines. The judge’s clips stay "
            "at Altice"),
          L("TLS; contrato sem treino com os dados, DPA e processamento na UE", "TLS; a contract with no training on the data, a DPA and EU processing")),
-        ("F7", L("modelo de linguagem → serviço", "language model → service"), L("A regra estruturada, a resposta ou o veredicto",
-                                                                              "The structured rule, the answer or the verdict"), "TLS"),
+        ("F7", L("modelo de linguagem → serviço", "language model → service"), L("Só texto: a regra estruturada, que o serviço valida, ou a resposta. O modelo nunca decide",
+                                                                              "Text only: the structured rule, which the service checks, or the answer. The model never decides"), "TLS"),
         ("F8", L("aplicação → serviço (telemóvel → Altice)", "app → service (phone → Altice)"),
          L("Frases, perguntas, fotografias de objetos, o vídeo do rosto, “Sim”", "Sentences, questions, photos of things, the face video, “Yes”"),
          L("HTTPS, com a sessão da aplicação Altice", "HTTPS, with the Altice app’s session")),
@@ -1160,8 +1161,8 @@ def fluxo_app(lang):
                                                  "A short video with the phone; in the home, YuNet and SFace make up to 8 templates")),
             (L("Pessoa adicionada", "Person added"), L("Os padrões ficam só em casa; a aplicação mostra o nome",
                                                       "The templates stay in the home; the app shows the name")),
-            (L("Sugestão", "Suggestion"), L("“Tocar o alarme quando entrar alguém que não seja da Família?”",
-                                           "“Sound the alarm when someone who isn’t Family comes in?”")),
+            (L("Sugestão", "Suggestion"), L("“Tocar o alarme quando entrar alguém que não seja da família?”",
+                                           "“Sound the alarm when someone who isn’t family comes in?”")),
         ]),
         (L("Cenário a partir de uma frase", "A scenario from a sentence"), [
             (L("Botão do assistente", "Assistant button"), L("Em qualquer separador", "On any tab")),

@@ -40,7 +40,7 @@
 <text x="58.0" y="513.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Guarda só em memória os últimos 3 s, para o juiz</text>
 <text x="58.0" y="537.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Fila de saída: guarda os eventos enquanto não há internet; sem</text>
 <text x="58.0" y="554.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">internet, não há análise de imagem</text>
-<text x="58.0" y="578.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi: o<tspan font-style="italic"> router</tspan> sabe que telemóveis da Família estão ligados</text>
+<text x="58.0" y="578.4" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Wi-Fi: o<tspan font-style="italic"> router</tspan> sabe que telemóveis da família estão ligados</text>
 <rect x="44.0" y="631.9" width="402.0" height="87.2" rx="12" fill="#FFFFFF" stroke="#D0D0D0" stroke-width="1.0"/>
 <text x="58.0" y="659.7" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Central de segurança e sensor da porta</tspan></text>
 <text x="58.0" y="683.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">MS-WES1AS</tspan> (LTE) e<tspan font-style="italic"> MS-D3D</tspan>; comunicam com a plataforma</text>
@@ -141,7 +141,7 @@
 <text x="456.0" y="378.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">pedidos: verificação ativa,</text>
 <text x="456.0" y="393.8" font-size="11.5" font-weight="400" fill="#0084D6" text-anchor="start">atualização</text>
 <path d="M446.0 572.9 H624.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="456.0" y="549.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">telemóveis da Família no Wi-Fi</text>
+<text x="456.0" y="549.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">telemóveis da família no Wi-Fi</text>
 <text x="456.0" y="564.9" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">(ferramenta proposta)</text>
 <path d="M446.0 675.5 H624.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="456.0" y="652.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">porta aberta e fechada, como</text>

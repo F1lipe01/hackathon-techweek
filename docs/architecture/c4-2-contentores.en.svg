@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2260 1102" width="2260" height="1102" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="C4, level 2: containers"><title>C4, level 2: containers</title><defs><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2260" height="1102" fill="#FFFFFF"/><rect x="20.0" y="24.0" width="290.0" height="1026.0" rx="18" fill="#F4F4F4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2260 1143" width="2260" height="1143" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="C4, level 2: containers"><title>C4, level 2: containers</title><defs><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="2260" height="1143" fill="#FFFFFF"/><rect x="20.0" y="24.0" width="290.0" height="1067.0" rx="18" fill="#F4F4F4"/>
 <text x="40.0" y="54.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">In the home</tspan></text>
 <rect x="1160.0" y="24.0" width="1080.0" height="181.2" rx="18" fill="#FFF6EA"/>
 <text x="1180.0" y="54.0" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Phone</tspan></text>
-<rect x="410.0" y="233.1" width="1830.0" height="816.9" rx="18" fill="#EEF3FB"/>
+<rect x="410.0" y="233.1" width="1830.0" height="857.9" rx="18" fill="#EEF3FB"/>
 <text x="430.0" y="263.1" font-size="17" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Altice</tspan></text>
 <rect x="40.0" y="96.0" width="250.0" height="91.2" rx="12" fill="#F2F3F5" stroke="#B8BEC6" stroke-width="1.2"/>
 <text x="54.0" y="123.8" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Kit cameras</tspan></text>
@@ -37,7 +37,7 @@
 <text x="804.0" y="537.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[message broker]</text>
 <text x="804.0" y="560.6" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Urgent and batch vision; each home’s</text>
 <text x="804.0" y="578.1" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">events in order; model requests</text>
-<rect x="1180.0" y="487.8" width="270.0" height="538.2" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="2.4"/>
+<rect x="1180.0" y="487.8" width="270.0" height="579.2" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="2.4"/>
 <text x="1194.0" y="515.6" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">ThingTracker service</tspan></text>
 <text x="1194.0" y="537.1" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[stateless containers, behind a load</text>
 <text x="1194.0" y="554.6" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">balancer]</text>
@@ -67,13 +67,15 @@
 <text x="1604.0" y="741.7" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[with pgvector]</text>
 <text x="1604.0" y="765.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Per customer: things, fingerprints,</text>
 <text x="1604.0" y="782.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">rules, alerts, sightings</text>
-<rect x="790.0" y="897.1" width="250.0" height="129.0" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
+<rect x="790.0" y="897.1" width="250.0" height="170.0" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
 <text x="804.0" y="924.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Language and vision-language</tspan></text>
 <text x="804.0" y="945.2" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">models</tspan></text>
 <text x="804.0" y="966.7" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[GPU servers behind a queue]</text>
-<text x="804.0" y="990.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Text and, rarely, short clips for the</text>
-<text x="804.0" y="1007.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">judge</text>
-<rect x="1590.0" y="897.1" width="240.0" height="129.0" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
+<text x="804.0" y="990.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Write text only: sentences into rules,</text>
+<text x="804.0" y="1007.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">which the service checks, and answers;</text>
+<text x="804.0" y="1025.2" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">they never decide</text>
+<text x="804.0" y="1048.7" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Judge: rarely, a short clip</text>
+<rect x="1590.0" y="897.1" width="240.0" height="170.0" rx="12" fill="#FFFFFF" stroke="#0084D6" stroke-width="1.6"/>
 <text x="1604.0" y="924.9" font-size="14.5" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Object storage</tspan></text>
 <text x="1604.0" y="946.4" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">[S3-compatible]</text>
 <text x="1604.0" y="969.9" font-size="12.5" font-weight="400" fill="#333333" text-anchor="start">Thumbnails, 30 days (proposal)</text>
@@ -108,17 +110,17 @@
 <text x="1048.0" y="732.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">state</text>
 <path d="M1180.0 753.8 H1050.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="1048.0" y="769.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">state and timers</text>
-<path d="M1040.0 954.6 H1170.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1048.0" y="947.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">rule, answer, verdict</text>
-<path d="M1180.0 968.6 H1050.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1048.0" y="984.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">text or a short clip,</text>
-<text x="1048.0" y="999.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">through the queue</text>
+<path d="M1040.0 975.1 H1170.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1048.0" y="968.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">rule, answer, verdict</text>
+<path d="M1180.0 989.1 H1050.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1048.0" y="1005.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">text or a short clip,</text>
+<text x="1048.0" y="1020.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">through the queue</text>
 <path d="M1450.0 739.8 H1580.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="1458.0" y="732.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">things, rules, alerts</text>
 <path d="M1590.0 753.8 H1460.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="1458.0" y="769.8" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">fingerprints (pgvector)</text>
-<path d="M1450.0 961.6 H1580.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
-<text x="1458.0" y="954.6" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">thumbnails</text>
+<path d="M1450.0 982.1 H1580.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
+<text x="1458.0" y="975.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">thumbnails</text>
 <path d="M1450.0 535.1 H1960.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="1458.0" y="528.1" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">MCP calls: actions, reads</text>
 <path d="M1970.0 549.1 H1460.0" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
@@ -131,4 +133,4 @@
 <text x="1298.0" y="341.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="end">answers, thumbnails</text>
 <path d="M2095.0 487.8 V197.2" fill="none" stroke="#333333" stroke-width="1.6" marker-end="url(#m333333)"/>
 <text x="2104.0" y="341.5" font-size="11.5" font-weight="400" fill="#333333" text-anchor="start">notifications</text>
-<text x="40.0" y="1084.0" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">C4 notation, level 2. Blue outline: ThingTracker containers; grey: existing systems. Each arrow is one direction of a flow, with what it carries.</text></svg>
+<text x="40.0" y="1125.0" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">C4 notation, level 2. Blue outline: ThingTracker containers; grey: existing systems. Each arrow is one direction of a flow, with what it carries.</text></svg>

@@ -125,8 +125,8 @@
 <line x1="40" y1="1052.2" x2="1970" y2="1052.2" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1071.0" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F1</tspan></text>
 <text x="118.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">home agent → broker (home → Altice)</text>
-<text x="498.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">The changed region (at most 640 × 640, about 1 a second during motion) or the one asked for in a check; rarely, 2 to 3 s of the region for the judge; the face labels (“Filipe”, “unknown face”) with their</text>
-<text x="498.0" y="1087.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">boxes. Never continuous video or face templates</text>
+<text x="498.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">The changed region (at most 640 × 640, about 1 a second during motion) or the one asked for in a check; rarely, 2 to 3 s of the region for the judge; the face labels (the person’s name or “unknown face”)</text>
+<text x="498.0" y="1087.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">with their boxes. Never continuous video or face templates</text>
 <text x="1598.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">mTLS, one certificate per home</text>
 <line x1="40" y1="1097.8" x2="1970" y2="1097.8" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1116.6" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F2</tspan></text>
@@ -136,7 +136,7 @@
 <line x1="40" y1="1126.6" x2="1970" y2="1126.6" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1145.4" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F3</tspan></text>
 <text x="118.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">router → platform (home → Altice)</text>
-<text x="498.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Which Family phones are on the Wi-Fi, and when they join or leave (proposed MCP tool)</text>
+<text x="498.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Which family phones are on the Wi-Fi, and when they join or leave (proposed MCP tool)</text>
 <text x="1598.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Altice’s router management channel (to confirm)</text>
 <line x1="40" y1="1155.4" x2="1970" y2="1155.4" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1174.2" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F4</tspan></text>
@@ -157,7 +157,7 @@
 <line x1="40" y1="1258.6" x2="1970" y2="1258.6" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1277.4" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F7</tspan></text>
 <text x="118.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">language model → service</text>
-<text x="498.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">The structured rule, the answer or the verdict</text>
+<text x="498.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Text only: the structured rule, which the service checks, or the answer. The model never decides</text>
 <text x="1598.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">TLS</text>
 <line x1="40" y1="1287.4" x2="1970" y2="1287.4" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1306.2" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F8</tspan></text>

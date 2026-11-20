@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 1236" width="1380" height="1236" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequência: o livro esquecido"><title>Sequência: o livro esquecido</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1380" height="1236" fill="#FFFFFF"/><line x1="120.0" y1="102.77499999999999" x2="120.0" y2="1181.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="315.0" y1="102.77499999999999" x2="315.0" y2="1181.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="515.0" y1="102.77499999999999" x2="515.0" y2="1181.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="720.0" y1="102.77499999999999" x2="720.0" y2="1181.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="945.0" y1="102.77499999999999" x2="945.0" y2="1181.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
-<line x1="1215.0" y1="102.77499999999999" x2="1215.0" y2="1181.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1380 1219" width="1380" height="1219" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" role="img" aria-label="Sequência: o livro esquecido"><title>Sequência: o livro esquecido</title><defs><marker id="m111111" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#111111"/></marker><marker id="m333333" viewBox="0 0 10 10" refX="0" refY="5" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="10" orient="auto"><path d="M0 1.5 L10 5 L0 8.5 Z" fill="#333333"/></marker></defs><rect width="1380" height="1219" fill="#FFFFFF"/><line x1="120.0" y1="102.77499999999999" x2="120.0" y2="1164.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="315.0" y1="102.77499999999999" x2="315.0" y2="1164.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="515.0" y1="102.77499999999999" x2="515.0" y2="1164.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="720.0" y1="102.77499999999999" x2="720.0" y2="1164.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="945.0" y1="102.77499999999999" x2="945.0" y2="1164.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
+<line x1="1215.0" y1="102.77499999999999" x2="1215.0" y2="1164.775" stroke="#D0D0D0" stroke-width="1.2" stroke-dasharray="4 4"/>
 <rect x="32.0" y="20.0" width="176.0" height="82.8" rx="12" fill="#F4F4F4" stroke="#C9CED6" stroke-width="1.0"/>
 <text x="44.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Sensor da porta e</tspan></text>
 <text x="44.0" y="64.9" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700" font-style="italic">router</tspan></text>
@@ -24,7 +24,7 @@
 <text x="1094.0" y="45.3" font-size="14" font-weight="400" fill="#111111" text-anchor="start"><tspan font-weight="700">Aplicação Altice</tspan></text>
 <text x="1094.0" y="66.8" font-size="12.5" font-weight="400" fill="#555555" text-anchor="start">no telemóvel</text>
 <rect x="12.0" y="142.8" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="690.0" y="161.8" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Estado: OCUPADA (o telemóvel do Filipe está no Wi-Fi). O livro foi visto pela última vez na secretária da Sala 1, às 18h02.</text>
+<text x="690.0" y="161.8" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Estado: OCUPADA (o telemóvel do dono do livro está no Wi-Fi). O livro foi visto pela última vez na secretária da Sala 1, às 18h02.</text>
 <rect x="214.0" y="183.5" width="206.9" height="17.0" rx="2" fill="#FFFFFF"/>
 <text x="317.5" y="196.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">porta aberta (<tspan font-family="Menlo, monospace" font-size="11.2">sensorState:</tspan>&#160;<tspan font-family="Menlo, monospace" font-size="11.2">alarm</tspan>)</text>
 <path d="M132.0 205.0 H501.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
@@ -49,54 +49,53 @@
 <text x="945.0" y="412.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">A porta abriu e fechou: OCUPADA → A SAIR.</text>
 <text x="945.0" y="429.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Espera até T_saída (10 s na demonstração, 5 min</text>
 <text x="945.0" y="446.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">em produção) por quem saiu</text>
-<rect x="216.3" y="466.5" width="202.4" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="317.5" y="479.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">o telemóvel do Filipe saiu do Wi-Fi</text>
+<rect x="194.6" y="466.5" width="245.9" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="317.5" y="479.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">o telemóvel do dono do livro saiu do Wi-Fi</text>
 <path d="M132.0 488.0 H501.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
 <circle cx="120.0" cy="487.97499999999997" r="11" fill="#0084D6"/>
 <text x="120.0" y="492.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">5</tspan></text>
-<rect x="625.5" y="514.5" width="209.1" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="730.0" y="527.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">wifi.left</tspan>: Filipe (evento proposto)</text>
+<rect x="598.4" y="514.5" width="263.2" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="730.0" y="527.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle"><tspan font-family="Menlo, monospace" font-size="11.2">wifi.left</tspan>: o dono do livro (evento proposto)</text>
 <path d="M527.0 536.0 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
 <circle cx="515.0" cy="535.9749999999999" r="11" fill="#0084D6"/>
 <text x="515.0" y="540.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">6</tspan></text>
-<rect x="795.0" y="580.0" width="300.0" height="67.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="599.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Saiu alguém da Família: verificação ativa do</text>
-<text x="945.0" y="616.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">lugar habitual do livro, sem esperar por</text>
-<text x="945.0" y="633.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">movimento</text>
-<rect x="472.0" y="653.5" width="316.1" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="630.0" y="666.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">envia a região da secretária: 3 imagens, 1 por segundo</text>
-<path d="M933.0 675.0 H329.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="674.9749999999999" r="11" fill="#0084D6"/>
-<text x="945.0" y="679.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">7</tspan></text>
-<rect x="444.0" y="701.5" width="147.0" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="517.5" y="714.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">3 regiões, na fila urgente</text>
-<path d="M327.0 723.0 H706.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="315.0" cy="722.9749999999999" r="11" fill="#0084D6"/>
-<text x="315.0" y="727.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">8</tspan></text>
-<rect x="739.5" y="749.5" width="186.0" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="832.5" y="762.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">3 resultados: caixas de “livro” e</text>
-<rect x="783.5" y="766.5" width="98.0" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="832.5" y="779.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">vetores<tspan font-style="italic"> DINOv2</tspan></text>
-<path d="M732.0 788.0 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="720.0" cy="787.9749999999999" r="11" fill="#0084D6"/>
-<text x="720.0" y="792.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">9</tspan></text>
-<rect x="795.0" y="832.0" width="300.0" height="84.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
-<text x="945.0" y="851.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Comparados com as 8 vistas do livro (<tspan font-style="italic">pgvector</tspan>):</text>
-<text x="945.0" y="868.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">0,70 ≥ 0,62 em 3 de 3 imagens. Regra “avisa-me</text>
-<text x="945.0" y="885.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">se sair sem o livro” cumprida, porque bastam 2</text>
-<text x="945.0" y="902.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">de 3</text>
-<rect x="972.1" y="922.5" width="215.8" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="935.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso: “O livro ficou em casa”, com a</text>
-<rect x="972.0" y="939.5" width="215.9" height="17.0" rx="2" fill="#FFFFFF"/>
-<text x="1080.0" y="952.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">miniatura e “na secretária, às 18h02”</text>
-<path d="M957.0 961.0 H1201.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
-<circle cx="945.0" cy="960.9749999999999" r="11" fill="#0084D6"/>
-<text x="945.0" y="965.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">10</tspan></text>
-<rect x="12.0" y="1005.0" width="1356.0" height="50.4" rx="8" fill="#EEF1F6"/>
-<text x="690.0" y="1024.0" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Se o livro aparecer em menos de 2 das 3 imagens (meio tapado, por exemplo), o motor de regras pode chamar o juiz: um modelo de visão-linguagem na Altice vê 2 a 3 s da região e responde sim, não ou incerto, com uma</text>
-<text x="690.0" y="1042.2" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">frase. “Sim” dá o aviso; “não” não dá; “incerto” faz a aplicação perguntar à família, sem alarme.</text>
-<rect x="12.0" y="1081.4" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="690.0" y="1100.4" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Uma chegada (a porta abre e fecha e um telemóvel entra no Wi-Fi) não inicia a verificação.</text>
-<rect x="12.0" y="1139.6" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
-<text x="690.0" y="1158.6" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Sem sensor de porta, o mesmo teste começa quando um telemóvel da Família sai do Wi-Fi (passado T_telemóvel, por isso mais tarde) ou quando uma câmara que vê a porta de saída vê alguém sair por ela.</text>
-<text x="20.0" y="1207.8" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Cinzento: em casa. Azul: Altice. Laranja: telemóvel. Os tempos de produção são propostas, a afinar num piloto.</text></svg>
+<rect x="795.0" y="580.0" width="300.0" height="50.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="945.0" y="599.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Saiu alguém da família: verificação ativa do lugar</text>
+<text x="945.0" y="616.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">habitual do livro, sem esperar por movimento</text>
+<rect x="472.5" y="636.5" width="314.9" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="630.0" y="649.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">pede a região da secretária: 3 imagens, 1 por segundo</text>
+<path d="M933.0 658.0 H329.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="945.0" cy="657.9749999999999" r="11" fill="#0084D6"/>
+<text x="945.0" y="662.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">7</tspan></text>
+<rect x="444.0" y="684.5" width="147.0" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="517.5" y="697.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">3 regiões, na fila urgente</text>
+<path d="M327.0 706.0 H706.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="315.0" cy="705.9749999999999" r="11" fill="#0084D6"/>
+<text x="315.0" y="710.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">8</tspan></text>
+<rect x="739.5" y="732.5" width="186.0" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="832.5" y="745.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">3 resultados: caixas de “livro” e</text>
+<rect x="783.5" y="749.5" width="98.0" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="832.5" y="762.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">vetores<tspan font-style="italic"> DINOv2</tspan></text>
+<path d="M732.0 771.0 H931.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="720.0" cy="770.9749999999999" r="11" fill="#0084D6"/>
+<text x="720.0" y="775.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">9</tspan></text>
+<rect x="795.0" y="815.0" width="300.0" height="84.0" rx="8" fill="#E6F2FB" stroke="#B9D7EE" stroke-width="1.0"/>
+<text x="945.0" y="834.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">Comparados com as 8 vistas do livro (<tspan font-style="italic">pgvector</tspan>):</text>
+<text x="945.0" y="851.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">0,70 ≥ 0,62 em 3 de 3 imagens. Regra “avisa-me</text>
+<text x="945.0" y="868.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">se sair sem o livro” cumprida, porque bastam 2</text>
+<text x="945.0" y="885.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">de 3</text>
+<rect x="972.1" y="905.5" width="215.8" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="1080.0" y="918.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">aviso: “O livro ficou em casa”, com a</text>
+<rect x="972.0" y="922.5" width="215.9" height="17.0" rx="2" fill="#FFFFFF"/>
+<text x="1080.0" y="935.0" font-size="12.5" font-weight="400" fill="#333333" text-anchor="middle">miniatura e “na secretária, às 18h02”</text>
+<path d="M957.0 944.0 H1201.0" fill="none" stroke="#111111" stroke-width="1.4" marker-end="url(#m111111)"/>
+<circle cx="945.0" cy="943.9749999999999" r="11" fill="#0084D6"/>
+<text x="945.0" y="948.3" font-size="11.5" font-weight="400" fill="#FFFFFF" text-anchor="middle"><tspan font-weight="700">10</tspan></text>
+<rect x="12.0" y="988.0" width="1356.0" height="50.4" rx="8" fill="#EEF1F6"/>
+<text x="690.0" y="1007.0" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Se o livro aparecer em menos de 2 das 3 imagens (meio tapado, por exemplo), o motor de regras pode chamar o juiz: um modelo de visão-linguagem na Altice vê 2 a 3 s da região e responde sim, não ou incerto, com uma</text>
+<text x="690.0" y="1025.2" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">frase. “Sim” dá o aviso; “não” não dá; “incerto” faz a aplicação perguntar à família, sem alarme.</text>
+<rect x="12.0" y="1064.4" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
+<text x="690.0" y="1083.4" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Uma chegada (a porta abre e fecha e um telemóvel entra no Wi-Fi) não inicia a verificação.</text>
+<rect x="12.0" y="1122.6" width="1356.0" height="32.2" rx="8" fill="#EEF1F6"/>
+<text x="690.0" y="1141.6" font-size="13" font-weight="400" fill="#003399" text-anchor="middle">Sem sensor de porta, o mesmo teste começa quando um telemóvel da família sai do Wi-Fi (passado T_telemóvel, por isso mais tarde) ou quando uma câmara que vê a porta de saída vê alguém sair por ela.</text>
+<text x="20.0" y="1190.8" font-size="12" font-weight="400" fill="#555555" text-anchor="start">Cinzento: em casa. Azul: Altice. Laranja: telemóvel. Os tempos de produção são propostas, a afinar num piloto.</text></svg>

@@ -127,8 +127,8 @@
 <line x1="40" y1="1052.2" x2="1970" y2="1052.2" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1071.0" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F1</tspan></text>
 <text x="118.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">agente da casa → mediador (casa → Altice)</text>
-<text x="498.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">A região que mudou (no máximo 640 × 640, cerca de 1 por segundo com movimento) ou a pedida numa verificação; raramente, 2 a 3 s da região para o juiz; os rótulos dos rostos (“Filipe”, “rosto</text>
-<text x="498.0" y="1087.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">desconhecido”) com as caixas. Nunca vídeo contínuo nem padrões faciais</text>
+<text x="498.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">A região que mudou (no máximo 640 × 640, cerca de 1 por segundo com movimento) ou a pedida numa verificação; raramente, 2 a 3 s da região para o juiz; os rótulos dos rostos (o nome da pessoa ou</text>
+<text x="498.0" y="1087.8" font-size="12" font-weight="400" fill="#333333" text-anchor="start">“rosto desconhecido”) com as caixas. Nunca vídeo contínuo nem padrões faciais</text>
 <text x="1598.0" y="1071.0" font-size="12" font-weight="400" fill="#333333" text-anchor="start">mTLS, um certificado por casa</text>
 <line x1="40" y1="1097.8" x2="1970" y2="1097.8" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1116.6" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F2</tspan></text>
@@ -138,7 +138,7 @@
 <line x1="40" y1="1126.6" x2="1970" y2="1126.6" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1145.4" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F3</tspan></text>
 <text x="118.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start"><tspan font-style="italic">router</tspan> → plataforma (casa → Altice)</text>
-<text x="498.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Que telemóveis da Família estão no Wi-Fi e quando entram ou saem (ferramenta MCP proposta)</text>
+<text x="498.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Que telemóveis da família estão no Wi-Fi e quando entram ou saem (ferramenta MCP proposta)</text>
 <text x="1598.0" y="1145.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">O canal de gestão do<tspan font-style="italic"> router</tspan> da Altice (a confirmar)</text>
 <line x1="40" y1="1155.4" x2="1970" y2="1155.4" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1174.2" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F4</tspan></text>
@@ -159,7 +159,7 @@
 <line x1="40" y1="1258.6" x2="1970" y2="1258.6" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1277.4" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F7</tspan></text>
 <text x="118.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">modelo de linguagem → serviço</text>
-<text x="498.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">A regra estruturada, a resposta ou o veredicto</text>
+<text x="498.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">Só texto: a regra estruturada, que o serviço valida, ou a resposta. O modelo nunca decide</text>
 <text x="1598.0" y="1277.4" font-size="12" font-weight="400" fill="#333333" text-anchor="start">TLS</text>
 <line x1="40" y1="1287.4" x2="1970" y2="1287.4" stroke="#E1E4E8" stroke-width="1"/>
 <text x="48.0" y="1306.2" font-size="12" font-weight="400" fill="#0084D6" text-anchor="start"><tspan font-weight="700">F8</tspan></text>

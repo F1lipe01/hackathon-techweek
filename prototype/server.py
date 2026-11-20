@@ -454,6 +454,8 @@ def edge_observe(payload: dict = Body(...)):
             if isinstance(p, dict) and p.get("identity") == "unknown" and p.get("crop_b64"):
                 _unknown_crop[camera] = (now_, p["crop_b64"])
         presence.analysis(camera, persons, forced=bool(payload.get("forced")))
+        if DEMO_SITE:
+            light_follows(payload.get("persons") or [])
         if not payload.get("second_look"):
             track_handling(payload, camera, known, people)
         for r in store.active_rules():          # a run of face verdicts is judged at once, not at the next tick
@@ -1736,6 +1738,41 @@ def _edge_log_tail(n=4):
         return []
 
 
+# The kit's colour Light follows who the camera sees (the pitch site): blue with the name of a registered person,
+# red for a face that matches nobody, off when nobody has been in view for a while. It goes through actions.run like
+# every device action (a dry run: the MCP calls are written down, not sent), and each change is an event the app shows.
+KIT_LIGHT = "00e038d4-0da7-45c2-b61f-f38c9ff9df82"
+LIGHT = {"state": "off", "who": None, "at": 0.0, "known_at": 0.0, "seen_at": 0.0}
+
+
+def light_follows(persons):
+    now_ = time.time()
+    names = {t["id"]: t["name"] for t in store.things()}
+    known = [names[p["identity"]] for p in persons if isinstance(p, dict) and p.get("identity") in names]
+    unknown = any(isinstance(p, dict) and p.get("identity") == "unknown" for p in persons)
+    if persons:
+        LIGHT["seen_at"] = now_
+    if known:
+        LIGHT["known_at"] = now_
+        want, who = "blue", known[0]
+    elif unknown and now_ - LIGHT["known_at"] > 4:      # a face turned away for a moment is not a stranger
+        want, who = "red", None
+    elif not persons and LIGHT["state"] != "off" and now_ - LIGHT["seen_at"] > 12:
+        want, who = "off", None
+    else:
+        return
+    if (want, who) == (LIGHT["state"], LIGHT["who"]) or (want != "blue" and now_ - LIGHT["at"] < 3):
+        return
+    res = actions.run({"blue": "light_blue", "red": "light_red", "off": "light_off"}[want])
+    LIGHT.update(state=want, who=who, at=now_)
+    status = {"blue": f"Blue · {who}", "red": "Red · not recognised", "off": "Off"}[want]
+    with store.lock, store.db:
+        store.db.execute("UPDATE devices SET status = ? WHERE id = ?", (status, KIT_LIGHT))
+    text = {"blue": f"Light turned blue: {who} recognised.", "red": "Light turned red: a face the camera does not know.",
+            "off": "Light off: nobody in view."}[want]
+    store.add_event("device", text, light=want, action=res)
+
+
 @app.get("/api/demo/status")
 def demo_status():
     alive = _edge_alive()
@@ -1865,6 +1902,7 @@ def demo_reset():
         src.backup(store.db)
         src.close()
     presence.reset()
+    LIGHT.update(state="off", who=None, at=0.0, known_at=0.0, seen_at=0.0)
     for d in (HELD, CHECKS, SNAPSHOTS, PENDING, ENROL, LEARN):
         d.clear()
     with _door_lock:

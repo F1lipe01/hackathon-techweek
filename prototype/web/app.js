@@ -224,8 +224,9 @@ const ttOf = (id) => (state.tt_devices || []).find((x) => x.id === id);
 const ttStatus = (d) => { const t = ttOf(d.id); return t?.sim ? simWord(t, t.on) : t?.powers ? `${t.on ? 'On' : 'Off'} · powers ${t.powers}` : d.status; };
 function deviceCard(d) {
   const round = d.type === 'plug' ? 'round' : '';
+  const glow = d.type === 'bulb' ? (/^Blue/.test(d.status) ? 'blue' : /^Red/.test(d.status) ? 'red' : '') : '';
   return `<li><button type="button" class="card ${d.raised ? 'raised' : ''}" data-act="device" data-id="${esc(d.id)}">
-    <span class="ic ${round}"><img src="${devImg(d.type)}" alt=""></span>
+    <span class="ic ${round}${glow ? ` glow ${glow}` : ''}"><img src="${devImg(d.type)}" alt=""></span>
     <span><span class="nm">${esc(d.name)}</span><span class="st ${ttOf(d.id)?.sim && !ttOf(d.id).on ? 'grey' : statusCls(d.status)}">${esc(ttStatus(d))}</span></span><span></span></button></li>`;
 }
 function thingPhoto(t) { return t.last_seen?.crop || t.fingerprint?.crops?.[0] || null; }
@@ -311,7 +312,8 @@ function renderDevices() {
   const tb = shell('devices', ahead(homeName(), [[I.plus, 'add-device', 'Add device'], [I.filter, 'filter', 'Sort and filter'], [I.search, 'search-devices', 'Search']]) + searchBox('devices'));
   const list = devicesSorted(), rooms = state.home?.rooms || [];
   let html = '';
-  for (const r of rooms) {
+  const camRoom = (EMBED || PHONE) ? (state.home?.devices || []).find((d) => d.type === 'camera')?.room_id : null;
+  for (const r of camRoom ? [...rooms].sort((a, b) => (b.id === camRoom) - (a.id === camRoom)) : rooms) {
     const ds = list.filter((d) => d.room_id === r.id);
     if (ds.length) html += sec('room-' + r.id, r.name, ds.length) + `<ul class="cards">${ds.map(deviceCard).join('')}</ul>`;
   }
@@ -1136,6 +1138,7 @@ async function refresh() {
     if (seen.has(e.id)) continue;
     seen.add(e.id);
     if (!firstLoad && e.kind === 'alert') toast(e.title || 'Alert', e.text, e.crop || e.picture, e);
+    else if (!firstLoad && e.light) toast('Light', e.text);
   }
   firstLoad = false;
 }

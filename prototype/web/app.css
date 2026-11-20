@@ -602,8 +602,8 @@ body.embed .top { display: none; }
 body.embed { margin: 0; overflow: hidden; background: #f4f6f9; --s: 1; --ox: 0px; --oy: 0px; }
 body.embed .split { position: absolute; left: 0; top: 0; width: 1920px; height: 1016px; box-sizing: border-box; transform-origin: 0 0;
   transform: translate(var(--ox), var(--oy)) scale(var(--s)); display: grid; padding: 24px; column-gap: 24px; row-gap: 16px;
-  grid-template-columns: 1373px 475px; grid-template-rows: 772px 64px minmax(0, 1fr);
-  grid-template-areas: "stage phone" "player phone" "dock phone"; --screen-h: 968px; --phone-w: 475px; }
+  grid-template-columns: 1373px 475px; grid-template-rows: 968px; align-items: center;
+  grid-template-areas: "stage phone"; --screen-h: 968px; --phone-w: 475px; }
 body.embed .main, body.embed .main-in { display: contents; }
 body.embed .flow { display: none; }
 body.embed .stage { grid-area: stage; width: 1373px; height: 772px; aspect-ratio: auto; border-radius: 18px; }
@@ -633,7 +633,8 @@ body.embed .player { grid-area: player; display: flex; align-items: center; gap:
 .player .livebadge b { color: #e5484d; letter-spacing: 0.06em; }
 
 /* the dock: presence and the simulated signals, and the latest event */
-body.embed .activity { grid-area: dock; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 0 4px; min-width: 0; overflow: hidden; }
+body.embed .activity, body.embed .player { display: none !important; }
+body.embed .activity-unused { grid-area: dock; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 0 4px; min-width: 0; overflow: hidden; }
 body.embed .log-head { display: none; }
 body.embed .sim-bar { padding: 0; flex-wrap: nowrap; gap: 10px; font-size: 16px; }
 body.embed .sim-bar .pres { flex: none; font-size: 16px; color: #4a5262; margin-right: 6px; }
@@ -658,3 +659,8 @@ body.phone-page .phone .frame { display: none; }
 body.phone-page .screen-wrap { left: 0; top: 0; width: 100%; height: 100%; border-radius: 0; }
 body.phone-page .ios-status > * { visibility: hidden; }
 .player .livebadge .purl { margin-left: auto; color: #4a5262; } .player .livebadge code { font: 600 16px/1 ui-monospace, Menlo, monospace; color: #0d1320; background: #eef1f5; padding: 6px 10px; border-radius: 8px; }
+
+/* the kit's Light follows who the camera recognises (pitch site): its card glows in that colour */
+.card .ic.glow { border-radius: 50%; transition: box-shadow 300ms ease-out, background-color 300ms ease-out; }
+.card .ic.glow.blue { background: #d6ebfb; box-shadow: 0 0 0 4px rgb(0 132 214 / 0.18), 0 0 22px 4px rgb(0 132 214 / 0.55); }
+.card .ic.glow.red { background: #fde2e2; box-shadow: 0 0 0 4px rgb(220 38 38 / 0.16), 0 0 22px 4px rgb(220 38 38 / 0.5); }

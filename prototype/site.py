@@ -40,7 +40,7 @@ ROOMS = [("living-room", "Living room"), ("kitchen", "Kitchen"), ("bedroom", "Be
 KIT_ROOMS = {
     "0c7856ad-89b1-468d-9d6a-10253b2f3c20": ("work-room", "On"),                 # Camera
     "7aafb6f4-74ec-4771-84f6-bbc7df420631": ("entrance", "Closed"),              # Contact sensor (front door)
-    "00e038d4-0da7-45c2-b61f-f38c9ff9df82": ("living-room", "On"),               # Light
+    "00e038d4-0da7-45c2-b61f-f38c9ff9df82": ("work-room", "Off"),               # Light: follows who the camera sees
     "bc891629-98bc-44f7-99a8-1aa61428a9bf": ("work-room", "12,4 W"),             # Plug (powers the ceiling lights)
     "5d5f8fff-cd69-4f33-a331-04bd731de043": ("entrance", "On"),                  # Security hub
     "d091c05f-e72c-45be-a16f-0ab2e93297a3": ("kitchen", "On"),                   # Smoke sensor

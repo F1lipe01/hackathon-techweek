@@ -10,11 +10,13 @@ Use these words for each moment:
 - **Done by hand:** a person did it in the lab;
 - **Envisioned:** added in the edit to show the full experience.
 
-The column "Tonight" is filled in only when the prototype does it and an unedited proof run shows it (`video/out/proof/`, made on the night of 19-20 Nov: each film's own take replayed through the real pipeline, `video/tools/proof_run.py`). The phones' moments in each replay were read off the footage, because the phones weren't logged in the lab. The proof videos show people from the lab: use them only with their agreement, or blurred.
+Moments done by hand or envisioned are staged for the film. The last column shows what the system itself does on the same take.
+
+The column "Proof run" is filled in only when the prototype does it and an unedited proof run shows it (`video/out/proof/`, made on the night of 19–20 Nov: each film's own take replayed through the real pipeline, `video/tools/proof_run.py`). The phones' moments in each replay were read off the footage, because the phones weren't logged in the lab. The proof videos show people from the lab: use them only with their agreement, or blurred.
 
 ## Film 1: the book
 
-| Moment | Status | How it was made | Tonight |
+| Moment | Status | How it was made | Proof run |
 |---|---|---|---|
 | App: *Things*, Add, the 8 photos, the name, Save | Real | Prototype app recorded as it ran (`record_app.mjs add-book`); the thing and its photos were stored | Photos now become a real fingerprint (0,69 on a desk-level kit frame), but from the ceiling only camera views recognise it (0,91-0,94); the app adds them on confirmation |
 | A sentence becomes a scenario | Real | The local model and the rule code built the rule | |
@@ -26,17 +28,17 @@ The column "Tonight" is filled in only when the prototype does it and an unedite
 
 ## Film 2: the face
 
-| Moment | Status | How it was made | Tonight |
+| Moment | Status | How it was made | Proof run |
 |---|---|---|---|
-| App: add person, the face video, "Filipe added", Family, the suggested scenario, "Scenario saved" | Real | Prototype app recorded as it ran; the video was uploaded and the rule created | |
-| Finding the face in the video | Not real | The server cut 8 fixed squares; no face model ran | **Real now:** _YuNet_ finds the face and _SFace_ makes the templates, on the home side |
-| Filipe enters, the stranger enters | Real footage | Kit camera | |
-| The face comparison | Envisioned | Labelled "comparação ilustrativa" in the film | **Proof run:** Filipe recognised (0,54 and 0,63, threshold 0,40), the stranger unknown (0,17 and 0,14); nothing fires while Filipe is home |
+| App: add person, the face video, "Filipe added", Family, the suggested scenario, "Scenario saved" | Real | Prototype app recorded as it ran, with a team member (Filipe), registered with consent; the video was uploaded and the rule created | |
+| Finding the face in the video | Placed by us | At recording time the server cut 8 fixed squares; no face model ran | **Real now:** _YuNet_ finds the face and _SFace_ makes the templates, on the home side |
+| The team member enters, then a stranger | Real footage | Kit camera | |
+| The face comparison | Envisioned | Labelled "comparação ilustrativa" in the film | **Proof run:** the team member recognised (0,54 and 0,63, threshold 0,40), the stranger unknown (0,17 and 0,14, below 0,25); nothing fires while the team member is home |
 | Alarm and police suggestion | Envisioned | Added in the edit; the alert was triggered for the recording | **Proof run:** fired by the rule in 2 of 4 replays. In the other 2, too few of the stranger's faces were clear enough to judge, so the system asked ("someone is home, face not seen") instead of alarming. The alarm is simulated; the app never dials |
 
 ## Film 3: the people
 
-| Moment | Status | How it was made | Tonight |
+| Moment | Status | How it was made | Proof run |
 |---|---|---|---|
 | Two sentences become scenarios | Real | Real rules (keyword templates) | |
 | Three come in, sit, leave; lights and AC on | Real footage | Four takes joined, the clock rewritten with the camera's own digits, the sitting part at 4× | |
@@ -51,9 +53,10 @@ The column "Tonight" is filled in only when the prototype does it and an unedite
 
 **Local models on the Mac:**
 - **OWLv2:** people and things by name, about 0,6 s per frame;
-- **DINOv2:** "your" thing by its fingerprint, 0,70 against a 0,62 threshold for the book in a lab test;
-- **YuNet and SFace:** faces, being added on 19 Nov;
-- **Qwen3-1.7B:** sentences into rules, and the messages.
+- **DINOv2:** "your" thing by its fingerprint: the book at 0,70 against a 0,62 threshold from phone photos at desk level, and at a median of 0,93 in 68 of 68 frames from the ceiling with the camera's own views;
+- **YuNet and SFace:** faces on the home device, opt-in (known at 0,40 or more, unknown below 0,25);
+- **Qwen3-1.7B:** sentences into rules, and the messages;
+- **Qwen2-VL-2B:** the judge, asked only when an active check finds no match, on one tight crop; its answer becomes a question to the family, never an action.
 
 **The kit's devices, through Altice's MCP server:**
 - **Read:** all devices, including the door contact (every 4 s), temperature, smoke, the plug's power and the bulb;

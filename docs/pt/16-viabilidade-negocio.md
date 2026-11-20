@@ -6,7 +6,7 @@ Dados atualizados a 18 de novembro de 2026. Os gráficos são gerados a partir d
 
 - As famílias pagam ao seu operador uma pequena mensalidade, e a Altice Labs fornece o _ThingTracker_ através da plataforma _Cognitive Home_.
 - No cenário esperado, aderem ao serviço cerca de 19 000 casas MEO, ou seja, 1,2 % das casas com banda larga fixa da operadora.
-- De uma mensalidade de 3,99 €, restam cerca de 1,74 € por casa, depois de descontados o IVA e os custos do modelo de linguagem, dos servidores, do apoio ao cliente e da angariação.
+- De uma mensalidade de 3,99 €, restam cerca de 1,74 € por casa, depois de descontados o IVA e os custos do modelo de linguagem, dos servidores, do apoio ao cliente e da angariação, e cerca de 1,25 € quando os modelos de visão correm nos servidores da própria Altice (cerca de 0,49 €, documento 17).
 - A condição essencial é dispensar uma caixa dedicada em cada casa, correndo os modelos de visão mais exigentes nos servidores da própria Altice ou em equipamento já instalado em casa (documento 17). Com uma caixa dedicada em cada casa, o serviço adicional dá prejuízo.
 - O preço proposto corresponde a uma fração do preço dos atuais planos de alarme com câmara em Portugal, que começam nos 34,99 € por mês.
 
@@ -24,7 +24,7 @@ A MEO tem cerca de 1,58 milhões de casas com banda larga fixa (ANACOM, 4.º tri
 
 Figura 2 – Cada assinante deixa cerca de 1,74 € por mês
 
-A Figura 2 mostra o que resta de uma mensalidade depois de descontados os custos. O modelo de linguagem custa cerca de 0,43 € por casa e por mês no cenário base (de 0,10 a 1,78 €), uma vez que só é chamado quando se cria um sensor a partir de uma frase, quando o utilizador faz uma pergunta ou quando surge um caso duvidoso. Este valor diz respeito apenas ao modelo de linguagem, já que as imagens das câmaras são analisadas por modelos de visão _open-source_, os mais leves em casa, no _router_, e o _OWLv2_ e o _DINOv2_ nos servidores _L4_ da própria Altice, cujo custo se calcula no documento 17 (ver também a secção 3). Os valores dos restantes custos são pressupostos da equipa.
+A Figura 2 mostra o que resta de uma mensalidade depois de descontados os custos. O modelo de linguagem custa cerca de 0,43 € por casa e por mês no cenário base (de 0,10 a 1,78 €), uma vez que só é chamado quando se cria um sensor a partir de uma frase, quando o utilizador faz uma pergunta ou quando surge um caso duvidoso. Este valor diz respeito apenas ao modelo de linguagem, já que as imagens das câmaras são analisadas por modelos de visão _open-source_, os mais leves em casa, no _router_, e o _OWLv2_ e o _DINOv2_ nos servidores _L4_ da própria Altice, cujo custo se calcula no documento 17 (ver também a secção 3). Com a visão a cerca de 0,49 €, a margem é de cerca de 1,25 € (documento 17, secção 9). Os valores dos restantes custos são pressupostos da equipa.
 
 ## 3. Onde corre a IA
 
@@ -32,7 +32,7 @@ A Figura 2 mostra o que resta de uma mensalidade depois de descontados os custos
 
 Figura 3 – Onde corre a IA decide o caso
 
-Os modelos de visão locais são a parte mais exigente do sistema. Se funcionarem num _router_, num _gateway_ ou numa câmara já instalados em casa, cada assinante dá lucro, mas, com uma caixa dedicada em cada casa, o serviço adicional dá prejuízo, como mostra a Figura 3. A câmara fica em repouso até haver movimento ou som, e só então os modelos analisam imagens. Admitindo, a título de exemplo, cerca de 2 horas de movimento por dia, os modelos exigem muito menos processamento e eletricidade do que em funcionamento contínuo, com um custo de cerca de 0,14 € de eletricidade por mês num equipamento de 15 W. Este modo de funcionamento torna mais plausível a utilização de equipamento já instalado em casa (opção E1), embora o custo do equipamento continue a ser o fator decisivo. A via híbrida adotada na arquitetura dispensa a caixa, uma vez que só os modelos leves correm em casa e o _OWLv2_ e o _DINOv2_ correm nos servidores da própria Altice (documento 17). Ainda assim, a primeira questão a colocar à Altice é se o equipamento que instala em casa dos clientes tem capacidade disponível, porque permitiria trazer a visão para casa (ver D9).
+Os modelos de visão locais são a parte mais exigente do sistema. Se funcionarem num _router_, num _gateway_ ou numa câmara já instalados em casa, cada assinante dá lucro, mas, com uma caixa dedicada em cada casa, o serviço adicional dá prejuízo, como mostra a Figura 3. A câmara fica em repouso até haver movimento ou som, e só então os modelos analisam imagens. Admitindo, a título de exemplo, cerca de 2 horas de movimento por dia, os modelos exigem muito menos processamento e eletricidade do que em funcionamento contínuo, com um custo de cerca de 0,14 € de eletricidade por mês num equipamento de 15 W. Este modo de funcionamento torna mais plausível a utilização de equipamento já instalado em casa (opção E1), embora o custo do equipamento continue a ser o fator decisivo. A via híbrida adotada na arquitetura dispensa a caixa, uma vez que só os modelos leves correm em casa e o _OWLv2_ e o _DINOv2_ correm nos servidores da própria Altice (documento 17). Ainda assim, o primeiro ponto a confirmar com a Altice é se o equipamento que instala em casa dos clientes tem capacidade disponível, porque permitiria trazer a visão para casa (ver D9).
 
 ## 4. Preço
 
@@ -111,7 +111,7 @@ Os assinantes do _Maison Sécurisée_ seriam o melhor mercado para começar, mas
 
 ### D4. Custos e margem por casa e por mês
 
-A análise das imagens só arranca quando há movimento ou som. O modelo de linguagem é chamado apenas para três tipos de pedido.
+A visão só corre quando há movimento ou som, e o seu custo calcula-se no documento 17. O modelo de linguagem, na nuvem, é chamado apenas para três tipos de pedido.
 
 | Pedido | Modelo | Custo medido por pedido | Pedidos por mês, mínimo / esperado / máximo (pressuposto da equipa) |
 |---|---|---|---|
@@ -119,7 +119,7 @@ A análise das imagens só arranca quando há movimento ou som. O modelo de ling
 | Pergunta | _Sonnet 5.5_ | 0,002546 USD [A17] | 30 / 60 / 150 |
 | Evento duvidoso | _Haiku 5.5_ | 0,0003077 USD [A18] | 60 / 300 / 900 |
 
-O total é de 0,10 / 0,43 / 1,78 USD por casa e por mês [C01] e assenta em três pressupostos da equipa:
+O total é de 0,10 / 0,43 / 1,78 USD por casa e por mês [C01], tomados como 0,10 / 0,43 / 1,78 € nas tabelas seguintes, e assenta em três pressupostos da equipa:
 
 - um fator multiplicativo de 1,0 / 1,5 / 2,0 sobre o custo medido de cada pedido, uma vez que só foi medido um pedido de cada tipo;
 - um fator de 1,00 / 1,10 / 1,25, isto é, um acréscimo de 0 a 25 %, associado à residência dos dados;

@@ -8,10 +8,10 @@ It assumes that everything is available: the Altice app, the platform, the MCP s
 
 Five markers are used throughout:
 - proposal, for a new product decision the team has not yet validated;
-- assumption, for a value still to be confirmed, chosen to make the specification concrete;
+- assumption, for a value chosen to make the specification concrete, which the pilot confirms;
 - target, for an objective to measure in a pilot, which is not a result;
 - hypothesis, for a business idea or a risk that nobody has validated yet;
-- to verify, for a legal point not yet confirmed in the primary source.
+- to verify, for a legal point not yet confirmed in the primary source; every such point goes to the legal review that precedes the pilot (section 10, decision 4).
 
 Anything that does not come from documents 14 to 18 or from the prototype is a proposal, even in sentences where the marker is not repeated.
 
@@ -157,7 +157,7 @@ Figure 2 and the table below describe how an adult family member is enrolled, wi
 | 5 | Ana and Rui: "Ana will now be recognised. You can turn this off in Settings → Privacy" | Nothing | Writes the entry in the audit log (section 5.5) |
 | 6 | Later, Ana taps "Stop recognising me" | Deletes the face template and confirms | Sends the deletion request, records the confirmation and keeps only the record of the consent and its withdrawal, without biometric data |
 
-Enrolment happens in front of the home camera, not with a selfie on the phone, so that no image of the face crosses the platform. The price of this choice is that a new or reset edge service requires people to enrol again, unlike objects, whose fingerprint the platform keeps. The face recognition model is still to be chosen, with one precondition: several published models have weights for non-commercial use only, so the licence must be checked model by model (to verify).
+Enrolment happens in front of the home camera, not with a selfie on the phone, so that no image of the face crosses the platform. The price of this choice is that a new or reset edge service requires people to enrol again, unlike objects, whose fingerprint the platform keeps. Several published face models have weights for non-commercial use only, so the licence is checked model by model: the prototype uses YuNet (MIT) and SFace (Apache-2.0), checked on their OpenCV Zoo folders on 19 November 2026 (document 14, section 15). Document 14 (section 8.3) later chose a short selfie video, relayed to the home agent without being stored; enrolment in front of the camera remains the alternative that keeps every face image off the platform.
 
 Each kind of person has its own particulars:
 - Child. One of the holders of parental responsibility consents and the other receives a notification (proposal). The age band (0–2, 3–5, 6–9, 10–12 years) is stored, because the danger for a two-year-old is not the danger for a ten-year-old and the plan in section 1.5 depends on it. Alerts about children never carry a photo of the child (section 6.3).
@@ -301,7 +301,7 @@ The language model receives only the text lines of the events found (type, time,
 
 ### 2.5 Sound as a trigger
 
-Sound can flag what the image does not show, such as the 4 am bark, but it raises a legal question. Law 58/2019 forbids capturing sound in places where video surveillance is allowed, except when the premises are closed or with prior authorisation from the CNPD (Article 19(4)), and whether the rule applies to a private home is still to be verified (document 18, section 2.6). Until then, it is proposed that sound as a trigger be off by default, never be used on outdoor cameras and, indoors, only work if the family turns it on after reading what it does. A small sound classifier, on the edge service, assigns only a type (bark, breaking glass, smoke alarm) and a level; the sound is never recorded or sent. The classifier is still to be chosen, and its licence to be verified.
+Sound can flag what the image does not show, such as the 4 am bark, but it raises a legal question. Law 58/2019 forbids capturing sound in places where video surveillance is allowed, except when the premises are closed or with prior authorisation from the CNPD (Article 19(4)), and whether the rule applies to a private home is still to be verified (document 18, section 2.6). Until then, it is proposed that sound as a trigger be off by default, never be used on outdoor cameras and, indoors, only work if the family turns it on after reading what it does. A small sound classifier, on the edge service, assigns only a type (bark, breaking glass, smoke alarm) and a level; the sound is never recorded or sent. The classifier is chosen in the pilot, with the same licence check as the vision models (assumption).
 
 ### 2.6 Export for the authorities
 
@@ -393,7 +393,7 @@ The administrator is the holder of the MEO contract. A carer always has a time-l
 |---|---|---|---|
 | Information | "Mimi went to the food bowl"; "A parcel arrived" | Only in the app's activity, with no notification, unless chosen otherwise | Do not apply |
 | Alert | "You left without the book"; "Nobody has been in the kitchen by midday" | Notification | Respects each member's quiet hours |
-| Urgent | "The child is next to the stove"; "A person in the garden at 3 am" | Critical notification, with sound, and escalation to another contact | Overrides quiet hours, as far as the phone's operating system allows (to verify) |
+| Urgent | "The child is next to the stove"; "A person in the garden at 3 am" | Critical notification, with sound, and escalation to another contact | Overrides quiet hours, as far as the phone's operating system allows (assumption) |
 
 ### 4.3 Who receives each alert
 
@@ -491,11 +491,11 @@ The rules of document 18 (section 2.6) become mandatory steps in the installatio
 
 ### 5.8 What the language model receives
 
-To compile rules and answer questions, the language model receives text only: the sentence or the question, the names of the things, places and devices, the home's profile and the relevant memory lines (thing, place and time). It is also proposed that people's names be replaced with placeholders before sending ("Ana" becomes "person_1") and restored in the answer, so that the provider never receives the family's names. Document 14 foresees that, in an unclear case, the model receives a crop, and that is one of the open decisions in section 10; the alternative is an open-weight vision model hosted by Altice (document 14, section 3), so that no crop leaves Altice. The prototype's local model (Qwen3-1.7B) shows that questions and simple rules can be handled without any external provider.
+To compile rules and answer questions, the language model receives text only: the sentence or the question, the names of the things, places and devices, the home's profile and the relevant memory lines (thing, place and time). It is also proposed that people's names be replaced with placeholders before sending ("Ana" becomes "person_1") and restored in the answer, so that the provider never receives the family's names. For an unclear case, document 14 (section 8.6) uses a vision-language judge on Altice's servers instead, so that no crop leaves Altice (section 10, decision 2); the prototype runs one locally (Qwen2-VL-2B). The prototype's local model (Qwen3-1.7B) shows that questions and simple rules can be handled without any external provider.
 
 ### 5.9 Who is the data controller
 
-The roles of each party still have to be decided with Altice's lawyers: the family, when it uses the camera only inside the home, may be covered by the household exemption (GDPR, Article 2(2)(c)), but Altice processes data to provide the service, as controller or as processor (Article 28), and the language model provider is Altice's processor. This decision determines who answers data subjects' requests, who carries out the DPIA and the wording of the terms of service (to verify). Combining the household exemption, on the family's side, with Altice as a processor is unusual and needs a legal opinion.
+The roles of each party are decided with Altice's lawyers before the pilot (section 10, decision 4): the family, when it uses the camera only inside the home, may be covered by the household exemption (GDPR, Article 2(2)(c)), but Altice processes data to provide the service, as controller or as processor (Article 28), and the language model provider is Altice's processor. This decision determines who answers data subjects' requests, who carries out the DPIA and the wording of the terms of service (to verify). Combining the household exemption, on the family's side, with Altice as a processor is unusual and needs a legal opinion.
 
 ## 6. Quality and failure modes
 
@@ -567,7 +567,7 @@ On the hybrid route, the edge service marks as urgent the changed region of a ca
 
 ### 7.2 Over-the-air model updates
 
-Models are updated in signed packages (model, version, cryptographic hash and Altice's signature), installed through the channel Altice already uses to manage its routers (assumption: TR-069 or TR-369, to confirm with Altice). Before switching models, the edge service runs the new one in parallel on the next detections and only adopts it if it recognises the same things at least as well as the old one. Rollout happens in stages (1 %, 10 %, 50 % and 100 % of homes) and stops automatically if analysis time, the recognition rate or false alerts get worse. The previous version is kept to allow rollback, and an update never happens during an enrolment or while there is motion in the home. Fingerprints store the name and version of the model that computed them, as the prototype already does.
+Models are updated in signed packages (model, version, cryptographic hash and Altice's signature), installed through the channel Altice already uses to manage its routers (assumption: TR-069 or TR-369). Before switching models, the edge service runs the new one in parallel on the next detections and only adopts it if it recognises the same things at least as well as the old one. Rollout happens in stages (1 %, 10 %, 50 % and 100 % of homes) and stops automatically if analysis time, the recognition rate or false alerts get worse. The previous version is kept to allow rollback, and an update never happens during an enrolment or while there is motion in the home. Fingerprints store the name and version of the model that computed them, as the prototype already does.
 
 ### 7.3 Capacity per home
 
@@ -608,13 +608,13 @@ People recognition stays out of phases 1 and 2, unless the DPIA and the legal re
 
 ### 7.7 Pricing
 
-The business case proposes €3.99 a month for homes that already have a camera and €7.50 with a camera included (document 16). Altice's costs are about €0.43 per home a month for the language model and €0.49 per camera for vision, on the hybrid route on its own servers (document 17), which leaves about €1.25 per home with one camera and about €0.75 with two. It is therefore proposed to include two cameras in the base price and to charge from the third, at a price still to be set that covers the roughly €0.49 cost per camera. People recognition, since it needs AI capacity in the home, can only be offered where the router has it; a box in every home would cost between €6.55 and €8.64 a month (document 17) and does not fit the price.
+The business case proposes €3.99 a month for homes that already have a camera and €7.50 with a camera included (document 16). Altice's costs are about €0.43 per home a month for the language model and €0.49 per camera for vision, on the hybrid route on its own servers (document 17), which leaves about €1.25 per home with one camera and about €0.75 with two. It is therefore proposed to include two cameras in the base price and to charge from the third, at a price set in the pilot that covers the roughly €0.49 cost per camera. People recognition, since it needs AI capacity in the home, can only be offered where the router has it; a box in every home would cost between €6.55 and €8.64 a month (document 17) and does not fit the price.
 
 ## 8. Out-of-the-box ideas
 
 The home timeline, first thought of as one of these ideas, has become a core feature (section 2). The others are the following.
 
-1. "Where did I last see…" on the MEO Box. On the remote with a microphone, the customer says "where are the keys?" and the TV shows a card with the answer and the thumbnail. The box's app calls the ThingTracker service with the home's account, and "information" alerts can appear as a discreet banner on screen ("A parcel arrived at the door"). The MEO Box's capabilities are still to be confirmed (to verify with Altice).
+1. "Where did I last see…" on the MEO Box. On the remote with a microphone, the customer says "where are the keys?" and the TV shows a card with the answer and the thumbnail. The box's app calls the ThingTracker service with the home's account, and "information" alerts can appear as a discreet banner on screen ("A parcel arrived at the door"). The MEO Box's capabilities are an assumption, to check with Altice.
 2. Voice on a smart speaker. The speaker is used to ask ("where is my wallet?") and to alert in the right room ("The hob is on and there is nobody in the kitchen"). Speech recognition is done by the speaker itself, which sends the service only the text, and the answer comes back as text to be spoken.
 3. Automatic suggestions from the profile and from use. Beyond the profile suggestions the prototype already makes (child, dog, cat, older person living alone), the system proposes rules from repeated questions ("You asked four times this week where your glasses were. Do you want me to tell you if you leave without them?") and from observed habits (the keys are always on the hall table, so it proposes "tell me if the keys are not on the hall table at 11 pm").
 4. Lending a thing to grandma's home. Since fingerprints are kept on the platform, linked to the customer, lending a thing means sending it, for a set period, to another home's edge service, provided that home's contract holder accepts. The dog spending the holidays at grandma's takes its fingerprint and rules with it ("Bobi is at grandma's until Sunday"); grandma's walking stick or hearing-aid case can be followed in her daughter's home during a visit. At the end of the period, the fingerprint is deleted in the home that received it.
@@ -638,7 +638,7 @@ The home timeline, first thought of as one of these ideas, has become a core fea
    No, on the recommended route. A box in every home would cost between €6.55 and €8.64 a month and an investment of €100 to €140 million for 500,000 homes (document 17). The best scenario is an Altice router with an NPU, at about €0.36 per home a month, if it is confirmed that it can run the models.
 
 5. Why not send the video to the cloud and use a large vision model?
-   Sending continuous video moves 37 times more data than the images with motion, and asking a language model, image by image, costs money, takes 1 to 3 s per call and gives inconsistent answers (documents 14 and 17). The AI writes the rule once, and the rule runs in the home.
+   Sending continuous video moves 37 times more data than the images with motion, and asking a language model, image by image, costs money, takes 1 to 3 s per call and gives inconsistent answers (documents 14 and 17). The AI writes the rule once, and plain code evaluates it from then on.
 
 6. Why not just use a hyperscaler?
    It is the right starting point while uptake is unknown, because it has no fixed cost. As the base grows, the hybrid route costs about €0.49 per home on Altice's own servers, against €1.53 on AWS on demand (document 17).
@@ -647,7 +647,7 @@ The home timeline, first thought of as one of these ideas, has become a core fea
    Video and full images never leave. What leaves is the names, thumbnails and fingerprints of objects and pets, the events and, on the hybrid route, the region of the image that changed, analysed in memory and deleted. Face templates never leave (section 5.1).
 
 8. Does the language model see images?
-   To create rules and answer questions, it receives text only, and people's names are proposed to be replaced with placeholders. Sending a crop in unclear cases is foreseen in document 14, but it is an open decision, and the alternative is a vision model hosted by Altice.
+   To create rules and answer questions, it receives text only, and people's names are proposed to be replaced with placeholders. In unclear cases, a vision-language judge on Altice's servers looks at one crop, so no image goes to an external provider (document 14, section 8.6; section 10, decision 2).
 
 9. Do you recognise faces?
    Only if the person themselves agrees, and recognition is off by default. The face template stays in the home, so the feature needs local AI capacity, and its launch depends on a DPIA and a legal review. The recommendation is to launch without this feature.
@@ -686,16 +686,16 @@ The home timeline, first thought of as one of these ideas, has become a core fea
     The code decides which thing is meant and checks the answer against the home memory; an answer that contradicts it is replaced by a sentence built from the memory, as already happens in the prototype.
 
 21. Who is the data controller?
-    It is still to be decided with Altice's lawyers. The family may be covered by the household exemption, Altice will be controller or processor, and the language model provider is Altice's processor (section 5.9).
+    It is decision 4 in section 10, taken with Altice's lawyers before the pilot. The family may be covered by the household exemption, Altice will be controller or processor, and the language model provider is Altice's processor (section 5.9).
 
 22. What about the AI Act?
-    Remote biometric identification is high risk; identity verification, which confirms that someone is who they claim to be, is excluded from that category (to verify). Whether telling "child" from "adult" counts as biometric categorisation (Article 3(40)) is also to be verified. That is why it is proposed to launch without recognition and to study the verification mode.
+    Remote biometric identification is high risk; identity verification, which confirms that someone is who they claim to be, is excluded from that category (to verify). Whether telling "child" from "adult" counts as biometric categorisation (Article 3(40)) is also for the legal review. That is why it is proposed to launch without recognition and to study the verification mode.
 
 23. Isn't the timeline a recording of the family's life?
     It keeps no video, but events, with the time, the camera and the crop of what caused them, for 30 days, except those the family pins. Only an alarm justifies keeping full images, sound is never recorded, and exporting for the authorities requires an adult's confirmation and is recorded (section 2). On cancelling the service, everything is deleted within 30 days (assumption).
 
 24. What does Altice need to provide for the launch?
-    The seven items in document 15 (section 9), first of all the events API and push notifications, plus the tools in section 7.5, confirmation of the routers' NPU and an over-the-air update channel for the models.
+    The eight items in document 15 (section 9), first of all the events API and push notifications, plus the tools in section 7.5, confirmation of the routers' NPU and an over-the-air update channel for the models.
 
 25. How is success measured?
     In the pilot, by the quality targets in section 6.4; at launch, by uptake, the share of homes with weekly use, false alerts, support contacts and churn, against the business case's figures.
@@ -712,7 +712,7 @@ The following five decisions shape the rest of the specification and must be tak
 | 4 | Who is the data controller, and how long data are kept | Altice as controller or as processor; 30 days of observations or fewer | Decide with Altice's lawyers; keep 30 days of observations and 90 of events (document 14) until the pilot | Defines the terms of service, the DPIA and the handling of data subjects' requests |
 | 5 | How many false alarms are acceptable, and how alerts escalate | The targets in section 6.1; escalation to another contact at 2 and 5 minutes | Adopt the targets as the criterion for moving between phases | Defines the rules' minimum duration, trial mode and the criterion to move on |
 
-Still open: the timeline periods (30 days, and one year for pinned events), sound as a trigger, the backup of alarm images, the price from the third camera, the face recognition model and its licence, the length of trial mode, and the initial list in the detection catalogue.
+Set during the pilot, as assumptions until then: the timeline periods (30 days, and one year for pinned events), sound as a trigger, the backup of alarm images, the price from the third camera, the length of trial mode, and the initial list in the detection catalogue.
 
 ## Sources
 

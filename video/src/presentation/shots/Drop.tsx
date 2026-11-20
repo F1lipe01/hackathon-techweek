@@ -1,6 +1,6 @@
 // Act 3, s08 (8 s): the drop. The first boxes of the film lock on, one per beat (the wallet, then the pot), on the
 // hall table; on the next downbeat the wallet's corners close into the ThingTracker mark while the picture softens
-// behind it (blurred and lifted), the name is carried in, and the line holds over it, dead still. Fallback until Thursday: the wallet still.
+// behind it (blurred and lifted), the name is carried in, and the line holds over it, dead still. Fallback, when the take is missing: the wallet still.
 import React from "react";
 import { AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { theme } from "../../theme";

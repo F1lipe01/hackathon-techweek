@@ -1,6 +1,6 @@
 // Act 4: the wallet, from the photos to the alert (s09–s13). The app is always the real prototype, recorded
 // (public/app/*.mp4) and placed into the filmed phone's screen, then pushed in until it can be read (2 px per pt keeps the
-// app's 13 pt text at 26 px). Fallbacks until Thursday's takes are tagged "a filmar".
+// app's 13 pt text at 26 px). Fallbacks for takes not yet filmed are tagged "a filmar".
 import React from "react";
 import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { theme } from "../../theme";

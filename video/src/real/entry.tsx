@@ -1,4 +1,4 @@
-// A separate entry point for video 2 alone, so it can be rendered while video 1 is being edited:
+// A separate entry point for video 2 alone, so it can be rendered on its own:
 //   npx remotion render src/real/entry.tsx RealExample out/real-example.mp4
 import React from "react";
 import { Composition, registerRoot } from "remotion";

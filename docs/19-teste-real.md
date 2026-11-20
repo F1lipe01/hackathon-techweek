@@ -1,6 +1,6 @@
 # Teste real no laboratório: o livro esquecido em casa
 
-Lista de verificação para quinta-feira, 19 de novembro de 2026. Objetivo: gravar o cenário completo com o _kit_, sem nada simulado. O livro amarelo (_O ano da morte de Ricardo Reis_) está registado na câmara do _kit_; alguém sai pela porta, onde está o sensor de contacto real, sem o livro; a lâmpada do _kit_ fica vermelha e o alerta chega à aplicação com a fotografia do livro e o último lugar onde foi visto.
+Lista de verificação para quinta-feira, 19 de novembro de 2026. Objetivo: gravar o cenário completo com o _kit_, sem nada simulado além dos telemóveis da família, porque nenhuma ferramenta do MCP expõe os clientes do Wi-Fi. O livro amarelo (_O ano da morte de Ricardo Reis_) está registado na câmara do _kit_; alguém sai pela porta, onde está o sensor de contacto real, sem o livro; a lâmpada do _kit_ fica vermelha e o alerta chega à aplicação com a fotografia do livro e o último lugar onde foi visto.
 
 Duas regras valem durante todo o teste:
 
@@ -43,19 +43,19 @@ Abrir http://127.0.0.1:8765 no Chrome. Sobre a imagem da câmara deve aparecer a
 1. Registar o livro: separador _Things_ → “+” → “Other…” → escrever `yellow book` (o detetor procura o texto em inglês). Segurar o livro a cerca de 50 cm da câmara do _kit_ e rodá-lo devagar durante 10 a 20 s, até às 8 vistas.
 2. Verificar a assinatura visual: na página do livro, “Visual fingerprint · 8 views”, e as 8 imagens mostram o livro (não a mão nem a cara). Se não, “Remove thing” e registar de novo.
 3. Pousar o livro na mesa, à vista da câmara. Em poucos segundos, o separador _Things_ mostra “On the table” com a hora, e a atividade “… seen on the table”.
-4. Criar o sensor: botão do assistente → `avisa-me se eu sair de casa sem o livro`. A atividade regista “New sensor”. O sensor fica do tipo `leave_without`, com a ação `light_red` (alerta mais luz vermelha, como a equipa escolheu).
+4. Criar o sensor: botão do assistente → `avisa-me se eu sair de casa sem o livro`. A atividade regista “New sensor”. O sensor fica do tipo `leave_without`, com a ação `light_red` (alerta mais luz vermelha).
 5. Só com a aprovação da equipa: parar o servidor (`kill $(lsof -t -iTCP:8765 -sTCP:LISTEN)`) e arrancá-lo com `TT_LIVE_ACTIONS=1 prototype/.venv/bin/python prototype/server.py`. A etiqueta do topo passa a dizer “actions LIVE”.
 
 ## 6. O teste
 
 1. Porta fechada, livro na mesa, ninguém a mexer-lhe.
 2. Começar as gravações (secção 7).
-3. Uma pessoa sai pela porta sem o livro.
-4. Em cerca de 10 s (até 4 s de leitura do sensor, 5 s de espera e 2 s do motor de regras), espera-se:
-   - na atividade, “The door opened (Contact sensor).”;
+3. Uma pessoa sai pela porta sem o livro e fecha-a; no painel de simulação da página, o telemóvel dela sai do Wi-Fi.
+4. Quando a porta fecha e a presença mostra que alguém da família saiu, o servidor pede à câmara uma verificação ativa da mesa (`check_leave_without()`, no `server.py`). Espera-se:
+   - na atividade, a abertura e o fecho da porta (Contact sensor);
    - o alerta, com a fotografia do livro e “Última deteção: na mesa (Work Room), hoje às …”, no aviso da aplicação e em _Menu_ → _Notifications_;
    - a lâmpada vermelha, com `TT_LIVE_ACTIONS=1`. Sem essa variável, a atividade mostra “MCP dry run, not sent” e as duas chamadas exatas (abaixo).
-5. Fechar a porta. Para repetir, esperar 5 minutos (o sensor não volta a disparar antes disso) ou encurtar a espera para 60 s: `curl -X PATCH http://127.0.0.1:8765/api/rules/<id> -H 'Content-Type: application/json' -d '{"cooldown_s": 60}'` (o `<id>` vem de `curl -s http://127.0.0.1:8765/api/state`, em `rules`).
+5. Para repetir, esperar 5 minutos (o sensor não volta a disparar antes disso) ou encurtar a espera para 60 s: `curl -X PATCH http://127.0.0.1:8765/api/rules/<id> -H 'Content-Type: application/json' -d '{"cooldown_s": 60}'` (o `<id>` vem de `curl -s http://127.0.0.1:8765/api/state`, em `rules`).
 6. No fim, a equipa repõe a cor da lâmpada na aplicação Altice.
 
 As chamadas que a ação `light_red` faz, por esta ordem (`prototype/actions.py`):
@@ -65,7 +65,7 @@ update_device_capabilities {"deviceId": "00e038d4-0da7-45c2-b61f-f38c9ff9df82", 
 update_device_capabilities {"deviceId": "00e038d4-0da7-45c2-b61f-f38c9ff9df82", "body": {"type": "color_rgb", "redValue": 255, "greenValue": 0, "blueValue": 0}}
 ```
 
-Não filmar como sucesso o caso contrário (a pessoa leva o livro). Sem uma câmara na entrada, o protótipo não vê o livro a sair e também dispara. É uma limitação conhecida e está documentada em `check_leave_without()`, no `server.py`.
+No caso contrário (a pessoa leva o livro), a câmara não o vê na mesa e a atividade regista “unsure”, sem alerta nem alarme (`check_leave_without()`, no `server.py`, e documento 23, pergunta B4).
 
 ## 7. Gravação
 

@@ -119,6 +119,80 @@
     <text class="lb" x="40" y="450">tudo volta ao início, para repetir</text>
   </svg>
   </figure>
+  <h2 class="sec">A memória, num exemplo</h2>
+  <figure class="fig flow-fig">
+  <svg viewBox="0 0 1200 600" role="img" aria-label="A memória: registar cria uma página por pessoa ou objeto; ver compara com todas as páginas; cada reconhecimento escreve uma linha no diário; perguntar lê a linha mais recente">
+    <defs>
+      <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#5b6270"/></marker>
+      <marker id="ah2b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#0084d6"/></marker>
+      <style>
+        .m-h { font: 700 13px ui-monospace, Menlo, monospace; fill: #0084d6; letter-spacing: .04em; }
+        .m-t { font: 600 18px Switzer, Helvetica, Arial, sans-serif; fill: #0d1320; }
+        .m-s { font: 400 14px Switzer, Helvetica, Arial, sans-serif; fill: #5b6270; }
+        .m-r { font: 500 15px Switzer, Helvetica, Arial, sans-serif; fill: #0d1320; }
+        .m-k { font: 600 14px ui-monospace, Menlo, monospace; fill: #5b6270; }
+        .m-ok { font: 600 14px Switzer, Helvetica, Arial, sans-serif; fill: #138a5e; }
+        .m-no { font: 600 14px Switzer, Helvetica, Arial, sans-serif; fill: #b45309; }
+        .m-q { font: 500 16px Switzer, Helvetica, Arial, sans-serif; fill: #0d1320; }
+      </style>
+    </defs>
+
+    <!-- 1 · register: the pages -->
+    <text class="m-h" x="40" y="40">1 · REGISTAR</text>
+    <rect class="bx" x="40" y="56" width="320" height="250" rx="16"/>
+    <text class="m-t" x="62" y="90">Quem e o que conheço</text>
+    <text class="m-s" x="62" y="112">uma página por pessoa ou objeto</text>
+    <rect x="62" y="132" width="276" height="64" rx="12" fill="#f4f6f9"/>
+    <circle cx="94" cy="164" r="18" fill="#0084d6"/><text x="88" y="170" style="font:700 16px Switzer,Arial;fill:#fff">F</text>
+    <text class="m-r" x="124" y="160">Filipe</text><text class="m-s" x="124" y="181">rosto: 128 números</text>
+    <rect x="62" y="208" width="276" height="64" rx="12" fill="#f4f6f9"/>
+    <circle cx="94" cy="240" r="18" fill="#f6d31a"/><path d="M86 240 a6 6 0 1 1 12 0 a6 6 0 1 1 -12 0 M98 240 h10 v5 M104 240 v4" fill="none" stroke="#6b5a12" stroke-width="2.2" stroke-linecap="round"/>
+    <text class="m-r" x="124" y="236">Chaves</text><text class="m-s" x="124" y="257">aparência: 8 vistas</text>
+    <text class="m-s" x="62" y="294">no equipamento de casa</text>
+
+    <!-- 2 · see: compare with every page -->
+    <text class="m-h" x="440" y="40">2 · VER</text>
+    <rect class="bx" x="440" y="56" width="320" height="250" rx="16"/>
+    <rect x="462" y="76" width="276" height="112" rx="10" fill="#1b2230"/>
+    <rect x="490" y="92" width="58" height="84" rx="6" fill="none" stroke="#7cc4f5" stroke-width="2" stroke-dasharray="5 4"/><text x="512" y="140" style="font:700 22px Switzer,Arial;fill:#7cc4f5">?</text>
+    <rect x="640" y="140" width="56" height="30" rx="6" fill="none" stroke="#7cc4f5" stroke-width="2" stroke-dasharray="5 4"/><text x="663" y="162" style="font:700 18px Switzer,Arial;fill:#7cc4f5">?</text>
+    <text class="m-s" x="462" y="212">compara com todas as páginas</text>
+    <text class="m-ok" x="462" y="242">Filipe · 0,69</text><text class="m-s" x="600" y="242">≥ 0,40: é ele</text>
+    <text class="m-ok" x="462" y="268">Chaves · 0,85</text><text class="m-s" x="600" y="268">≥ 0,62: são as tuas</text>
+    <text class="m-no" x="462" y="294">Outra pessoa</text><text class="m-s" x="600" y="294">&lt; 0,25: desconhecida</text>
+    <path class="lnb dash" d="M360 180 H434" marker-end="url(#ah2b)"/>
+
+    <!-- 3 · write: the diary -->
+    <text class="m-h" x="840" y="40">3 · ESCREVER NO DIÁRIO</text>
+    <rect class="bx" x="840" y="56" width="320" height="250" rx="16"/>
+    <text class="m-t" x="862" y="90">O que vi, e quando</text>
+    <text class="m-s" x="862" y="112">uma linha por reconhecimento</text>
+    <text class="m-k" x="862" y="152">14:05</text><text class="m-r" x="916" y="152">Filipe · Work Room</text>
+    <text class="m-k" x="862" y="190">14:06</text><text class="m-r" x="916" y="190">Chaves · secretária</text>
+    <rect x="852" y="210" width="296" height="40" rx="10" fill="#e6f2fb" stroke="#0084d6" stroke-width="1.5"/>
+    <text class="m-k" x="862" y="236">14:12</text><text class="m-r" x="916" y="236">Chaves · prateleira</text>
+    <text class="m-s" x="862" y="290">na base de dados · nunca a imagem inteira</text>
+    <path class="ln" d="M760 180 H834" marker-end="url(#ah2)"/>
+
+    <!-- 4 · ask: read the newest line -->
+    <text class="m-h" x="40" y="380">4 · PERGUNTAR</text>
+    <rect x="40" y="396" width="300" height="64" rx="32" fill="#eef1f5"/>
+    <text class="m-q" x="66" y="434">“Onde estão as minhas chaves?”</text>
+    <path class="ln" d="M340 428 H434" marker-end="url(#ah2)"/>
+    <rect class="bx" x="440" y="396" width="320" height="64" rx="14"/>
+    <text class="m-r" x="462" y="422">o código lê a linha mais recente</text>
+    <text class="m-s" x="462" y="444">das Chaves: prateleira, 14:12</text>
+    <path class="lnb" d="M1000 250 V340 H600 V390" marker-end="url(#ah2b)"/>
+    <path class="ln" d="M760 428 H834" marker-end="url(#ah2)"/>
+    <rect x="840" y="396" width="320" height="64" rx="32" fill="#0084d6"/>
+    <text x="866" y="434" style="font:600 16px Switzer,Arial;fill:#fff">“Na prateleira, desde as 14:12.”</text>
+    <text class="m-s" x="840" y="484">o Qwen3 só escreve a frase; o facto vem do diário</text>
+
+    <!-- the rule of thumb -->
+    <rect x="40" y="520" width="1120" height="56" rx="14" fill="#f4f6f9"/>
+    <text class="m-r" x="64" y="554">Registar cria uma página · Ver compara com todas e escreve uma linha · Perguntar lê a linha mais recente</text>
+  </svg>
+  </figure>
   <h2 class="sec">Um exemplo, do princípio ao fim</h2>
   <figure class="fig"><img src="/media/img/exemplo.png" alt="Exemplo: a regra, o registo visual, a deteção e o alerta" data-zoom></figure>
   <div class="models">

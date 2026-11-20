@@ -12,7 +12,7 @@ Use the short answer, then the detail only if asked. Two rules for every answer:
 Status markers:
 - **[target]**: the design;
 - **[prototype]**: what the code on the demo laptop does;
-- **[to confirm]**: still being implemented on 19 Nov, to be checked before the pitch.
+- **[proof run]**: shown on the films' own takes replayed through the real pipeline, on the night of 19-20 Nov (`video/out/proof/`, [24-what-is-real.md](24-what-is-real.md)).
 
 ---
 
@@ -110,20 +110,20 @@ Status markers:
 **B2. How do you register a thing?**
 - **Short answer:** "Photos from the phone, or showing it to a camera; the result is 8 views and a fingerprint."
 - **Detail:**
-  - **phone photos:** OWLv2 crops the thing in each photo, then DINOv2 makes the vectors [to confirm: implemented on 19 Nov];
+  - **phone photos:** OWLv2 crops the thing in each photo, then DINOv2 makes the vectors [prototype: queued to the edge, `server.py`, `edge.py`]. They reach 0,69 on a desk-level kit frame, but from the ceiling only the camera's own views recognise the book (0,91-0,94), so the app adds them on confirmation (B1a);
   - **showing it to the camera:** the edge keeps 8 views, each different enough from the others (cosine below 0,97) (`edge.py` `enrol_step`);
   - the fingerprint is stored per customer in the platform's database.
 
 **B3. How does it know someone picked up the book?**
 - **Short answer:** "No model decides that: it is a rule on boxes."
-- **[target, to confirm in the prototype]:**
+- **[target; prototype: in the code with end-to-end tests, not yet seen on the lab takes]:**
   - the book's box overlapping a person's box makes an "in hand" sighting, with who, if the face is registered;
   - the book then gone from its place for 3 analyses or more makes "taken by…";
   - the book seen somewhere else makes "moved to…".
 
 **B4. How does it know the book was left behind?**
 - **Short answer:** "When the door closes after someone from the family left, the camera checks that the book is still there."
-- **[target, to confirm in the prototype]:**
+- **[prototype and proof run]:** on film 1's take replayed through the real pipeline, "left behind" fires from the rule (the book seen at 0,94 over 3 frames); when he leaves with the book the result is "unsure", no alert, and the vision judge agrees.
   - trigger: the door **closes** after opening, and presence shows a family member left (a phone left the Wi-Fi, or fewer people);
   - then an **active check**, a forced analysis of the book's place over a few frames, even without motion;
   - an alert only if the book is seen; if it isn't visible, the result is "unsure", with no alarm;
@@ -150,7 +150,7 @@ Status markers:
   - only a label leaves the house: "Filipe", "unknown face" or "face not visible";
   - biometric data used to identify a person is a special category under GDPR (Article 9), which needs explicit consent;
   - **diagram:** `seq-pessoa-desconhecida.png`.
-- **[prototype before 19 Nov]:** there was no face model; any person triggered the rule. Being fixed on 19 Nov [to confirm].
+- **[prototype and proof run]:** on film 2's take, Filipe is recognised (0,54 and 0,63) and nothing fires; the stranger is unknown (0,17 and 0,14). The prototype uses three bands for the kit camera's small faces (40-86 px): known at 0,40 or more, unknown under 0,25, "not sure" between. The alarm and the police suggestion fired from the rule in 2 of 4 replays; in the other 2, too few of his faces were clear enough, so the system asked instead of alarming. Before 19 Nov there was no face model.
 
 **B6. And when someone with no visible face comes in?**
 - **Short answer:** "It asks, it doesn't alarm."
@@ -280,7 +280,7 @@ Status markers:
   - only Altice can send into the Altice app;
   - the MCP server has no notification tool ([10-mcp-in-practice.md](10-mcp-in-practice.md));
   - in production, ThingTracker runs inside Altice's platform and uses that notification service directly. It is one of the few things we would ask Altice to add.
-- **[prototype]:** alerts appear inside our copy of the app [to confirm: fired by the rules, not injected]. The phone notification in the films was composited.
+- **[prototype]:** alerts are fired by the rules and appear inside our copy of the app; Yes and "Turn off the alarm" call the actions (dry runs). The phone notification in the films was composited.
 - **If the kit is set up for the demo:** open the door and the real Altice app notifies the phone. That part is Altice's existing feature.
 
 **E3. Did ThingTracker really turn off the lights and the AC in film 3? Why not say a smart plug cut the lab's power?**
@@ -310,14 +310,15 @@ Status markers:
 **G1. Is what the films show real?**
 - **Short answer:** "The footage is the real lab and kit camera, the app is our prototype, and the boxes come from our models run on that footage; some moments were shortened, and the films say so."
 - **Detail, say it plainly if asked:**
-  - the alerts were triggered for the recording [to confirm: since 19 Nov the same rules fire them in the prototype];
+  - the alerts in the films were triggered for the recording; since the night of 19-20 Nov the same rules fire them in the prototype, shown on the same takes in the proof runs;
   - the stretch where people sit is shown at 4×;
   - a cut skips time where the room is empty;
   - the camera's drop to black when the lights went off was rebuilt from the camera's own behaviour;
   - the smart plug's box was placed on a chosen plug because the kit had been packed.
 
 **G2. What can you show live?**
-- [to confirm after the code work] the rules firing from a simulated door and simulated phones, the presence state changing, and a face recognised or not.
+- the unedited proof runs: each film's own take replayed through the real pipeline, with the rules firing, the presence state changing and the faces judged (one face appears blurred for privacy);
+- live, only if the kit is set up: the door sensor read through MCP, presence changing, an alert fired by a rule.
 
 **G3. What is measured, and what isn't?**
 - **Measured, in the lab on the kit camera:** the book at 0,70 against 0,62; a bottle at 0,10.

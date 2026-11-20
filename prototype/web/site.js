@@ -98,7 +98,7 @@ $('#views').innerHTML = VIEWS.map(([f, t]) => `<figure data-src="/media/views/${
 // ------------------------------------------------------------------ videos
 const VIDEOS = [
   ['hero', '', [
-    ['film-completo.mp4', 'O filme', 'As três histórias, em cerca de 90 s.'],
+    ['film-completo.mp4', 'O filme', 'As três histórias num só filme.'],
   ]],
   ['Os três exemplos', '', [
     ['film-livro.mp4', 'O livro', 'Sair de casa sem o livro: a porta, o telemóvel e a câmara decidem, e a aplicação avisa.'],

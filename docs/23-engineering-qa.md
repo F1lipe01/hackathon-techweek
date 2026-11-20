@@ -40,8 +40,9 @@ Status markers:
 - **[prototype]:**
   - `edge.py` plays the home agent and Altice's vision servers (OWLv2 and DINOv2 on the Mac's GPU);
   - `server.py` plays the ThingTracker service: app, API, presence and rules engines, with SQLite standing in for PostgreSQL;
-  - `llm_local.py` plays the language-model pool (Qwen3-1.7B).
-- In the demo, the kit camera's stream reached the Mac through the organisers' cloud relay. That is a property of the hackathon setup, not of the product.
+  - `llm_local.py` plays the language-model pool (Qwen3-1.7B);
+  - `judge.py`, optional, plays the vision-language judge (Qwen2-VL-2B).
+- In the lab takes, the kit camera's stream reached the Mac through the organisers' cloud relay. That is a property of the hackathon setup, not of the product.
 
 **A3. Why not a box in every home, with everything local?**
 - **Short answer:** "Because it costs €100–140 M up front for 500 000 homes."
@@ -82,7 +83,7 @@ Status markers:
 - **Short answer:** "The target is under 3 seconds; the prototype takes about 10 seconds on the door path."
 - **Detail:**
   - the budget is: motion, then the region uploaded, then the urgent vision queue, then the rule, then the notification;
-  - measured on the Mac's GPU: OWLv2 0,57 s per frame, DINOv2 22 ms per crop (docs/14 §3);
+  - measured on the Mac's GPU: OWLv2 0,57 s per frame, DINOv2 22 ms per crop (docs/14 §14);
   - the prototype's 10 s comes from polling the door sensor through MCP every 4 s, plus the rule's wait (docs/19 §6.4).
 
 ## B. Perception: what the models do, and only that
@@ -94,7 +95,7 @@ Status markers:
   - **DINOv2** turns each box into a fingerprint (384 numbers) and compares it with the 8 stored views by cosine similarity;
   - 0,62 or more counts as yours;
   - in the lab, on the kit camera, the book scored 0,70 and a bottle 0,10;
-  - `edge.py` (matching around lines 195-208).
+  - `edge.py`, `best_match`.
 - **Measured on film 1's take, ceiling camera:**
   - on the full-resolution region around the desk, OWLv2 found the book in 68 of 68 frames;
   - against a fingerprint registered from the same camera, the book scored a median of 0,93 (0,79-0,96), other objects 0,23 (max 0,28), and after the book was taken there were no candidates;
@@ -146,16 +147,16 @@ Status markers:
 - **Short answer:** "Yes, so it is opt-in, with consent, and the face templates never leave the home."
 - **Detail:**
   - **YuNet** (MIT) finds the face and **SFace** (Apache-2.0) compares it; both are small models that run on an ordinary processor;
-  - a known face scores 0,363 or more in the design, OpenCV's recommended value; the prototype uses three bands for the kit camera's small faces (40-86 px): known at 0,40 or more, unknown under 0,25, "not sure" between, to be calibrated per camera in a pilot;
-  - only a label leaves the house: "Filipe", "unknown face" or "face not visible";
+  - three bands, set on the kit camera's small faces (40-86 px): that person at a cosine of 0,40 or more to one of their templates, "unknown face" below 0,25 to every template, and "not sure" in between, answered as "face not visible" (docs/14 §8.3). OpenCV recommends 0,363 for sharp close-ups; the bands are calibrated per camera in a pilot;
+  - only a label leaves the house: the family member's id, "unknown face" or "face not visible";
   - biometric data used to identify a person is a special category under GDPR (Article 9), which needs explicit consent;
   - **diagram:** `seq-pessoa-desconhecida.png`.
-- **[prototype and proof run]:** on film 2's take, Filipe is recognised (0,54 and 0,63) and nothing fires; the stranger is unknown (0,17 and 0,14). The prototype uses three bands for the kit camera's small faces (40-86 px): known at 0,40 or more, unknown under 0,25, "not sure" between. The alarm and the police suggestion fired from the rule in 2 of 4 replays; in the other 2, too few of his faces were clear enough, so the system asked instead of alarming. Before 19 Nov there was no face model.
+- **[prototype and proof run]:** on film 2's take, a team member (Filipe), registered with consent, is recognised (0,54 and 0,63) and nothing fires; the stranger is unknown (0,17 and 0,14). The alarm and the police suggestion fired from the rule in 2 of 4 replays; in the other 2, too few of his faces were clear enough, so the system asked instead of alarming. Before 19 Nov there was no face model.
 
 **B6. And when someone with no visible face comes in?**
 - **Short answer:** "It asks, it doesn't alarm."
 - **Detail:**
-  - the alarm sounds only for a **visible** unknown face on several consecutive analyses (3 in the design), and never for a family member;
+  - the alarm sounds only for a **visible** unknown face on several consecutive analyses (3 in the design; 2 in the prototype, where an "unknown" verdict needs a clearly visible face below 0,25, `presence.py`), and never for a family member;
   - a person whose face isn't visible, while the family is away, makes the home "unsure" and sends a question.
 
 **B7. False detections, like a jacket taken for a person?**
@@ -184,22 +185,22 @@ Status markers:
   - the family's **phones on the Wi-Fi** (the router knows; a new MCP tool proposed to Altice);
   - the **door sensor** (open and close events, which the platform already receives);
   - the **people the cameras see**, with a name if the face is registered.
-- **States:**
-  - OCUPADA: a phone is home, or someone was seen recently;
-  - A SAIR: the door opened and closed, and the service checks who left;
-  - VAZIA: all phones away, the door cycled, nobody seen for a set time;
-  - INCERTA: the signals disagree.
-- **Timings:** demo values in seconds, production values in minutes (for example "empty" after 20 s in the demo, 3 min proposed in production).
+- **States** (in the PT diagram: OCUPADA, A SAIR, VAZIA, INCERTA):
+  - OCCUPIED: a phone is home, or someone was seen recently;
+  - LEAVING: the door opened and closed, and the service checks who left;
+  - EMPTY: all phones away, the door cycled, nobody seen for a set time;
+  - UNSURE: the signals disagree.
+- **Timings:** demo values in seconds, production values in minutes, proposals to tune in a pilot (for example, LEAVING lasts 10 s in the demo and 5 min in production; docs/14 §7, `presence.py`).
 - **Diagram:** `presenca-estados.png`.
 
 **C2. A room without a camera? Someone sitting still?**
 - **Short answer:** "The phones cover it."
-- **Detail:** if Filipe's phone is on the Wi-Fi, he is home even in a room with no camera. A person sitting still is covered by the phones, and by a periodic refresh analysis while presence depends on a camera alone.
+- **Detail:** if a family member's phone is on the Wi-Fi, they are home even in a room with no camera. A person sitting still is covered by the phones, and by a periodic refresh analysis while presence depends on a camera alone.
 
 **C3. And if the phone stays at home, or a visitor has no phone?**
 - **Short answer:** "Then the signals disagree, the home is 'unsure', and the rules ask instead of acting."
 - **Detail:**
-  - a phone at home with no sighting and no door use for a long time (3 h proposed) means a phone left behind;
+  - a phone at home with no sighting and no door use for a long time (4 h proposed) means a phone left behind;
   - a person seen with no phone home is someone without a registered phone: a visitor, a child, or a stranger;
   - the face decides which, if registered; otherwise the family is asked.
 
@@ -208,7 +209,7 @@ Status markers:
 - **Detail:**
   - OWLv2 gives boxes with scores; DINOv2 says how close a crop is to a fingerprint; SFace says whose face it is;
   - every conclusion ("left behind", "nobody home", "unknown person") is code in the rules and presence engines, re-evaluated on each event and timer;
-  - the language model does only three jobs: turn a sentence into a rule, phrase answers and messages, and rarely judge an unclear crop;
+  - the language model does only two jobs: turn a sentence into a rule, and phrase answers and messages; a separate vision-language judge rarely looks at an unclear crop, and its answer can only become a question to the family;
   - **[prototype]:** `server.py` `rules_engine`; the language model in `brain.py`.
 
 **C5. What if the language model makes a mistake?**
@@ -241,20 +242,20 @@ Status markers:
 
 **D4. GDPR?**
 - **Short answer:** "Minimisation by design: no video leaves, faces only with explicit consent and stored at home, and retention limits."
-- The language-model provider must guarantee no training on our data, a DPA and processing in the EU (docs/14 §3).
+- The language-model provider must guarantee no training on our data, a DPA and processing in the EU (docs/14 §12 and §15).
 
 ## E. Altice integration
 
 **E1. What does Altice need to add?**
 - **Short answer:** "A *Things* tab, an assistant button, four MCP tools for things, one for Wi-Fi presence, and the service."
-- **The tools:** `list_things`, `create_thing`, `get_thing_last_seen`, `get_thing_timeline`, plus the proposed Wi-Fi presence tool. Actions use the 18 tools that already exist (docs/14 §3, docs/15).
+- **The tools:** `list_things`, `create_thing`, `get_thing_last_seen`, `get_thing_timeline`, plus the proposed Wi-Fi presence tool. Actions use the 18 tools that already exist (docs/15 §2 and §5).
 
 **E1a. How did you connect the door to your app without access to our backend, app or database?**
 - **Short answer:** "We didn't need your backend. You gave the teams the Connected Home MCP server, the official interface to the platform. The door sensor belongs to our test home on your platform, like any customer's device, and we read it through that interface."
 - **Detail:**
   - **the sensor:** the kit's contact sensor (MS-D3D) in our test home ("Hack 3"). Altice provisioned all seven kit devices and linked them to the team account; we added no device ([04-kit-and-access.md](04-kit-and-access.md)). We stuck the sensor and its magnet on the lab door ([19-teste-real.md](19-teste-real.md));
   - **the access:** our own MCP client (`mcp/client/chmcp.py`) signs in with the team account through Altice's Keycloak (OAuth) and sends the API key on every request (`chmcp.py:170-171`), MCP protocol 2025-06-18;
-  - **reading the door:** every 4 s the server calls the read-only tool `get_home_devices`, finds the `contactSensor` and reads `sensorState`, where "alarm" means open (`server.py:894-921`). Real door events are in the prototype's database from 19 Nov;
+  - **reading the door:** every 4 s the server calls the read-only tool `get_home_devices`, finds the `contactSensor` and reads `sensorState`, where "alarm" means open (`server.py`, the door poll, `POLL_S`). Real door events are in the prototype's database from 19 Nov;
   - **never touched:** Altice's backend, app or database. The app in the films is our copy of the Altice app's screens, running our prototype; in production Altice adds the *Things* tab to its own app.
 - **The honest limit, and the request:** the MCP server has no push events, so we poll, which is part of the prototype's ~10 s door alert. In production ThingTracker runs inside Altice's platform and receives sensor events directly, or through an event subscription. We never call the write tools: actions are dry runs by our own rule.
 
@@ -299,11 +300,11 @@ Status markers:
 
 **F1. Cost per home?**
 - **Short answer:** "About €0,49 a month for vision with one camera, and about €0,43 for the language model."
-- These are team estimates from public prices (docs/16, docs/17), to be measured in the pilot.
+- These are team estimates from public prices (docs/16, docs/17), to be measured in the pilot. The 0,43 € is the base case for a cloud language model; the prototype's local model has no cost per call.
 
 **F2. Licences?**
 - **Short answer:** "All open and free for commercial use."
-- **Detail:** OWLv2 and DINOv2: Apache-2.0. Qwen3-1.7B: Apache-2.0. YuNet: MIT. SFace: Apache-2.0 (checked on their model files; the checksums are in AGENTS.md).
+- **Detail:** OWLv2 and DINOv2: Apache-2.0. Qwen3-1.7B and Qwen2-VL-2B: Apache-2.0. YuNet: MIT. SFace: Apache-2.0 (YuNet and SFace checked on their model folders on 19 Nov; their checksums are in AGENTS.md).
 
 ## G. The films and the demo
 
@@ -318,8 +319,13 @@ Status markers:
 
 **G2. What can you show live?**
 - the unedited proof runs: each film's own take replayed through the real pipeline, with the rules firing, the presence state changing and the faces judged (one face appears blurred for privacy);
-- live, only if the kit is set up: the door sensor read through MCP, presence changing, an alert fired by a rule.
+- live, on the laptop's webcam with the app on the presenter's phone: OWLv2 and DINOv2 running on the camera, nothing recorded;
+- with the kit set up: the door sensor read through MCP, presence changing, an alert fired by a rule.
 
 **G3. What is measured, and what isn't?**
-- **Measured, in the lab on the kit camera:** the book at 0,70 against 0,62; a bottle at 0,10.
+- **Measured, in the lab on the kit camera:**
+  - the book from phone photos at desk level: 0,70 against 0,62; a bottle at 0,10;
+  - the book from the ceiling with the camera's own views: found in 68 of 68 frames, median 0,93 (B1);
+  - faces: the registered team member at 0,54 and 0,63, a stranger at 0,17 and 0,14 (B5);
+  - the scenarios end to end, with no camera: 106 checks in `prototype/test_scenarios.py`, all passing (20 Nov).
 - **Not measured:** accuracy and false alarms in real homes. The pilot is the place for that.

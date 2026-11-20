@@ -66,7 +66,7 @@ A regra é criada em quatro passos:
 
 Quando a regra se cumpre (Figura 1), sucede o seguinte:
 5. O sensor da porta comunica “aberta” e depois “fechada” à plataforma (`sensorState: alarm` significa aberta), e o serviço recebe os dois eventos (hoje, por consulta de `get_home_devices` a cada 4 s), passando o motor de presença de OCUPADA para A SAIR.
-6. O telemóvel do Filipe sai do Wi-Fi da casa, o que o serviço fica a saber através do evento proposto `wifi.left` (ou de `get_home_wifi_clients`), e conclui que saiu um membro da família.
+6. O telemóvel de um membro da família sai do Wi-Fi da casa, o que o serviço fica a saber através do evento proposto `wifi.left` (ou de `get_home_wifi_clients`), e conclui que saiu um membro da família.
 7. O serviço pede ao agente da casa a região do lugar habitual do livro, em 3 imagens com cerca de 1 s de intervalo, independentemente do movimento, e as regiões seguem pela fila urgente para os servidores de visão.
 8. Os servidores de visão devolvem as caixas de “livro” e os respetivos vetores do _DINOv2_, que o serviço compara com as 8 vistas do livro (semelhança ≥ 0,62). Se o livro for visto em pelo menos 2 das 3 imagens, a regra cumpre-se e a aplicação mostra o aviso com a miniatura do livro; com menos, o resultado é “incerto” e não há aviso, ou, se o livro puder estar parcialmente tapado, o motor de regras pode chamar o juiz de visão-linguagem, cuja resposta “incerto” leva a aplicação a perguntar à família.
 
@@ -168,7 +168,7 @@ Cada frase do utilizador torna-se uma regra, compilada uma única vez pelo model
 - As condições e as ações sobre dispositivos (contacto da porta, cor da lâmpada, tomada) já têm correspondência no modelo de cenários da plataforma.
 - As condições sobre objetos e pessoas (“o livro continua na secretária depois de alguém sair”, “ninguém na sala há 30 minutos”) não têm equivalente entre os acionadores atuais. Propõe-se, por isso, o acionador `thingTracker`, avaliado pelo motor de regras no serviço _ThingTracker_. Quando a condição se cumpre, o serviço assinala o acionador como cumprido (`sensor.fired`) e a plataforma executa as ações de início do cenário; uma ação que a família tenha escolhido confirmar aguarda um “Sim” na aplicação.
 
-O cenário do primeiro exemplo, no formato de `post_new_scenario` (os valores de `triggerLogic` e de `operator` aceites pela plataforma estão ainda por confirmar), é o seguinte:
+O cenário do primeiro exemplo, no formato de `post_new_scenario`, é o seguinte. O esquema da ferramenta define `triggerLogic` como texto, sem uma lista de valores; o exemplo pressupõe `"AND"`.
 ```json
 { "name": "Saiu sem o livro", "isActive": true, "triggerLogic": "AND",
   "triggers": [
@@ -179,7 +179,7 @@ O cenário do primeiro exemplo, no formato de `post_new_scenario` (os valores de
     { "type": "notification", "message": "O livro ficou em casa." } ] }
 ```
 
-A porta faz parte da condição `thingTracker`, porque “fechada depois de ter sido aberta” e “saiu um membro da família” são determinados pelo serviço a partir das comunicações da porta e do motor de presença. O sensor de contacto da porta comunica uma porta aberta como `sensorState` com o valor `alarm`, conforme observado no kit do desafio, e a família indica qual dos sensores de contacto é o da porta da entrada. O aviso é entregue pelo serviço de notificações da aplicação, e não por uma ferramenta MCP, e a existência de um tipo de ação de notificação no modelo de cenários está por confirmar com a Altice.
+A porta faz parte da condição `thingTracker`, porque “fechada depois de ter sido aberta” e “saiu um membro da família” são determinados pelo serviço a partir das comunicações da porta e do motor de presença. O sensor de contacto da porta comunica uma porta aberta como `sensorState` com o valor `alarm`, conforme observado no kit do desafio, e a família indica qual dos sensores de contacto é o da porta da entrada. O aviso é entregue pelo serviço de notificações da aplicação, e não por uma ferramenta MCP. No esquema de `post_new_scenario`, as `startActions` aplicam capacidades a dispositivos e não incluem um tipo de notificação, pelo que a ação `notification` do exemplo é um acréscimo proposto (pedido 7 da secção 9).
 
 ## 8. Ligação entre o agente da casa e a plataforma
 
@@ -187,7 +187,7 @@ A porta faz parte da condição `thingTracker`, porque “fechada depois de ter 
 |---|---|
 | Ligação | O agente da casa abre uma única ligação de saída para a plataforma (MQTT sobre TLS com autenticação mútua), através de um balanceador de carga, até a um mediador; a casa não precisa de nenhuma porta de entrada aberta |
 | Identidade | Um certificado por casa, emitido quando se adiciona a câmara na aplicação e revogável a partir dela |
-| De casa para a plataforma | A região que mudou (no máximo 640 × 640, cerca de uma por segundo durante o movimento); a região pedida numa verificação ativa ou numa atualização; raramente, um clipe de 2 a 3 s da região para o juiz; os rótulos dos rostos (“Filipe”, “rosto desconhecido”) com as respetivas caixas; eventos. Nunca vídeo contínuo nem padrões faciais |
+| De casa para a plataforma | A região que mudou (no máximo 640 × 640, cerca de uma por segundo durante o movimento); a região pedida numa verificação ativa ou numa atualização; raramente, um clipe de 2 a 3 s da região para o juiz; os rótulos dos rostos (o nome de uma pessoa registada, “rosto desconhecido” ou “rosto não visível”) com as respetivas caixas; eventos. Nunca vídeo contínuo nem padrões faciais |
 | Da plataforma para casa | Pedidos de verificação ativa ou de atualização; o vídeo do rosto no registo de uma pessoa, reencaminhado sem ser guardado; as máscaras de privacidade; ordens para apagar padrões faciais |
 | Porta | Hoje, o serviço consulta `get_home_devices` a cada 4 s; com um fluxo de eventos, os eventos da porta chegariam de imediato |
 | Telemóveis no Wi-Fi | A ferramenta só de leitura proposta, `get_home_wifi_clients` (endereço MAC, nome, banda e hora de ligação de cada cliente), com os eventos `wifi.joined` e `wifi.left`; a família associa uma vez, na aplicação, cada telemóvel a uma pessoa |
@@ -202,16 +202,16 @@ A porta faz parte da condição `thingTracker`, porque “fechada depois de ter 
 | 2 | Uma ferramenta só de leitura, `get_home_wifi_clients` | A presença precisa dos telemóveis da família, já que nenhuma câmara vê quem saiu | O _router_ vê os clientes, mas nenhuma ferramenta os expõe |
 | 3 | Acesso local ao RTSP da câmara a partir do _router_ | O vídeo deve ficar na rede da casa | O vídeo passa por um _relay_ na nuvem (_go2rtc_) |
 | 4 | Saber se os _routers_ ou as câmaras têm uma NPU | Com uma NPU, a visão passa para casa e custa cerca de 0,36 € por casa e por mês, em vez de 0,49 € (documento 17) | A central LTE do kit não consegue executar modelos de visão |
-| 5 | Uma forma de acrescentar ferramentas ao servidor MCP | Para as quatro ferramentas _Things_ e o acionador `thingTracker` | Por determinar |
+| 5 | Uma forma de acrescentar ferramentas ao servidor MCP | Para as quatro ferramentas _Things_ e o acionador `thingTracker` | O servidor MCP tem 18 ferramentas, nenhuma sobre objetos. Até lá, as ferramentas _Things_ são uma API do serviço, como no protótipo |
 | 6 | Uma ferramenta para apagar cenários | Os utilizadores têm de poder remover sensores | O MCP permite criar cenários, mas não apagá-los |
-| 7 | Notificações _push_ para a aplicação | Para os avisos das regras | O serviço de notificações da aplicação; desconhece-se como o _ThingTracker_ o chamaria |
-| 8 | Contratos ou capacidade de GPU para os modelos | Modelos de texto sem uso dos dados para treino, com DPA e processamento na UE; GPU para os servidores de visão e para o juiz | Desconhece-se que fornecedores ou que capacidade a Altice já tem |
+| 7 | Notificações _push_ para a aplicação | Para os avisos das regras | A aplicação tem o seu serviço de notificações, mas o servidor MCP não expõe nenhuma ferramenta para o chamar; propõe-se que o serviço _ThingTracker_ o chame diretamente, como mais um emissor de avisos |
+| 8 | Contratos ou capacidade de GPU para os modelos | Modelos de texto sem uso dos dados para treino, com DPA e processamento na UE; GPU para os servidores de visão e para o juiz | A informação não é pública. A arquitetura funciona com qualquer das opções de modelo de texto que cumprem estes requisitos (documento 14, §15), e a capacidade de GPU dimensiona-se pelo documento 17 (cerca de 1 427 placas _L4_ para 500 000 casas) |
 
 ## 10. Estado do protótipo
 
 | Elemento | No protótipo (pasta `prototype/`) |
 |---|---|
-| Agente da casa e servidores de visão | Um único programa no portátil da equipa (`edge.py`) desempenha os dois papéis, com o filtro de movimento, os rostos com o _YuNet_ e o _SFace_ e o _OWLv2_ e o _DINOv2_ na GPU do portátil, sobre a imagem completa |
+| Agente da casa e servidores de visão | Um único programa no portátil da equipa (`edge.py`) desempenha os dois papéis, com o filtro de movimento, os rostos com o _YuNet_ e o _SFace_ e o _OWLv2_ e o _DINOv2_ na GPU do portátil, sobre a imagem completa e, para os objetos, sobre regiões de resolução total à volta do que mudou |
 | Registo | A partir de fotografias do telemóvel e de 8 vistas mostradas à câmara; a assinatura visual fica numa cópia que representa a base de dados da plataforma |
 | Motor de presença | `presence.py`, com os quatro estados, a partir dos telemóveis simulados, da porta e das câmaras |
 | Porta | Lida por consulta de `get_home_devices` a cada 4 s quando a sessão MCP está ativa; porta simulada nos restantes casos |

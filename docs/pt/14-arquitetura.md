@@ -1,13 +1,13 @@
 # Arquitetura do _ThingTracker_
 
-Versão 2, quinta-feira, 19 de novembro de 2026. Destina-se ao júri e aos engenheiros da Altice Labs, bem como à equipa, e descreve a solução final decidida a 19 de novembro, com o local onde corre cada parte, o componente que decide cada coisa e o sinal e o limiar em que se baseia. A secção 16 indica, ponto a ponto, o que o protótipo já faz.
+Versão 2, de 19 de novembro de 2026, com o estado do protótipo revisto a 20 de novembro. Destina-se ao júri e aos engenheiros da Altice Labs e descreve a solução final, com o local onde corre cada parte, o componente que decide cada coisa e o sinal e o limiar em que se baseia. A secção 16 indica, ponto a ponto, o que o protótipo já faz.
 
 As vistas seguem três referências. O modelo C4 (c4model.com) organiza o contexto, os contentores e os componentes; o arc42 (arc42.org) orienta a vista de execução, com as sequências, e a vista de implantação; o diagrama de fluxo de dados com fronteiras de confiança segue a prática de modelação de ameaças do _Microsoft Security Development Lifecycle_ e da OWASP. Todas as figuras são geradas por `docs/architecture/build_views.py`, que verifica se cada texto cabe na respetiva caixa e interrompe a geração quando algum não cabe.
 
 ## Em resumo
 
 - A solução é híbrida. Em casa, no equipamento que já lá existe (o processador do _router_ Altice, sem acelerador de IA), correm o filtro de movimento, as máscaras de privacidade, o recorte da região que mudou e o reconhecimento facial opcional, pelo que os padrões faciais nunca saem de casa. Na Altice, os modelos de visão (_OWLv2_ e _DINOv2_) correm em GPU _L4_ próprias, alimentadas por filas, e o serviço _ThingTracker_ determina a presença e avalia as regras de cada casa.
-- O vídeo nunca sai de casa. Saem apenas a região que mudou (no máximo 640 × 640 píxeis, cerca de uma vez por segundo enquanto há movimento), a região pedida numa verificação, os rótulos dos rostos (“Filipe”, “rosto desconhecido”) e, raramente, um clipe de 2 a 3 s da região para o juiz.
+- O vídeo nunca sai de casa. Saem apenas a região que mudou (no máximo 640 × 640 píxeis, cerca de uma vez por segundo enquanto há movimento), a região pedida numa verificação, os rótulos dos rostos (o nome de uma pessoa registada ou “rosto desconhecido”) e, raramente, um clipe de 2 a 3 s da região para o juiz.
 - Há três tipos de evidência e um único decisor. Os olhos rápidos atuam sempre que há movimento (filtro de movimento, _OWLv2_, _DINOv2_ e rostos), o juiz de visão-linguagem é chamado raramente, perante um momento duvidoso, e os factos que a câmara não vê (o sensor da porta e os telemóveis da família no Wi-Fi) respondem a “saiu alguém de casa?”. Quem decide é o motor de regras, em código simples.
 - Com 500 000 casas, a visão custa cerca de 0,49 € por casa e por mês, com uma câmara, nos servidores _L4_ da própria Altice (documento 17), a que se somam cerca de 0,43 € do modelo de linguagem (documento 16), ambos estimativas.
 - Caso o _router_ ou a câmara disponham de uma NPU capaz de correr um detetor, a visão passa para casa e o custo desce para cerca de 0,36 € (documento 17, opção A1).
@@ -73,7 +73,7 @@ A Figura 2 apresenta os contentores, a tecnologia de cada um e o que leva cada s
 | Armazenamento de objetos | Altice | Compatível com S3 | Miniaturas das observações, durante 30 dias (proposta) | Capacidade |
 | Modelos de linguagem e de visão-linguagem | Altice (o de texto pode ser de um fornecedor sob contrato) | Servidores GPU atrás de uma fila | Texto, para converter frases em regras e redigir respostas; juiz, para os raros clipes curtos | Servidores GPU |
 
-O serviço não guarda estado, para que qualquer instância possa servir qualquer casa. Os eventos de cada casa chegam por ordem a uma única partição, o estado corrente fica na _cache_ e tudo o que tem de durar fica no _PostgreSQL_. A sequência de mensagens do documento 15 pressupunha o motor de regras em casa; nesta solução, o motor corre no serviço, mantendo-se inalteradas as ferramentas MCP e o formato de cenário do documento 15.
+O serviço não guarda estado, para que qualquer instância possa servir qualquer casa. Os eventos de cada casa chegam por ordem a uma única partição, o estado corrente fica na _cache_ e tudo o que tem de durar fica no _PostgreSQL_. O documento 15 descreve as ferramentas MCP e o formato de cenário que o serviço usa, com o motor de regras também no serviço.
 
 ## 5. Implantação (arc42, secção 7)
 
@@ -95,7 +95,7 @@ O documento 17 estima, para 500 000 casas, cerca de 1 427 placas _L4_ e 6,4 M€
 
 ### 5.2 Evolução prevista: a visão em casa (A1)
 
-Se os _routers_ ou as câmaras da Altice tiverem uma NPU capaz de correr um detetor, o _OWLv2_ e o _DINOv2_ (ou um detetor mais leve) passam para o agente da casa, e de casa saem apenas eventos, miniaturas e assinaturas visuais. O documento 17 estima cerca de 0,36 € por casa e por mês, com base num sobrecusto de 15 € por _router_, que é um pressuposto. Saber se o _router_ tem essa NPU é a primeira pergunta para a Altice (§18).
+Se os _routers_ ou as câmaras da Altice tiverem uma NPU capaz de correr um detetor, o _OWLv2_ e o _DINOv2_ (ou um detetor mais leve) passam para o agente da casa, e de casa saem apenas eventos, miniaturas e assinaturas visuais. O documento 17 estima cerca de 0,36 € por casa e por mês, com base num sobrecusto de 15 € por _router_, que é um pressuposto. Confirmar se o _router_ tem essa NPU é o primeiro ponto a validar com a Altice (§18).
 
 ### 5.3 As opções rejeitadas
 
@@ -108,7 +108,7 @@ A solução escolhida mantém em casa o filtro de movimento, que é o que torna 
 
 ### 5.4 Onde corre cada parte na demonstração
 
-Na demonstração, o _MacBook_ da equipa desempenha todos os papéis ao mesmo tempo. O `edge.py` faz de agente da casa (o filtro de movimento e, desde 19 de novembro, os rostos) e de servidores de visão da Altice (_OWLv2_ e _DINOv2_, na GPU do _Mac_). O `server.py` faz de serviço _ThingTracker_, com o motor de presença, o motor de regras e o _SQLite_ no lugar do _PostgreSQL_, e o `llm_local.py` faz de servidores do modelo de linguagem, com o _Qwen3-1.7B_ através do _MLX_. Os ecrãs do telemóvel são um navegador no mesmo _Mac_. O _stream_ da câmara chega ao _Mac_ através do _relay_ na nuvem da organização, o que nunca acontece no produto, em que o _stream_ não sai da rede da casa.
+Na demonstração, o _MacBook_ da equipa desempenha todos os papéis ao mesmo tempo. O `edge.py` faz de agente da casa (o filtro de movimento e os rostos) e de servidores de visão da Altice (_OWLv2_ e _DINOv2_, na GPU do _Mac_). O `server.py` faz de serviço _ThingTracker_, com o motor de presença, o motor de regras e o _SQLite_ no lugar do _PostgreSQL_, e o `llm_local.py` faz de servidores do modelo de linguagem, com o _Qwen3-1.7B_ através do _MLX_. Os ecrãs do telemóvel são um navegador no mesmo _Mac_. O _stream_ da câmara chega ao _Mac_ através do _relay_ na nuvem da organização, o que nunca acontece no produto, em que o _stream_ não sai da rede da casa.
 
 ## 6. Componentes (C4, nível 3)
 
@@ -124,7 +124,7 @@ A Figura 4 detalha o agente da casa, os servidores de visão e o serviço _Thing
 | 2 | Máscaras de privacidade | Agente da casa | Imagem | Que zonas nunca são analisadas | Zonas desenhadas pela família | Imagem com máscaras |
 | 3 | Filtro de movimento | Agente da casa | Imagem de 160 × 90 em tons de cinzento, a cada 0,5 s, comparada com um fundo que se atualiza lentamente | Se há análise | Mais de 0,6 % dos píxeis com uma diferença superior a 22 níveis de cinzento; fica aberto 6 s (valores do protótipo); abre também a pedido do serviço | Aberto ou fechado |
 | 4 | Recorte da região | Agente da casa | Imagem e filtro | Que parte enviar | A região que mudou, ou a pedida, no máximo 640 × 640, cerca de uma por segundo | Região |
-| 5 | Rostos (opcional) | Agente da casa | Região | A quem pertence um rosto visível | O _YuNet_ encontra o rosto e o _SFace_ compara-o com os padrões; semelhança ≥ 0,363 dá o nome (§8.3) | “Filipe” ou “rosto desconhecido”, com a caixa do rosto |
+| 5 | Rostos (opcional) | Agente da casa | Região | A quem pertence um rosto visível | O _YuNet_ encontra o rosto e o _SFace_ compara-o com os padrões; semelhança ≥ 0,40 dá o nome, e inferior a 0,25 com todos os padrões dá “rosto desconhecido” (§8.3) | O nome da pessoa, “rosto desconhecido” ou “rosto não visível”, com a caixa do rosto |
 | 6 | Canal seguro | Agente da casa | Região e rótulos | Nada; sem internet, guarda eventos e rótulos numa fila, nunca imagens | mTLS, um certificado por casa | Mensagens para o mediador |
 | 7 | Filas de visão | Altice | Regiões e pedidos | Urgente ou em lote | Urgente: verificações ativas, atualizações, registos, clipes para o juiz e casas com uma regra de segurança ativa; em lote, o resto | Trabalho por ordem |
 | 8 | Deteção | Servidores de visão | Região | Caixas dos objetos registados da casa, de “a person” e de superfícies (secretária, mesa) | Pontuações do _OWLv2_ (no protótipo, 0,1 para propor e 0,2 para uma pessoa) | Caixas |
@@ -147,7 +147,7 @@ A Figura 5 mostra a máquina de estados da presença, que corre no serviço _Thi
 **Figura 5** – Presença: quatro estados, a partir dos telemóveis da família, do sensor da porta e das câmaras, com os tempos da demonstração e de produção.
 
 O motor de presença combina três sinais:
-- Os telemóveis da família no Wi-Fi da casa. O _router_ Altice sabe que dispositivos estão ligados, pelo que se propõe à Altice uma ferramenta MCP só de leitura, `get_home_wifi_clients` (o endereço MAC, o nome, a banda e a hora de ligação de cada cliente), e os eventos `wifi.joined` e `wifi.left`, cabendo à família associar uma vez, na aplicação, cada telemóvel a uma pessoa. A forma como o _router_ continua a reconhecer um telemóvel que muda de endereço MAC é uma questão para a Altice. O protótipo simula os telemóveis.
+- Os telemóveis da família no Wi-Fi da casa. O _router_ Altice sabe que dispositivos estão ligados, pelo que se propõe à Altice uma ferramenta MCP só de leitura, `get_home_wifi_clients` (o endereço MAC, o nome, a banda e a hora de ligação de cada cliente), e os eventos `wifi.joined` e `wifi.left`, cabendo à família associar uma vez, na aplicação, cada telemóvel a uma pessoa. Reconhecer um telemóvel que muda de endereço MAC cabe ao _router_ e é um ponto a validar com a Altice (§18). O protótipo simula os telemóveis.
 - O sensor de contacto da porta (_MS-D3D_, com a central _MS-WES1AS_), que já comunica “aberta” e “fechada” à plataforma. Hoje é lido por consulta de `get_home_devices` a cada 4 s, sendo uma API de eventos o primeiro pedido à Altice. A família indica qual dos sensores de contacto é o da porta de entrada.
 - As pessoas vistas por cada câmara, a partir das caixas “a person” do _OWLv2_, com o rótulo do rosto calculado pelo agente da casa, que pode ser o nome de um membro da família, “rosto desconhecido” ou “rosto não visível” (uma caixa de pessoa sem nenhum rosto avaliado no seu interior).
 
@@ -161,7 +161,7 @@ A tabela seguinte descreve as transições entre estados.
 | A SAIR | INCERTA | Telemóveis fora, mas uma pessoa é vista | Telemóveis e câmaras |
 | VAZIA | OCUPADA | Chegada: um telemóvel da família entra no Wi-Fi, ou um rosto da família é reconhecido | Telemóveis e rostos |
 | VAZIA | INCERTA | Uma pessoa é vista (rosto desconhecido ou não visível) com todos os telemóveis fora | Câmaras e telemóveis |
-| OCUPADA | INCERTA | Um telemóvel está em casa, mas ninguém foi visto nem a porta foi usada durante T_parado (um telemóvel esquecido?) | Telemóveis, câmaras e porta |
+| OCUPADA | INCERTA | Um telemóvel está em casa, mas ninguém foi visto nem a porta foi usada durante T_parado (possivelmente um telemóvel esquecido em casa) | Telemóveis, câmaras e porta |
 | INCERTA | OCUPADA | Um telemóvel da família entra no Wi-Fi, ou um rosto da família é reconhecido | Telemóveis e rostos |
 | INCERTA | VAZIA | Telemóveis fora e ninguém nas câmaras, depois da atualização | Telemóveis e câmaras |
 
@@ -238,7 +238,7 @@ O registo de uma pessoa decorre em cinco passos.
 | 4 | Agente da casa | Até 8 padrões, escolhidos em imagens diferentes, ficam guardados no _SQLite_ cifrado do _router_, e o vídeo é apagado |
 | 5 | Retirada | A pessoa desativa o reconhecimento; os padrões são apagados em casa e o apagamento é confirmado |
 
-O documento 20 (secção 1.3) tinha proposto o registo em frente à câmara da casa, para que nenhuma imagem de um rosto atravessasse a plataforma, mas a equipa optou pelo vídeo gravado com o telemóvel. O envio desse vídeo pelo Wi-Fi da casa, diretamente para o _router_, mantê-lo-ia totalmente fora da plataforma, e fica registado como opção na §18.
+O registo usa um vídeo gravado com o telemóvel, que a plataforma reencaminha sem o guardar. Uma alternativa é enviar esse vídeo pelo Wi-Fi da casa diretamente para o _router_, o que o manteria totalmente fora da plataforma (§18).
 
 O reconhecimento segue as regras da tabela seguinte.
 
@@ -247,11 +247,12 @@ O reconhecimento segue as regras da tabela seguinte.
 | Procurar | Para cada caixa de pessoa, o agente da casa procura um rosto com o _YuNet_ no seu interior |
 | Avaliar só rostos nítidos | Um rosto demasiado pequeno, pouco nítido ou demasiado virado fica como “rosto não visível” (no protótipo, pontuação do _YuNet_ ≥ 0,8, largura ≥ 40 px e rotação ≤ 0,75) |
 | Comparar | Semelhança de cosseno do _SFace_ com todos os padrões da casa |
-| Nomear | Semelhança ≥ 0,363 com os padrões de uma pessoa identifica essa pessoa; 0,363 é o valor recomendado pelo _OpenCV_ para o _SFace_ (`samples/dnn/face_detect.py`), definido em rostos nítidos e próximos |
-| Desconhecido | Um rosto visível abaixo do limiar para todos fica como “rosto desconhecido” |
-| Protótipo | Três faixas, fixadas na gravação do laboratório em que os rostos na câmara do kit tinham 40 a 86 px de largura: conhecido a 0,40 ou mais de um padrão, desconhecido abaixo de 0,25 para todos os padrões e “incerto” entre os dois. Com um único corte a 0,30, um dos rostos do estranho obteve 0,33 contra a pessoa registada e alguns rostos desta ficaram entre 0,31 e 0,36, por isso o corte passou a faixa. Na gravação reproduzida, a pessoa registada obteve 0,54 e 0,63 e o estranho 0,17 e 0,14. Uma gravação é uma verificação, e não uma medição de exatidão, pelo que as faixas devem ser fixadas por câmara no piloto |
+| Nomear | Semelhança ≥ 0,40 com um dos padrões de uma pessoa identifica essa pessoa |
+| Desconhecido | Um rosto visível com semelhança inferior a 0,25 com todos os padrões fica como “rosto desconhecido” |
+| Incerto | Entre 0,25 e 0,40, a resposta é “incerto” e o rosto conta como “rosto não visível”, que não dispara nem silencia um alarme |
+| Origem dos limiares | O _OpenCV_ recomenda 0,363 para o _SFace_ (`samples/dnn/face_detect.py`), um valor definido em rostos nítidos e próximos. As três faixas foram fixadas na gravação do laboratório, em que os rostos na câmara do kit tinham 40 a 86 px de largura: com um único corte a 0,30, um dos rostos do estranho obteve 0,33 contra a pessoa registada e alguns rostos desta ficaram entre 0,31 e 0,36, por isso o corte passou a faixa. Na gravação reproduzida, a pessoa registada (um membro da equipa, registado com consentimento) obteve 0,54 e 0,63 e o estranho 0,17 e 0,14. Uma gravação é uma verificação, e não uma medição de exatidão, pelo que as faixas se fixam por câmara no piloto |
 
-De casa sai apenas o rótulo (“Filipe” ou “rosto desconhecido”, com a caixa do rosto), e nunca os padrões.
+De casa sai apenas o rótulo (o nome da pessoa, “rosto desconhecido” ou “rosto não visível”, com a caixa do rosto), e nunca os padrões.
 
 As decisões de alarme e as sugestões constam da tabela seguinte.
 
@@ -301,7 +302,7 @@ Cada regra mostra ao utilizador, em linguagem corrente, o que observa e o que fa
 | Porque não em cada imagem | O custo para 500 000 casas (documento 17), o facto de um objeto concreto da família precisar sempre de uma assinatura visual e a necessidade de os alarmes assentarem em regras que se podem testar |
 | O que não consegue fazer | Ver alguém que já saiu da imagem; “saiu alguém de casa?” responde-se com o sensor da porta e com os telemóveis |
 
-O juiz substitui a tarefa anterior do modelo de texto, que era avaliar um recorte duvidoso. Ainda não foi escolhido nenhum modelo, e a respetiva licença será verificada antes de o nomear.
+O juiz substitui a tarefa anterior do modelo de texto, que era avaliar um recorte duvidoso. No protótipo, o juiz é o _Qwen2-VL-2B-Instruct_ (4 bits, _MLX_, licença Apache-2.0), opcional, chamado só quando uma verificação ativa não encontra o objeto, sobre um recorte apertado do lugar; o seu “sim” ou “incerto” torna-se uma pergunta à família. O modelo da solução final escolhe-se no piloto, com a licença verificada antes.
 
 ### 8.7 Avisos e ações
 
@@ -326,7 +327,7 @@ Cada frase é compilada uma única vez numa regra pequena e explícita, e o moto
   "title": "Livro esquecido",
   "kind": "leave_without",
   "thing": "livro",
-  "owner": "Filipe",
+  "owner": "Ana",
   "trigger": { "door": "closed_after_open", "and_any": ["phone_left", "count_dropped"] },
   "check": { "frames": 3, "seen_at_least": 2, "match": 0.62, "judge_if_unsure": true },
   "then": [ { "notify": "O livro ficou em casa." } ],
@@ -374,9 +375,9 @@ A tabela seguinte reúne as principais ameaças por fronteira, como ponto de par
 
 | Fronteira | Ameaça | Mitigação |
 |---|---|---|
-| Casa → Altice | Uma casa falsa envia regiões ou eventos | mTLS com um certificado por casa, revogável na aplicação |
+| Casa → Altice | Um dispositivo que se faz passar por uma casa envia regiões ou eventos | mTLS com um certificado por casa, revogável na aplicação |
 | Casa → Altice | Regiões lidas em trânsito ou guardadas | TLS; processamento em memória; sem registos de píxeis |
-| Altice → casa | Um pedido falso pede regiões a uma casa | Pedidos só do serviço, pelo mesmo canal mTLS, e registados |
+| Altice → casa | Um pedido forjado pede regiões a uma casa | Pedidos só do serviço, pelo mesmo canal mTLS, e registados |
 | Altice | Dados de um cliente lidos por outro | Cada linha associada ao cliente, com segurança ao nível da linha; tópicos e partições por casa |
 | Altice → fornecedor | Texto reutilizado ou guardado pelo fornecedor | Contrato sem treino com os dados, DPA e processamento na UE; marcadores no lugar dos nomes (proposta) |
 | Telemóvel → Altice | Um “Sim” de outra pessoa | Sessão da aplicação Altice; ação registada com a regra e a evidência |
@@ -431,29 +432,29 @@ Quanto às licenças dos modelos de visão, verificadas nas fichas dos modelos e
 
 ## 16. Protótipo e solução final
 
-Estado no final de 19 de novembro de 2026, segundo o código e o histórico do protótipo. Os pontos “em curso” estavam a ser desenvolvidos na noite de 19 de novembro e carecem de confirmação.
+Estado a 20 de novembro de 2026, verificado no código do protótipo (pasta `prototype/`).
 
 | Parte | Solução final | Protótipo | Estado |
 |---|---|---|---|
 | Captura | RTSP na rede da casa, uma ligação aberta | Uma ligação aberta, através do _relay_ da organização | Implementado (o _relay_ só na demonstração) |
 | Máscaras de privacidade | Zonas desenhadas pela família | Só o relógio sobreposto pela câmara é mascarado | Não existe no protótipo |
 | Filtro de movimento | 160 × 90 em tons de cinzento, a cada 0,5 s, no _router_ | O mesmo, no Mac (`edge.py`) | Implementado |
-| Região que mudou enviada para a Altice | Região ≤ 640 × 640, cerca de uma por segundo | O _Mac_ analisa localmente a imagem completa | Simulado |
+| Região que mudou enviada para a Altice | Região ≤ 640 × 640, cerca de uma por segundo | O Mac analisa a imagem completa e, para os objetos, também regiões de resolução total à volta do que mudou (até 640 × 640) e da última caixa de cada objeto; nada é enviado, porque tudo corre no mesmo Mac | Parcial |
 | Rostos | _YuNet_ e _SFace_ no _router_, padrões em casa | _YuNet_ e _SFace_ no Mac, padrões no _SQLite_ do próprio agente, conhecido a 0,40, desconhecido abaixo de 0,25 | Implementado |
 | Servidores de visão | _OWLv2_ e _DINOv2_ em GPU _L4_, com filas | _OWLv2_ e _DINOv2_ na GPU do Mac, sem fila | Simulado |
 | Comparação | _pgvector_ no serviço | _NumPy_ no agente, limiar 0,62 | Implementado (noutro componente) |
-| Na mão, levado e mudado | Seguimento no serviço | “Na mão” calculado no agente; “levado” após 3 análises sem o objeto, no servidor; “mudado” num lugar novo | Implementado (a confirmar) |
+| Na mão, levado e mudado | Seguimento no serviço | “Na mão” calculado no agente (sobreposição ≥ 0,02 com a caixa de uma pessoa); “levado” após 3 análises sem o objeto, no servidor; “mudado” num lugar novo; “reposto” quando volta ao lugar | Implementado |
 | Motor de presença | Por eventos, por casa | `presence.py`, quatro estados, tempos de demonstração e de produção, estado em _SQLite_ | Implementado |
 | Telemóveis da família no Wi-Fi | Ferramenta proposta `get_home_wifi_clients` | Alternados a partir da página (`/api/sim/phone`) | Simulado |
 | Sensor da porta | API de eventos (pedida) | Consulta de `get_home_devices` a cada 4 s com sessão iniciada; porta simulada nos restantes casos | Implementado |
 | Objeto esquecido | Porta fechada, alguém que saiu e verificação ativa | O mesmo; “incerto” quando não é visto ou não há resposta | Implementado |
 | Pessoa desconhecida e 112 | 3 análises com a família fora; apenas sugestão | O mesmo; o botão da aplicação nunca marca o número | Implementado |
 | Poupança de energia e porta aberta | Em VAZIA, um aviso por ocorrência | O mesmo | Implementado |
-| Juiz | Modelo de visão-linguagem na Altice | Poderá ser acrescentado um modelo pequeno na noite de 19 de novembro | Em curso (a confirmar) |
+| Juiz | Modelo de visão-linguagem na Altice | Opcional: _Qwen2-VL-2B-Instruct_ (4 bits, _MLX_, `judge.py`), só quando uma verificação ativa não encontra o objeto, sobre um recorte apertado do lugar; cerca de 1,5 s por chamada no Mac; “sim” ou “incerto” tornam-se uma pergunta à família | Implementado (opcional) |
 | Motor de regras | Por eventos, no serviço | Um ciclo a cada 2 s no `server.py` | Implementado (em ciclo) |
 | Avisos e ações | Serviço de notificações; MCP depois de um “Sim” | Na réplica _web_ da aplicação; em simulação salvo `TT_LIVE_ACTIONS=1`; o alarme é sempre simulado | Simulado |
 | Registo por fotografias e pela câmara | Servidores de visão | Implementado no Mac | Implementado |
-| Propostas da câmara | Servidores de visão | Ecrã “A procurar nas câmaras…” | A confirmar |
+| Propostas da câmara | Servidores de visão | Ecrã “A procurar nas câmaras…” com uma lista fixa de objetos comuns, sem propostas a partir do que a câmara vê | Não existe no protótipo (só o ecrã) |
 | Canal seguro | MQTT sobre mTLS | HTTP no Mac | Não existe no protótipo |
 | Balanceadores de carga, instâncias sem estado e filas | Na Altice | Um único processo | Não existe no protótipo |
 | _PostgreSQL_, _cache_ e armazenamento de objetos | Na Altice | _SQLite_ (`store.py`) e ficheiros locais | Simulado |
@@ -473,15 +474,19 @@ Estado no final de 19 de novembro de 2026, segundo o código e o histórico do p
 | D8 | Reconhecimento de pessoas opcional e em casa | Nunca, ou na nuvem | Os cenários de segurança da família precisam dele; o consentimento pessoa a pessoa e os padrões em casa mantêm controláveis o risco jurídico e a questão da confiança |
 | D9 | Cada câmara corresponde a um lugar | Zonas desenhadas dentro de uma câmara | Mais simples para a família; as zonas ficam para a Altice, numa fase posterior |
 
-## 18. Questões em aberto para a Altice
+## 18. Pontos a validar com a Altice
 
-1. Que _routers_ ou câmaras têm uma NPU capaz de correr um detetor (opção A1, cerca de 0,36 € por casa e por mês)?
-2. A plataforma disponibiliza eventos ou notificações _push_ (porta, Wi-Fi) que se possam usar, em vez de consultar periodicamente o servidor MCP?
-3. A Altice pode acrescentar uma ferramenta só de leitura, `get_home_wifi_clients`, e como continua o _router_ a reconhecer um telemóvel que muda de endereço MAC?
-4. O _router_ pode ler o _stream_ RTSP da câmara na rede da casa, em vez de passar pelo _relay_ na nuvem?
-5. A Altice acrescentaria ao servidor MCP as ferramentas _Things_, o acionador `thingTracker` e uma ferramenta para apagar cenários?
-6. Que contratos de modelos de linguagem tem a Altice em vigor (residência dos dados na UE, DPA), e que capacidade de GPU tem disponível?
-7. O vídeo do rosto deve ser enviado pelo Wi-Fi da casa diretamente para o _router_, para nunca atravessar a plataforma?
+Cada ponto indica o pressuposto adotado neste documento e o que muda se a Altice o confirmar ou não. Os pedidos correspondentes estão na secção 9 do documento 15.
+
+| # | Ponto | Pressuposto neste documento | Se se confirmar, ou não |
+|---|---|---|---|
+| 1 | NPU nos _routers_ ou nas câmaras | Não se conta com ela; a solução escolhida (§5.1) não depende dela | Com uma NPU capaz de correr um detetor, aplica-se a opção A1, com cerca de 0,36 € por casa e por mês (§5.2) |
+| 2 | Eventos da porta e do Wi-Fi | O servidor MCP não tem notificações _push_; a porta é lida por consulta de `get_home_devices` a cada 4 s, como no protótipo | Com uma API de eventos, a regra reage ao fecho da porta sem esperar pela consulta seguinte |
+| 3 | Telemóveis da família no Wi-Fi | É acrescentada a ferramenta só de leitura `get_home_wifi_clients`, e o _router_ continua a reconhecer um telemóvel que muda de endereço MAC | Sem ela, “saiu alguém” assenta só na porta e nas câmaras (§8.1) |
+| 4 | Leitura local do RTSP | O _router_ lê o _stream_ da câmara na rede da casa; o _relay_ na nuvem existe só na demonstração | Se não puder, o agente da casa precisa de outro equipamento na rede da casa, cujo custo este documento não estima |
+| 5 | Ferramentas _Things_, acionador `thingTracker` e ferramenta para apagar cenários | Acrescentadas ao servidor MCP (documento 15) | Até lá, as regras ficam na base de dados do serviço e as ferramentas _Things_ são uma API do serviço, como no protótipo |
+| 6 | Contratos de modelos de linguagem e capacidade de GPU | Uma das opções da §15 que cumprem; GPU dimensionadas pelo documento 17 (cerca de 1 427 placas _L4_ para 500 000 casas) | O custo do modelo de linguagem varia entre 0,10 e 1,78 € por casa e por mês, consoante o modelo (documento 16) |
+| 7 | Caminho do vídeo do rosto no registo | A plataforma reencaminha-o para o _router_ sem o guardar (§8.3) | Enviá-lo pelo Wi-Fi da casa diretamente para o _router_ mantê-lo-ia totalmente fora da plataforma |
 
 ## Fontes
 

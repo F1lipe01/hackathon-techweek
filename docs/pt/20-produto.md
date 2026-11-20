@@ -15,6 +15,8 @@ Usam-se cinco marcas ao longo do texto:
 
 Tudo o que não provém dos documentos 14 a 18 nem do protótipo é proposta, mesmo nas frases em que a marca não se repete.
 
+A distribuição dos componentes segue a versão 2 da arquitetura (documento 14, de 19 de novembro de 2026). Em casa, no processador do _router_ Altice, correm o filtro de movimento, as máscaras de privacidade, o recorte da região que mudou e o reconhecimento facial opcional (_YuNet_ e _SFace_). Nos servidores da Altice correm o _OWLv2_ e o _DINOv2_, a memória da casa e o Motor de regras. O modelo de linguagem só escreve texto. As tabelas das secções 1 a 6 mostram, na coluna “Em casa”, o serviço local com capacidade de IA (um _router_ com NPU ou uma pequena caixa), a evolução prevista no documento 14; na via híbrida, a deteção e as assinaturas dessas tabelas correm nos servidores da Altice.
+
 ## Em resumo
 
 - O cliente acompanha quatro tipos de _things_ (objetos, animais, pessoas e lugares) e cria regras com uma frase. Cada tipo tem um fluxo de registo próprio, porque o que se aprende, o que sai de casa e o consentimento exigido diferem de um tipo para outro (secção 1).
@@ -22,22 +24,22 @@ Tudo o que não provém dos documentos 14 a 18 nem do protótipo é proposta, me
 - Uma frase vaga como “avisa-me se a criança estiver em perigo” não dá origem a uma regra, mas a um plano com várias regras, que o modelo de linguagem escolhe num catálogo fechado de deteções, o código valida e o cliente confirma; o plano inclui ainda a lista do que o sistema não consegue vigiar.
 - A linha do tempo da casa é uma funcionalidade central, porque a mesma memória que serve para responder a “onde está o livro?” guarda os eventos, incluindo os invulgares (um latido às 4h), com a hora, a câmara e um recorte, durante 30 dias, e permite pesquisar (“o que aconteceu às 4h?”) e exportar um incidente para as autoridades com a confirmação de um adulto (secção 2).
 - Cada aviso tem um nível (informação, aviso ou urgente), leva a respetiva prova e passa para um segundo contacto se ninguém responder. A sirene segue a escolha da família para cada regra: perguntar primeiro ou tocar logo (a criança em perigo é o exemplo de tocar logo). Armar o alarme pede sempre um “sim”.
-- A via híbrida recomendada no documento 17 (verificação de movimento em casa e análise da zona alterada nos servidores da Altice) obriga a reformular a promessa de privacidade e tem uma consequência pouco evidente, a de que o reconhecimento de pessoas só pode existir nas casas com capacidade de IA local.
+- A via híbrida recomendada no documento 17 (verificação de movimento em casa e análise da zona alterada nos servidores da Altice) obriga a reformular a promessa de privacidade: nenhum vídeo sai de casa, só a zona que mudou é analisada nos servidores da Altice e apagada, e o reconhecimento facial opcional corre no processador do _router_, pelo que os padrões faciais nunca saem de casa (secção 5).
 - Propõe-se um lançamento em três fases, com metas de qualidade medidas por caso de uso, antes da disponibilidade geral a 3,99 € por mês (secção 7).
-- Antes de qualquer piloto, a equipa tem de tomar cinco decisões, listadas na secção 10: onde corre a visão no lançamento, o que recebe o modelo de linguagem, se o reconhecimento de pessoas entra no lançamento, quem é o responsável pelo tratamento dos dados e qual é o limite aceitável de falsos alarmes.
+- A secção 10 reúne as cinco propostas que condicionam o piloto: a visão pela via híbrida; só texto para o modelo de linguagem; o lançamento sem reconhecimento de pessoas; o enquadramento do tratamento de dados, a fixar com os juristas da Altice, com 30 dias de observações e 90 de eventos até lá; e as metas de falsos alarmes da secção 6.1 como critério de passagem entre fases.
 
 ## Glossário
 
 | Termo | Significado |
 |---|---|
 | _Thing_ | Aquilo que o cliente acompanha: um objeto, um animal, uma pessoa ou um lugar |
-| Serviço local | O programa do _ThingTracker_ que corre em casa, no _router_ ou numa pequena caixa: verificação de movimento, memória da casa, Motor de regras e, quando há capacidade, os modelos de visão |
-| Serviço _ThingTracker_ | O componente da plataforma Altice que recebe os pedidos da aplicação e os eventos das casas; é o único que chama o modelo de linguagem |
+| Serviço local | O agente do _ThingTracker_ que corre em casa, no processador do _router_: verificação de movimento, máscaras de privacidade, recorte da região que mudou e reconhecimento facial opcional; com uma NPU em casa, também os modelos de visão (documento 14) |
+| Serviço _ThingTracker_ | O componente da plataforma Altice que recebe os pedidos da aplicação e os eventos das casas, guarda a memória da casa, avalia as regras e é o único que chama o modelo de linguagem |
 | Detetor | O modelo _OWLv2_, que encontra numa imagem aquilo que uma pesquisa em inglês descreve (“a knife”) |
 | Assinatura visual | 8 vetores do _DINOv2_, um por vista, que distinguem uma _thing_ concreta de outras do mesmo tipo |
 | Padrão facial | Os vetores que permitem reconhecer o rosto de uma pessoa registada; só existe com consentimento e só em casa |
 | Lugar | Uma câmara (“Cozinha 1”); dentro de um lugar, as superfícies (a bancada, a secretária) encontram-se pelo nome |
-| Regra | Uma condição e uma ação, compiladas uma única vez a partir de uma frase e avaliadas em casa pelo Motor de regras |
+| Regra | Uma condição e uma ação, compiladas uma única vez a partir de uma frase e avaliadas pelo Motor de regras do serviço _ThingTracker_ |
 | Plano | Um grupo de regras criado a partir de uma frase vaga, como “a criança em perigo” |
 | Prova | O que acompanha cada aviso: um recorte, o lugar, a hora e o motivo |
 | Linha do tempo | O registo dos eventos da casa, com a hora, a câmara e um recorte, que se pesquisa e se exporta (secção 2) |
@@ -88,7 +90,7 @@ O registo de um objeto é o fluxo que o protótipo já executa e serve de modelo
 
 Cada objeto fica com um identificador estável, o nome, os outros nomes (secção 3), o dono, a categoria em inglês, o lugar habitual, o limiar, a miniatura e a assinatura visual, que ocupa cerca de 12 KB (8 vetores de 384 números em precisão simples), acompanhada do nome e da versão do modelo que a calculou. Os recortes das 8 vistas ficam também guardados no serviço local, para que uma nova versão do modelo possa recalcular a assinatura sem repetir o registo (secção 7.2).
 
-Hoje, o protótipo regista um objeto com 8 vistas mostradas à câmara e reconhece-o com um limiar fixo de 0,62; o registo a partir de vistas captadas com o telemóvel foi testado uma vez, com o livro (semelhança de 0,70). O lugar habitual, o teste guiado, as vistas negativas e o limiar por objeto ainda não existem.
+Hoje, o protótipo regista um objeto com 8 vistas mostradas à câmara e reconhece-o com um limiar fixo de 0,62; o registo a partir de vistas captadas com o telemóvel foi testado uma vez, com o livro (semelhança de 0,70). Na gravação do laboratório, o _OWLv2_ encontrou o livro em 68 de 68 imagens e, face a uma assinatura registada a partir da mesma câmara, a semelhança mediana foi de 0,93 (documento 23). O lugar habitual, o teste guiado, as vistas negativas e o limiar por objeto ainda não existem.
 
 ### 1.2 Um animal
 
@@ -168,7 +170,7 @@ Cada tipo de pessoa tem as suas particularidades:
 
 O ponto mais delicado é o das visitas. Para reconhecer a Ana, o serviço local tem de calcular o padrão de todos os rostos que a câmara vê e compará-lo com os padrões da casa; os que não correspondem são descartados na própria análise, sem ficarem guardados nem saírem de casa. Mesmo assim, as Diretrizes 3/2019 do CEPD, na secção sobre dados biométricos, dão o exemplo de um hotel que reconhece clientes VIP e concluem que o sistema só seria lícito se todas as outras pessoas analisadas também tivessem consentido (secção 5.1, a verificar). Propõe-se, por isso, um modo de verificação que restringe a comparação aos momentos em que o telemóvel de um membro registado chega ao Wi-Fi da casa, confirmando “é a Ana?” em vez de procurar “quem é?”. Este modo reduz os rostos analisados, mas continua a comparar com o padrão da Ana todos os rostos vistos nesse momento, sem que ninguém declare quem é; pode, por isso, contar ainda como identificação, e não como a verificação biométrica que o Regulamento da IA exclui do risco elevado, pelo que o seu enquadramento tem de ser revisto juridicamente antes do lançamento (a verificar).
 
-Hoje, o protótipo não reconhece pessoas: deteta “a person” e “a child” e guarda quem, onde e quando, sem qualquer imagem.
+Hoje, o protótipo deteta “a person” e “a child” e guarda quem, onde e quando, sem qualquer imagem. O reconhecimento facial é opcional: o _YuNet_ encontra o rosto dentro da caixa da pessoa e o _SFace_ compara-o com os padrões da família, guardados só na base de dados do equipamento da casa. Um rosto é dessa pessoa a partir de uma semelhança de 0,40 e é desconhecido abaixo de 0,25 com todos os padrões; entre os dois valores, ou num rosto pequeno, pouco nítido ou muito virado, a resposta é “rosto não visível”. Para a plataforma segue apenas o resultado.
 
 ### 1.4 Uma câmara e o seu lugar
 
@@ -428,7 +430,7 @@ O que sai de casa depende de onde correm os modelos de visão, e a promessa feit
 | Vídeo, gravações do _ThingTracker_ | Nunca existem | Nunca existem |
 | Imagens completas | Nunca saem, salvo a cópia cifrada das imagens de um alarme, se a família a ativar (secção 2.1) | Iguais |
 | Zona da imagem que mudou | Não sai | Sai para os servidores da Altice, é analisada em memória e apagada; pode mostrar uma pessoa |
-| Padrões faciais | Nunca saem | Nunca saem; o reconhecimento de pessoas não existe nesta via |
+| Padrões faciais | Nunca saem | Nunca saem; o reconhecimento corre no processador do _router_ e sai apenas o rótulo (“Ana”, “rosto desconhecido”) |
 | Recortes de pessoas | Só nos casos de segurança S7, E1, E2 e E4 | Iguais |
 | Assinaturas, miniaturas e nomes de objetos e animais | Para a plataforma, associados ao cliente | Iguais |
 | Eventos, visitas às taças, presença sem identidade | Para a plataforma | Iguais |
@@ -438,18 +440,18 @@ A visualização em direto e as gravações do próprio cliente continuam a func
 
 ### 5.2 Os recortes da via híbrida
 
-Na via híbrida, a verificação de movimento corre em casa e só a zona alterada da imagem, reduzida para um máximo de 640 × 640 píxeis, segue para os servidores da Altice (documento 17, secção 8). A promessa ao cliente deixa, assim, de ser “nenhuma imagem sai de casa” e passa a ser “nenhum vídeo é guardado; só a zona que mudou é analisada nos servidores da Altice e apagada logo a seguir”. Propõe-se que essas zonas sejam tratadas apenas em memória, sem registos de píxeis, em servidores localizados em Portugal (pressuposto) e nunca enviadas ao modelo de linguagem. Como o padrão facial nunca sai de casa, o reconhecimento de pessoas só pode existir nas casas com capacidade de IA local, o que tem consequências no preço e no calendário (secções 7.7 e 10). A via híbrida tem ainda outra consequência, já que, sem ligação à internet, deixa de haver visão em casa (secção 6.2).
+Na via híbrida, a verificação de movimento corre em casa e só a zona alterada da imagem, reduzida para um máximo de 640 × 640 píxeis, segue para os servidores da Altice (documento 17, secção 8). A promessa ao cliente deixa, assim, de ser “nenhuma imagem sai de casa” e passa a ser “nenhum vídeo é guardado; só a zona que mudou é analisada nos servidores da Altice e apagada logo a seguir”. Propõe-se que essas zonas sejam tratadas apenas em memória, sem registos de píxeis, em servidores localizados em Portugal (pressuposto) e nunca enviadas ao modelo de linguagem. O padrão facial nunca sai de casa, porque o reconhecimento corre no processador do _router_, com o _YuNet_ e o _SFace_, e para a plataforma segue apenas o rótulo (documento 14). A via híbrida tem uma consequência: sem ligação à internet, não há análise de imagem nem regras (secção 6.2).
 
 ### 5.3 Retenção
 
 | Dados | Onde | Quanto tempo |
 |---|---|---|
-| Observações de _things_ e miniaturas | Serviço local | 30 dias (documento 14) |
-| Presença sem identidade (pessoa, criança, animal; lugar; hora) | Serviço local | 30 dias (proposta, o prazo que o documento 14 dá à presença dos telemóveis) |
-| Eventos e ações executadas | Serviço local e plataforma | 90 dias, como registo de auditoria (documento 14) |
-| Entradas da linha do tempo, com o recorte | Serviço local; o texto também na plataforma | 30 dias; até um ano, se a família as fixar (proposta) |
+| Observações de _things_ e miniaturas | Plataforma (base de dados e armazenamento de objetos) | 30 dias (documento 14) |
+| Presença sem identidade (pessoa, criança, animal; lugar; hora) | Plataforma | 30 dias (proposta, o prazo que o documento 14 dá à presença dos telemóveis) |
+| Eventos e ações executadas | Plataforma | 90 dias, como registo de auditoria (documento 14) |
+| Entradas da linha do tempo, com o recorte | Plataforma | 30 dias; até um ano, se a família as fixar (proposta) |
 | Imagens completas de um alarme | Serviço local; cópia cifrada na plataforma, se a família a ativar | Como a entrada a que pertencem |
-| Assinaturas visuais e recortes do registo | Serviço local; a assinatura também na plataforma | Até a _thing_ ser apagada |
+| Assinaturas visuais e recortes do registo | Plataforma, associados ao cliente; com visão em casa, também no serviço local | Até a _thing_ ser apagada |
 | Padrões faciais | Só no serviço local | Até o consentimento ser retirado |
 | Registo do consentimento e da sua retirada | Plataforma | Enquanto a conta existir e pelo prazo legal posterior (a verificar) |
 | Zonas alteradas da via híbrida | Servidores da Altice, em memória | Apenas durante a análise |
@@ -489,11 +491,11 @@ As regras do documento 18 (secção 2.6) tornam-se passos obrigatórios na insta
 
 ### 5.8 O que recebe o modelo de linguagem
 
-Para compilar regras e responder a perguntas, o modelo de linguagem recebe apenas texto: a frase ou a pergunta, os nomes das _things_, dos lugares e dos dispositivos, o perfil da casa e as linhas da memória que interessam (_thing_, lugar e hora). Propõe-se ainda que os nomes de pessoas sejam substituídos por marcadores antes do envio (“Ana” passa a “pessoa_1”) e repostos na resposta, de modo que o fornecedor nunca receba os nomes da família. O documento 14 prevê que, num caso duvidoso, o modelo receba um recorte, e essa é uma das decisões em aberto da secção 10; a alternativa é um modelo _open-weight_ com visão, alojado pela Altice (documento 14, secção 3), para que nenhum recorte saia da Altice. O modelo local do protótipo (_Qwen3-1.7B_) mostra que as perguntas e as regras simples podem ser tratadas sem nenhum fornecedor externo.
+Para compilar regras e responder a perguntas, o modelo de linguagem recebe apenas texto: a frase ou a pergunta, os nomes das _things_, dos lugares e dos dispositivos, o perfil da casa e as linhas da memória que interessam (_thing_, lugar e hora). Propõe-se ainda que os nomes de pessoas sejam substituídos por marcadores antes do envio (“Ana” passa a “pessoa_1”) e repostos na resposta, de modo que o fornecedor nunca receba os nomes da família. Os casos duvidosos não vão ao modelo de linguagem, mas ao juiz, um modelo de visão e linguagem alojado pela Altice, que recebe 2 a 3 s da região e cuja resposta “incerto” leva o sistema a perguntar à família, nunca a agir (documento 14, secção 8.6). Nenhum recorte sai, assim, da Altice. O modelo local do protótipo (_Qwen3-1.7B_) mostra que as perguntas e as regras simples podem ser tratadas sem nenhum fornecedor externo.
 
 ### 5.9 Quem é o responsável pelo tratamento
 
-Falta definir, com os juristas da Altice, o papel de cada parte. A família, quando usa a câmara apenas dentro de casa, pode estar abrangida pela isenção doméstica (RGPD, artigo 2.º, n.º 2, alínea c)), mas a Altice trata dados para prestar o serviço, como responsável pelo tratamento ou como subcontratante (artigo 28.º), e o fornecedor do modelo de linguagem é subcontratante da Altice. Esta decisão determina quem responde aos pedidos dos titulares, quem faz a AIPD e o texto dos termos do serviço (a verificar). A combinação da isenção doméstica, do lado da família, com a Altice como subcontratante é pouco habitual e exige um parecer jurídico.
+O papel de cada parte fixa-se com os juristas da Altice antes do piloto; o enquadramento proposto é o seguinte. A família, quando usa a câmara apenas dentro de casa, pode estar abrangida pela isenção doméstica (RGPD, artigo 2.º, n.º 2, alínea c)), mas a Altice trata dados para prestar o serviço, como responsável pelo tratamento ou como subcontratante (artigo 28.º), e o fornecedor do modelo de linguagem é subcontratante da Altice. Esta decisão determina quem responde aos pedidos dos titulares, quem faz a AIPD e o texto dos termos do serviço (a verificar). A combinação da isenção doméstica, do lado da família, com a Altice como subcontratante é pouco habitual e exige um parecer jurídico.
 
 ## 6. Qualidade e modos de falha
 
@@ -516,9 +518,8 @@ Para as cumprir, combinam-se seis mecanismos: a duração mínima de cada condi�
 | Roupa diferente | Não afeta o reconhecimento facial; afeta o seguimento sem rosto | A identidade vem do rosto e nunca da roupa |
 | Irmãos parecidos ou gémeos | Os padrões faciais ficam demasiado próximos | No registo, se dois padrões da casa forem demasiado semelhantes, a aplicação avisa “Não consigo distinguir com segurança o Tiago do Rui” e os eventos dizem “o Tiago ou o Rui” |
 | Câmara desligada | O serviço local deteta a falta de imagem ao fim de 60 s | A câmara aparece a cinzento. As regras de segurança e de ausência dessa câmara não disparam por engano; os destinatários recebem “Não consigo confirmar: a câmara da Cozinha 1 está desligada desde as 9h12”. Nas regras de conveniência, a falha não é comunicada |
-| Corte de energia | Câmaras, _router_ e serviço local desligam-se | Ao voltar, o serviço local carrega as regras e as assinaturas guardadas e envia “Retomado às 10h40”; a linha do tempo mostra o intervalo. A central do kit tem bateria e continua a ser a referência do alarme |
-| Sem internet, com visão em casa | O serviço local continua a seguir as _things_ e a avaliar as regras, e os eventos ficam em fila (documento 15, secção 8) | Os avisos e as ações chegam quando a ligação volta |
-| Sem internet, na via híbrida | As zonas alteradas não podem ser analisadas | A casa fica sem visão; a aplicação mostra-o e os destinatários das regras de segurança são avisados, como numa câmara desligada |
+| Corte de energia | Câmaras, _router_ e serviço local desligam-se | Ao voltar, o serviço local liga-se de novo ao serviço _ThingTracker_ e envia “Retomado às 10h40”; a linha do tempo mostra o intervalo. A central do kit tem bateria e continua a ser a referência do alarme |
+| Sem internet | Não há análise de imagem e as regras, que correm na Altice, não podem disparar; o serviço local guarda em fila os eventos e os rótulos, nunca imagens, e envia-os quando a ligação volta (documento 15) | A aplicação mostra que a casa está sem análise e os destinatários das regras de segurança são avisados, como numa câmara desligada. A central do kit mantém o alarme |
 | Modelo atualizado | Os vetores de um modelo novo não se comparam com os do antigo | As assinaturas de objetos e de animais recalculam-se a partir dos recortes do registo; os padrões faciais exigem uma nova inscrição de 10 s, pedida à pessoa, e o modelo antigo continua ativo até lá (secção 7.2) |
 
 O _ThingTracker_ não é um dispositivo de segurança certificado; avisa, mas não protege. O detetor de fumo, o alarme e a supervisão de um adulto continuam a ser a referência, e os termos do serviço e a própria aplicação têm de o dizer.
@@ -558,14 +559,14 @@ As metas seguintes são objetivos a medir, e não resultados. A referência, ist
 | Verificação de movimento (imagem de 160 × 90 em tons de cinzento, a cada 0,5 s) ou a deteção de movimento da própria câmara | Sempre | Sempre | Nunca |
 | Deteção (_OWLv2_ ou um detetor mais leve) | Não | Sim | Sim, na zona alterada, com fila para o que não é urgente |
 | Assinaturas (_DINOv2_), seguimento, profundidade | Não | Sim | Sim |
-| Reconhecimento facial | Não | Sim, só com consentimento | Nunca |
-| Memória da casa e Motor de regras | No _router_, se tiver memória e processador para tal (pressuposto) | Sim | Não; a memória e as regras ficam sempre em casa |
+| Reconhecimento facial (_YuNet_ e _SFace_) | Sim, no processador, só com consentimento | Sim, só com consentimento | Nunca; recebem apenas o rótulo |
+| Memória da casa e Motor de regras | Não | Não | Sim, no serviço _ThingTracker_, por casa (documento 14) |
 
-Na via híbrida, o serviço local marca como urgente a zona alterada de uma câmara que tenha uma regra de segurança ativa, para que a fila dos servidores a trate de imediato, e o servidor devolve apenas as deteções, que a memória da casa guarda. Assim, a memória e as regras ficam em casa em todas as vias.
+Na via híbrida, o serviço local marca como urgente a zona alterada de uma câmara que tenha uma regra de segurança ativa, para que a fila dos servidores a trate de imediato, As deteções ficam na memória da casa, na base de dados da plataforma, associada ao cliente, e o Motor de regras do serviço _ThingTracker_ avalia as regras de cada casa (documento 14).
 
 ### 7.2 Atualizações remotas dos modelos
 
-Os modelos atualizam-se em pacotes assinados (modelo, versão, resumo criptográfico e assinatura da Altice), instalados pela via que a Altice já usa para gerir os seus _routers_ (pressuposto: TR-069 ou TR-369, a confirmar com a Altice). Antes de mudar de modelo, o serviço local corre o novo em paralelo sobre as deteções seguintes e só o adota se reconhecer as mesmas _things_ pelo menos tão bem como o anterior. A distribuição faz-se por etapas (1 %, 10 %, 50 % e 100 % das casas) e para automaticamente se o tempo de análise, a taxa de reconhecimento ou os falsos avisos piorarem. A versão anterior fica guardada para permitir a reversão, e a atualização nunca ocorre durante um registo nem com movimento na casa. As assinaturas guardam o nome e a versão do modelo que as calculou, como já acontece no protótipo.
+Os modelos atualizam-se em pacotes assinados (modelo, versão, resumo criptográfico e assinatura da Altice), instalados pela via que a Altice já usa para gerir os seus _routers_ (pressuposto: TR-069 ou TR-369). Antes de mudar de modelo, o serviço local corre o novo em paralelo sobre as deteções seguintes e só o adota se reconhecer as mesmas _things_ pelo menos tão bem como o anterior. A distribuição faz-se por etapas (1 %, 10 %, 50 % e 100 % das casas) e para automaticamente se o tempo de análise, a taxa de reconhecimento ou os falsos avisos piorarem. A versão anterior fica guardada para permitir a reversão, e a atualização nunca ocorre durante um registo nem com movimento na casa. As assinaturas guardam o nome e a versão do modelo que as calculou, como já acontece no protótipo.
 
 ### 7.3 Capacidade por casa
 
@@ -573,7 +574,7 @@ Preveem-se duas ou três câmaras interiores e, numa moradia, uma ou duas exteri
 
 ### 7.4 Suporte e monitorização
 
-A Altice monitoriza cada casa sem nunca ver imagens. O serviço local envia indicadores de funcionamento: o estado de cada câmara, as imagens por segundo, as horas de movimento por dia, o tempo de análise, a fila de espera, os disparos de cada regra e as respostas dos clientes. Um painel de operação agrega-os por versão de modelo, por tipo de equipamento e por região. Quando um cliente liga para o apoio, pode partilhar a partir da aplicação um pacote de diagnóstico sem imagens (configuração, contagens e tempos) e, se quiser, autorizar durante uma sessão a consulta das últimas miniaturas de objetos; esse acesso fica registado na auditoria. Os guiões de apoio cobrem os problemas mais prováveis: um objeto que não é reconhecido (repetir o registo, aproximar a câmara), falsos avisos (modo de ensaio, duração mínima) e uma câmara desligada. O caso de negócio prevê 0,5 contactos por casa e por ano, a 10 € cada (documento 16), um valor a confirmar no piloto.
+A Altice monitoriza cada casa sem nunca ver imagens. O serviço local envia indicadores de funcionamento: o estado de cada câmara, as imagens por segundo, as horas de movimento por dia, o tempo de análise, a fila de espera, os disparos de cada regra e as respostas dos clientes. Um painel de operação agrega-os por versão de modelo, por tipo de equipamento e por região. Quando um cliente liga para o apoio, pode partilhar a partir da aplicação um pacote de diagnóstico sem imagens (configuração, contagens e tempos) e, se quiser, autorizar durante uma sessão a consulta das últimas miniaturas de objetos; esse acesso fica registado na auditoria. Os guiões de apoio cobrem os problemas mais prováveis: um objeto que não é reconhecido (repetir o registo, aproximar a câmara), falsos avisos (modo de ensaio, duração mínima) e uma câmara desligada. O caso de negócio prevê 0,5 contactos por casa e por ano, a 10 € cada (documento 16), um pressuposto que o piloto vai medir.
 
 ### 7.5 Ferramentas MCP e eventos novos
 
@@ -602,11 +603,11 @@ A API de eventos (o primeiro pedido à Altice no documento 15) deve transportar,
 | 2. Clientes por convite | 1000 clientes MEO com câmara, gratuito durante 3 meses | 12 semanas | Adesão, uso semanal, abandono, apoio e taxa de conversão para pago | Pelo menos 40 % das casas fazem uma pergunta ou recebem um aviso útil por semana; taxa de conversão medida |
 | 3. Disponibilidade geral | Clientes MEO com câmara | Contínua | Escala | Custo por casa dentro dos valores do documento 17 |
 
-O reconhecimento de pessoas fica fora das fases 1 e 2, salvo se a AIPD e a revisão jurídica o aprovarem antes, e mesmo nesse caso apenas nas casas com capacidade de IA local. Na fase 3, a visão começa em _GPU_ alugadas na nuvem, sem custo fixo enquanto a adesão é desconhecida, e passa para servidores próprios da Altice à medida que a base cresce (documento 17, secção 10).
+O reconhecimento de pessoas fica fora das fases 1 e 2, salvo se a AIPD e a revisão jurídica o aprovarem antes. Na fase 3, a visão começa em _GPU_ alugadas na nuvem, sem custo fixo enquanto a adesão é desconhecida, e passa para servidores próprios da Altice à medida que a base cresce (documento 17, secção 10).
 
 ### 7.7 Preço
 
-O caso de negócio propõe 3,99 € por mês para as casas que já têm câmara e 7,50 € com câmara incluída (documento 16). Os custos para a Altice são de cerca de 0,43 € por casa e por mês no modelo de linguagem e de 0,49 € por câmara na visão, pela via híbrida em servidores próprios (documento 17), o que deixa cerca de 1,25 € por casa com uma câmara e cerca de 0,75 € com duas. Propõe-se, por isso, incluir duas câmaras no preço base e cobrar a partir da terceira, por um valor a definir que cubra os cerca de 0,49 € de custo por câmara. O reconhecimento de pessoas, por exigir capacidade de IA em casa, só pode ser oferecido onde o _router_ a tiver; uma caixa em cada casa custaria entre 6,55 € e 8,64 € por mês (documento 17) e não cabe no preço.
+O caso de negócio propõe 3,99 € por mês para as casas que já têm câmara e 7,50 € com câmara incluída (documento 16). Os custos para a Altice são de cerca de 0,43 € por casa e por mês no modelo de linguagem e de 0,49 € por câmara na visão, pela via híbrida em servidores próprios (documento 17), o que deixa cerca de 1,25 € por casa com uma câmara e cerca de 0,75 € com duas. Propõe-se, por isso, incluir duas câmaras no preço base e cobrar a partir da terceira um valor que cubra, pelo menos, os cerca de 0,49 € de custo por câmara. O reconhecimento de pessoas corre no processador do _router_ que já existe em casa (documento 14) e não exige uma caixa, que custaria entre 6,55 € e 8,64 € por mês (documento 17) e não caberia no preço.
 
 ## 8. Ideias fora da caixa
 
@@ -636,19 +637,19 @@ A linha do tempo da casa, inicialmente pensada como uma destas ideias, passou a 
    Não, na via recomendada. Uma caixa em cada casa custaria entre 6,55 € e 8,64 € por mês e um investimento de 100 a 140 milhões de euros para 500 000 casas (documento 17). O melhor cenário é um _router_ da Altice com NPU, a cerca de 0,36 € por casa e por mês, se se confirmar que consegue correr os modelos.
 
 5. Porque não enviar o vídeo para a nuvem e usar um modelo de visão grande?
-   Enviar vídeo contínuo implica transferir 37 vezes mais dados do que as imagens com movimento, e perguntar a um modelo de linguagem, imagem a imagem, custa dinheiro, demora 1 a 3 s por chamada e dá respostas diferentes (documentos 14 e 17). A IA escreve a regra uma vez, e a regra corre em casa.
+   Enviar vídeo contínuo implica transferir 37 vezes mais dados do que as imagens com movimento, e perguntar a um modelo de linguagem, imagem a imagem, custa dinheiro, demora 1 a 3 s por chamada e dá respostas diferentes (documentos 14 e 17). A IA escreve a regra uma vez, e a regra corre como código no serviço _ThingTracker_.
 
 6. Porque não usar só um _hyperscaler_?
    É o ponto de partida certo, enquanto a adesão é desconhecida, porque não tem custo fixo. Com a base a crescer, a via híbrida custa cerca de 0,49 € por casa em servidores próprios, face a 1,53 € na AWS a pedido (documento 17).
 
 7. O que sai de casa?
-   Nunca saem vídeo nem imagens completas. Saem os nomes, as miniaturas e as assinaturas dos objetos e dos animais, os eventos e, na via híbrida, a zona da imagem que mudou, analisada em memória e apagada. Os padrões faciais nunca saem (secção 5.1).
+   Nunca saem vídeo nem imagens completas. Saem os nomes, as miniaturas e as assinaturas dos objetos e dos animais, os eventos e, na via híbrida, a zona da imagem que mudou, analisada em memória e apagada. Os padrões faciais nunca saem; sai apenas o rótulo de cada rosto, como “Ana” ou “rosto desconhecido” (secção 5.1).
 
 8. O modelo de linguagem vê imagens?
-   Para criar regras e responder a perguntas, recebe apenas texto, e propõe-se que os nomes das pessoas sejam substituídos por marcadores. O envio de um recorte nos casos duvidosos está previsto no documento 14, mas é uma decisão em aberto, e a alternativa é um modelo com visão alojado pela Altice.
+   Não. Recebe apenas texto, e propõe-se que os nomes das pessoas sejam substituídos por marcadores. Os casos duvidosos vão a um juiz, um modelo de visão e linguagem alojado pela Altice, cujo “incerto” leva o sistema a perguntar à família, nunca a agir (secção 5.8).
 
 9. Reconhecem caras?
-   Só se a própria pessoa o aceitar, e o reconhecimento está desligado por omissão. O padrão facial fica em casa, pelo que a funcionalidade exige capacidade de IA local, e o lançamento depende de uma AIPD e de uma revisão jurídica. A recomendação é lançar sem esta funcionalidade.
+   Só se a própria pessoa o aceitar, e o reconhecimento está desligado por omissão. O padrão facial fica em casa, porque o reconhecimento corre no processador do _router_ (_YuNet_ e _SFace_), e o lançamento depende de uma AIPD e de uma revisão jurídica. A recomendação é lançar sem esta funcionalidade.
 
 10. E as caras das visitas?
     Para reconhecer a família, o sistema tem de comparar cada rosto que vê; os que não correspondem são descartados na própria análise. O CEPD considera que um sistema destes pode exigir o consentimento de todas as pessoas analisadas (Diretrizes 3/2019, a verificar), pelo que se propõe estudar um modo de verificação, que só compara quando o telemóvel de um membro chega a casa e cujo enquadramento também está por verificar.
@@ -657,7 +658,7 @@ A linha do tempo da casa, inicialmente pensada como uma destas ideias, passou a 
     Por omissão, são “uma criança”, sem identificação. Os avisos nunca levam a fotografia da criança, guarda-se só a faixa etária, e o reconhecimento individual exige o consentimento de quem tem a responsabilidade parental.
 
 12. Quantos falsos alarmes?
-    A meta é, no máximo, 1 falso aviso por semana e 1 urgente por mês, por casa, a confirmar no piloto. As regras novas passam 48 horas em ensaio, e cada aviso tem os botões “Estava certo” e “Não era perigo”, que ajustam a regra.
+    A meta é, no máximo, 1 falso aviso por semana e 1 urgente por mês, por casa, a medir no piloto. As regras novas passam 48 horas em ensaio, e cada aviso tem os botões “Estava certo” e “Não era perigo”, que ajustam a regra.
 
 13. E se falhar no momento em que a criança pega na faca?
     O _ThingTracker_ avisa, mas não protege, e não é um dispositivo de segurança certificado. A deteção de facas à distância ainda não foi medida, e a criança a segurar uma faca exige um modelo de pose que fica para o futuro. A supervisão de um adulto, o detetor de fumo e o alarme continuam a ser a referência.
@@ -666,10 +667,10 @@ A linha do tempo da casa, inicialmente pensada como uma destas ideias, passou a 
     A câmara usa a visão noturna, a preto e branco, e a deteção piora, num grau que ainda não foi medido. As regras afetadas indicam “fiabilidade reduzida à noite”, e propõe-se acrescentar vistas noturnas às assinaturas.
 
 15. E sem internet?
-    Com visão em casa, as regras continuam a ser avaliadas e os eventos ficam em fila; as ações sobre os dispositivos esperam pela ligação. Na via híbrida, a casa fica sem visão até a ligação voltar, e a aplicação di-lo. A central do kit mantém o alarme.
+    Não há análise de imagem e as regras, que correm na Altice, não podem disparar até a ligação voltar; o serviço local guarda em fila os eventos e os rótulos, nunca imagens, e a aplicação mostra que a casa está sem análise. A central do kit mantém o alarme.
 
 16. Distingue as minhas chaves das chaves de uma visita?
-    Sim, pela assinatura visual, que é o que o protótipo já faz. Num teste com o livro, oito vistas captadas com o telemóvel bastaram para o reconhecer na câmara do kit (semelhança de 0,70, para um limiar de 0,62). Trata-se de um único teste, e a taxa real é uma das metas do piloto.
+    Sim, pela assinatura visual, que é o que o protótipo já faz. Num teste com o livro, oito vistas captadas com o telemóvel bastaram para o reconhecer na câmara do _kit_ (semelhança de 0,70, para um limiar de 0,62). Na gravação do laboratório, o _OWLv2_ encontrou o livro em 68 de 68 imagens e, face a uma assinatura registada a partir da mesma câmara, a semelhança mediana foi de 0,93, face a 0,23 nos outros objetos (documento 23). São resultados de um só objeto numa só casa, e a taxa real é uma das metas do piloto.
 
 17. E se tiver dois gatos iguais?
     Pode não os distinguir, porque o reconhecimento de um animal concreto ainda não foi testado. Nesse caso, as regras aplicam-se a “um gato” e os avisos dizem-no.
@@ -684,7 +685,7 @@ A linha do tempo da casa, inicialmente pensada como uma destas ideias, passou a 
     O código decide de que _thing_ se fala e confronta a resposta com a memória da casa; uma resposta que a contradiga é substituída por uma frase construída a partir da memória, como já acontece no protótipo.
 
 21. Quem é o responsável pelo tratamento dos dados?
-    Está por decidir com os juristas da Altice. A família pode estar abrangida pela isenção doméstica, a Altice será responsável pelo tratamento ou subcontratante, e o fornecedor do modelo de linguagem é subcontratante da Altice (secção 5.9).
+    Fixa-se com os juristas da Altice antes do piloto (secção 5.9). A família pode estar abrangida pela isenção doméstica, a Altice será responsável pelo tratamento ou subcontratante, e o fornecedor do modelo de linguagem é subcontratante da Altice (secção 5.9).
 
 22. E o Regulamento da IA?
     A identificação biométrica à distância é de risco elevado; a verificação de identidade, que confirma que alguém é quem afirma ser, está excluída dessa categoria (a verificar). Também está por verificar se distinguir “criança” de “adulto” conta como categorização biométrica (artigo 3.º, n.º 40). Por isso, propõe-se lançar sem reconhecimento e estudar o modo de verificação.
@@ -698,19 +699,19 @@ A linha do tempo da casa, inicialmente pensada como uma destas ideias, passou a 
 25. Como se mede o sucesso?
     No piloto, pelas metas de qualidade da secção 6.4; no lançamento, pela adesão, pela percentagem de casas com uso semanal, pelos falsos avisos, pelos contactos de apoio e pelo abandono, face aos valores do caso de negócio.
 
-## 10. Decisões para a equipa
+## 10. Propostas que condicionam o piloto
 
-As cinco decisões seguintes condicionam o resto da especificação e devem ser tomadas antes de qualquer piloto.
+As cinco propostas seguintes condicionam o resto da especificação. Para cada uma, indica-se a recomendação da equipa; a decisão final cabe à Altice, antes do piloto.
 
 | N.º | Decisão | Opções | Recomendação | Consequência |
 |---|---|---|---|---|
-| 1 | Onde corre a visão no lançamento | _Router_ com NPU; caixa em casa; via híbrida | Via híbrida em _GPU_ alugadas na nuvem e, depois, em servidores próprios; _router_ com NPU onde existir | A promessa de privacidade passa a ser “só a zona que mudou é analisada e apagada”; sem internet, não há visão |
-| 2 | O que recebe o modelo de linguagem | Só texto; texto e um recorte nos casos duvidosos; modelo com visão alojado pela Altice | Só texto, com os nomes das pessoas substituídos por marcadores; os casos duvidosos num modelo alojado pela Altice | Nenhuma imagem sai para um fornecedor externo |
-| 3 | O reconhecimento de pessoas entra no lançamento? | Sim; não; só no modo de verificação | Não; estudar o modo de verificação depois da AIPD | O lançamento não depende da NPU nem da revisão jurídica do Regulamento da IA |
-| 4 | Quem é o responsável pelo tratamento e quanto tempo se guardam os dados | Altice como responsável ou como subcontratante; 30 dias de observações, ou menos | Decidir com os juristas da Altice; manter 30 dias de observações e 90 de eventos (documento 14) até ao piloto | Define os termos do serviço, a AIPD e a resposta aos pedidos dos titulares |
-| 5 | Quantos falsos alarmes são aceitáveis e quando se passa a outro contacto | As metas da secção 6.1; passagem a outro contacto aos 2 e aos 5 minutos | Adotar as metas como critério de passagem entre fases | Define a duração mínima das regras, o modo de ensaio e o critério para avançar |
+| 1 | Onde corre a visão no lançamento | _Router_ com NPU; caixa em casa; via híbrida | Via híbrida em _GPU_ alugadas na nuvem e, depois, em servidores próprios; _router_ com NPU onde existir | A promessa de privacidade passa a ser “só a zona que mudou é analisada e apagada”; sem internet, não há análise de imagem |
+| 2 | O que recebe o modelo de linguagem | Só texto; texto e um recorte nos casos duvidosos; modelo com visão alojado pela Altice | Só texto, com os nomes das pessoas substituídos por marcadores; os casos duvidosos no juiz alojado pela Altice (documento 14) | Nenhuma imagem sai para um fornecedor externo |
+| 3 | Reconhecimento de pessoas no lançamento | Sim; não; só no modo de verificação | Não; estudar o modo de verificação depois da AIPD | O lançamento não depende da revisão jurídica do Regulamento da IA |
+| 4 | Quem é o responsável pelo tratamento e quanto tempo se guardam os dados | Altice como responsável ou como subcontratante; 30 dias de observações, ou menos | Fixar com os juristas da Altice; até lá, 30 dias de observações e 90 de eventos (documento 14) | Define os termos do serviço, a AIPD e a resposta aos pedidos dos titulares |
+| 5 | Falsos alarmes aceitáveis e passagem a outro contacto | As metas da secção 6.1; passagem a outro contacto aos 2 e aos 5 minutos | Adotar as metas como critério de passagem entre fases | Define a duração mínima das regras, o modo de ensaio e o critério para avançar |
 
-Ficam ainda em aberto os prazos da linha do tempo (30 dias e um ano para os eventos fixados), o som como gatilho, a cópia de segurança das imagens de alarme, o preço a partir da terceira câmara, o modelo de reconhecimento facial e a sua licença, a duração do modo de ensaio e a lista inicial do catálogo de deteções.
+Os restantes parâmetros ficam com os valores propostos neste documento até o piloto os medir: os prazos da linha do tempo (30 dias, e até um ano para os eventos fixados), o som como gatilho (desligado por omissão), a cópia cifrada das imagens de alarme (só se a família a ativar), a duração do modo de ensaio (48 horas), o preço a partir da terceira câmara (que cubra, pelo menos, os cerca de 0,49 € por câmara) e a lista inicial do catálogo de deteções (secção 1.5). O reconhecimento facial usa o _YuNet_ (licença MIT) e o _SFace_ (licença Apache-2.0), verificadas no documento 14.
 
 ## Fontes
 

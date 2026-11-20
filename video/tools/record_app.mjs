@@ -462,6 +462,86 @@ const TAKES = {
       await hideFinger();
       await pause(2200);
     }); },
+  // the book demo v3, all real: Things (Family: Filipe, João, Alice) › + › Person › Choose a photo (Mushahid's, from
+  // REC_PERSON) › the name › Save (faces.py makes his template from the photo) › Done › + › Book › Take photos › name ›
+  // Save › "Book added" asks who it belongs to, Mushahid proposed › Yes › "Belongs to Mushahid" › Not now › Things.
+  'link-person': () => { Object.assign(C, { on: false });
+    return take('link-person', '16:30', async ({ page, tap, hideFinger, mark }) => {
+      const typeIn = async (sel, text) => {
+        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); }, [sel, ch]); await pause(55 + Math.random() * 35); }
+      };
+      const addSel = '.ahead [data-act="add-thing"], header [data-act="add-thing"], [data-act="add-thing"]';
+      await pause(1300);
+      mark('things');
+      await tap(addSel);
+      mark('add-1');
+      await pause(1100);
+      await tap('[data-act="pick-thing"][data-name="Person"]');
+      mark('person-method');
+      await pause(1300);
+      let chooser = page.waitForEvent('filechooser');
+      await tap('[data-act="person-photo"]:not([data-capture])');
+      mark('choose-photo');
+      await hideFinger();
+      let fc = await chooser;
+      await pause(600);
+      await fc.setFiles(process.env.REC_PERSON);
+      await page.waitForSelector('#pname', { state: 'visible' });
+      mark('person-photo');
+      await pause(1100);
+      await tap('#pname'); await hideFinger();
+      await typeIn('#pname', 'Mushahid');
+      mark('named');
+      await pause(600);
+      await tap('[data-act="save-person-photo"]');
+      mark('save-person');
+      await hideFinger();
+      await page.waitForSelector('.person-added', { state: 'visible', timeout: 30000 });
+      mark('person-added');
+      await pause(1800);
+      await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+      mark('person-done');
+      await hideFinger();
+      await pause(1400);
+      await tap(addSel);
+      mark('add');
+      await pause(1100);
+      await tap('[data-act="pick-thing"][data-name="Book"]');
+      mark('method');
+      await pause(1300);
+      chooser = page.waitForEvent('filechooser');
+      await tap('[data-act="take-photos"]');
+      mark('take-photos');
+      await hideFinger();
+      fc = await chooser;
+      await pause(600);
+      await fc.setFiles(Array.from({ length: 8 }, (_, i) => join(IMG, `photos/final-${i + 1}.jpg`)));
+      await page.waitForSelector('#tname', { state: 'visible' });
+      mark('photos');
+      await pause(1500);
+      await tap('#tname'); await hideFinger();
+      await typeIn('#tname', 'Book');
+      await pause(400);
+      await tap('#tdesc'); await hideFinger();
+      await typeIn('#tdesc', 'yellow book');
+      await pause(500);
+      await tap('[data-act="save-thing"]');
+      mark('save-thing');
+      await hideFinger();
+      await page.waitForSelector('.link-card', { state: 'visible', timeout: 15000 });
+      mark('added');
+      await pause(2200);
+      await tap('[data-act="link-owner"]');
+      mark('link');
+      await hideFinger();
+      await page.waitForSelector('.owner-pair', { state: 'visible', timeout: 15000 });
+      mark('owned');
+      await pause(3200);
+      await tap('section.page:last-of-type .reco-acts [data-act="finish"]');
+      mark('things-after');
+      await hideFinger();
+      await pause(2400);
+    }); },
   // scene 2, the end: the app's real state (the person and the scenario, made in add-person). The family's phones leave the
   // home Wi-Fi (simulated); the stand-in edge reports an unknown face in three analyses in a row, with the person crop
   // the real edge sends only for a face that matches nobody (the lab camera's frame of the stranger). The server's

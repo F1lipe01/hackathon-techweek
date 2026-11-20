@@ -1325,6 +1325,24 @@ def add_thing(payload: dict = Body(...)):
     return {"id": tid}
 
 
+@app.post("/api/things/{tid}/owner")
+def thing_owner(tid: str, payload: dict = Body(...)):
+    """Who a thing belongs to: {"owner": "<a person's id>"} links it to that person, {"owner": null} unlinks it.
+    Scenarios can then be about the person ("tell me if Mushahid leaves home without the book")."""
+    things = {t["id"]: t for t in store.things()}
+    if tid not in things:
+        raise HTTPException(404, "unknown thing")
+    owner = payload.get("owner")
+    if owner is not None:
+        owner = str(owner)
+        if owner == tid or not (things.get(owner, {}).get("description") or "").startswith("person"):
+            raise HTTPException(400, "owner must be a registered person")
+    store.set_owner(tid, owner)
+    if owner:
+        store.add_event("thing", f"{things[tid]['name']} belongs to {things[owner]['name']}.", thing_id=tid)
+    return {"ok": True, "owner": owner}
+
+
 @app.post("/api/observe")
 def observe(payload: dict = Body(...)):
     if not brain.enabled:  # AI off: nothing is analysed or stored, so no rate limit is needed

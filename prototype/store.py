@@ -90,6 +90,9 @@ class Store:
         self.db.row_factory = sqlite3.Row
         self.db.execute("PRAGMA foreign_keys = ON")
         self.db.executescript(SCHEMA)
+        # who a thing belongs to (a person, itself a row of things); added to databases made before it existed
+        if "owner" not in {r[1] for r in self.db.execute("PRAGMA table_info(things)")}:
+            self.db.execute("ALTER TABLE things ADD COLUMN owner TEXT REFERENCES things(id) ON DELETE SET NULL")
         if not self.db.execute("SELECT 1 FROM home").fetchone():
             self._seed()
 
@@ -245,8 +248,14 @@ class Store:
         tid = "".join(ch for ch in ascii_name if ch.isalnum())[:20] or _id()
         with self.lock, self.db:
             if not self.db.execute("SELECT 1 FROM things WHERE id = ?", (tid,)).fetchone():
-                self.db.execute("INSERT INTO things VALUES (?, ?, ?, ?, NULL)", (tid, name, description or name.lower(), now()))
+                self.db.execute("INSERT INTO things (id, name, query, created) VALUES (?, ?, ?, ?)",
+                                (tid, name, description or name.lower(), now()))
         return tid
+
+    def set_owner(self, thing_id, person_id):
+        """Link a thing to the person it belongs to (None unlinks it)."""
+        with self.lock, self.db:
+            self.db.execute("UPDATE things SET owner = ? WHERE id = ?", (person_id, thing_id))
 
     def delete_thing(self, tid):
         with self.lock, self.db:

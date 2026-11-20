@@ -198,6 +198,8 @@ function thingCard(t, act = 'thing') {
 }
 // People are things whose description starts with "person" ("person · family" when the app saved who they are).
 const isPerson = (t) => /^person\b/.test(t?.description || '');
+/** The person a thing belongs to (things.owner), when the family linked it to one. */
+const ownerOf = (t) => (t?.owner ? state.things.find((x) => x.id === t.owner && isPerson(x)) : null);
 const relationOf = (t) => { const r = (t?.description || '').split('·')[1]?.trim(); return r ? r[0].toUpperCase() + r.slice(1) : ''; };
 /** The scenarios that use a thing or a person: by thing_id, and for people every rule about someone unknown (it
  *  depends on who the camera knows). Counted from the real rules only. */
@@ -210,7 +212,7 @@ const addedOn = (ts) => {
 function itemCard(t) {
   const p = thingPhoto(t), person = isPerson(t), n = rulesFor(t).length;
   const kind = person ? 'Person' : 'Thing';   // the group above says who they are (Family, Guests)
-  const meta = [kind, addedOn(t.created), n ? `${n} scenario${n === 1 ? '' : 's'}` : 'No scenarios'].join(' · ');
+  const meta = [ownerOf(t) ? `Belongs to ${ownerOf(t).name}` : kind, addedOn(t.created), n ? `${n} scenario${n === 1 ? '' : 's'}` : 'No scenarios'].join(' · ');
   const l = t.last_seen;
   const ic = p ? `<span class="ic photo${person ? ' round' : ''}"><img src="${crop(p)}" alt=""></span>` : `<span class="ic">${person ? I.user : I.book}</span>`;
   return `<li><button type="button" class="card" data-act="thing" data-id="${esc(t.id)}">${ic}
@@ -391,6 +393,7 @@ function thingPage(id) {
     const p = thingPhoto(t), [st, cls] = thingStatus(t), l = t.last_seen, fp = t.fingerprint;
     return `${phead(t.name, l ? l.room || '' : st, `<button type="button" class="ibtn" data-act="stub" data-title="More" aria-label="More">${I.more}</button>`)}
       <div class="hero">${p ? `<img class="photo" src="${crop(p)}" alt="">` : I.book.replace('<svg', '<svg width="60" height="60"')}<span class="st ${cls}">${esc(st)}</span></div>
+      ${ownerOf(t) ? `<div class="owner-line"><img src="${crop(ownerOf(t).fingerprint?.crops?.[0] || '')}" alt=""><span>Belongs to <b>${esc(ownerOf(t).name)}</b></span></div>` : ''}
       ${fp ? `<div class="single" style="padding-top:12px"><div style="font-size:14.5px;font-weight:600;padding:2px 0 10px">Visual fingerprint · ${fp.n} views</div>
         <div class="views-grid">${fp.crops.map((c) => `<img src="${crop(c)}" alt="">`).join('')}</div></div><div style="height:18px"></div>` : ''}
       <div class="group">${row(I.eventsC, 'Sightings', 'sightings')}${row(I.sensor, 'Sensors', 'scenarios')}${row(I.bellC, 'Notifications', 'notifications')}</div>
@@ -492,7 +495,10 @@ async function saveThing(btn) {
     addedPage(id);
   } catch (e) { btn.disabled = false; btn.textContent = 'Save'; dialog('Could not save', e.message, [['OK', 'btn-p', null]]); }
 }
+/** The people a thing can belong to, the one added last first (the app proposes them). */
+const ownersFor = () => state.things.filter(isPerson).sort((a, b) => b.created - a.created);
 function addedPage(id) {
+  if (ownersFor().length) { linkPage(id); return; }
   push(() => {
     const t = state.things.find((x) => x.id === id), fp = t?.fingerprint;
     return `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
@@ -501,6 +507,87 @@ function addedPage(id) {
     <div class="bottom-bar col"><button type="button" class="btn-p" data-act="new-scenario" data-id="${esc(id)}">Create a scenario</button>
       <button type="button" class="btn-s" data-act="finish">Not now</button></div>`;
   });
+}
+/** "Book added" with the question "Who does it belong to?": the family's faces, the person added last proposed. */
+function linkPage(id) {
+  const people = ownersFor(), pick = { id: people[0]?.id };
+  const page = push(() => {
+    const t = state.things.find((x) => x.id === id), fp = t?.fingerprint, sel = people.find((q) => q.id === pick.id) || people[0];
+    return `<div class="step link-step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
+      <div class="views-grid" style="width:100%;margin-bottom:10px">${(fp?.crops || []).slice(0, 4).map((c) => `<img src="${crop(c)}" alt="">`).join('')}</div>
+      <h3>${esc(t?.name || 'Thing')} added</h3><p>The camera looks for it whenever something moves.</p></div>
+    <div class="reco-card link-card"><div class="reco-head">${ICON_LINK.replace('#fff', '#1d8f74')}<b>Who does it belong to?</b></div>
+      <p>Link to ${esc(sel.name)}?</p>
+      <div class="fam-row">${people.map((q) => `<button type="button" class="fam${q.id === sel.id ? ' on' : ''}" data-act="pick-owner" data-id="${esc(q.id)}"><img src="${crop(q.fingerprint?.crops?.[0] || '')}" alt=""><small>${esc(q.name)}</small></button>`).join('')}</div></div>
+    <div class="bottom-bar col"><button type="button" class="btn-p" data-act="link-owner" data-id="${esc(id)}">Yes, link to ${esc(sel.name)}</button>
+      <button type="button" class="btn-s" data-act="new-scenario" data-id="${esc(id)}">Not now</button></div>`;
+  });
+  page._pick = pick;
+}
+async function linkOwner(btn) {
+  const tid = btn.dataset.id, owner = stack[stack.length - 1]?._pick?.id;
+  btn.disabled = true;
+  try {
+    await api(`/api/things/${encodeURIComponent(tid)}/owner`, { method: 'POST', body: JSON.stringify({ owner }) });
+    await refresh();
+    ownedPage(tid);
+  } catch (e) { btn.disabled = false; dialog('Could not link it', e.message, [['OK', 'btn-p', null]]); }
+}
+/** Linked: the thing and its person side by side, and a scenario about that person, ready to save. */
+function ownedPage(id) {
+  push(() => {
+    const t = state.things.find((x) => x.id === id), o = ownerOf(t), name = (t?.name || 'thing').toLowerCase();
+    const sentence = `Tell me if ${o?.name || 'they'} leaves home without the ${name}`;
+    return `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
+      <div class="owner-pair"><img src="${crop(thingPhoto(t) || '')}" alt=""><span class="owner-link">${ICON_LINK}</span><img class="round" src="${crop(o?.fingerprint?.crops?.[0] || '')}" alt=""></div>
+      <h3>Belongs to ${esc(o?.name || '')}</h3><p>The ${esc(name)} is linked to ${esc(o?.name || '')}. Scenarios can now be about ${esc(o?.name || 'them')}.</p></div>
+    <div class="reco-card sugg"><div class="reco-head">${I.sensor}<b>Suggested scenario</b></div>
+      <p>${esc(sentence)}</p>
+      <div class="reco-acts"><button type="button" class="btn-p" data-act="owned-scenario" data-id="${esc(id)}" data-text="${esc(sentence)}">Create</button><button type="button" class="btn-s" data-act="finish">Not now</button></div></div>`;
+  });
+}
+const ICON_LINK = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>';
+// ------------------------------------------------------------------ adding a person: a face video, or one photo of the face
+/** Add › Person: how to show the app their face. A face video gives 8 views; one clear photo gives one. */
+function personPickPage() {
+  push(() => `<div class="step"><button type="button" class="ibtn x" data-act="back" aria-label="Close">${I.x}</button>
+      <div class="method-art">${ICON_FACE}</div><h3>Add a person</h3>
+      <p>Record a short video of their face, or use one clear photo of it, looking at the camera.</p></div>
+    <input type="file" id="pphotoin" accept="image/*" hidden>
+    <div class="bottom-bar col"><button type="button" class="btn-p" data-act="person-video">Record a face video</button>
+      <button type="button" class="btn-s" data-act="person-photo" data-capture="user">Take a photo</button>
+      <button type="button" class="btn-s" data-act="person-photo">Choose a photo</button></div>`,
+  { mount: (el) => el.querySelector('#pphotoin').addEventListener('change', (e) => { if (e.target.files[0]) personPhotoPage(e.target.files[0]); }) });
+}
+async function personPhotoPage(file) {
+  const bmp = await createImageBitmap(file), k = Math.min(1, 900 / Math.max(bmp.width, bmp.height));
+  const c = Object.assign(document.createElement('canvas'), { width: Math.round(bmp.width * k), height: Math.round(bmp.height * k) });
+  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  const url = c.toDataURL('image/jpeg', 0.92);
+  push(() => `${phead('', '')}<div class="ptitle">New person</div><p class="psub">One photo of their face, looking at the camera.</p>
+    <div class="person-shot"><img src="${url}" alt=""></div>
+    <p class="lbl">Name</p><div class="fwrap"><input class="field" id="pname" placeholder="For example: Ana" maxlength="40" autocomplete="off" spellcheck="false"></div>
+    <p class="lbl">Who is it?</p><div class="chips-row"><button type="button" class="chip on" data-act="rel" data-rel="family">Family</button><button type="button" class="chip" data-act="rel" data-rel="guest">Guest</button></div>
+    <div class="bottom-bar"><button type="button" class="btn-p" data-act="save-person-photo" disabled>Save</button></div>`,
+  { mount: (el) => { el._photo = url; const n = el.querySelector('#pname'); n.addEventListener('input', () => { el.querySelector('[data-act="save-person-photo"]').disabled = !n.value.trim(); }); } });
+}
+/** The photo goes to the server as a person's views; the home device's face step (faces.py) makes their template. */
+async function savePersonPhoto(btn) {
+  const pg = stack[stack.length - 1], name = $('pname').value.trim(), rel = pg.querySelector('.chip.on[data-rel]')?.dataset.rel || 'family';
+  if (!name) return;
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const { id } = await api('/api/things', { method: 'POST', body: JSON.stringify({ name, description: `person · ${rel}` }) });
+    await api(`/api/things/${encodeURIComponent(id)}/photos`, { method: 'POST', body: JSON.stringify({ photos_b64: [pg._photo] }) });
+    await refresh();
+    push(() => {
+      const t = state.things.find((x) => x.id === id), fp = t?.fingerprint;
+      return `<div class="step"><button type="button" class="ibtn x" data-act="finish" aria-label="Close">${I.x}</button>
+        <div class="person-added"><img src="${crop(fp?.crops?.[0] || '')}" alt=""><span class="ok">${ICON_CHECK}</span></div>
+        <h3>${esc(t?.name || name)} added</h3><p>${esc(relationOf(t) || 'Person')} · ${fp?.faces ? 'face learnt from 1 photo' : 'no face found in the photo: it is kept as their picture only'}</p></div>
+      <div class="bottom-bar"><button type="button" class="btn-p" data-act="finish">Done</button></div>`;
+    });
+  } catch (e) { btn.disabled = false; btn.textContent = 'Save'; dialog('Could not save', e.message, [['OK', 'btn-p', null]]); }
 }
 // ------------------------------------------------------------------ adding a person: views of the face from a short video
 const ICON_FACE = '<svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#1a2233" stroke-width="1.6" stroke-linecap="round"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10.2" r="3" stroke="#2abe9e" stroke-width="1.8"/><path d="M7.6 17.2a5.2 5.2 0 0 1 8.8 0" stroke="#2abe9e" stroke-width="1.8"/></svg>';
@@ -588,12 +675,12 @@ async function securityOn(btn) {
     savedPage(r);
   } catch (e) { btn.disabled = false; btn.textContent = 'Turn on'; dialog('Could not turn it on', e.message, [['OK', 'btn-p', null]]); }
 }
-function scenarioPage(id) {
+function scenarioPage(id, text = '') {
   const t = state.things.find((x) => x.id === id), photo = t?.fingerprint?.crops?.[0];
   const back = t ? 0 : stack.length;   // a scenario without a thing (Menu › Scenarios): Done returns to that list
   const page = push(() => `${phead('', '')}<div class="ptitle">New scenario</div><p class="psub">Say what should happen, in one sentence.</p>
     ${t ? `<div class="scen-thing">${photo ? `<img src="${crop(photo)}" alt="">` : ''}<span><b>${esc(t.name)}</b><small>${isPerson(t) ? relationOf(t) || 'Person' : 'Work Room'}</small></span></div>` : ''}
-    <div class="fwrap"><textarea class="field" id="scentext" rows="1" placeholder="${t ? 'For example: tell me if I leave without it' : 'For example: if nobody is home, tell me'}" maxlength="300"></textarea></div>
+    <div class="fwrap"><textarea class="field" id="scentext" rows="1" placeholder="${t ? 'For example: tell me if I leave without it' : 'For example: if nobody is home, tell me'}" maxlength="300">${esc(text)}</textarea></div>
     <div class="bottom-bar"><button type="button" class="btn-p" data-act="save-scenario" disabled>Save</button></div>`,
   { mount: (el) => {
     const f = el.querySelector('#scentext'), b = el.querySelector('[data-act="save-scenario"]');
@@ -914,7 +1001,13 @@ device.addEventListener('click', async (e) => {
     case 'ask-about': { const t = state.things.find((x) => x.id === id); ask(whereIs(t ? t.name.toLowerCase() : 'thing')); break; }
     case 'sightings': sightingsPage(topId()); break;
     case 'add-thing': addThingPage(); break;
-    case 'pick-thing': if (el.dataset.q === 'person') personMethodPage(); else methodPage(el.dataset.name, el.dataset.q); break;
+    case 'pick-thing': if (el.dataset.q === 'person') personPickPage(); else methodPage(el.dataset.name, el.dataset.q); break;
+    case 'person-video': pop(); personMethodPage(); break;
+    case 'person-photo': { const i = $('pphotoin'); if (el.dataset.capture) i.setAttribute('capture', el.dataset.capture); else i.removeAttribute('capture'); i.value = ''; i.click(); break; }
+    case 'save-person-photo': savePersonPhoto(el); break;
+    case 'pick-owner': { const pg = el.closest('section.page'); if (pg?._pick) { pg._pick.id = el.dataset.id; pg.innerHTML = pg._render(); } break; }
+    case 'link-owner': linkOwner(el); break;
+    case 'owned-scenario': scenarioPage(el.dataset.id, el.dataset.text); break;
     case 'person-next': suggestionPage(); break;
     case 'security-on': securityOn(el); break;
     case 'record-face': $('facein')?.click(); break;

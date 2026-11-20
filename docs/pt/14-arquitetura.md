@@ -1,26 +1,53 @@
 # Arquitetura do _ThingTracker_
 
-Versão 2, de 19 de novembro de 2026, com o estado do protótipo revisto a 20 de novembro. Destina-se ao júri e aos engenheiros da Altice Labs e descreve a solução final, com o local onde corre cada parte, o componente que decide cada coisa e o sinal e o limiar em que se baseia. A secção 16 indica, ponto a ponto, o que o protótipo já faz.
+Versão 3, de 20 de novembro de 2026. Destina-se ao júri e aos engenheiros da Altice Labs. A solução final, decidida a 20 de novembro, faz toda a perceção e toda a inferência em casa e é apresentada na secção seguinte. As secções 1 a 18 mantêm o desenho detalhado de 19 de novembro, com o local onde corre cada parte, o componente que decide cada coisa e o sinal e o limiar em que se baseia; sempre que uma delas coloca na Altice a visão, um modelo de linguagem, as assinaturas visuais ou as imagens, descreve a alternativa avaliada e não escolhida, porque as imagens sairiam de casa. A secção 16 indica, ponto a ponto, o que o protótipo já faz.
 
 As vistas seguem três referências. O modelo C4 (c4model.com) organiza o contexto, os contentores e os componentes; o arc42 (arc42.org) orienta a vista de execução, com as sequências, e a vista de implantação; o diagrama de fluxo de dados com fronteiras de confiança segue a prática de modelação de ameaças do _Microsoft Security Development Lifecycle_ e da OWASP. Todas as figuras são geradas por `docs/architecture/build_views.py`, que verifica se cada texto cabe na respetiva caixa e interrompe a geração quando algum não cabe.
 
+## Solução final (20 de novembro): tudo local
+
+A privacidade vem primeiro: tudo o que observa a casa corre dentro de casa.
+
+- O equipamento da casa faz toda a perceção e toda a inferência. Pode ser o _router_, se tiver uma NPU, ou uma caixa dedicada, como um _Raspberry Pi 5_ com um acelerador de IA ou um _Jetson Orin Nano Super_. Encarrega-se de:
+  - receber as imagens das câmaras na rede local;
+  - filtrar o movimento;
+  - a visão, com a deteção e a reidentificação pela assinatura visual (_OWLv2_ e _DINOv2_ no protótipo; detetores mais leves, como o _YOLOv8n_, nos equipamentos pequenos);
+  - o reconhecimento facial opcional (_YuNet_ e _SFace_), com os padrões guardados no próprio equipamento;
+  - a memória local (onde e quando foi visto cada objeto);
+  - o motor de regras;
+  - o modelo de linguagem (_Qwen3-1.7B_ no protótipo), que converte frases em regras e perguntas em respostas, sem nunca decidir.
+- As imagens, o vídeo, as assinaturas visuais e os padrões faciais nunca saem de casa.
+- As fotografias de registo seguem do telemóvel para o equipamento da casa, diretamente pelo Wi-Fi da casa ou por um _relay_ cifrado de ponta a ponta, que a Altice não consegue ler. É o equipamento que constrói a assinatura visual.
+- A plataforma Altice é o plano de controlo e de dados e só trata texto. Assegura:
+  - as contas, a identidade e as permissões da família;
+  - o registo de referência dos metadados (objetos, pessoas, apenas pelo nome, ligações de posse e cenários), que garante a cópia de segurança, a sincronização entre os telemóveis da família e a reposição quando a caixa é substituída;
+  - o histórico de eventos, em texto estruturado (por exemplo, “livro, secretária, 18:02”);
+  - as notificações _push_ para a aplicação;
+  - um _relay_ que permite à aplicação chegar a casa quando a família está fora;
+  - as ações sobre os dispositivos, através do MCP da _Connected Home_.
+- A nuvem continua a ser necessária porque o telemóvel nem sempre está na rede da casa, porque as notificações e o controlo dos dispositivos são serviços da plataforma Altice e porque os metadados precisam de cópia de segurança e de sincronização entre vários utilizadores.
+- Os modelos de linguagem externos (por exemplo, o _ChatGPT_ ou o _Claude_ do próprio utilizador) poderão vir a ser uma opção do utilizador, apenas com texto, mas não fazem parte da solução atual.
+- O equipamento compra-se uma única vez: uma câmara de interior custa cerca de 45 €, um _Raspberry Pi 5_ cerca de 200 € e um _Jetson Orin Nano Super_ cerca de 345 €, ou um _router_ com NPU custa cerca de mais 15 € (estimativa). A cinco anos, o equipamento corresponde a 3,33 ou 5,75 € por mês. A energia dos modelos custa cêntimos por mês, menos de 0,01 € com o _YOLOv8n_ e até 0,72 € com o _OWLv2_ com 12 h de movimento por dia (estimativa da equipa num _Jetson Orin Nano_). Os valores resultam da pesquisa de preços da equipa de 20 de novembro, com as fontes no documento 17. Uma caixa paga pela Altice não se paga com 3,99 € por mês e deixa −4,81 a −6,90 € por casa e por mês (documento 17, secção 9), pelo que o modelo funciona com a IA no _router_ ou com equipamento comprado pelo cliente.
+- A visão nas GPU _L4_ da Altice (a solução híbrida de 19 de novembro, com cerca de 0,49 € por casa e por mês, documento 17) é uma alternativa avaliada e não escolhida, porque as imagens sairiam de casa: a região que mudou seguiria para a Altice cerca de uma vez por segundo durante o movimento.
+- Fica por desenhar a forma de a aplicação mostrar uma imagem num aviso ou numa resposta (a pessoa desconhecida, a última observação) sem que as imagens saiam de casa, por exemplo através do _relay_ cifrado de ponta a ponta.
+
 ## Em resumo
 
-- A solução é híbrida. Em casa, no equipamento que já lá existe (o processador do _router_ Altice, sem acelerador de IA), correm o filtro de movimento, as máscaras de privacidade, o recorte da região que mudou e o reconhecimento facial opcional, pelo que os padrões faciais nunca saem de casa. Na Altice, os modelos de visão (_OWLv2_ e _DINOv2_) correm em GPU _L4_ próprias, alimentadas por filas, e o serviço _ThingTracker_ determina a presença e avalia as regras de cada casa.
-- O vídeo nunca sai de casa. Saem apenas a região que mudou (no máximo 640 × 640 píxeis, cerca de uma vez por segundo enquanto há movimento), a região pedida numa verificação, os rótulos dos rostos (o nome de uma pessoa registada ou “rosto desconhecido”) e, raramente, um clipe de 2 a 3 s da região para o juiz.
+- Toda a perceção e toda a inferência são feitas em casa. No equipamento da casa correm a receção das imagens das câmaras, o filtro de movimento, as máscaras de privacidade, a visão (deteção e reidentificação), o reconhecimento facial opcional, a memória, o motor de regras e o modelo de linguagem. Na Altice fica apenas texto: as contas, o registo dos metadados, o histórico de eventos, as notificações, o _relay_ e as ações sobre os dispositivos através do MCP.
+- As imagens nunca saem de casa. O vídeo, as imagens, as assinaturas visuais e os padrões faciais ficam no equipamento da casa, e para a Altice segue apenas texto: eventos, rótulos (o nome de um objeto, o nome de uma pessoa registada ou “rosto desconhecido”), regras e comandos.
 - Há três tipos de evidência e um único decisor. Os olhos rápidos atuam sempre que há movimento (filtro de movimento, _OWLv2_, _DINOv2_ e rostos), o juiz de visão-linguagem é chamado raramente, perante um momento duvidoso, e os factos que a câmara não vê (o sensor da porta e os telemóveis da família no Wi-Fi) respondem a “saiu alguém de casa?”. Quem decide é o motor de regras, em código simples.
-- Com 500 000 casas, a visão custa cerca de 0,49 € por casa e por mês, com uma câmara, nos servidores _L4_ da própria Altice (documento 17), a que se somam cerca de 0,43 € do modelo de linguagem (documento 16), ambos estimativas.
-- Caso o _router_ ou a câmara disponham de uma NPU capaz de correr um detetor, a visão passa para casa e o custo desce para cerca de 0,36 € (documento 17, opção A1).
+- O equipamento da casa compra-se uma única vez (3,33 ou 5,75 € por mês, a cinco anos) e a energia que consome custa cêntimos por mês. As estimativas anteriores, de cerca de 0,49 € por casa e por mês para a visão nos servidores _L4_ da própria Altice (documento 17) e de cerca de 0,43 € para um modelo de linguagem na nuvem (documento 16), dizem respeito à alternativa avaliada e não escolhida.
+- O equipamento da casa é o _router_, caso disponha de uma NPU capaz de correr um detetor (cerca de mais 15 € por _router_, estimativa; documento 17, opção A1), ou, se não dispuser, uma caixa dedicada.
 
 ## 1. A ideia num parágrafo
 
-A câmara é o sensor mais rico da casa, mas hoje limita-se a comunicar “movimento detetado”; o _ThingTracker_ transforma-a numa fonte de informação. Modelos de visão _open-source_ encontram os objetos que a família registou (um livro, as chaves, a carteira) e as pessoas que aparecem na imagem, e é um filtro de movimento de baixo custo, em casa, que decide quando correm. Um modelo de linguagem converte uma frase numa regra precisa (“avisa-me se sair de casa sem o livro”) e responde a perguntas a partir da memória (“onde está o meu livro?”). As regras correm como código simples no serviço _ThingTracker_, que junta o que as câmaras viram àquilo que nenhuma câmara consegue ver, ou seja, a porta a abrir e a fechar e os telemóveis da família a sair do Wi-Fi da casa ou a entrar nele. As ações chegam aos dispositivos Altice já instalados (lâmpada, tomada, sirene) através do servidor MCP (“_Model Context Protocol_”) da Altice, depois de um “Sim” na aplicação.
+A câmara é o sensor mais rico da casa, mas hoje limita-se a comunicar “movimento detetado”; o _ThingTracker_ transforma-a numa fonte de informação. Modelos de visão _open-source_ encontram os objetos que a família registou (um livro, as chaves, a carteira) e as pessoas que aparecem na imagem, e é um filtro de movimento de baixo custo, em casa, que decide quando correm. Um modelo de linguagem converte uma frase numa regra precisa (“avisa-me se sair de casa sem o livro”) e responde a perguntas a partir da memória (“onde está o meu livro?”). As regras correm como código simples no equipamento da casa, que junta o que as câmaras viram àquilo que nenhuma câmara consegue ver, ou seja, a porta a abrir e a fechar e os telemóveis da família a sair do Wi-Fi da casa ou a entrar nele. As ações chegam aos dispositivos Altice já instalados (lâmpada, tomada, sirene) através do servidor MCP (“_Model Context Protocol_”) da Altice, depois de um “Sim” na aplicação.
 
 Três princípios orientam tudo o que se descreve a seguir:
 
 1. Olhos baratos sempre, um juiz dispendioso raramente. O filtro de movimento, a deteção, as assinaturas visuais e os rostos atuam sempre que há movimento, enquanto o modelo de visão-linguagem só observa um momento duvidoso, e a sua resposta “incerto” leva o sistema a perguntar à família, nunca a agir.
 2. O modelo de linguagem escreve a regra e o motor de regras decide. O modelo é usado quando uma frase se torna regra, e não em cada imagem, pelo que os alarmes assentam em regras que se podem ler e testar.
-3. O que fica em casa não sai de casa. O vídeo e os padrões faciais nunca saem; a região que mudou sai cerca de uma vez por segundo durante o movimento e é apagada depois da análise, com exceção das miniaturas guardadas nas observações.
+3. O que fica em casa não sai de casa. As imagens, o vídeo, as assinaturas visuais e os padrões faciais nunca saem; sai apenas texto (eventos, rótulos, regras e comandos).
 
 ## 2. Requisitos e restrições
 
@@ -31,8 +58,8 @@ Três princípios orientam tudo o que se descreve a seguir:
 | F3 | Criar um sensor a partir de uma frase | Sem ecrãs de configuração | O modelo de linguagem compila a frase numa regra (§10) |
 | F4 | Saber quem está em casa | Fiável para as regras de casa vazia | Motor de presença sobre os telemóveis, a porta e as câmaras (§7) |
 | F5 | Atuar sobre os dispositivos da casa | O mesmo caminho que a aplicação já usa | Ferramentas MCP, depois de um “Sim” (§8.7) |
-| N1 | Privacidade | Nenhum vídeo sai de casa, nem os padrões faciais | Divisão híbrida, diagrama de fluxo de dados e regras sobre os dados (§12) |
-| N2 | Custo para 500 000 casas | Visão abaixo dos 1,73 € por mês que o serviço comporta (documento 17) | Filtro de movimento em casa, só a região que mudou e uma fila para o que não é urgente: cerca de 0,49 € |
+| N1 | Privacidade | Nenhuma imagem, vídeo, assinatura visual ou padrão facial sai de casa | Toda a perceção no equipamento da casa e só texto para a Altice; diagrama de fluxo de dados e regras sobre os dados (§12) |
+| N2 | Custo para 500 000 casas | Visão abaixo dos 1,73 € por mês que o serviço comporta (documento 17) | Nenhum custo de visão na Altice: o equipamento da casa compra-se uma única vez, no _router_ ou pelo cliente. A alternativa não escolhida, com a visão na Altice, custaria cerca de 0,49 € |
 | N3 | Latência, do evento ao aviso | Alguns segundos | Evento da porta, fila urgente e regra; as partes medidas estão na §14 |
 | N4 | Adoção pela Altice | Nenhuma aplicação nova e nenhum caminho novo até aos dispositivos | Um separador na aplicação existente, ferramentas MCP e cenários da plataforma |
 
@@ -60,6 +87,8 @@ A Figura 2 apresenta os contentores, a tecnologia de cada um e o que leva cada s
 
 **Figura 2** – C4, nível 2: os contentores do _ThingTracker_ em casa e na Altice, e os sistemas existentes que utilizam.
 
+A tabela descreve o desenho híbrido de 19 de novembro. Na solução final, os servidores de visão, a comparação com as assinaturas visuais, o motor de regras, a memória das observações, as miniaturas e os modelos de linguagem passam para o equipamento da casa; na Altice ficam o mediador de ligações (agora o _relay_), a API da aplicação, o registo dos metadados, o histórico de eventos e o _host_ MCP, sempre apenas com texto.
+
 | Contentor | Onde | Tecnologia | Função | Escala em função de |
 |---|---|---|---|---|
 | Agente da casa | Processador do _router_ | _Python_, _OpenCV_ | Máscaras, filtro de movimento, região que mudou e rostos; lê a pedido; guarda em memória os últimos 3 s, para o juiz | Um por casa |
@@ -83,7 +112,9 @@ A Figura 3 mostra onde corre cada parte, o equipamento, os números para 500 000
 
 **Figura 3** – Implantação: o agente da casa no _router_, o _ThingTracker_ no centro de dados da Altice, o telemóvel e as opções consideradas.
 
-### 5.1 A solução escolhida: híbrida, nos servidores _L4_ da Altice
+### 5.1 Alternativa avaliada e não escolhida: híbrida, nos servidores _L4_ da Altice
+
+Não foi escolhida a 20 de novembro, porque as imagens sairiam de casa (a região que mudou, cerca de uma vez por segundo durante o movimento). Mantém-se aqui por ter sido orçamentada em detalhe (documento 17).
 
 Em casa, no equipamento que já lá existe, o _router_ Altice (processador sem acelerador de IA) corre o agente da casa, as câmaras do kit enviam RTSP apenas na rede da casa, a central de segurança e o sensor de contacto da porta comunicam com a plataforma Altice, como hoje, e o _router_ sabe que telemóveis da família estão ligados. Tudo o que o _ThingTracker_ envia a partir de casa segue por uma única ligação de saída com autenticação mútua (mTLS).
 
@@ -93,22 +124,24 @@ Os balanceadores de carga ficam na Altice, e não em casa, porque uma casa tem u
 
 O documento 17 estima, para 500 000 casas, cerca de 1 427 placas _L4_ e 6,4 M€ de equipamento, o que corresponde a cerca de 0,49 € por casa e por mês com uma câmara (0,98 € com duas). O cálculo pressupõe 2 h de movimento por câmara e por dia, analisadas a uma imagem por segundo, com as GPU a 25 % da sua velocidade de pico, e um erro de duas vezes em qualquer destes três pressupostos duplica ou reduz para metade o custo, razão pela qual a primeira verificação prevista no documento 17 é medir o débito real.
 
-### 5.2 Evolução prevista: a visão em casa (A1)
+### 5.2 A solução final: a visão em casa (A1, ou uma caixa dedicada)
 
-Se os _routers_ ou as câmaras da Altice tiverem uma NPU capaz de correr um detetor, o _OWLv2_ e o _DINOv2_ (ou um detetor mais leve) passam para o agente da casa, e de casa saem apenas eventos, miniaturas e assinaturas visuais. O documento 17 estima cerca de 0,36 € por casa e por mês, com base num sobrecusto de 15 € por _router_, que é um pressuposto. Confirmar se o _router_ tem essa NPU é o primeiro ponto a validar com a Altice (§18).
+Se os _routers_ ou as câmaras da Altice tiverem uma NPU capaz de correr um detetor, o _OWLv2_ e o _DINOv2_ (ou um detetor mais leve) correm no agente da casa, e de casa sai apenas texto: eventos, rótulos, regras e comandos. O documento 17 estima cerca de 0,36 € por casa e por mês, com base num sobrecusto de 15 € por _router_, que é um pressuposto. Confirmar se o _router_ tem essa NPU é o primeiro ponto a validar com a Altice (§18). Caso não tenha, o equipamento da casa é uma caixa dedicada comprada pelo cliente: um equipamento leve, um _Raspberry Pi 5_ (cerca de 200 €), ou um mais potente, um _Jetson Orin Nano Super_ (cerca de 345 €), segundo a pesquisa de preços da equipa de 20 de novembro (documento 17).
 
-### 5.3 As opções rejeitadas
+### 5.3 As opções rejeitadas a 19 de novembro
+
+A opção (a) foi rejeitada a 19 de novembro pelo custo de uma caixa paga pela Altice, ao preço de lançamento do _Jetson_. A 20 de novembro tornou-se a solução final, com a caixa comprada pelo cliente ou a IA no _router_, para que as imagens nunca saiam de casa.
 
 | Opção | O que significa | Números (documento 17, salvo indicação) | Porque foi rejeitada |
 |---|---|---|---|
 | (a) Tudo em casa, incluindo o modelo de linguagem | Uma caixa por casa corre a visão e um modelo de linguagem | _Raspberry Pi 5_ com _AI HAT+_ (200 €) ou _Jetson Orin Nano Super_ (269 €): 6,55 a 8,64 € por casa e por mês e 107,5 a 142,0 M€ de equipamento para 500 000 casas. O modelo de linguagem do protótipo (_Qwen3-1.7B_, 4 bits) ocupa cerca de 1 GB e um modelo de 4B testado ocupou 2,1 GB e foi três vezes mais lento (medição da equipa, 18 de novembro) | O serviço comporta no máximo 1,73 € por mês para a visão, e uma caixa custa quatro a cinco vezes mais. Um modelo de linguagem exige ainda mais memória, os modelos pequenos escreveram um português que nem sempre era europeu e cada atualização de modelos teria de chegar a 500 000 caixas |
 | (b) Visão na nuvem da Altice, a partir de imagens completas ou de vídeo | Cada câmara envia imagens ou um _stream_ para servidores GPU | Um _stream_ contínuo a 2 Mbps (pressuposto) corresponde a 657 GB por câmara e por mês, 1 000 Gbps no pico para 500 000 câmaras e 1,00 € por casa e por mês só em rede. Imagens completas durante o movimento correspondem a 17,5 GB por câmara e por mês, com GPU dimensionadas para o pico do fim do dia: 2,41 € por casa e por mês nos servidores da Altice e 3,93 a 4,26 € em GPU de _hyperscalers_, a pedido | Custa mais do que o serviço comporta, e toda a imagem da casa sairia de casa, a toda a hora |
 
-A solução escolhida mantém em casa o filtro de movimento, que é o que torna viável qualquer opção central, já que a região que mudou representa cerca de 8,8 GB por câmara e por mês (40 KB por região, um pressuposto), face a 657 GB de um _stream_.
+O desenho híbrido mantém em casa o filtro de movimento, que é o que torna viável qualquer opção central, já que a região que mudou representa cerca de 8,8 GB por câmara e por mês (40 KB por região, um pressuposto), face a 657 GB de um _stream_.
 
 ### 5.4 Onde corre cada parte na demonstração
 
-Na demonstração, o _MacBook_ da equipa desempenha todos os papéis ao mesmo tempo. O `edge.py` faz de agente da casa (o filtro de movimento e os rostos) e de servidores de visão da Altice (_OWLv2_ e _DINOv2_, na GPU do _Mac_). O `server.py` faz de serviço _ThingTracker_, com o motor de presença, o motor de regras e o _SQLite_ no lugar do _PostgreSQL_, e o `llm_local.py` faz de servidores do modelo de linguagem, com o _Qwen3-1.7B_ através do _MLX_. Os ecrãs do telemóvel são um navegador no mesmo _Mac_. O _stream_ da câmara chega ao _Mac_ através do _relay_ na nuvem da organização, o que nunca acontece no produto, em que o _stream_ não sai da rede da casa.
+Na demonstração, o _MacBook_ da equipa desempenha todos os papéis ao mesmo tempo. O `edge.py` faz de olhos do equipamento da casa: o filtro de movimento, os rostos e os modelos de visão (_OWLv2_ e _DINOv2_, na GPU do _Mac_). O `server.py` faz da memória e do motor de regras do equipamento da casa e do lado da Altice, com o motor de presença e o _SQLite_ no lugar do _PostgreSQL_, e o `llm_local.py` faz do modelo de linguagem do equipamento da casa, com o _Qwen3-1.7B_ através do _MLX_. Os ecrãs do telemóvel são um navegador no mesmo _Mac_. O _stream_ da câmara chega ao _Mac_ através do _relay_ na nuvem da organização, o que nunca acontece no produto, em que o _stream_ não sai da rede da casa.
 
 ## 6. Componentes (C4, nível 3)
 
@@ -294,7 +327,7 @@ Cada regra mostra ao utilizador, em linguagem corrente, o que observa e o que fa
 
 | Elemento | Valor |
 |---|---|
-| O que é | Um modelo de visão-linguagem nos servidores GPU da Altice |
+| O que é | Um modelo de visão-linguagem no equipamento da casa, uma vez que observa imagens (na alternativa híbrida, nos servidores GPU da Altice) |
 | Quando é chamado | Só quando uma regra encontra um momento duvidoso, como “a pessoa levou o livro ou apenas o mudou de sítio?”, ou uma verificação de objeto esquecido em que o objeto pode estar parcialmente tapado |
 | Entrada | Um clipe de 2 a 3 s da região (dos 3 s que o agente da casa guarda em memória, ou de uma curta sequência que grava a pedido) e a pergunta da regra |
 | Saída | Sim, não ou incerto, com uma frase |
@@ -312,11 +345,11 @@ Um aviso é um evento estruturado, com título, mensagem, miniatura, cartões de
 
 | Caminho | Onde corre | O que acontece | Resultado |
 |---|---|---|---|
-| Fotografias do telemóvel | Aplicação → serviço → servidores de visão | 6 a 8 fotografias de lados diferentes (ou imagens de um vídeo curto); o _OWLv2_ encontra o objeto em cada fotografia, usando o nome em inglês como termo de pesquisa, e o _DINOv2_ calcula o vetor de cada recorte | Assinatura visual com até 8 vetores |
-| Mostrado a uma câmara | Agente da casa → servidores de visão | O utilizador roda o objeto devagar em frente a uma câmara; cada região passa pelo _OWLv2_ e pelo _DINOv2_, e uma vista só é guardada se a semelhança com todas as já guardadas for inferior a 0,97 (um ângulo novo), até haver 8 | Assinatura visual com 8 vistas |
-| Propostas da câmara | Servidores de visão | A aplicação mostra o que as câmaras veem (“A procurar nas câmaras…”); a família escolhe o objeto com um toque, e as fotografias ou a câmara completam as vistas | Como acima |
+| Fotografias do telemóvel | Aplicação → equipamento da casa (pelo Wi-Fi da casa ou por um _relay_ cifrado de ponta a ponta, que a Altice não consegue ler) | 6 a 8 fotografias de lados diferentes (ou imagens de um vídeo curto); o _OWLv2_ encontra o objeto em cada fotografia, usando o nome em inglês como termo de pesquisa, e o _DINOv2_ calcula o vetor de cada recorte | Assinatura visual com até 8 vetores |
+| Mostrado a uma câmara | Equipamento da casa | O utilizador roda o objeto devagar em frente a uma câmara; cada região passa pelo _OWLv2_ e pelo _DINOv2_, e uma vista só é guardada se a semelhança com todas as já guardadas for inferior a 0,97 (um ângulo novo), até haver 8 | Assinatura visual com 8 vistas |
+| Propostas da câmara | Equipamento da casa | A aplicação mostra o que as câmaras veem (“A procurar nas câmaras…”); a família escolhe o objeto com um toque, e as fotografias ou a câmara completam as vistas | Como acima |
 
-A assinatura visual fica no _PostgreSQL_ (_pgvector_) desse cliente, e o melhor recorte passa a ser a fotografia do objeto, no armazenamento de objetos. Um _router_ novo ou reposto de fábrica não exige novo registo dos objetos, uma vez que as assinaturas visuais ficam na Altice, mas exige novo registo dos rostos, cujos padrões nunca saem de casa.
+O equipamento constrói a assinatura visual e guarda-a, com o melhor recorte como fotografia do objeto, e nenhuma das duas sai de casa. A Altice guarda os metadados do objeto em texto (o nome, o dono e as regras), pelo que uma caixa substituída recupera a lista de objetos e os cenários. Como as assinaturas visuais e os padrões faciais não ficam guardados fora de casa, uma caixa nova exige que se registem de novo as vistas dos objetos e os rostos. (Na alternativa híbrida, as assinaturas visuais ficavam no _PostgreSQL_ com _pgvector_, na Altice.)
 
 ## 10. A linguagem de sensores
 
@@ -369,7 +402,7 @@ A Figura 11 é o diagrama de fluxo de dados com as fronteiras de confiança (a c
 
 **Figura 11** – Fluxo de dados com fronteiras de confiança e o que leva cada fluxo que atravessa uma fronteira.
 
-De casa saem a região que mudou, no máximo 640 × 640 píxeis e cerca de uma vez por segundo enquanto há movimento, a região pedida numa verificação ativa ou numa atualização, raramente um clipe de 2 a 3 s da região para o juiz, os rótulos e as caixas dos rostos e os eventos. A região pode cobrir quase toda a imagem quando alguém atravessa todo o campo de visão. O vídeo nunca sai de casa, nem os padrões faciais, e as regiões e os clipes são apagados depois da análise, com exceção das miniaturas guardadas nas observações. O modelo de texto recebe apenas texto (a frase ou a pergunta, os nomes dos objetos, dos lugares e dos dispositivos e excertos da memória), e o documento 20 propõe substituir os nomes das pessoas por marcadores antes do envio.
+Na solução final, de casa sai apenas texto: eventos (por exemplo, “livro, secretária, 18:02”), rótulos (o nome de um objeto, o nome de uma pessoa registada ou “rosto desconhecido”), regras e comandos. As imagens, o vídeo, as assinaturas visuais e os padrões faciais nunca saem de casa. Na alternativa híbrida, não escolhida, sairiam de casa a região que mudou (no máximo 640 × 640 píxeis, cerca de uma vez por segundo enquanto há movimento), a região pedida numa verificação ativa e, raramente, um clipe de 2 a 3 s da região para o juiz. O modelo de texto recebe apenas texto (a frase ou a pergunta, os nomes dos objetos, dos lugares e dos dispositivos e excertos da memória), e o documento 20 propõe substituir os nomes das pessoas por marcadores antes do envio.
 
 A tabela seguinte reúne as principais ameaças por fronteira, como ponto de partida de um modelo de ameaças.
 
@@ -404,11 +437,15 @@ Medições feitas no Mac da equipa (GPU Apple, 18 de novembro, `prototype/vision
 | Comando MCP a um dispositivo (desligar a tomada) | Cerca de 1,3 s | Medido a 16 de novembro (documento 10) |
 | Modelo de texto local (_Qwen3-1.7B_, _MLX_) | Respostas em 0,4 a 1,7 s e regras em 1,5 a 3,2 s | Medição da equipa, 18 de novembro |
 
-Com 500 000 casas, estima-se que a visão custe cerca de 0,49 € por casa e por mês, com uma câmara, nos servidores _L4_ da Altice (documento 17), e o modelo de linguagem cerca de 0,43 € (documento 16, cenário base, de 0,10 a 1,78 €). O custo do juiz ainda não está estimado, uma vez que só é chamado em momentos duvidosos e a frequência dessas chamadas tem de ser medida num piloto antes de ser orçamentada.
+Na solução final, o equipamento da casa compra-se uma única vez, o que corresponde a 3,33 ou 5,75 € por mês a cinco anos (cerca de 200 ou 345 €), ou a cerca de mais 15 € num _router_ com NPU, e a energia dos modelos custa cêntimos por mês (menos de 0,01 € com o _YOLOv8n_ e até 0,72 € com o _OWLv2_ com 12 h de movimento por dia, estimativa da equipa num _Jetson Orin Nano_). Os valores resultam da pesquisa de preços da equipa de 20 de novembro, com as fontes no documento 17.
+
+Na alternativa não escolhida, com 500 000 casas, estimava-se que a visão custasse cerca de 0,49 € por casa e por mês, com uma câmara, nos servidores _L4_ da Altice (documento 17), e um modelo de linguagem na nuvem cerca de 0,43 € (documento 16, cenário base, de 0,10 a 1,78 €). O custo do juiz ainda não está estimado, uma vez que só é chamado em momentos duvidosos e a frequência dessas chamadas tem de ser medida num piloto antes de ser orçamentada.
 
 ## 15. Os modelos de linguagem
 
-O modelo de texto é chamado apenas pelo serviço _ThingTracker_, para duas tarefas, compilar uma frase numa regra e redigir uma resposta a partir da memória. O juiz (§8.6) é um modelo de visão-linguagem na Altice, chamado raramente. Na terminologia do MCP, nenhum modelo se liga ao servidor MCP, uma vez que o modelo pede uma ferramenta e é o serviço que a chama.
+Na solução final, o modelo de texto corre no equipamento da casa (o _Qwen3-1.7B_ no protótipo), para duas tarefas, compilar uma frase numa regra e redigir uma resposta a partir da memória, e nunca decide. O juiz (§8.6) é também um modelo de visão-linguagem no equipamento da casa, uma vez que observa imagens, e é chamado raramente. Na terminologia do MCP, nenhum modelo se liga ao servidor MCP, uma vez que o modelo pede uma ferramenta e é o código que a chama.
+
+Os modelos de linguagem externos (por exemplo, o _ChatGPT_ ou o _Claude_ do próprio utilizador) poderão vir a ser uma opção do utilizador, apenas com texto, mas não fazem parte da solução atual. O que se segue é a análise anterior, para um modelo de texto alojado pela Altice ou por um fornecedor.
 
 Pode usar-se qualquer modelo de texto com qualidade suficiente, alojado pela Altice (_open-weight_) ou sob um contrato que garanta que os dados não são usados para treino, inclua um acordo de tratamento de dados, ou DPA (“_Data Processing Agreement_”), e assegure o processamento na UE. O protótipo usa o _Qwen3-1.7B_ localmente, podendo ativar-se o _Claude Haiku 5.5_ e o _Claude Sonnet 5.5_. As opções seguintes foram verificadas nos termos e na documentação de cada fornecedor a 18 de novembro de 2026:
 
@@ -432,7 +469,7 @@ Quanto às licenças dos modelos de visão, verificadas nas fichas dos modelos e
 
 ## 16. Protótipo e solução final
 
-Estado a 20 de novembro de 2026, verificado no código do protótipo (pasta `prototype/`).
+Estado a 20 de novembro de 2026, verificado no código do protótipo (pasta `prototype/`). A coluna “Solução final” descreve o desenho híbrido de 19 de novembro; na solução final de 20 de novembro, as linhas da visão, da comparação, do juiz, do motor de regras e do modelo de texto correm no equipamento da casa, papel que o Mac desempenha na demonstração, e a região que mudou nunca é enviada.
 
 | Parte | Solução final | Protótipo | Estado |
 |---|---|---|---|
@@ -464,7 +501,7 @@ Estado a 20 de novembro de 2026, verificado no código do protótipo (pasta `pro
 
 | # | Decisão | Alternativas | Justificação |
 |---|---|---|---|
-| D1 | Solução híbrida, com movimento, regiões e rostos em casa e a visão na Altice | Uma caixa por casa; imagens completas ou vídeo para a nuvem | Custo (§5.3), de 0,49 € face a 6,55 a 8,64 € ou a 2,41 a 4,26 € por casa e por mês; o vídeo e os padrões faciais ficam em casa |
+| D1 | Tudo em casa (20 de novembro): toda a perceção e toda a inferência no equipamento da casa; a Altice como plano de controlo e de dados, apenas com texto | Híbrida, com a visão nas GPU _L4_ da Altice (a decisão de 19 de novembro, cerca de 0,49 € por casa e por mês); imagens completas ou vídeo para a nuvem | As imagens, o vídeo, as assinaturas visuais e os padrões faciais nunca saem de casa; o equipamento compra-se uma única vez (3,33 ou 5,75 € por mês a cinco anos) ou a IA fica no _router_ |
 | D2 | O modelo de linguagem compila regras e o motor de regras decide | Perguntar a um modelo, em cada imagem, se a resposta é sim ou não (o primeiro protótipo da equipa) | As chamadas por imagem custam dinheiro, acrescentam segundos e dão respostas diferentes; as regras compiladas são baratas, rápidas e testáveis |
 | D3 | Um juiz apenas para momentos duvidosos | Nenhum juiz; um juiz em cada imagem | Algumas perguntas exigem ver um momento (“levado ou mudado?”); em cada imagem, custaria demasiado e os alarmes passariam a assentar num modelo |
 | D4 | Presença a partir dos telemóveis, da porta e das câmaras | Só as câmaras | Divisões sem câmara e pessoas paradas; nenhuma câmara vê quem já saiu da imagem |
@@ -480,12 +517,12 @@ Cada ponto indica o pressuposto adotado neste documento e o que muda se a Altice
 
 | # | Ponto | Pressuposto neste documento | Se se confirmar, ou não |
 |---|---|---|---|
-| 1 | NPU nos _routers_ ou nas câmaras | Não se conta com ela; a solução escolhida (§5.1) não depende dela | Com uma NPU capaz de correr um detetor, aplica-se a opção A1, com cerca de 0,36 € por casa e por mês (§5.2) |
+| 1 | NPU nos _routers_ ou nas câmaras | Decidido a 20 de novembro: a visão corre no equipamento da casa | Com uma NPU capaz de correr um detetor, aplica-se a opção A1, com cerca de 0,36 € por casa e por mês (§5.2); sem ela, o cliente compra uma caixa dedicada |
 | 2 | Eventos da porta e do Wi-Fi | O servidor MCP não tem notificações _push_; a porta é lida por consulta de `get_home_devices` a cada 4 s, como no protótipo | Com uma API de eventos, a regra reage ao fecho da porta sem esperar pela consulta seguinte |
 | 3 | Telemóveis da família no Wi-Fi | É acrescentada a ferramenta só de leitura `get_home_wifi_clients`, e o _router_ continua a reconhecer um telemóvel que muda de endereço MAC | Sem ela, “saiu alguém” assenta só na porta e nas câmaras (§8.1) |
 | 4 | Leitura local do RTSP | O _router_ lê o _stream_ da câmara na rede da casa; o _relay_ na nuvem existe só na demonstração | Se não puder, o agente da casa precisa de outro equipamento na rede da casa, cujo custo este documento não estima |
 | 5 | Ferramentas _Things_, acionador `thingTracker` e ferramenta para apagar cenários | Acrescentadas ao servidor MCP (documento 15) | Até lá, as regras ficam na base de dados do serviço e as ferramentas _Things_ são uma API do serviço, como no protótipo |
-| 6 | Contratos de modelos de linguagem e capacidade de GPU | Uma das opções da §15 que cumprem; GPU dimensionadas pelo documento 17 (cerca de 1 427 placas _L4_ para 500 000 casas) | O custo do modelo de linguagem varia entre 0,10 e 1,78 € por casa e por mês, consoante o modelo (documento 16) |
+| 6 | O modelo de linguagem | Decidido a 20 de novembro: corre no equipamento da casa (o _Qwen3-1.7B_ no protótipo); um modelo externo, como o _ChatGPT_ ou o _Claude_ do utilizador, poderá vir a ser uma opção, apenas com texto | Falta confirmar a velocidade do modelo no equipamento da casa escolhido; na análise anterior, um modelo na nuvem custava entre 0,10 e 1,78 € por casa e por mês (documento 16) |
 | 7 | Caminho do vídeo do rosto no registo | A plataforma reencaminha-o para o _router_ sem o guardar (§8.3) | Enviá-lo pelo Wi-Fi da casa diretamente para o _router_ mantê-lo-ia totalmente fora da plataforma |
 
 ## Fontes

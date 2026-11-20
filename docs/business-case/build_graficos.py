@@ -445,10 +445,11 @@ def receita():
     c.line(cx[2], yb - 5, cx[2], yb, AXIS)
     in_doc(L("(1,2 %) situa-se entre as colunas de 1 % e de 2 %", "(1.2 %) sits between the 1 % and 2 % columns"))
     c.text((cx[1] + cx[2]) / 2, yb + 16, L("cenário esperado: 1,2 %", "expected case: 1.2 %"), 11.5, MUTED, anchor="middle")
-    c.finish(yb + 16, L("As percentagens de adesão são cenários e não previsões (pressuposto da equipa). Margem de "
-                        "contribuição com a IA em equipamento já instalado (E1) e com os custos esperados [linhas R].",
-                        "Adoption shares are scenarios, not forecasts (team assumption). Contribution margin with the AI on "
-                        "hardware already in the home (E1) and the expected costs [R rows]."))
+    c.finish(yb + 16, L("Fontes: casas, receita e margem de contribuição por coluna [R1a–R4c], com a IA em equipamento já "
+                        "instalado (E1) e os custos esperados. As percentagens de adesão são cenários, não previsões "
+                        "(pressuposto da equipa).",
+                        "Sources: homes, revenue and contribution margin by column [R1a–R4c], with the AI on hardware already "
+                        "in the home (E1) and the expected costs. Adoption shares are scenarios, not forecasts (team assumption)."))
 
 
 if __name__ == "__main__":

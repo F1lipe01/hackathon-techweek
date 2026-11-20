@@ -4,19 +4,19 @@ Uma página para o Filipe, a 20 de novembro de 2026. O guião completo está no 
 
 ## Ordem e tempos
 
-- 3 minutos, até aos 2:43: capa · hoje · possível · _ThingTracker_ · conceitos · filme do livro (25 s) · como funciona · custos · começar · fecho.
-- 5 minutos, até aos 4:32: capa · hoje · possível · _ThingTracker_ · os três filmes (20 s cada) · como funciona · modelos · custos · replicação · começar · repositório · fecho.
+- 3 minutos, 6 diapositivos, até aos 2:27: capa · hoje e possível · _ThingTracker_ · o livro (filme de 25 s) · Altice (encaixa, 0,49 €, piloto) · fecho.
+- 5 minutos, 8 diapositivos, até aos 4:00: capa · hoje e possível · _ThingTracker_ · exemplos (os três filmes de 20 s, seguidos) · como funciona (com os modelos e as ferramentas) · viabilidade e replicação · começar (o piloto e o repositório) · fecho.
+- O anexo de diagramas é um ficheiro à parte, só para as perguntas.
 
 ## Abertura e fecho
 
 - Capa: “Boa tarde. Somos a equipa IT-Porto, do Instituto de Telecomunicações.”
-- Hoje, por omissão: “Hoje, a câmara de casa só grava. Uma criança pega numa cápsula de detergente, e o telemóvel diz apenas ‘movimento detetado’. E depois?”
-- Hoje, em alternativa: “Onde deixaram as chaves esta manhã? A câmara de casa até as viu, mas só sabe gravar, e o telemóvel diz apenas ‘movimento detetado’. E depois?” (com esta, em “possível”, diz-se “a criança em perigo” em vez de “onde ficaram as chaves”)
-- Possível: “Com IA, a câmara percebe o que vê: onde ficaram as chaves, quem entrou em casa, o que ficou ligado. Cada família cria os seus avisos, com uma frase.”
+- Hoje e possível, por omissão: “Hoje, a câmara de casa só grava. Uma criança pega numa cápsula de detergente, e o telemóvel diz apenas ‘movimento detetado’. E depois? Com IA, a câmara percebe o que vê: onde ficaram as chaves, quem entrou em casa, o que ficou ligado. Cada família cria os seus avisos, com uma frase.”
+- Em alternativa, a primeira metade: “Onde deixaram as chaves esta manhã? A câmara de casa até as viu, mas só sabe gravar, e o telemóvel diz apenas ‘movimento detetado’. E depois?” (e, na segunda, “a criança em perigo” em vez de “onde ficaram as chaves”)
 - _ThingTracker_: “Por isso criámos o _ThingTracker_: a câmara que a Altice já vende capta as imagens, a IA percebe-as e a família recebe o aviso.”
 - Fecho: “O _ThingTracker_ já reconhece objetos nas imagens da câmara do _kit_, custa à Altice cerca de 49 cêntimos por casa e por mês, e usa a app e o MCP que a Altice já tem. Propomos começar já pelo piloto.” Pausa. “A câmara da casa, atenta ao que importa.” Silêncio.
 
-## Antes do primeiro filme
+## Antes dos filmes
 
 “Filmámos no nosso laboratório, com a câmara do _kit_ e o nosso protótipo; alguns momentos foram encenados.”
 

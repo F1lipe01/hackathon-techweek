@@ -3,7 +3,7 @@
     video/tools/heavy.sh prototype/.venv/bin/python video/tools/proof_run.py book      # or face, nobody
     ... proof_run.py book --no-video                                                    # the run and its log only
 
-What runs, all on this Mac, nothing faked but the inputs no camera can see:
+What runs, all on this machine; only the inputs no camera can see are replayed:
   1. a private server (port 8790) in replay mode (prototype/replays/<name>.json): the take is its camera, read in real
      time at full resolution; the door, the phones and hand-switched devices are replayed at their moments in the take,
      each written "Replayed: ..." in the activity;
@@ -30,7 +30,10 @@ ROOT = Path(__file__).resolve().parents[2]
 PROTO = ROOT / "prototype"
 OUT = ROOT / "video" / "out" / "proof"
 PORT = 8790
-NODE_PATH = os.environ.get("NODE_PATH") or "/Users/filipepeixoto/.hermes/hermes-agent/node_modules"
+# The recorder needs playwright-core: NODE_PATH, or the first of these folders that holds it.
+NODE_PATH = os.environ.get("NODE_PATH") or next(
+    (str(d) for d in (ROOT / "video" / "node_modules", ROOT / "node_modules",
+                      Path.home() / ".hermes" / "hermes-agent" / "node_modules") if (d / "playwright-core").is_dir()), "")
 
 
 def get(path, timeout=5):

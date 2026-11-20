@@ -431,6 +431,17 @@ class Brain:
             rule = self._sim_compile_local(sentence, things, places)
         else:
             rule = self._claude_compile_local(sentence, things, places)
+        # "if Mushahid leaves home without the book": the rule is about the BOOK left behind. A small model sometimes
+        # takes the person for the thing (left_for, or leave_without on the person); the code puts the thing back.
+        tail = re.search(r"\b(without|sem)\b(.*)", sentence.lower())
+        if tail:
+            objs = [t for t in things if not str(t.get("description") or "").startswith("person")]
+            words = tail.group(2).split()
+            words += [_PT_EN.get(w.strip(".,!?"), "") for w in words]            # "sem o livro" -> book
+            stems = {w.strip(".,!?").rstrip("s") for w in words if w}
+            hit = next((t for t in objs if str(t.get("name", "")).lower().rstrip("s") in stems), None)
+            if hit and (rule.get("kind") != "leave_without" or rule.get("thing_id") != hit["id"]):
+                rule["kind"], rule["thing_id"] = "leave_without", hit["id"]
         rule["lang"] = _lang(sentence)
         if rule["lang"] == "pt":
             rule["title"], rule["message"] = pt_pt(rule["title"]), pt_pt(rule["message"])

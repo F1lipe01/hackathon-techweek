@@ -87,7 +87,6 @@ const VIEWS = [
   ['seq-livro-esquecido', 'Sequência: o livro esquecido', 'Da porta ao aviso, passo a passo.'],
   ['seq-pessoa-desconhecida', 'Sequência: a pessoa desconhecida', 'Do rosto ao alarme simulado.'],
   ['seq-casa-vazia', 'Sequência: ninguém em casa', 'Da última saída ao “desligar?”.'],
-  ['sequencia-regra', 'Sequência: uma frase vira regra', 'Do texto escrito à regra validada.'],
   ['dfd-fronteiras', 'Fluxo de dados e fronteiras de confiança', 'O que sai de casa e o que nunca sai.'],
   ['er-casa', 'Dados no equipamento de casa', 'O que o equipamento de casa guarda.'],
   ['er-plataforma', 'Dados na plataforma', 'O que a plataforma guarda por cliente.'],

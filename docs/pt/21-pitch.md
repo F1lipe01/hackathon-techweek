@@ -21,65 +21,62 @@ O júri:
 
 O _ThingTracker_ põe a câmara que a Altice já vende a perceber o que vê, e a avisar a família quando é preciso.
 
-A frase técnica, dita nas duas versões, é “os modelos veem, o código decide, o modelo de linguagem só escreve”. Três provas sustentam a mensagem e são as três linhas do fecho: o reconhecimento já funciona nas imagens da câmara do _kit_ (o livro foi reconhecido em 68 de 68 fotogramas, com mediana 0,93, para um limiar de 0,62); a visão custa à Altice cerca de 0,49 € por casa e por mês; o produto usa a app e o MCP que a Altice já tem. O pedido é começar já com um piloto em casas de colaboradores da MEO, e a frase final, igual à da capa, é “A câmara da casa, atenta ao que importa.”
+A frase técnica, dita nas duas versões, é “os modelos veem, o código decide”; nas perguntas, acrescenta-se “e o modelo de linguagem só escreve”. Três provas sustentam a mensagem e são as três linhas do fecho: o reconhecimento já funciona nas imagens da câmara do _kit_ (o livro foi reconhecido em 68 de 68 fotogramas, com mediana 0,93, para um limiar de 0,62); a visão custa à Altice cerca de 0,49 € por casa e por mês; o produto usa a app e o MCP que a Altice já tem. O pedido é começar já com um piloto em casas de colaboradores da MEO, e a frase final, igual à da capa, é “A câmara da casa, atenta ao que importa.”
 
-## 3. A abertura: duas alternativas
+## 3. A abertura
 
-Os primeiros 20 s decidem se o júri quer o _ThingTracker_. As duas alternativas ocupam a capa e o diapositivo `problema` (cerca de 23 s), e o Filipe escolhe uma no primeiro ensaio.
+A abertura segue a nova ordem do _deck_ (capa, `hoje`, `possivel`, `thingtracker`) e dura cerca de 43 s nas duas versões. As duas aberturas possíveis dizem-se no diapositivo `hoje`:
+- Por omissão, “a cena”, que é a mais forte: abre pela segurança, como pediram os mentores, contrasta o que a câmara faz hoje com o que podia fazer e, no _pitch_ de 3 minutos, tem resposta no diapositivo `conceitos`.
+- Em alternativa, “a pergunta”, que envolve o júri na primeira frase; com ela, em `possivel` diz-se “a criança em perigo” em vez de “onde ficaram as chaves”, para não repetir as chaves, e a abertura fica 1,5 s mais longa.
 
-Alternativa A, “a pergunta”, que abre com uma pergunta direta ao júri:
-- Na capa: “Onde deixaram as chaves esta manhã?” (clique)
-- No `problema`: “E as crianças, estão em segurança? A câmara que já têm em casa pode responder. O _ThingTracker_ põe a câmara que a Altice já vende a perceber o que vê, e a avisar a família quando é preciso.”
-- 46 palavras. Envolve o júri logo na primeira frase e junta a comodidade à segurança.
+| Diapositivo | O que está no ecrã | O que se diz | Palavras |
+|---|---|---|---|
+| `capa` | Os nomes e a equipa | “Boa tarde. Somos a equipa IT-Porto, do Instituto de Telecomunicações.” | 10 |
+| `hoje`, por omissão | “Hoje, a câmara de casa só grava”; a notificação “Movimento detetado”; “…e depois?” | “Hoje, a câmara de casa só grava. Uma criança pega numa cápsula de detergente, e o telemóvel diz apenas ‘movimento detetado’. E depois?” | 23 |
+| `hoje`, em alternativa | O mesmo | “Onde deixaram as chaves esta manhã? A câmara de casa até as viu, mas só sabe gravar, e o telemóvel diz apenas ‘movimento detetado’. E depois?” | 26 |
+| `possivel` | “Câmara + IA: a casa percebe o que vê”; seis casos de uso; “Cada família cria os seus, com uma frase.” | “Com IA, a câmara percebe o que vê: onde ficaram as chaves, quem entrou em casa, o que ficou ligado. Cada família cria os seus avisos, com uma frase.” | 29 |
+| `thingtracker` | “Por isso criámos o _ThingTracker_”; Câmara → Imagens → IA → Aviso | “Por isso criámos o _ThingTracker_: a câmara que a Altice já vende capta as imagens, a IA percebe-as e a família recebe o aviso.” | 24 |
 
-Alternativa B, “a cena”, que abre com uma imagem:
-- Na capa: “Imaginem uma criança a pegar numa cápsula de detergente. A câmara da cozinha vê-a e os pais recebem logo um aviso, com a fotografia.” (clique)
-- No `problema`: “Isto é o _ThingTracker_: a câmara que a Altice já vende, a perceber o que vê e a avisar a família.”
-- 47 palavras. Abre pela segurança, como pediram os mentores, e o diapositivo `conceitos` mostra depois a mesma cena.
+Os três exemplos de `possivel` correspondem aos três filmes do _pitch_ de 5 minutos (as coisas, a segurança e a energia), e, no de 3 minutos, os conceitos acrescentam a criança e o pai.
 
 ## 4. Os diapositivos
 
-O _deck_ ([ThingTracker · Pitch](https://claude.ai/artifact/HrCc8JBAhjvCy1fcKEkyXp), privado até ser partilhado) está na versão 23. Esta secção indica ao agente do _deck_ os diapositivos que ficam, os que mudam, os que entram e a posição de cada um nas duas versões. Os filmes não passam dentro do _deck_: o diapositivo de cada filme é um cartão com o título, e o filme passa em ecrã inteiro a partir do ficheiro local (secção 9). As notas de todos os diapositivos passam a ter um só orador, o Filipe, com os tempos e as frases das secções 6 e 7.
+O _deck_ ([ThingTracker · Pitch](https://claude.ai/artifact/HrCc8JBAhjvCy1fcKEkyXp), privado até ser partilhado) está a ser refeito pelo agente do _deck_ com esta ordem. Os filmes não passam dentro do _deck_: o diapositivo de cada filme é um cartão com o título, e o filme passa em ecrã inteiro a partir do ficheiro local (secção 9). As notas de todos os diapositivos têm um só orador, o Filipe, com os tempos e as frases das secções 6 e 7.
 
 ### 4.1 Lista e critérios
 
-| Id | Diapositivo | Estado | 3 min | 5 min | Critério que ganha |
-|---|---|---|---|---|---|
-| `cover` | Capa: logótipo, Altice Labs, Instituto de Telecomunicações, equipa IT-Porto | Fica; notas atualizadas | 1 | 1 | Apresentação |
-| `problema` | O problema: pequenas preocupações de todos os dias | Fica | 2 | 2 | Enquadramento |
-| `ideia` | A ideia: ver, perceber, lembrar, agir | Fica | 3 | 3 | Enquadramento |
-| `conceitos` | Dois conceitos: a criança em perigo e os comprimidos do pai | Novo; substitui `crianca` e `mae` | 4 | — | Enquadramento |
-| `filme-livro` | As coisas: o livro esquecido (filme) | Novo; nasce do `exemplo` atualizado | 5 | 4 | Enquadramento, viabilidade, apresentação |
-| `filme-desconhecido` | A segurança: uma pessoa desconhecida (filme) | Novo | — | 5 | Enquadramento, apresentação |
-| `filme-casa-vazia` | A energia: ninguém em casa (filme) | Novo | — | 6 | Enquadramento, viabilidade |
-| `modelos` | Modelos e ferramentas | Novo; cumpre a menção obrigatória das ferramentas | — | 7 | Viabilidade, adoção, replicação, documentação |
-| `prototipo-proposta` | Os modelos veem, o código decide, o modelo de linguagem só escreve | Novo; substitui `arquitetura` e reaproveita o seu diagrama | 6 | 8 | Adoção, viabilidade |
-| `custos` | Custos: 49 cêntimos por casa e por mês | Fica | 7 | 9 | Viabilidade |
-| `replicacao` | Replicação noutros operadores e países | Fica | — | 10 | Replicação |
-| `lancamento` | Como se começa: o piloto e os passos seguintes | Fica, com o primeiro passo em pormenor; entra também no de 3 min | 8 | 11 | Adoção, viabilidade, replicação |
-| `repositorio` | Está tudo no repositório | Novo | — | 12 | Documentação |
-| `equipa` | Equipa IT-Porto | Fica | — | 13 | Apresentação |
-| `fecho` | Fecho: três pontos, o pedido e a frase final | Fica; créditos atualizados | 9 | 14 | Apresentação, adoção, viabilidade |
-| `crianca`, `mae` | Casos 1 e 3 | Saem das duas versões; reserva | — | — | Substituídos por `conceitos` |
-| `exemplo` | Exemplo real: o livro | Sai das duas versões | — | — | Dá origem a `filme-livro` |
-| `arquitetura` | Arquitetura: encaixa no que a Altice já tem | Sai das duas versões; reserva | — | — | O diagrama passa para `prototipo-proposta` |
-| `privacidade` | A privacidade decide-se em casa | Sai das duas versões; reserva | — | — | Resposta a perguntas sobre privacidade |
-| `memoria` | A memória da casa: a linha do tempo (proposta), antes “A casa lembra-se” | Sai das duas versões; reserva, com o título mudado | — | — | Resposta a perguntas sobre a memória |
-| `propoe`, `gato` | A app propõe; o gato na bancada | Saem das duas versões; reserva | — | — | Resposta a perguntas sobre configuração e animais |
-| `noite`, `carteira` | Casos 4 e 5 | Saem das duas versões | — | — | Sem lugar nas duas versões |
+| Id | Diapositivo | 3 min | 5 min | Critério que ganha |
+|---|---|---|---|---|
+| `capa` | Os nomes e a equipa IT-Porto, do Instituto de Telecomunicações | 1 | 1 | Apresentação |
+| `hoje` | “Hoje, a câmara de casa só grava”: “Movimento detetado”… e depois? | 2 | 2 | Enquadramento |
+| `possivel` | “Câmara + IA: a casa percebe o que vê”: seis casos de uso; cada família cria os seus com uma frase | 3 | 3 | Enquadramento, replicação |
+| `thingtracker` | “Por isso criámos o _ThingTracker_”: Câmara → Imagens → IA → Aviso | 4 | 4 | Enquadramento, adoção |
+| `conceitos` | Dois conceitos: a criança em perigo e os comprimidos do pai | 5 | — | Enquadramento |
+| `filme-livro` | As coisas: o livro esquecido (filme) | 6 | 5 | Enquadramento, viabilidade, apresentação |
+| `filme-desconhecido` | A segurança: uma pessoa desconhecida (filme) | — | 6 | Enquadramento, apresentação |
+| `filme-casa-vazia` | A energia: ninguém em casa (filme) | — | 7 | Enquadramento, viabilidade |
+| `como-funciona` | No protótipo, um portátil faz de casa e de servidores da Altice; na proposta, o _router_ e os servidores da Altice; “os modelos veem, o código decide” | 7 | 8 | Adoção, viabilidade |
+| `modelos` | Modelos e ferramentas (menção obrigatória) | — | 9 | Viabilidade, adoção, replicação, documentação |
+| `custos` | Custos: 49 cêntimos por casa e por mês | 8 | 10 | Viabilidade |
+| `replicacao` | Replicação noutros operadores e países | — | 11 | Replicação |
+| `comecar` | Como se começa: o piloto | 9 | 12 | Adoção, viabilidade, replicação |
+| `repositorio` | Está tudo no repositório | — | 13 | Documentação |
+| `fecho` | Fecho: três pontos, o pedido e a frase final | 10 | 14 | Apresentação, adoção, viabilidade |
 
 Ordem de cada versão:
-- 3 minutos (9 diapositivos): `cover`, `problema`, `ideia`, `conceitos`, `filme-livro`, `prototipo-proposta`, `custos`, `lancamento`, `fecho`.
-- 5 minutos (14 diapositivos): `cover`, `problema`, `ideia`, `filme-livro`, `filme-desconhecido`, `filme-casa-vazia`, `modelos`, `prototipo-proposta`, `custos`, `replicacao`, `lancamento`, `repositorio`, `equipa`, `fecho`.
-- Reserva, depois do fecho e fora das duas versões: os sete diapositivos `anexo-*` da versão 23, seguidos de `privacidade`, `arquitetura`, `memoria`, `crianca`, `mae`, `propoe` e `gato`.
+- 3 minutos (10 diapositivos): `capa`, `hoje`, `possivel`, `thingtracker`, `conceitos`, `filme-livro`, `como-funciona`, `custos`, `comecar`, `fecho`.
+- 5 minutos (14 diapositivos): `capa`, `hoje`, `possivel`, `thingtracker`, `filme-livro`, `filme-desconhecido`, `filme-casa-vazia`, `como-funciona`, `modelos`, `custos`, `replicacao`, `comecar`, `repositorio`, `fecho`.
+- Reserva, depois do fecho e fora das duas versões: os diapositivos `anexo-*` e os antigos que ficaram de fora, como `privacidade`, `arquitetura` e `memoria`.
 
-Para não saltar diapositivos em palco, sugere-se uma exportação por versão (PDF e PPTX). A capa recebe nas notas as novas versões e tempos, e o fecho acrescenta aos créditos “Filmes: laboratório da equipa, com momentos encenados”, uma linha com as ferramentas (os modelos do diapositivo `modelos`, o servidor MCP da Altice e o _Claude Code_), para que a exportação de 3 minutos também as mencione, e, em letra pequena, o endereço do repositório. A apresentação entregue às 17h30 é a de 5 minutos, que inclui `modelos`.
+Saem das duas versões os antigos `cover`, `problema`, `ideia`, `equipa` (os nomes passam para a capa), `prototipo-proposta` (passa a `como-funciona`) e `lancamento` (passa a `comecar`). Para não saltar diapositivos em palco, sugere-se uma exportação por versão (PDF e PPTX). Aos créditos, o fecho acrescenta três linhas: “Filmes: laboratório da equipa, com momentos encenados”; as ferramentas (os modelos do diapositivo `modelos`, o servidor MCP da Altice e o _Claude Code_), para que também a exportação de 3 minutos as mencione; e, em letra pequena, o endereço do repositório. A apresentação entregue às 17h30 é a de 5 minutos, que inclui `modelos`.
 
-### 4.2 Os diapositivos novos e o que muda
+### 4.2 O conteúdo dos diapositivos
+
+`possivel`: seis casos de uso, se o _deck_ ainda não os tiver escolhido: onde ficaram as chaves, a criança em perigo, quem entrou em casa, o que ficou ligado, os comprimidos do pai e o gato na bancada. Por baixo: “Cada família cria os seus, com uma frase.”
 
 `conceitos`: “Uma frase basta”, com a marca “Conceito” bem visível e dois conceitos lado a lado.
 - À esquerda, a criança em perigo:
-  - imagem: a fotografia da Figura 1 do relatório submetido, `deliverables/executive-summary/fotos/crianca2-cena.jpg` (há também `crianca2-cena-full.jpg`), com o rosto e os logótipos desfocados; antes de a usar, confirmar que a marca do forno não se lê no tamanho do diapositivo;
+  - imagem: a fotografia da Figura 1 do relatório submetido, `deliverables/executive-summary/fotos/crianca2-cena.jpg` (há também `crianca2-cena-full.jpg`), com o rosto e os logótipos desfocados; o _deck_ usa uma cópia com a marca do forno também desfocada, sem mudar o ficheiro do relatório;
   - caixas, como na Figura 1: “Criança” e “Detergente” (coordenadas em `fotos/fotos.json`);
   - a regra, definida de antemão: “Avisa-me se a criança estiver em perigo”;
   - o aviso: “A criança pôs um detergente na boca. Cozinha · 16h30 · com fotografia”.
@@ -88,7 +85,7 @@ Para não saltar diapositivos em palco, sugere-se uma exportação por versão (
   - o aviso, às 12h00, para a filha: “O pai ainda não tomou os comprimidos.”;
   - como funcionaria, numa linha: a caixa dos comprimidos é registada como objeto, e os comprimidos contam como tomados quando a caixa aparece na mão do pai (o evento “na mão”, documento 14, §8.2);
   - imagem: reaproveitar a fotografia de `mae` (“um casal idoso ao pequeno-almoço, numa sala luminosa”), recortada no homem, se resultar; caso contrário, uma fotografia de arquivo com licença (Pexels, como o resto do _deck_) de um homem idoso à mesa da cozinha, de manhã, com uma caixa ou um organizador de comprimidos à vista, vista de um canto alto, como a de uma câmara de casa, e sem marcas. Só se desenham caixas se forem deteções reais do _OWLv2_ nessa imagem, como em `gato` e `mae`.
-- Créditos: a fotografia da criança foi fornecida pela equipa, com o rosto e os logótipos desfocados (`fotos.json`). Hoje, o fecho atribui “a imagem da criança” ao _Gemini_, o que vale para a imagem de `ideia`; os créditos têm de corresponder às imagens que ficarem.
+- Créditos: a fotografia da criança foi fornecida pela equipa, com o rosto e os logótipos desfocados (`fotos.json`). Os créditos do fecho têm de corresponder às imagens que ficarem no _deck_.
 
 `filme-livro`: “As coisas: o livro esquecido”.
 - Cartão escuro com o título e uma linha: “Filmado no nosso laboratório, com a câmara do _kit_ e o nosso protótipo; alguns momentos foram encenados.”
@@ -115,18 +112,18 @@ Para não saltar diapositivos em palco, sugere-se uma exportação por versão (
   - o desenvolvimento: _Claude Code_ (_Claude Opus 5.5_), na pesquisa, na programação e na redação.
 - Rodapé: “Os modelos veem; quem decide é o código.”
 
-`prototipo-proposta`: “Os modelos veem, o código decide, o modelo de linguagem só escreve”.
-- À esquerda, numa coluna estreita, “Na demonstração”: “Um _MacBook_ faz de casa e de servidores da Altice: recebe o _stream_ real da câmara do _kit_, corre todos os modelos, guarda os dados e lê os dispositivos do _kit_ pelo servidor MCP da Altice.”
-- À direita, numa coluna larga marcada “Proposta”, o diagrama de `arquitetura` da versão 23 (que já tem os rostos em casa e a presença):
-  - em casa, no processador do _router_, sem _hardware_ novo: o movimento, a zona que mudou e os rostos, opcionais, com os padrões faciais sempre em casa;
+`como-funciona`: “Os modelos veem, o código decide”.
+- À esquerda, numa coluna estreita, “No protótipo”: “Um _MacBook_ faz de casa e de servidores da Altice: recebe o _stream_ real da câmara do _kit_, corre todos os modelos, guarda os dados e lê os dispositivos do _kit_ pelo servidor MCP da Altice.”
+- À direita, numa coluna larga marcada “Proposta”, o diagrama de `arquitetura`, que já tem os rostos em casa e a presença:
+  - em casa, no processador do _router_, sem _hardware_ novo: o movimento, a zona da imagem que mudou e, se a família quiser, os rostos, cujos padrões faciais nunca saem de casa;
   - na Altice: os servidores de visão (_OWLv2_ e _DINOv2_ em GPU _L4_), o serviço _ThingTracker_ atrás de um balanceador de carga, com os motores de presença e de regras, a base de dados _PostgreSQL_ e o modelo de linguagem, só para texto;
   - o que já existe: a app, o servidor MCP e as notificações.
 - Faixa em baixo: “Presença: câmaras, sensor da porta e telemóveis no Wi-Fi” e “Cerca de 0,49 € por casa e por mês”.
 
-`lancamento`: “Como se começa”, com os três passos e o primeiro em destaque.
-- Passo 1, o piloto: casas de colaboradores da MEO, com a câmara do _kit_ e o MCP que já existem, e a app com o novo separador _Things_; GPU alugadas na nuvem, sem custo fixo.
-- Passo 2, os clientes: 3,99 € por mês; servidores próprios quando a base de clientes crescer.
-- Passo 3, os _routers_ com IA: a visão passa para casa, a cerca de 0,36 € por casa e por mês.
+`comecar`: “Como se começa”, com o piloto em destaque e os passos seguintes em pequeno.
+- O piloto: casas de colaboradores da MEO, com a câmara do _kit_ e o MCP que já existem, e a app com o novo separador _Things_; GPU alugadas na nuvem, sem custo fixo.
+- Depois, os clientes: 3,99 € por mês; servidores próprios quando a base de clientes crescer.
+- Por fim, os _routers_ com IA: a visão passa para casa, a cerca de 0,36 € por casa e por mês.
 
 `repositorio`: “Está tudo no repositório”.
 - Seis blocos:
@@ -156,52 +153,53 @@ O líder da equipa quer diapositivos de grande qualidade. Para o agente do _deck
 
 ## 6. _Pitch_ de 3 minutos
 
-As contas fazem-se a 2 palavras por segundo, com os números contados como se dizem (“três e noventa e nove” são cinco palavras), e com 1 s para cada troca entre o _deck_ e o filme. O _pitch_ termina aos 2:44, com 6 s de folga até aos 2:50 e 16 s até ao corte. As contas são conservadoras: ao ritmo médio de fala (138 palavras por minuto), o texto encurta cerca de 15 s, mas não se conta com essa folga.
+As contas fazem-se a 2 palavras por segundo, com os números contados como se dizem (“três e noventa e nove” são cinco palavras), e com 1 s para cada troca entre o _deck_ e o filme. O _pitch_ termina aos 2:43, ou aos 2:45 com a abertura alternativa, dentro do limite de 2:45 e com pelo menos 5 s de folga até aos 2:50. As contas são conservadoras: ao ritmo médio de fala (138 palavras por minuto), o texto encurta cerca de 15 s, mas não se conta com essa folga.
 
 | Início | Fim | Diapositivo | Palavras | O que se diz |
 |---|---|---|---|---|
-| 0:00 | 0:23 | `cover` e `problema` | 46 ou 47 | A abertura escolhida (secção 3). |
-| 0:23 | 0:35 | `ideia` | 23 | “A câmara só analisa a imagem quando há movimento: reconhece a criança e o detergente, regista onde e quando, e avisa os pais.” |
-| 0:35 | 0:47 | `conceitos` | 24 | “Dois conceitos: ‘avisa-me se a criança estiver em perigo’ e ‘avisa-me se o pai não tomar os comprimidos até ao meio-dia’. Uma frase basta.” |
-| 0:47 | 0:56 | `filme-livro` | 17 | “Filmámos no nosso laboratório, com a câmara do _kit_ e o nosso protótipo; alguns momentos foram encenados.” |
-| 0:56 | 1:21 | Filme | — | `ThingTracker - pitch - o livro (25 s).mp4`, em ecrã inteiro |
-| 1:22 | 1:46 | `prototipo-proposta` | 47 | “No protótipo, este portátil faz de casa e de servidores da Altice. A adoção não exige _hardware_ novo: o _router_ trata do movimento e dos rostos, e a Altice trata da visão e das regras. Os modelos veem, o código decide, o modelo de linguagem só escreve.” |
-| 1:46 | 2:03 | `custos` | 33 | “Viabilidade: a visão custa cerca de 49 cêntimos por casa e por mês; num serviço de 3,99 €, sobram cerca de 1,25 € por casa.” |
-| 2:03 | 2:17 | `lancamento` | 27 | “Para começar: um piloto em casas de colaboradores da MEO, com a câmara, a app e o MCP que já existem, e GPU alugadas, sem custo fixo.” |
-| 2:17 | 2:44 | `fecho` | 50 | A frase de fecho (secção 8), uma pausa e a frase final. |
+| 0:00 | 0:05 | `capa` | 10 | “Boa tarde. Somos a equipa IT-Porto, do Instituto de Telecomunicações.” |
+| 0:05 | 0:16 | `hoje` | 23 | “Hoje, a câmara de casa só grava. Uma criança pega numa cápsula de detergente, e o telemóvel diz apenas ‘movimento detetado’. E depois?” |
+| 0:16 | 0:31 | `possivel` | 29 | “Com IA, a câmara percebe o que vê: onde ficaram as chaves, quem entrou em casa, o que ficou ligado. Cada família cria os seus avisos, com uma frase.” |
+| 0:31 | 0:43 | `thingtracker` | 24 | “Por isso criámos o _ThingTracker_: a câmara que a Altice já vende capta as imagens, a IA percebe-as e a família recebe o aviso.” |
+| 0:43 | 0:53 | `conceitos` | 21 | “Dois conceitos: ‘avisa-me se a criança estiver em perigo’ e ‘avisa-me se o pai não tomar os comprimidos até ao meio-dia’.” |
+| 0:53 | 1:02 | `filme-livro` | 17 | “Filmámos no nosso laboratório, com a câmara do _kit_ e o nosso protótipo; alguns momentos foram encenados.” |
+| 1:03 | 1:28 | Filme | — | `ThingTracker - pitch - o livro (25 s).mp4`, em ecrã inteiro |
+| 1:29 | 1:47 | `como-funciona` | 37 | “No protótipo, este portátil faz de casa e de servidores da Altice. A adoção não exige _hardware_ novo: o _router_ deteta o movimento e os servidores da Altice tratam da visão. Os modelos veem, o código decide.” |
+| 1:47 | 2:03 | `custos` | 31 | “Viabilidade: a visão custa uns 49 cêntimos por casa e por mês; num serviço de 3,99 €, ficam uns 1,25 € de margem.” |
+| 2:03 | 2:16 | `comecar` | 27 | “Para começar: um piloto em casas de colaboradores da MEO, com a câmara, a app e o MCP que já existem, e GPU alugadas, sem custo fixo.” |
+| 2:16 | 2:43 | `fecho` | 50 | A frase de fecho (secção 8), uma pausa e a frase final. |
 
-Pontos de controlo: o filme começa até aos 0:57, os custos até aos 1:48 e o fecho até aos 2:19. Se aos 0:35 houver atraso, salta-se `conceitos`, o que poupa 12 s.
+Pontos de controlo: o filme começa até aos 1:04, os custos até aos 1:49 e o fecho até aos 2:18. Se aos 0:43 houver atraso, salta-se `conceitos`, o que poupa cerca de 10 s.
+
 ## 7. _Pitch_ de 5 minutos
 
-As mesmas contas. O _pitch_ termina aos 4:35, com 10 s de folga até aos 4:45; ao ritmo médio de fala, o texto encurta cerca de 25 s, folga com que também não se conta. Os três filmes (20,5 s, 20,2 s e 19,5 s) substituem os casos e o exemplo real, e nunca se mostram juntos com eles.
+As mesmas contas. O _pitch_ termina aos 4:32, ou aos 4:34 com a abertura alternativa, com pelo menos 6 s de folga até aos 4:40; ao ritmo médio de fala, o texto encurta cerca de 25 s, folga com que também não se conta. Os três filmes (20,5 s, 20,2 s e 19,5 s) substituem os casos e o exemplo real, e nunca se mostram juntos com eles.
 
 | Início | Fim | Diapositivo | Palavras | O que se diz |
 |---|---|---|---|---|
-| 0:00 | 0:23 | `cover` e `problema` | 46 ou 47 | A abertura escolhida (secção 3). |
-| 0:23 | 0:35 | `ideia` | 23 | Igual ao _pitch_ de 3 minutos. |
-| 0:35 | 0:48 | `filme-livro` | 26 | “Filmámos no nosso laboratório, com a câmara do _kit_ e o nosso protótipo; alguns momentos foram encenados. No primeiro filme, saio de casa sem o livro.” |
-| 0:48 | 1:09 | Filme | — | `ThingTracker - pitch - o livro (20 s).mp4` |
-| 1:09 | 1:17 | `filme-desconhecido` | 16 | “Depois, a segurança: o sistema reconhece-me, com o meu consentimento, e avisa quando entra um desconhecido.” |
-| 1:17 | 1:38 | Filme | — | `ThingTracker - pitch - pessoa desconhecida (20 s).mp4` |
-| 1:38 | 1:48 | `filme-casa-vazia` | 19 | “Por fim, a energia: quando já não está ninguém em casa, a app propõe desligar o que ficou ligado.” |
-| 1:48 | 2:08 | Filme | — | `ThingTracker - pitch - ninguém em casa (20 s).mp4` |
-| 2:09 | 2:30 | `modelos` | 41 | “Os modelos são _open-source_ e permitem uso comercial: o _OWLv2_ encontra pessoas e coisas, o _DINOv2_ reconhece as coisas de cada família, o _YuNet_ e o _SFace_ tratam dos rostos e o _Qwen3_ escreve regras e mensagens.” |
-| 2:30 | 2:54 | `prototipo-proposta` | 47 | Igual ao _pitch_ de 3 minutos. |
-| 2:54 | 3:11 | `custos` | 33 | Igual ao _pitch_ de 3 minutos. |
-| 3:11 | 3:24 | `replicacao` | 26 | “Replicação: basta uma câmara, uma app e uma interface como o MCP; nada depende do mercado português. Serve outros operadores, lares de idosos e alojamento local.” |
-| 3:24 | 3:51 | `lancamento` | 53 | “Adoção em três passos. Primeiro, um piloto em casas de colaboradores da MEO, com a câmara, a app e o MCP que já existem, e GPU alugadas, sem custo fixo. Depois, os clientes, a 3,99 € por mês. Por fim, _routers_ com IA, e a visão passa a correr em casa.” |
-| 3:51 | 4:03 | `repositorio` | 23 | “Está tudo no repositório: o código, a arquitetura com 12 diagramas, os custos e 107 testes dos cenários, todos a passar.” |
-| 4:03 | 4:08 | `equipa` | 8 | “Somos a equipa IT-Porto, do Instituto de Telecomunicações.” |
-| 4:08 | 4:35 | `fecho` | 50 | A frase de fecho (secção 8), uma pausa e a frase final. |
+| 0:00 | 0:43 | `capa`, `hoje`, `possivel` e `thingtracker` | 86 | Igual ao _pitch_ de 3 minutos (secção 3). |
+| 0:43 | 0:56 | `filme-livro` | 26 | “Filmámos no nosso laboratório, com a câmara do _kit_ e o nosso protótipo; alguns momentos foram encenados. No primeiro filme, saio de casa sem o livro.” |
+| 0:57 | 1:17 | Filme | — | `ThingTracker - pitch - o livro (20 s).mp4` |
+| 1:18 | 1:26 | `filme-desconhecido` | 16 | “Depois, a segurança: o sistema reconhece-me, com o meu consentimento, e avisa quando entra um desconhecido.” |
+| 1:27 | 1:47 | Filme | — | `ThingTracker - pitch - pessoa desconhecida (20 s).mp4` |
+| 1:48 | 1:58 | `filme-casa-vazia` | 19 | “Por fim, a energia: quando já não está ninguém em casa, a app propõe desligar o que ficou ligado.” |
+| 1:59 | 2:18 | Filme | — | `ThingTracker - pitch - ninguém em casa (20 s).mp4` |
+| 2:19 | 2:38 | `como-funciona` | 37 | Igual ao _pitch_ de 3 minutos. |
+| 2:38 | 2:58 | `modelos` | 41 | “Os modelos são _open-source_ e permitem uso comercial: o _OWLv2_ encontra pessoas e coisas, o _DINOv2_ reconhece as coisas de cada família, o _YuNet_ e o _SFace_ tratam dos rostos e o _Qwen3_ escreve regras e mensagens.” |
+| 2:58 | 3:14 | `custos` | 31 | Igual ao _pitch_ de 3 minutos. |
+| 3:14 | 3:27 | `replicacao` | 26 | “Replicação: basta uma câmara, uma app e uma interface como o MCP; nada depende do mercado português. Serve outros operadores, lares de idosos e alojamento local.” |
+| 3:27 | 3:54 | `comecar` | 54 | “Adoção em três passos. Primeiro, um piloto em casas de colaboradores da MEO, com a câmara, a app e o MCP que já existem, e GPU alugadas, sem custo fixo. Depois, os clientes, a 3,99 € por mês. Por fim, _routers_ com IA, e a visão passa a correr em casa.” |
+| 3:54 | 4:06 | `repositorio` | 23 | “Está tudo no repositório: o código, a arquitetura com 12 diagramas, os custos e 107 testes dos cenários, todos a passar.” |
+| 4:06 | 4:32 | `fecho` | 50 | A frase de fecho (secção 8), uma pausa e a frase final. |
 
-Pontos de controlo: o primeiro filme começa até aos 0:49, o último acaba até aos 2:09 e os custos começam até aos 2:56. Se aos 2:09 houver atraso, dos modelos diz-se só “Os modelos são _open-source_ e permitem uso comercial.” e salta-se a equipa, o que poupa cerca de 20 s.
+Pontos de controlo: o primeiro filme começa até aos 0:58, o último acaba até aos 2:19 e os custos começam até aos 3:00. Se aos 2:19 houver atraso, dos modelos diz-se só “Os modelos são _open-source_ e permitem uso comercial.”, o que poupa cerca de 14 s.
+
 ## 8. Frases fixas
 
-- A abertura: uma das alternativas da secção 3.
+- A abertura: secção 3, com `hoje` por omissão ou em alternativa.
 - Antes do primeiro filme, nas duas versões: “Filmámos no nosso laboratório, com a câmara do _kit_ e o nosso protótipo; alguns momentos foram encenados.”
-- A frase técnica, nas duas versões: “Os modelos veem, o código decide, o modelo de linguagem só escreve.”
+- A frase técnica, nas duas versões: “Os modelos veem, o código decide.” Nas perguntas, acrescenta-se “e o modelo de linguagem só escreve”.
 - O primeiro passo, nas duas versões: “Um piloto em casas de colaboradores da MEO, com a câmara, a app e o MCP que já existem, e GPU alugadas, sem custo fixo.”
-- Na equipa: “Somos a equipa IT-Porto, do Instituto de Telecomunicações.”
 - O fecho, nas duas versões: “O _ThingTracker_ já reconhece objetos nas imagens da câmara do _kit_, custa à Altice cerca de 49 cêntimos por casa e por mês, e usa a app e o MCP que a Altice já tem. Propomos começar já pelo piloto.” Pausa. Última frase, palavra por palavra: “A câmara da casa, atenta ao que importa.” Depois, silêncio; nunca “alguma pergunta?”.
 
 O que não se diz no _pitch_, porque pertence às perguntas: “ainda não”, “não sabemos”, “a confirmar”, “simulado”, “em teste”, e qualquer referência ao que falta fazer.
@@ -212,10 +210,10 @@ As quatro versões estão em `video/out/pitch/`, a 1080p, com música baixa. Cad
 
 | Filme | Ficheiro | Duração | Onde passa | Frase antes | O que mostra | O que foi encenado (documento 24, para as perguntas) |
 |---|---|---|---|---|---|---|
-| O livro | `ThingTracker - pitch - o livro (25 s).mp4` | 25,0 s | 3 min, aos 0:56 | “Filmámos no nosso laboratório (…); alguns momentos foram encenados.” | As fotografias do livro; uma frase que se torna cenário; o Filipe sai sem o livro e o alarme toca; a notificação e o aviso no telemóvel; volta para o buscar; “Desta vez, o alarme não tocou.” | O som do alarme, a notificação e “Desligar o alarme”; a porta aberta ou fechada foi deduzida da imagem na montagem |
-| O livro | `ThingTracker - pitch - o livro (20 s).mp4` | 20,5 s | 5 min, aos 0:48 | A mesma frase e “No primeiro filme, saio de casa sem o livro.” | O mesmo caso, mais curto | O mesmo |
-| A pessoa desconhecida | `ThingTracker - pitch - pessoa desconhecida (20 s).mp4` | 20,2 s | 5 min, aos 1:17 | “Depois, a segurança: o sistema reconhece-me, com o meu consentimento, e avisa quando entra um desconhecido.” | Segundo o documento 24, o registo do Filipe na app, o cenário sugerido, a entrada do Filipe e a de um desconhecido, e o alarme com a sugestão de chamar a polícia | No filme, a comparação de rostos é ilustrativa e está marcada como tal; o alarme e a sugestão da polícia foram acrescentados na montagem |
-| Ninguém em casa | `ThingTracker - pitch - ninguém em casa (20 s).mp4` | 19,5 s | 5 min, aos 1:48 | “Por fim, a energia: quando já não está ninguém em casa, a app propõe desligar o que ficou ligado.” | O cenário guardado; entram, acendem as luzes; sentados, a 4×, com o ar condicionado ligado; saem; o aviso com dois cartões e a sala a escurecer; a passagem ao ar condicionado; a porta fechada; “Ninguém em casa, nada ligado.” | As luzes e o ar condicionado foram desligados à mão; o contador de pessoas e a porta foram calculados na montagem; a caixa da tomada e a passagem a escuro foram feitas na montagem; o aviso foi disparado à mão, o desligar da tomada foi em simulação e o ar condicionado é simulado |
+| O livro | `ThingTracker - pitch - o livro (25 s).mp4` | 25,0 s | 3 min, aos 1:03 | “Filmámos no nosso laboratório (…); alguns momentos foram encenados.” | As fotografias do livro; uma frase que se torna cenário; o Filipe sai sem o livro e o alarme toca; a notificação e o aviso no telemóvel; volta para o buscar; “Desta vez, o alarme não tocou.” | O som do alarme, a notificação e “Desligar o alarme”; a porta aberta ou fechada foi deduzida da imagem na montagem |
+| O livro | `ThingTracker - pitch - o livro (20 s).mp4` | 20,5 s | 5 min, aos 0:57 | A mesma frase e “No primeiro filme, saio de casa sem o livro.” | O mesmo caso, mais curto | O mesmo |
+| A pessoa desconhecida | `ThingTracker - pitch - pessoa desconhecida (20 s).mp4` | 20,2 s | 5 min, aos 1:27 | “Depois, a segurança: o sistema reconhece-me, com o meu consentimento, e avisa quando entra um desconhecido.” | Segundo o documento 24, o registo do Filipe na app, o cenário sugerido, a entrada do Filipe e a de um desconhecido, e o alarme com a sugestão de chamar a polícia | No filme, a comparação de rostos é ilustrativa e está marcada como tal; o alarme e a sugestão da polícia foram acrescentados na montagem |
+| Ninguém em casa | `ThingTracker - pitch - ninguém em casa (20 s).mp4` | 19,5 s | 5 min, aos 1:59 | “Por fim, a energia: quando já não está ninguém em casa, a app propõe desligar o que ficou ligado.” | O cenário guardado; entram, acendem as luzes; sentados, a 4×, com o ar condicionado ligado; saem; o aviso com dois cartões e a sala a escurecer; a passagem ao ar condicionado; a porta fechada; “Ninguém em casa, nada ligado.” | As luzes e o ar condicionado foram desligados à mão; o contador de pessoas e a porta foram calculados na montagem; a caixa da tomada e a passagem a escuro foram feitas na montagem; o aviso foi disparado à mão, o desligar da tomada foi em simulação e o ar condicionado é simulado |
 
 Como se passam (procedimento a ensaiar na sala):
 - Os ficheiros ficam no portátil e numa _pen_, sem depender da rede.
@@ -300,7 +298,7 @@ O Filipe responde a todas. Na ronda intermédia, os 2 minutos dão para duas ou 
 ## 13. Lista para o dia
 
 O Filipe e os ensaios:
-- Escolher a abertura (secção 3) no primeiro ensaio.
+- Confirmar a abertura no primeiro ensaio (secção 3; por omissão, “a cena”).
 - Três ensaios cronometrados de cada versão, em voz alta e com os filmes a passar, um deles filmado; uma ronda de perguntas difíceis feita por quem não conhece o projeto, com “o vídeo é real?” incluída.
 - Um ensaio no equipamento da sala: projetor, som, resolução e a troca entre o _deck_ e o leitor de vídeo.
 - Terminar até aos 2:50 no de 3 minutos e até aos 4:45 no de 5, porque a apresentação é interrompida no limite; o que não cabe corta-se no ensaio, não em palco.

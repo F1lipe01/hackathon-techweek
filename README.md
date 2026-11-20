@@ -6,6 +6,8 @@ Team IT-Porto's entry for Challenge #3 by Altice Labs, "Connected Home, Reimagin
 
 ThingTracker turns the home's camera into a source of information, not only of surveillance. Open-source vision models recognise the things and people a family registers (a book, keys, a wallet; family members, opt-in); a language model turns one sentence into a sensor ("tell me if I leave home without my book") and answers questions ("where is my book?"). The models only perceive and write: a deterministic rules engine decides, and actions go through the Connected Home MCP server of Altice's platform. It is designed as a new *Things* tab and an assistant button in the Altice app.
 
+**Final design (20 Nov): fully local, privacy first.** The home device (the router, if it has an NPU, or a dedicated box such as a Raspberry Pi 5 with an AI accelerator or a Jetson Orin Nano Super) does all the perception and inference: camera ingest, motion gating, vision, optional faces, the memory, the rules engine and the language model. Images, video, visual fingerprints and face templates never leave the home. The Altice platform is the control and data plane, text only: accounts and family permissions, the metadata record (things, people's names, scenarios), the event log, push notifications, a relay to reach the home from outside, and device actions through the Connected Home MCP. Vision on Altice's GPU servers was evaluated and not chosen, because images would leave the home ([docs/14](docs/14-architecture.md)).
+
 ## What was built
 
 - **A working prototype** ([prototype/](prototype/)):
@@ -26,7 +28,8 @@ ThingTracker turns the home's camera into a source of information, not only of s
 | Faces (opt-in) on the kit camera | A team member (Filipe), registered with consent, recognised at 0,54 and 0,63 (threshold 0,40); a stranger at 0,17 and 0,14 (unknown below 0,25) | [docs/24](docs/24-what-is-real.md) |
 | Speed on the team's M1 Pro | OWLv2 557 ms per frame, DINOv2 22 ms per crop; local text model answers in 0,4–1,7 s, rules in 1,5–3,2 s | [docs/14](docs/14-architecture.md) §14, [AGENTS.md](AGENTS.md) |
 | End-to-end scenarios (`prototype/test_scenarios.py`, no camera) | 106 checks, all passing (20 Nov 2026) | [prototype/README.md](prototype/README.md) |
-| Operator's cost per home per month (estimates from public prices) | Vision ≈ 0,49 € with one camera (0,98 € with two); language model ≈ 0,43 € | [docs/17](docs/17-operator-costs.md), [docs/16](docs/16-business-case.md) |
+| Cost of the final design (team price research, 20 Nov) | The home device is bought once: 3,33 or 5,75 € a month over 5 years (Raspberry Pi 5 ≈ 200 €, Jetson Orin Nano Super ≈ 345 €), or ≈ 15 € more for a router with an NPU (an estimate); the models' energy costs cents a month | [docs/17](docs/17-operator-costs.md), [docs/16](docs/16-business-case.md) |
+| Earlier estimate, for the alternative not chosen | Vision on Altice's servers ≈ 0,49 € per home a month with one camera (0,98 € with two); a cloud language model ≈ 0,43 € | [docs/17](docs/17-operator-costs.md), [docs/16](docs/16-business-case.md) |
 
 What each film shows, and how each moment was made (real, real footage, model output, staged or envisioned), is in [docs/24-what-is-real.md](docs/24-what-is-real.md).
 
@@ -56,7 +59,7 @@ Without the local model, the assistant falls back to keyword templates; without 
 | [docs/architecture/](docs/architecture/) | The twelve architecture views (PT and EN) and the script that draws them |
 | [docs/15-integration-spec.md](docs/15-integration-spec.md) | Integration with the Altice platform: the proposed Things MCP tools, the home ↔ platform channel, what is needed from Altice |
 | [docs/16-business-case.md](docs/16-business-case.md), [docs/business-case/](docs/business-case/) | Business case: market, pricing, unit economics, risks; charts and PDF |
-| [docs/17-operator-costs.md](docs/17-operator-costs.md) | What vision costs the operator per home: at home, on Altice's servers or in the cloud, at 500 000 homes |
+| [docs/17-operator-costs.md](docs/17-operator-costs.md) | What vision costs per home: the final design's equipment and energy (20 Nov) first, then the earlier analysis at home, on Altice's servers or in the cloud, at 500 000 homes |
 | [docs/18-use-cases.md](docs/18-use-cases.md) | 34 use cases, 10 scored, 5 for the pitch |
 | [docs/20-product.md](docs/20-product.md), [docs/product/](docs/product/) | Product spec: adding people, pets and things; rules; alerts; flow diagrams |
 | [docs/23-engineering-qa.md](docs/23-engineering-qa.md) | Engineering questions and answers, design separated from prototype |

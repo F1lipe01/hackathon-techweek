@@ -1,6 +1,6 @@
 # The mobile app, analysed
 
-From the app installed on the team phone (Xiaomi Redmi 17), on 16 Nov. The APK was pulled for inspection; it is **not** committed (236 MB, proprietary beta build). It lives in the session scratchpad only.
+From the app installed on the team phone (Xiaomi Redmi 17), on 16 Nov. The APK was pulled for inspection; it is **not** committed (236 MB, proprietary beta build).
 
 ## Identity
 
@@ -53,7 +53,7 @@ Screens captured by driving the app over ADB. Clean screenshots (no account data
 - **Device detail page:** header (name, room, connection state, favourite star, "⋯" menu), a large device icon with the state, then sections. The sections differ by device:
   - **Plug:** Scenarios, **Energy**, Events, Notifications, About.
   - **Light:** Scenarios, Events, Notifications, About — **no Energy section**.
-  - Controls (power, brightness, colour) are hidden while a device is **Disconnected**, so the bulb's colour support could not be confirmed from the app while the kit was offline. Its About page shows only a serial UUID. Confirm colour when the kit is on Wi-Fi, or via the scenario capability picker.
+  - Controls (power, brightness, colour) are hidden while a device is **Disconnected**, so the bulb's colour support could not be read from the app while the kit was offline; its About page shows only a serial UUID. The MCP confirms it is a colour bulb (`workMode` colour / white / music / scene, [10-mcp-in-practice.md](10-mcp-in-practice.md)).
 - **Menu tab:** Home (Scenarios, Rooms, Houses management), Account (Profile, Notifications, App settings), Support.
 - **App settings:** notification types; App authentication (on), Access code, Biometrics (on); Language, Units; About links (Smart home service — external web portal, Accessibility, Terms). **Version 2.5.0 (2050003)**, build `BP2A.250605.031.A3-…`.
 - **No hidden debug menu:** tapping the version line ten times did nothing. No developer/environment switcher was found in the UI.

@@ -2,7 +2,7 @@
 
 Sources: kick-off transcript of 16 Nov (`sources/meetings/`), team Slack, template footers.
 
-The **participant guide** is not filed here yet. It holds the evaluation criteria, the venue address and the mentor list, so several points below say "see guide".
+The official **participants' guide** was read on the organisers' Drive on 20 Nov and is not filed in `sources/`. Where it settles a point, this page says so.
 
 ## What it is
 
@@ -12,7 +12,7 @@ The **participant guide** is not filed here yet. It holds the evaluation criteri
 
 | # | Challenge | Proposed by | Teams |
 |---|---|---|---|
-| 1 | Use the data the city of Aveiro already collects to support concrete decisions and actions | Câmara Municipal de Aveiro and "Instituto de Comunicações" as transcribed (probably Instituto de Telecomunicações) | 12 |
+| 1 | Use the data the city of Aveiro already collects to support concrete decisions and actions | Câmara Municipal de Aveiro and Instituto de Telecomunicações (the transcript reads "Instituto de Comunicações") | 12 |
 | 2 | Ctrl+F: automatic identification of urban furniture with computer vision | Universidade de Aveiro (inferred from the transcript) | 12 |
 | **3** | **Connected Homes Reimagined: AI at the service of the home** | **Altice Labs** | **7**, capped by the number of hardware kits |
 
@@ -67,7 +67,7 @@ Two rounds, **different criteria**. These are the official criteria and weights 
 
 What the criteria tell us to optimise for: it is not just the demo. Two fifths of the final score (40 %) is **adoption by Altice + replicability** — i.e. would Altice actually ship this, and would it work beyond our one kit. Build and pitch for that.
 
-> **Resolved on 20 Nov.** The official participants' guide (Drive, read 20 Nov) settles it: **3** finalists per challenge and a **3 + 2** min intermediate pitch, from 16:00; the presentation is due as PPT (PDF accepted) by 17:30 via Google Drive and must mention the tools used. The earlier note: the written rules and the FAQ both said the intermediate selects **up to six** teams per challenge, with a **3 + 1** min pitch. At the kick-off Rui said only the **3** best teams advance, with **3 + 2** min. The written documents (version vf1) are the formal rule; the kick-off was later and verbal. With only 7 teams in our challenge, "up to 6 advance" would mean almost everyone does. Worth a one-line check with the mentors.
+> **Finalists and pitch length.** The written rules and the FAQ (version vf1) say the intermediate round selects up to six teams per challenge, with a 3 + 1 min pitch; the kick-off said 3 teams and 3 + 2 min. The official participants' guide (read 20 Nov) settles it as the kick-off did: **3** finalists per challenge and a **3 + 2** min intermediate pitch, from 16:00. The presentation is due as PPT (PDF accepted) by 17:30 via Google Drive and must mention the tools used.
 
 - The whole team does not need to be at the intermediate pitch. Some can pitch while the rest keep working.
 - Time is enforced: when it runs out you finish your sentence and stop.
@@ -88,7 +88,7 @@ From the rules (Article 14) and FAQ Q18. There are **two submission moments**:
 
 - Write the **2-page PDF** using the Sumário Executivo template and submit it on the **18th**.
 - Keep improving it and **resubmit the 2-page PDF on the 20th**, together with the **slides**.
-- Treat them as the same document refined, unless the mentors say otherwise. Worth confirming at the checkpoint.
+- Treat them as the same document refined. The team submitted v2 on 18 Nov at 18:51 and resubmits the final version on 20 Nov ([DELIVERABLES.md](../DELIVERABLES.md)).
 
 About the 2-page document:
 
@@ -111,9 +111,9 @@ From the rules and FAQ. These shape what we build and how we pitch:
 
 ## Prizes
 
-€15,000 in total — nine monetary prizes, three per challenge: **€3,000** for 1st, **€1,500** for 2nd, **€500** for 3rd (Article 21). Only the top 3 per challenge get a prize, even though up to 6 may reach the final stage. (At the kick-off Rui implied all finalists get a prize — that matched his "3 finalists" figure, not the written "up to 6".)
+€15,000 in total — nine monetary prizes, three per challenge: **€3,000** for 1st, **€1,500** for 2nd, **€500** for 3rd (Article 21). With 3 finalists per challenge (participants' guide), every finalist receives a prize.
 
-The prize is paid to the **team representative** (Filipe), who splits it with the team. Payment may require, from the representative, up-to-date tax and social-security clearance certificates and an IBAN. Winners whose solution is not mature enough may be asked to finish it within 30 days for the prize to be confirmed.
+The prize is paid to the **team representative**, who splits it with the team. Payment may require, from the representative, up-to-date tax and social-security clearance certificates and an IBAN. Winners whose solution is not mature enough may be asked to finish it within 30 days for the prize to be confirmed.
 
 ## Rules and logistics
 

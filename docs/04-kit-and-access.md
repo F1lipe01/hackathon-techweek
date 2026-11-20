@@ -6,7 +6,7 @@ Sources: photos of the kit taken on 16 Nov ([`sources/kit/`](../sources/kit/)), 
 
 - Collected from Altice Labs in Aveiro. The pick-up was arranged for Fri 13 Nov.
 - Every device is already provisioned on Altice's platform and linked to our team account. No pairing is needed.
-- The table says what the hardware is. What the platform exposes for each device is **not confirmed yet**: fill in the last column once the kit is online, from the app or from `GET_HOME_DEVICES`.
+- The table says what the hardware is. The last column is what the platform exposes for each device, read from the app and from `get_home_devices` ([10-mcp-in-practice.md](10-mcp-in-practice.md)).
 
 The home is named **"Hack 3"** in the app, with all seven devices "Without room". The states below were read from the app on 16 Nov, with the gateway cabled to ethernet but no Wi-Fi network up yet.
 
@@ -16,7 +16,7 @@ The home is named **"Hack 3"** in the app, with all seven devices "Without room"
 | **Temperature sensor** | On — **20.8 °C, 48.3 %** | Nedis **ZBSC10WT** (label 689) | Zigbee, via the hub | Temperature + humidity, live. Only **one** unit is paired (the app lists one), even though two round discs were in the kit |
 | **Smoke sensor** | On | Photoelectric, EN 14604 (label 349) | via the hub | Smoke events; 85 dB siren, test/hush, low-battery warning |
 | **Contact sensor** | **Open** | **MS-D3D** oval (label 685) | RF, via the hub | Open / closed state of a door or window. **Confirmed a contact sensor** |
-| **Camera** | Disconnected | Tuya **SC034-WNV3** (label 346) | **Wi-Fi 2.4 GHz only**, IP65 | RTSP feed; motion detection with sensitivity and pet filter, **built-in siren**, night vision, SD recording, two-way audio. Needs the Wi-Fi network **and its 12 V adapter (missing)**. Last contact 09 Nov |
+| **Camera** | Disconnected | Tuya **SC034-WNV3** (label 346) | **Wi-Fi 2.4 GHz only**, IP65 | RTSP feed; motion detection with sensitivity and pet filter, **built-in siren**, night vision, SD recording, two-way audio. Needs the Wi-Fi network **and its 12 V adapter (missing from the kit on 16 Nov)**. Last contact 09 Nov |
 | **Plug** | Disconnected → **Online** once the hotspot was up, reporting **0,0 W** | Unbranded Schuko plug | **Wi-Fi** | On/off **and live energy metering** (confirmed: watts shown in the device list) |
 | **Light** | Disconnected — **last contact 04 Nov** (provisioning) | Unbranded E27 bulb | **Wi-Fi** | On/off, brightness, white tone, and **colour (confirmed via MCP: `workMode` colour/white/music/scene)**. Needs the Wi-Fi network and a powered socket |
 
@@ -49,8 +49,7 @@ flowchart LR
   CS -. "Zigbee" .-> GW
   SA -. "Zigbee or 868 MHz" .-> GW
   DS -. "Zigbee or 868 MHz" .-> GW
-  PB -. "if Zigbee" .-> GW
-  PB -. "if Wi-Fi" .-> WIFI
+  PB -- "Wi-Fi" --> WIFI
   GW -- "RJ45" --> ETH
   GW -. "or Wi-Fi, or LTE" .-> WIFI
   CAM -- "Wi-Fi" --> WIFI
@@ -61,7 +60,7 @@ flowchart LR
   PLAT --> APP
 ```
 
-Solid lines are known. Dotted lines are inferred and still to confirm.
+Solid lines are confirmed. Dotted lines are inferred from the hardware labels: the platform does not report which radio a sensor uses, or the gateway's fallback uplinks.
 
 The point that tripped us up on 16 Nov: **the gateway does not create a Wi-Fi network.** Plugging it into ethernet gives the gateway its own uplink and nothing else. The camera still needs a Wi-Fi network that we provide.
 
@@ -71,9 +70,9 @@ The point that tripped us up on 16 Nov: **the gateway does not create a Wi-Fi ne
 
 Power it and give it an uplink. The simplest is a cable into a port with internet access.
 
-Its front panel has four lights: power, Wi-Fi, a padlock and a link symbol. On 16 Nov, cabled to the lab's ethernet, power was green, link was blue, and Wi-Fi and the padlock were off. We have no manual, so the reading is ours: link shows the wired uplink, and the padlock probably shows whether the security system is armed.
+Its front panel has four lights: power, Wi-Fi, a padlock and a link symbol. On 16 Nov, cabled to the lab's ethernet, power was green, link was blue, and Wi-Fi and the padlock were off. No manual came with the kit, so this reading is an assumption: link shows the wired uplink, and the padlock shows whether the security system is armed.
 
-The back panel has, from left to right: a speaker grille, the RJ45 port, a SIM-card slot, two recessed buttons marked with a link symbol and a power symbol, and the DC power input (`sources/kit/gateway-back.jpg`). Cable in the RJ45 port and power in DC is all it needs. Leave the SIM slot empty and **do not press the recessed buttons**: one of them is probably what reset another team's gateway.
+The back panel has, from left to right: a speaker grille, the RJ45 port, a SIM-card slot, two recessed buttons marked with a link symbol and a power symbol, and the DC power input (`sources/kit/gateway-back.jpg`). Cable in the RJ45 port and power in DC is all it needs. Leave the SIM slot empty and **do not press the recessed buttons**: another team's gateway was reset, and its devices had to be added again.
 
 A managed lab network may refuse an unregistered device even though the cable is in and a light is on. **The test is the app:** if the gateway shows offline there, either get the device allowed on the lab network or unplug the cable so it falls back to Wi-Fi.
 
@@ -96,13 +95,13 @@ Ways to create it:
 
 The phone that hosts the hotspot can still run the app. Whatever the camera streams travels over that phone's mobile data, so a router on wired internet is the better choice for long sessions.
 
-**What we use now (16 Nov):** the team's **Redmi 17** hotspot, reconfigured over ADB to the kit's SSID and password from `.env`, **WPA2-Personal, 2.4 GHz**, SSID visible, auto-off disabled. It shares the phone's mobile data. Within a minute of switching it on the **Plug came online** and started reporting live power. The phone's previous hotspot name was "REDMI 17" — to restore it, set the name back and enter the owner's own password.
+**What the team used from 16 Nov:** the team phone's (Redmi 17) hotspot, reconfigured over ADB to the kit's SSID and password from `.env`, **WPA2-Personal, 2.4 GHz**, SSID visible, auto-off disabled. It shares the phone's mobile data. Within a minute of switching it on the **Plug came online** and started reporting live power.
 
 If a Wi-Fi device stays offline after the network appears, **power-cycle it**: devices that failed to find the network for hours can back off, and a restart makes them retry at once. The bulb also needs to be in a socket that is switched on.
 
 ### 3. Check every device in the app
 
-Each one should show as online. Note what the app calls each device and its room, and fill in the table above.
+Each one should show as online. The table above gives each device's app name; all seven are "Without room".
 
 ### 4. Camera
 
@@ -116,15 +115,15 @@ Connect an MCP client and log in with the team account. See [03-mcp-connected-ho
 
 - **The climate sensor is slow by design.** Its box gives an update interval of 5 to 30 minutes, so a temperature change will not show up live in a demo.
 - **If every device is online in the app and something fails through the MCP, the devices are not the problem.** This is the mentors' rule of thumb.
-- **Do not reset the gateway.** It happened to another team: the devices then have to be added again through the app. If it happens, ask the mentors. Someone called Marta on the Altice side knows this process well.
+- **Do not reset the gateway.** It happened to another team: the devices then have to be added again through the app. If it happens, ask the mentors.
 - The camera's serial number and MAC address are on its label and on the back of its box (`sources/kit/camera-box-back.jpg`).
 
 ## Mobile app
 
-- Distributed through Firebase App Distribution. The invite was emailed to the team representative (Filipe). The link is in `.env` as `APP_INVITE_URL`. It is unclear whether one invite works on several phones.
-- **More invites:** message Hugo Dias on Slack. He offered to send invites to other team members.
-- **iPhone:** the app is blocked at first as an untrusted enterprise developer. The mentors said to mark the developer (Altice Labs) as trusted and to look up a guide online. The usual place, from general iOS knowledge rather than from them, is Settings → General → VPN & Device Management. The mentors thought the build had only gone out for Android, so iOS may need extra help.
-- Name: the transcript calls it the "Connectathon" app, which is probably a transcription error. The login page in the MCP guide is titled `SMARTHOME-PRO-BETA-APP`.
+- Distributed through Firebase App Distribution. The invite was emailed to the team representative. The link is in `.env` as `APP_INVITE_URL`.
+- **More invites:** Hugo Dias (Altice Labs) offered on Slack to send invites to other team members.
+- **iPhone:** the app is blocked at first as an untrusted enterprise developer. The mentors said to mark the developer (Altice Labs) as trusted and to look up a guide online. The usual place, from general iOS knowledge rather than from them, is Settings → General → VPN & Device Management. The mentors said the build had gone out for Android; the team runs it on an Android phone ([08-app-and-apk.md](08-app-and-apk.md)).
+- Name: the transcript calls it the "Connectathon" app. The login page is titled `SMARTHOME-PRO-BETA-APP` and the installed package is `pt.altice.smarthome.beta` ([08-app-and-apk.md](08-app-and-apk.md)).
 - Screenshots of Altice's own Connected Home app, from their public product page, are in [`assets/altice-app/`](../assets/altice-app/). The build we were given may look different.
 
 ## Camera
@@ -146,9 +145,9 @@ Values are in `.env`, which is gitignored. All of them reached us on 16 Nov.
 | What | `.env` variable | What you do with it | Came from |
 |---|---|---|---|
 | Kit Wi-Fi | `KIT_WIFI_SSID`, `KIT_WIFI_PASSWORD` | **You do not look for this network, you create it.** Give a hotspot or router this name and password and the kit devices join by themselves. Same values for every team | Rui Mendes, Slack DM |
-| Team account | `CONNECTED_HOME_USERNAME`, `CONNECTED_HOME_PASSWORD` | Type it into the login page that opens when an MCP client connects. Try it for the app login too. It was sent as one line, "A - B"; reading that as username and password is our interpretation | Rui Mendes, Slack DM |
+| Team account | `CONNECTED_HOME_USERNAME`, `CONNECTED_HOME_PASSWORD` | Type it into the login page that opens when an MCP client connects. It was sent as one line, "A - B": username and password, which log in to the MCP ([10-mcp-in-practice.md](10-mcp-in-practice.md)) | Rui Mendes, Slack DM |
 | Camera feed | `CAMERA_RTSP_URL` | Paste it into VLC to watch the camera, or hand it to our own vision code. No authentication | Rui Mendes, Slack DM |
 | MCP API key | `CONNECTED_HOME_API_KEY` | Paste it into the MCP client config in place of `<API_KEY>` | Rui Mendes, Slack, 16 Nov |
-| App invite | `APP_INVITE_URL` | Open it on the phone to install the app | Email to Filipe |
+| App invite | `APP_INVITE_URL` | Open it on the phone to install the app | Email to the team representative |
 
 None of these is typed into the gateway. The gateway has nothing for us to configure.

@@ -146,7 +146,7 @@ Status markers:
 - **Short answer:** "Yes, so it is opt-in, with consent, and the face templates never leave the home."
 - **Detail:**
   - **YuNet** (MIT) finds the face and **SFace** (Apache-2.0) compares it; both are small models that run on an ordinary processor;
-  - a known face scores 0,363 or more in the design, OpenCV's recommended value; the prototype uses 0,30, measured on a lab take where the kit camera's faces are 40-86 px, to be calibrated per camera in a pilot;
+  - a known face scores 0,363 or more in the design, OpenCV's recommended value; the prototype uses three bands for the kit camera's small faces (40-86 px): known at 0,40 or more, unknown under 0,25, "not sure" between, to be calibrated per camera in a pilot;
   - only a label leaves the house: "Filipe", "unknown face" or "face not visible";
   - biometric data used to identify a person is a special category under GDPR (Article 9), which needs explicit consent;
   - **diagram:** `seq-pessoa-desconhecida.png`.
@@ -308,7 +308,7 @@ Status markers:
 ## G. The films and the demo
 
 **G1. Is what the films show real?**
-- **Short answer:** "The footage is the real lab and kit camera, the app is our prototype, and the boxes come from our models run on that footage; some moments were shortened, and the films say so."
+- **Short answer:** "The footage is the real lab and kit camera, the app is our prototype, and the boxes come from our models run on that footage; some moments were staged to show the full experience, and we can show you the same footage running through the system, unedited."
 - **Detail, say it plainly if asked:**
   - the alerts in the films were triggered for the recording; since the night of 19-20 Nov the same rules fire them in the prototype, shown on the same takes in the proof runs;
   - the stretch where people sit is shown at 4×;

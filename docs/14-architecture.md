@@ -249,7 +249,7 @@ Document 20 (section 1.3) had proposed enrolment in front of the home camera so 
 | Compare | SFace cosine against every template of the household |
 | Name | Cosine ≥ 0.363 to a person's templates: that person. 0.363 is OpenCV's recommended value for SFace (`samples/dnn/face_detect.py`), set on sharp close-up faces |
 | Unknown | A visible face below the threshold for everyone: "unknown face" |
-| Prototype | Uses 0.30, measured on one lab take where the kit camera's faces were 40 to 86 px wide: at 0.363, 2 of 21 judged faces of the enrolled person were called unknown; at 0.30 none was, and the highest stranger score was 0.248. One take is a check, not a measured accuracy; the threshold is to be set per camera in the pilot |
+| Prototype | Three bands, set on the lab take where the kit camera's faces were 40 to 86 px wide: known at 0.40 or more to a template, unknown below 0.25 to every template, "not sure" in between. At a single 0.30 cut, one of the stranger's faces scored 0.33 against the enrolled person while some of the enrolled person's own scored 0.31 to 0.36, so a band replaced the cut. On the replayed take the enrolled person scored 0.54 and 0.63, the stranger 0.17 and 0.14. One take is a check, not a measured accuracy; the bands are to be set per camera in the pilot |
 
 Only the label leaves the home ("Filipe", "unknown face", with the face box); the templates never do.
 
@@ -439,7 +439,7 @@ Status late on 19 Nov 2026, from the prototype's code and commits. "In progress"
 | Privacy masks | Areas the family draws | Only the camera's clock overlay is masked | Not in the prototype |
 | Motion gate | 160 × 90 grey, every 0.5 s, on the router | Same, on the Mac (`edge.py`) | Implemented |
 | Changed region sent to Altice | Region ≤ 640 × 640, about 1 a second | The Mac analyses the whole frame where it is | Simulated |
-| Faces | YuNet + SFace on the router, templates at home | YuNet + SFace on the Mac, templates in the edge's own SQLite, threshold 0.30 | Implemented |
+| Faces | YuNet + SFace on the router, templates at home | YuNet + SFace on the Mac, templates in the edge's own SQLite, known at 0.40, unknown below 0.25 | Implemented |
 | Vision workers | OWLv2, DINOv2 on L4 GPUs behind queues | OWLv2, DINOv2 on the Mac's GPU, no queue | Simulated |
 | Matching | pgvector in the service | NumPy on the edge, threshold 0.62 | Implemented (different place) |
 | In hand, taken, moved | Tracking in the service | "in_hand" from the edge; "taken" after 3 missed analyses on the server; "moved" on a new place | Implemented (to confirm) |

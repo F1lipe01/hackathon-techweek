@@ -176,7 +176,7 @@ Resposta curta: “São. Por isso, o reconhecimento é opcional, exige consentim
 
 - Pormenor:
   - o _YuNet_ (MIT) encontra o rosto e o _SFace_ (Apache-2.0) compara-o; ambos são modelos pequenos, que correm num processador comum;
-  - na solução proposta, um rosto conhecido obtém 0,363 ou mais, o valor recomendado pelo OpenCV; o protótipo usa 0,30, medido numa gravação do laboratório em que os rostos na câmara do _kit_ têm 40-86 px, e o valor tem de ser calibrado por câmara num piloto;
+  - na solução proposta, um rosto conhecido obtém 0,363 ou mais, o valor recomendado pelo OpenCV; o protótipo usa três faixas para os rostos pequenos da câmara do _kit_ (40-86 px): conhecido a 0,40 ou mais, desconhecido abaixo de 0,25 e “incerto” entre os dois, a calibrar por câmara num piloto;
   - de casa só sai um rótulo: “Filipe”, “rosto desconhecido” ou “rosto não visível”;
   - os dados biométricos usados para identificar uma pessoa são uma categoria especial ao abrigo do RGPD (artigo 9.º), que exige consentimento explícito.
 - Onde se mostra: `docs/architecture/seq-pessoa-desconhecida.png`.
@@ -383,7 +383,7 @@ Resposta curta: “Todas abertas, e todas permitem uso comercial.”
 
 ### G1. O que os filmes mostram é real?
 
-Resposta curta: “As imagens são do laboratório real e da câmara do _kit_, a app é o nosso protótipo e as caixas vêm dos nossos modelos, aplicados a essas imagens; alguns momentos foram encurtados, e os filmes indicam-no.”
+Resposta curta: “As imagens são do laboratório real e da câmara do _kit_, a app é o nosso protótipo e as caixas vêm dos nossos modelos, aplicados a essas imagens; alguns momentos foram encenados para mostrar a experiência completa, e podemos mostrar-vos as mesmas imagens a passar pelo sistema, sem edição.”
 
 - Pormenor, a dizer com franqueza se for pedido:
   - os avisos dos filmes foram disparados para a gravação; desde a noite de 19 para 20 de novembro, são as mesmas regras que os disparam no protótipo, como mostram as execuções sem montagem com as mesmas gravações;

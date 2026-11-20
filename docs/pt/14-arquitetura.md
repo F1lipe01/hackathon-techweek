@@ -249,7 +249,7 @@ O reconhecimento segue as regras da tabela seguinte.
 | Comparar | Semelhança de cosseno do _SFace_ com todos os padrões da casa |
 | Nomear | Semelhança ≥ 0,363 com os padrões de uma pessoa identifica essa pessoa; 0,363 é o valor recomendado pelo _OpenCV_ para o _SFace_ (`samples/dnn/face_detect.py`), definido em rostos nítidos e próximos |
 | Desconhecido | Um rosto visível abaixo do limiar para todos fica como “rosto desconhecido” |
-| Protótipo | Usa 0,30, medido numa gravação do laboratório em que os rostos na câmara do kit tinham 40 a 86 px de largura: a 0,363, 2 dos 21 rostos avaliados da pessoa registada foram dados como desconhecidos, a 0,30 nenhum, e a semelhança mais alta de um estranho foi 0,248. Uma gravação é uma verificação, e não uma medição de exatidão, pelo que o limiar deve ser fixado por câmara no piloto |
+| Protótipo | Três faixas, fixadas na gravação do laboratório em que os rostos na câmara do kit tinham 40 a 86 px de largura: conhecido a 0,40 ou mais de um padrão, desconhecido abaixo de 0,25 para todos os padrões e “incerto” entre os dois. Com um único corte a 0,30, um dos rostos do estranho obteve 0,33 contra a pessoa registada e alguns rostos desta ficaram entre 0,31 e 0,36, por isso o corte passou a faixa. Na gravação reproduzida, a pessoa registada obteve 0,54 e 0,63 e o estranho 0,17 e 0,14. Uma gravação é uma verificação, e não uma medição de exatidão, pelo que as faixas devem ser fixadas por câmara no piloto |
 
 De casa sai apenas o rótulo (“Filipe” ou “rosto desconhecido”, com a caixa do rosto), e nunca os padrões.
 
@@ -439,7 +439,7 @@ Estado no final de 19 de novembro de 2026, segundo o código e o histórico do p
 | Máscaras de privacidade | Zonas desenhadas pela família | Só o relógio sobreposto pela câmara é mascarado | Não existe no protótipo |
 | Filtro de movimento | 160 × 90 em tons de cinzento, a cada 0,5 s, no _router_ | O mesmo, no Mac (`edge.py`) | Implementado |
 | Região que mudou enviada para a Altice | Região ≤ 640 × 640, cerca de uma por segundo | O _Mac_ analisa localmente a imagem completa | Simulado |
-| Rostos | _YuNet_ e _SFace_ no _router_, padrões em casa | _YuNet_ e _SFace_ no Mac, padrões no _SQLite_ do próprio agente, limiar 0,30 | Implementado |
+| Rostos | _YuNet_ e _SFace_ no _router_, padrões em casa | _YuNet_ e _SFace_ no Mac, padrões no _SQLite_ do próprio agente, conhecido a 0,40, desconhecido abaixo de 0,25 | Implementado |
 | Servidores de visão | _OWLv2_ e _DINOv2_ em GPU _L4_, com filas | _OWLv2_ e _DINOv2_ na GPU do Mac, sem fila | Simulado |
 | Comparação | _pgvector_ no serviço | _NumPy_ no agente, limiar 0,62 | Implementado (noutro componente) |
 | Na mão, levado e mudado | Seguimento no serviço | “Na mão” calculado no agente; “levado” após 3 análises sem o objeto, no servidor; “mudado” num lugar novo | Implementado (a confirmar) |

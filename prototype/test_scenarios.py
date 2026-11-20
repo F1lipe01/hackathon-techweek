@@ -5,7 +5,7 @@
         :8766 if it runs), so the test never writes sensors, alerts or suggestions into the demo's database; stops it
         at the end.
     prototype/.venv/bin/python prototype/test_scenarios.py --unit
-        only the presence engine, on a fake clock (no server)
+        only the presence engine, on a test clock (no server)
     video/tools/heavy.sh prototype/.venv-vision/bin/python prototype/test_scenarios.py --vision
         only the models on the lab's footage: faces on the face take, photos -> fingerprint vs the book take
     prototype/.venv/bin/python prototype/test_scenarios.py --server http://127.0.0.1:8765
@@ -201,8 +201,8 @@ def main():
 
 
 def presence_unit():
-    """The presence engine alone (presence.py), on a fake clock and a throwaway database: no server, no camera."""
-    print("\nP. Presence engine: phones + door + cameras (fake clock, own database)")
+    """The presence engine alone (presence.py), on a test clock and a throwaway database: no server, no camera."""
+    print("\nP. Presence engine: phones + door + cameras (test clock, own database)")
     sys.path.insert(0, str(HERE))
     import presence as P
     from store import Store

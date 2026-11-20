@@ -1,58 +1,41 @@
 # People
 
-Names of organisers, mentors and jurors come from an automatic transcript, so spellings and surnames may be wrong. Confirm against the participant guide.
+Mentor and organiser names are as introduced at the online kick-off on 16 Nov; for some, only a first name was given.
 
 ## Team IT-Porto
 
-Registered under the name proposed on Slack, "IT-Porto". The organisers write it "IT Porto".
+The organisers write the name "IT Porto".
 
 | Who | Role |
 |---|---|
-| Filipe Peixoto | Team leader and contact with the organisers. Holds the credentials and the app invite |
+| Filipe Peixoto | Team leader and contact with the organisers |
 | Simon Ranjith | Team member |
 | Mushahid Hussain | Team member |
 
-Roles inside the team (data, interface, pitch and so on) are not assigned yet. The pitch and the written deliverables are in Portuguese.
-
-Around the team:
-
-| Who | Involvement |
-|---|---|
-| Prof. Ana Aguiar | Encouraged the group to take part and is steering the idea |
-| Sofia Martins | Not participating. Posted the whiteboard photo and offered to share thoughts and quick feedback along the way |
-| Pedro Santos, Onoriode Akporherhe | Tagged in the registration thread. No reply in the thread we have |
+The pitch and the written deliverables are in Portuguese.
 
 ## Mentors, Altice Labs
 
-| Who | Team and focus | Go to them for |
-|---|---|---|
-| Hugo Dias | Prototyping and new products | Kits, app invites, credentials, general steer on what Altice wants |
-| Ricardo | Same team as Hugo, focus on AI and machine learning. Surname unclear in the transcript | AI and ML questions |
-| Gonçalo | Data and AI platforms. His team built the MCP server | MCP server questions |
-
-Also mentioned on the Altice side: a colleague who sent the app invites, transcribed as "Frasco", and a Marta who knows the devices well.
+| Who | Team and focus |
+|---|---|
+| Hugo Dias | Prototyping and new products: the kits, the app and the challenge's goals |
+| Ricardo | Same team, focus on AI and machine learning |
+| Gonçalo | Data and AI platforms; his team built the Connected Home MCP server |
 
 ## Organisers
 
 | Who | Role |
 |---|---|
-| Rui Mendes (Staff, Ripply) | Runs the event logistics. Sent our credentials by Slack DM |
-| Marta | Organisation. Emails, Slack access, room links |
-| Leonid Kholkine | Co-hosted the kick-off and gave the advice for first-time teams |
-
-For anything about the event, message Rui or Marta on Slack.
+| Rui Mendes (Ripply) | Event logistics |
+| Marta | Organisation: communications and access |
+| Leonid Kholkine | Co-hosted the kick-off |
 
 ## Jury for the final
 
-Per the rules (Article 19), the jury has **five** members:
+Per the rules (Article 19), the jury has five members:
+- two from Câmara Municipal de Aveiro, one of them acting as president, who breaks ties;
+- one from Instituto de Telecomunicações;
+- one from Universidade de Aveiro;
+- one from Altice Labs.
 
-- Two from Câmara Municipal de Aveiro, one of them acting as **president** (the president breaks ties).
-- One from Instituto de Telecomunicações.
-- One from Universidade de Aveiro.
-- One from **Altice Labs**.
-
-The jury's scores and decisions are final, with no appeal. At the kick-off the names mentioned (partial, to be confirmed) were "Pedro Duarte" and "Vítor" from Altice.
-
-## A note on the transcript
-
-Speaker labels are unreliable in the second half, the challenge room. Several answers about devices are labelled "Rui Mendes" but are clearly given by Hugo, and a few lines are our own team talking near the microphone. Read it for content, not for who said what.
+The jury's scores and decisions are final, with no appeal.

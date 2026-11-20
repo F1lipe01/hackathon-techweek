@@ -1,94 +1,65 @@
-# Open questions and next steps
+# Questions raised during the week, and how each was settled
 
-Last reviewed: Tue 17 Nov 2026.
+Every question the team logged between 16 and 18 Nov, with its outcome on 20 Nov 2026. Each one is **resolved** (with the evidence), **not needed** for the solution that was built, or stated as an **assumption** or a **pilot step**: something only a pilot with Altice can measure. The original numbers are kept so older references still match.
 
-## Blocking
+## Kit and access
 
-| # | What | Who can resolve it |
+| # | Question | Outcome |
 |---|---|---|
-| ~~1~~ | ~~MCP API key~~ **Received** 16 Nov from Rui Mendes, stored in `.env`. The MCP client still needs the OAuth login (team account) on top of it | Done |
-| 1b | **Camera has no power adapter.** It needs 12 V ⎓ 2 A DC (barrel 5.5 × 2.1 mm, centre-positive — check the label). Ethernet does **not** power it: it is not PoE; its RJ45 is only a wired-network alternative to Wi-Fi. Don't borrow the gateway's 12 V 1 A adapter | Hugo or Rui on Slack, or any 12 V ≥ 2 A CCTV adapter in the lab |
-| 2 | **Book the Wednesday mentor checkpoint.** It is mandatory and must happen on Wed 18 Nov | The Altice mentors, on Slack |
-| 3 | **Bring the kit online** and confirm every device shows in the app. The gateway is cabled to the lab ethernet; the camera still needs a 2.4 GHz Wi-Fi network with the kit's name and password, which the gateway does not provide | Us. See [04-kit-and-access.md](04-kit-and-access.md) |
+| 1 | MCP API key | Resolved: received on 16 Nov and kept in `.env`; the login also needs the team account through OAuth ([10-mcp-in-practice.md](10-mcp-in-practice.md)) |
+| 1b | The camera had no 12 V power adapter | Resolved: the camera runs and streams RTSP through the organisers' relay (H.265, 2304 × 1296, 20 fps, checked with ffprobe on 18 Nov; [14-architecture.md](14-architecture.md) §2) |
+| 3 | Bring the kit online and confirm every device in the app | Resolved: the seven kit devices are mapped with their capabilities ([04-kit-and-access.md](04-kit-and-access.md), [10-mcp-in-practice.md](10-mcp-in-practice.md)) |
+| 4 | The format of the team account | Resolved: the MCP login works with it ([10-mcp-in-practice.md](10-mcp-in-practice.md)) |
+| 5, 5b | Devices in the home; whether the security hub reaches the platform | Resolved: 7 devices in home "Hack 3"; the hub shows as On ([10-mcp-in-practice.md](10-mcp-in-practice.md)) |
+| 5c | The Light had not reached the cloud since 4 Nov | Resolved: the bulb is read through the MCP ([24-what-is-real.md](24-what-is-real.md), "What our setup can really do") |
+| 7 | OAuth callbacks for MCP clients | Resolved: only the documented callbacks are accepted, so the team wrote its own client, `mcp/client/chmcp.py` ([mcp/README.md](../mcp/README.md)) |
+| 8 | Whether one app invite works on several phones | Not needed: the team used one phone for the Altice app ([08-app-and-apk.md](08-app-and-apk.md)) |
+| 36 | Reading the camera stream with our code | Resolved: `prototype/edge.py` reads the kit camera's RTSP stream; the stream capability was not changed |
+| 40 | The kit's "Test Motion" scenario and the team's "Detect-motion" scenario both react to camera motion | Not needed: ThingTracker does not use the kit's scenarios. A note for anyone testing with the kit: turn one off before testing the other |
 
-## To confirm
+## Event and rules
 
-| # | What | Why it matters |
+| # | Question | Outcome |
 |---|---|---|
-| 4 | The team account arrived as a single line, "A - B". We read it as username and password | First login will tell |
-| ~~5~~ | **Resolved** (app + MCP, 16 Nov): 7 devices in home "Hack 3"; MS-D3D is a contact sensor; plug meters energy; **bulb does colour**; camera has a siren. Full capability map in [10-mcp-in-practice.md](10-mcp-in-practice.md) | Done |
-| 5c | **The Light has not reached the cloud since 04 Nov**, even with the kit Wi-Fi up. Check it is in a socket that is switched on (steady, not blinking). If it still won't come online, ask the mentors — it may need re-pairing | Us, then mentors |
-| ~~5b~~ | **Resolved.** The app shows the **Security hub as On**, so the gateway reaches the Cognitive Home platform over the lab ethernet | Done |
-| ~~6~~ | **Resolved.** Official challenge sheet obtained and filed (`sources/challenge/desafio3-ficha.pdf`); summarised in [02-challenge.md](02-challenge.md) | Done |
-| ~~7~~ | **Resolved.** Only the documented callbacks are accepted, so we wrote our own client (`mcp/client/chmcp.py`), which also plugs into Claude Code | Done |
-| 8 | Whether one app invite works on several phones | Otherwise ask Hugo for invites for Simon and Mushahid |
-| 9 | Jury names and affiliations | Transcript is unreliable on names |
+| 2 | The mandatory mentor checkpoint | Resolved: held on Wed 18 Nov; its feedback moved the report's Figure 1 to a safety case ([JOURNAL.md](../JOURNAL.md)) |
+| 6, 10 | The challenge sheet, the evaluation criteria, the schedule and the rules | Resolved: filed in `sources/` and summarised in [01-event.md](01-event.md) and [02-challenge.md](02-challenge.md) |
+| 9 | Jury names | Not needed: the jury's composition is set by the rules, Article 19 ([06-people.md](06-people.md)) |
+| 10b | Finalist count and intermediate pitch length | Resolved on 20 Nov from the participants' guide: 3 finalists per challenge, 3 + 2 min ([01-event.md](01-event.md)) |
+| 11, 12, 13 | Links and screenshots from the organisers' messages that were not filed | Not needed: the material that matters is filed in `sources/` or summarised in [01-event.md](01-event.md) |
+| 14 | A research paper shared during the brainstorm was not summarised | Not needed: the solution does not rely on it |
 
-## Missing from this repo
+## Market evidence
 
-| # | What | Where it probably is |
+| # | Question | Outcome |
 |---|---|---|
-| ~~10~~ | **Resolved.** Evaluation criteria, schedule, deliverables, IP and rules are in the official norms + FAQ, now filed (`sources/rules/`) and summarised in [01-event.md](01-event.md). Venue address is in the norms (maps link). Mentor list still only partial | Mostly done |
-| 10b | **Confirm the finalist count and intermediate Q&A length.** Written rules say up to 6 teams / 3+1 min; the kick-off said 3 teams / 3+2 min | Ask the mentors |
-| 11 | The links from the organisers' email of 16 Nov: session room, challenge resources folder, Slack invite. Only the text was pasted, the links were lost | Same email |
-| 12 | Two Slack screenshots: `Screenshot 2026-11-02 at 11.43.36.png` and `Screenshot 2026-11-16 at 17.51.54.png` | Team Slack channel |
-| 13 | `Desafio#3_Altice_Hackathon_MCP_ATC2026.pdf - Google Drive.html` was not found in Downloads. The PDF itself is filed, so nothing is lost | |
-| 14 | The MDPI paper Ana shared has not been read or summarised | [05-ideas.md](05-ideas.md) |
+| 21 | Altice's customer data is not public | Assumption: the business case uses public proxies (ANACOM, Eurostat), marked as such ([16-business-case.md](16-business-case.md)); a pilot replaces them with Altice's own numbers |
+| 22 | Altice already covers older-person monitoring | Resolved by the choice of direction: ThingTracker adds what the camera can recognise (things, pets, people) rather than another monitoring product ([12-market-research.md](12-market-research.md), [18-use-cases.md](18-use-cases.md)) |
+| 26 | Some figures could not be confirmed at a primary source | Resolved: [12-market-research.md](12-market-research.md) grades every figure by the strength of its source and marks these as unverified, not to be used |
+| 27 | No current Portuguese time-use data | Accepted gap: no figure is claimed for it ([12-market-research.md](12-market-research.md)) |
+| 28 | A hidden, contradictory paragraph in an Altice brochure | Resolved: reported as untrusted material and not quoted from the extracted text ([12-market-research.md](12-market-research.md)) |
+| 38 | Acceptance of indoor cameras in Portuguese homes | Pilot step: not measured; acceptance and price are tested in a pilot ([17-operator-costs.md](17-operator-costs.md) §9, [16-business-case.md](16-business-case.md)) |
 
-## Gaps from the market research (17 Nov)
+## Platform and devices
 
-From [12-market-research.md](12-market-research.md). Mentor questions for the checkpoint are in its §9.
-
-| # | What | Who can resolve it |
+| # | Question | Outcome |
 |---|---|---|
-| 21 | **Altice's customer data is not public**: who uses Connected Home (now "Cognitive Home"), for what, and which segment MEO and SFR want to grow | Mentors, at the checkpoint |
-| 22 | **Altice already covers older-person monitoring**: Family Care (motion sensors + Wi-Fi sensing), Aging in place (activity and fall alerts, per the brochure), eHealth Smart Assisted Living. An older-person use case has to add something they lack, e.g. home-condition health (damp, cold). The use-case report's checkpoint question targets this | Mentors, at the checkpoint |
-| 23 | **The MCP has no event history and no notifications.** Any routine or trend feature means polling and keeping our own log; any alert needs our own channel | Ask mentors whether a platform event/push API exists |
-| 24 | **Nothing to switch on the plug at the venue** for a damp/cold demo (a dehumidifier, heater or stand-in lamp) | Us; ask the mentors whether a heater is allowed |
-| 25 | **Smoke sensor test button**: unknown whether it triggers the hub alarm or emergency contacts | Mentors |
-| 26 | **Figures not confirmed at source**: excess winter mortality (only press citing DGS was found), "37.8 % of 80+ live alone" (a seminar talk, wider definition), ANACOM Q2 2026 operator shares (the page loads by JavaScript; Q4 2025 is used), share of fire deaths who are elderly (not published) | Only if needed |
-| 27 | **No current Portuguese time-use data.** INE's survey is from 1999 and INUT (CESIS/CITE) from 2015, and Portugal is absent from EU HETUS. "People spend more time at home" cannot be backed by a number | Accept the gap; only RASI 2025 says it, qualitatively |
-| 28 | **Altice brochure (2025) has a hidden contradictory paragraph** (pp. 1, 16). It is not an instruction, but don't quote the PDF's extracted text without looking at the page | Noted |
-| 29 | **Untested kit behaviour the demos depend on**:
-  - the contact sensor changing open → closed through the MCP;
-  - plug metering under a load (and the daily counter's unit);
-  - whether the plugged appliance resumes on power;
-  - how fast the MCP may be polled;
-  - how a powered-off hub shows up, and that it reconnects cleanly;
-  - whether a smoke sensor can trigger a scenario.
+| 23 | The MCP server has no event history and no notifications | Confirmed ([10-mcp-in-practice.md](10-mcp-in-practice.md)). The prototype polls the door every 4 s through the read-only `get_home_devices`; an event feed and a notification channel are requested from Altice ([15-integration-spec.md](15-integration-spec.md) §9) |
+| 24 | Nothing to switch on the plug for a damp or cold demo | Not needed: that use case was not chosen |
+| 25 | Whether the smoke sensor's test button triggers the hub alarm | Not needed: ThingTracker never touches the alarm |
+| 29 | Kit behaviour the demos depended on | The door contact changing state through the MCP: resolved, real door events reach the prototype ([23-engineering-qa.md](23-engineering-qa.md), E1a). The polling rate: the prototype polls every 4 s; the rate for production is agreed with Altice ([15-integration-spec.md](15-integration-spec.md) §9). Plug metering under load, a powered-off hub and smoke-triggered scenarios: not needed for ThingTracker |
+| 31 | Two-way audio through the camera relay | Not needed: the prototype uses the camera's video only (see 33) |
+| 32 | Whether a vision model may run on the camera feed, and whether an indoor camera is acceptable | Resolved in the design: vision runs only on motion, on the region that changed, video never leaves the home, and faces are opt-in ([14-architecture.md](14-architecture.md) §12) |
+| 33 | Microphones and the law (Lei 58/2019, art. 19.º, n.º 4; Código Penal, art. 199.º) | Design rule: the prototype uses no audio. In the product, sound as a trigger is proposed off by default, never on outdoor cameras, and indoors only if the family turns it on; a classifier gives only a type and a level, and the sound is never recorded or sent. Whether the law applies to a private home is to be verified before launch ([20-product.md](20-product.md) §2.5). Not legal advice |
+| 34 | Detecting the family's phones on the network | Resolved for the prototype: the phones are simulated, because no MCP tool exposes the router's clients; a read-only `get_home_wifi_clients` tool is proposed ([15-integration-spec.md](15-integration-spec.md)) |
+| 37 | Detection rate for small objects such as keys | Pilot step: not measured on the kit camera; the book is the measured example ([23-engineering-qa.md](23-engineering-qa.md), B1 and G3) |
 
-  Full list: [use-case report §9](../deliverables/use-case-report/top5-use-cases.md) | Us, Wednesday morning or Thursday; the scenario question goes to the mentors |
-| 30 | **Owners for the build streams** (engine, conversation, story) and the **LLM/coding-assistant names** for the Sumário's AI section | Team, before Wed 19:00 |
+## Team decisions
 
-## Gaps from the v4 redesign (17 Nov, Casa Atenta)
-
-From [the v4 summary](../deliverables/use-case-report/top5-summary.md). The camera is now central, so blocker 1b is urgent.
-
-| # | What | Who can resolve it |
+| # | Question | Outcome |
 |---|---|---|
-| 31 | **Camera sound both ways.** The label says two-way audio. Whether Altice's go2rtc relay carries the microphone track, and can send sound back to the speaker (go2rtc ≥ 1.9.9 with `?backchannel=1`), is unknown. Test with `ffprobe` and a 2-second sound once the camera has power; the fallback is the laptop speaker | Us, then the mentors |
-| 32 | **May we run a vision model on the camera feed** for object memory, and is an indoor camera acceptable to Altice if it stores objects, not people? | Mentors, at the checkpoint |
-| 33 | **Microphone and the law.** Lei 58/2019 art. 19.º n.º 4 bans sound capture by video surveillance, and Código Penal art. 199.º covers recording words without consent. Design: push-to-talk only, no audio stored. Not legal advice | Accept as a design rule |
-| 34 | **Phone presence on our hotspot.** Untested whether the Mac can see a team phone (not the Redmi, which is the hotspot) by ping and ARP, and how a locked iPhone answers | Us, 5-minute test |
-| ~~35~~ | **Done for ThingTracker** (18 Nov): `deliverables/executive-summary/sumario-executivo-IT-Porto.pdf`, 2 pages. The team still has to read it, add any other AI tool it used to the last section, and submit it on the Google Form | Team, before Wed 19:00 |
-
-## Decisions the team has to make
-
-| # | What | By when |
-|---|---|---|
-| 15 | Which idea, or combination, we commit to | Before the Wednesday checkpoint |
-| 16 | Who does what: data and devices, interface, pitch | Now. The organisers' first piece of advice |
-| 17 | Who pitches in Portuguese on Friday | Before rehearsals |
-| 18 | Which access point or hotspot we take to Aveiro | Before Friday |
-| 19 | Whether anyone needs an absence declaration for Friday | Ask Rui or Marta |
-| 20 | Whether the repository we submit on Friday is this one, cleaned of `sources/`, or a separate code-only one | Before Fri 17:30 |
-
-## Gaps from the ThingTracker decision (18 Nov)
-
-| # | What | Who can resolve it |
-|---|---|---|
-| 36 | **Reading the camera stream with our code.** The ffprobe probe through the go2rtc relay got no answer on 18 Nov. The camera has a `streamingSwitch` capability that may need to be on; we have not changed it | Ask the mentors (checkpoint question 2) before touching it |
-| 37 | **Detection rate for small objects (keys) is unmeasured** | Us, Thursday, with the camera in its demo position |
-| 38 | **Indoor-camera acceptance in Portugal: no data.** Plan: ask 20 people before Friday | Team |
-| ~~39~~ | **Brand chosen** (18 Nov): Trail, Switzer, MEO colours. See `assets/brand/README.md`. The report keeps the template's Lato and Arial | Done |
-| 40 | **"Test Motion" and the team's "Detect-motion" scenario both fire on camera motion** and set the light to different colours. Turn one off before testing the other | Team |
+| 15 | Which idea to commit to | Resolved on 18 Nov: ThingTracker ([AGENTS.md](../AGENTS.md), "Key decisions") |
+| 16, 30 | Who builds what; the AI tools named in the report | Resolved: the team is listed in [06-people.md](06-people.md); the report's last section names the AI tools used ([deliverables/executive-summary/](../deliverables/executive-summary/)) |
+| 17 | Who pitches | Resolved: one presenter, with the run of show in [pt/21-pitch.md](pt/21-pitch.md) |
+| 18 | The network for the demo on Friday | Resolved: the live demo runs on the laptop's webcam, with the app on the presenter's phone |
+| 20 | Which repository is submitted | Resolved: this one ([DELIVERABLES.md](../DELIVERABLES.md)) |
+| 35, 39 | The report; the brand | Resolved: the report was submitted on 18 Nov ([DELIVERABLES.md](../DELIVERABLES.md)); the brand is in `assets/brand/README.md` |

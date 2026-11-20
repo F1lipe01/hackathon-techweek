@@ -26,7 +26,7 @@ const clipFrameOf = (src: number) => {
 };
 
 // the three passages used (source frames, end excluded), each around one photo. The third stops at 37.0 s, before the
-// colleague's fingers come over the lens. `blink` is where the camera app darkens its preview for 3 frames on capture.
+// photographer's fingers come over the lens. `blink` is where the camera app darkens its preview for 3 frames on capture.
 const V3 = R.views3.views;
 const PASSAGES = [
   { from: 12, to: 69, blink: 44 },

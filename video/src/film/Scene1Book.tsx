@@ -1,8 +1,8 @@
-// Real example 1, the book left behind (19 Nov, the lab), v5 after the team's notes on v4 (v4's were on v3), edited in the manner of the
-// two product films the team picked (research/claude-videos-study.md): a light page, a phone that glides while the
-// lines stream in beside it, the camera always drifting and diving into the one thing that matters, real screens only.
+// Real example 1, the book left behind (the lab, 19 Nov). The style (video/research/): a light page, a phone that glides
+// while the lines stream in beside it, the camera always drifting and diving into the one thing that matters, real
+// screens only.
 //   1  the phone, centred, glides right; the Altice app opens with its real loading (screen recording of the team's
-//      phone); Things › Add › Book › Take photos: the colleague's 8 shutter presses, each photo flying into a card; the
+//      phone); Things › Add › Book › Take photos: 8 shutter presses, each photo flying into a card; the
 //      card flies back into the app; name; Save; a scenario in one sentence; Save; Done (record_app.mjs add-book)
 //   2  "Vamos testar?", and the lab camera opens out of the page
 //   3  one take, in one go (book-full, 19 Nov 15:59:53): he leaves without the book, the door shuts, the alarm sounds;
@@ -10,7 +10,7 @@
 //      the alarm stops; a cut to his return: he takes the book and leaves; a green close.
 // A camera readout in the corner gives the time since the take began and the clock time (the camera's own clock).
 // The alarm and the notification are simulated (AGENTS.md rule 1).
-// v13 (20 Nov): after Save the app asks who the book belongs to (link-person, recorded with record_app.mjs: the same book,
+// After Save the app asks who the book belongs to (link-person, recorded with record_app.mjs: the same book,
 // the same 8 photos): "Link to Mushahid?", Yes, "Belongs to Mushahid"; then a page cut to the scenario. In the lab the
 // book is "o livro do Mushahid" (the thing's owner, as the app holds it); the man in the take is never named.
 import React from "react";
@@ -90,7 +90,7 @@ const CAM: CK[] = [
   { at: 586 + D, ...H0 }, { at: 606 + D, s: 2.4, ...TXT }, { at: 712 + D, s: 2.4, ...TXT }, { at: 730 + D, ...H0 },
   { at: 1372 + D, ...H0 }, { at: 1394 + D, s: 1.7, ...NOTE }, { at: 1424 + D, s: 1.7, ...NOTE }, { at: 1446 + D, ...H0 },
 ];
-/** The camera: eased moves between keys that come to rest (the team: the phone and the text stay still between moves). */
+/** The camera: eased moves between keys that come to rest (the phone and the text stay still between moves). */
 const camAt = (f: number) => {
   let i = 0;
   while (i < CAM.length - 2 && f >= CAM[i + 1].at) i++;

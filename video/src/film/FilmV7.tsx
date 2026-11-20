@@ -1,7 +1,6 @@
-// Video 1, first full cut after storyboard v7 (19 Nov). Licensed stock (Pexels, public/stock/stock.json) and the real
-// prototype's screens (video/tools/record_app.mjs), with the team's recommended choices: one real moment with the
-// questions over it, text without sound effects (real sounds on real actions), the dog instead of the mother, ~47 s,
-// the privacy line kept. Pace and design rules: video/research/pacing.md and claude-videos-study.md.
+// Video 1, the cut from storyboard v7. Licensed stock (Pexels, public/stock/stock.json) and the real prototype's
+// screens (video/tools/record_app.mjs): one real moment with the questions over it, text without sound effects (real
+// sounds on real actions), the dog example, about 47 s, the privacy line kept. Pace and design rules: video/research/.
 // 30 fps, 120 BPM (a beat is 15 frames).
 import React from "react";
 import { AbsoluteFill, Audio, Freeze, Img, OffthreadVideo, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig } from "remotion";

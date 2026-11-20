@@ -135,7 +135,7 @@ export const Chip: React.FC<{ at: number; text: string; x: number; y: number; co
   );
 };
 
-/** A small honesty tag in a corner: "a filmar" (preview only: footage we film on Thursday), "conceito". */
+/** A small tag in a corner that says what a shot is: "a filmar" (a preview of footage still to film), "conceito". */
 export const Tag: React.FC<{ text: string; dark?: boolean; corner?: "br" | "tr" }> = ({ text, dark, corner = "br" }) => (
   <div
     style={{

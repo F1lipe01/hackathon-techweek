@@ -1,25 +1,24 @@
-// Real example 2, the unknown person (19 Nov, the lab), v3 (the team's notes on v2), built on example 1 v9's grammar: the team's own Android
-// phone on a light page, a touch that glides between the real taps, the camera diving into what matters, typing sounds.
-//   1  the phone glides right; the app opens (its real loading); Things › + › Person › "Record their face": the team
-//      member's own selfie video, each of 8 views flying into a card, then into its slot in the app; the name; Save;
-//      a scenario in one sentence (compiled by the local model); Save; Done (record_app.mjs add-person)
+// Real example 2, the unknown person (the lab, 19 Nov), in example 1's grammar: the team's Android phone on a light page,
+// a touch that glides between the real taps, the camera diving into what matters, typing sounds.
+//   1  the phone glides right; the app opens (its real loading); Things › + › Person › "Record their face": a selfie
+//      video, each of 8 views flying into a card, then into its slot in the app; the name; Save; the app's Home
+//      security suggestion turned on (compiled by the local model); Save; Done (record_app.mjs add-person)
 //   2  "Vamos testar?", and the lab opens out of the page
 //   3  one take (face-take, 19 Nov 16:25:27): Filipe comes in: the frame is caught, the camera dives into his face, the
 //      face is set beside his registered one and they match; he takes the book and leaves. A cut to a stranger: caught,
 //      compared, no match; he takes the book; the alarm sounds; the phone gets the notification and opens the alert.
 //   4  a calm close and the end card.
-// Honest limits: the prototype has no face model. The face comparison is the film's illustration (marked on screen);
-// DINOv2 was tried on these faces (it scored the stranger 0,57 and Filipe 0,48 against Filipe's views, so it cannot
-// tell them apart) and is not shown. The person boxes come from OWLv2 over the take (detect_take.py); the scenario was
+// Limits: the face comparison on screen is the film's illustration (marked on screen; the prototype's own face check is
+// faces.py, YuNet + SFace). DINOv2 was tried on these faces (it scored the stranger 0,57 and Filipe 0,48 against
+// Filipe's views, so it cannot tell them apart) and is not shown. The person boxes come from OWLv2 over the take (detect_take.py); the scenario was
 // compiled by Qwen3-1.7B; the alarm and the notification are simulated (AGENTS.md rule 1). The person seated in the
-// glass cabin is blurred (rule 6). v2: the face scan screen centres the tracked face in a fixed oval and fills a ring of
-// segments right then left as the head really turns (measured, OWLv2 face and nose boxes, selfie A mirrored); João and
-// Alice are registered beforehand and the lab compares each face with all three; the alarm waits until the stranger
-// holds the book; the alert recommends calling the police ("Sugestão da app"). v3: the app's own person flow, recorded
-// for real: the name, the face recorded, the clip uploaded (the server cuts 8 views), "Filipe added", and the app's
-// Home security suggestion turned on (a real rule), no typed sentence; the Things list groups the Family.
-// v7 (20 Nov): the book is "o livro do Mushahid", its owner as the app now holds it (example 1 links it); only the labels
-// and the chip say so. The notification and the alert page keep the recorded app's own words.
+// glass cabin is blurred (rule 6). The face scan screen centres the tracked face in a fixed oval and fills a ring of
+// segments right then left as the head really turns (measured, OWLv2 face and nose boxes, selfie A mirrored); the alarm
+// waits until the stranger holds the book; the alert recommends calling the police ("Sugestão da app"). The person flow
+// is the app's own, recorded: the name, the face recorded, the clip uploaded (the server cuts 8 views), "Filipe added",
+// and the app's Home security suggestion turned on (a real rule), no typed sentence; the Things list groups the Family.
+// The book is "o livro do Mushahid", its owner as the app holds it (example 1 links it); only the labels and the chip
+// say so. The notification and the alert page keep the recorded app's own words.
 import React from "react";
 import { AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, interpolate, interpolateColors, staticFile, useCurrentFrame } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Newsreader";
@@ -42,7 +41,7 @@ type Rect = { x: number; y: number; w: number; h: number };
 const lerpRect = (a: Rect, b: Rect, u: number): Rect => ({ x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u), w: lerp(a.w, b.w, u), h: lerp(a.h, b.h, u) });
 
 /* ------------------------------------------------------------------ the timeline (30 fps) */
-// add-person.marks.json (v3, the app's own flow): things 1.702, + 2.413, Person 4.417, the name 6.404 (typed to 7.042),
+// add-person.marks.json (the app's own flow): things 1.702, + 2.413, Person 4.417, the name 6.404 (typed to 7.042),
 // Record their face 8.428, the clip uploaded 10.141, "Filipe added" 13.089, Turn on 16.166, saved 19.186 (the local
 // model compiles the suggestion), Done 22.483
 const T = {
@@ -239,7 +238,7 @@ const Notice: React.FC<{ at: number }> = ({ at: a }) => {
 /* ------------------------------------------------------------------ 1: the app, the face */
 const PERSON_TAPS = { add: [2.393, 249, 90], pick: [4.369, 201, 525.6], name: [6.374, 201, 306.8], face: [8.386, 201, 507], next: [16.91, 201, 520.1],
   on: [20.085, 116, 419.6], done: [28.876, 201, 607.7] } as const;   // add-person.marks.json (v5)
-// The face scan (v2): selfie A, mirrored as enrolment previews are, from 0,5 s at 1,3x. Its face is tracked (OWLv2 face
+// The face scan: selfie A, mirrored as enrolment previews are, from 0,5 s at 1,3x. Its face is tracked (OWLv2 face
 // and nose boxes, every other frame: public/phone/person/track.json) and the clip is moved under a fixed oval so the face
 // stays centred and fills 86 % of the oval's height; the clip always covers the oval. Measured turns of the mirrored
 // clip: straight to 1,9 s; to screen right 2,0-3,6 s (peak 0,39 at 2,8-3,4); straight by 4,2 s; to screen left
@@ -343,7 +342,7 @@ const ScreenA: React.FC = () => {
 const AP = [0.66, 0.705, 0.693, 0.732];
 const ALARM = [0.3135, 0.3023, 0.3243, 0.3115];
 const CABIN = [0.645, 0.41, 0.745, 0.69];               // the glass cabin: the detector's boxes of the person seated there
-// Her face only is blurred (the team's choice, 19 Nov): a soft oval on her head, followed frame by frame by template
+// Only her face is blurred: a soft oval on her head, followed frame by frame by template
 // matching (cabin-face.json, from a box set by hand); she keeps a detector box like anyone else ("person")
 type Head = { fps: number; frames: { t: number; head: number[] }[] };
 const BEEPS: [number, number][] = [[0.09, 0.73], [1.08, 1.81], [2.42, 2.69], [3.48, 4.5], [4.79, 6.2]];
@@ -458,7 +457,7 @@ const faceZoom = (f: number) => {
   }
   return { s: 1, fx: 960, fy: 540, u: 0 };
 };
-// The people the app knows (20 Nov: no stock people any more): Filipe, added in this film, and Mushahid, added from one
+// The people the app knows: Filipe, added in this film, and Mushahid, added from one
 // photo in example 1 (his face crop as the app made it). The camera face is checked against each in turn; Filipe
 // matches his own, the stranger matches none.
 const REGISTERED = [{ name: "Filipe", src: "phone/person/face-view-1.jpg" }, { name: "Mushahid", src: "phone/person/face-mushahid.jpg" }];

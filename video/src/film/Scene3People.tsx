@@ -314,7 +314,7 @@ const spread = (a: number, b: number, n: number) => Array.from({ length: n }, (_
 const APP_KEYS = [...spread(M.field1[0] + 0.26, TYPED1, SENT1.length), ...spread(M.field2[0] + 0.26, TYPED2, SENT2.length)];
 
 /* ------------------------------------------------------------------ the scene */
-export const Scene3People: React.FC = () => {
+export const Scene3People: React.FC<{ music?: boolean }> = ({ music = true }) => {   // music: false inside the full film, which has its own
   const f = useCurrentFrame();
   const cxA = lerp(CX.centre, CX.right, ez(f, 30, 66)) + 1100 * ez(f, TEST - 2, TEST + 16, theme.ease.in);
   const cxC = lerp(CXL + 900, CXL, ez(f, PHONE_IN, PHONE_IN + 26, theme.ease.out)) + 1100 * ez(f, PHONE_OUT - 6, PHONE_OUT + 18, theme.ease.in);
@@ -355,8 +355,8 @@ export const Scene3People: React.FC = () => {
       {/* sound, as in example 1: the song throughout (lower under the lab and under the alarm), the team's whooshes one kind
           per moment with their peaks on the fastest frame, light taps, a tick each time the count changes, the buzz per
           notification, the typing, the alarm from the door rule until the door is shut, a low sweep as the lights die */}
-      <Audio src={staticFile("audio/music/bed-real-long.wav")} volume={(v) => 0.5 * interpolate(v, [0, 20, LAB, LAB + 30, ALARM_ON - 10, ALARM_ON, DOOR_SHUT, DOOR_SHUT + 20,
-        SUCCESS - 10, SUCCESS + 20, END, END + 20, SCENE3_FRAMES - 16, SCENE3_FRAMES], [0, 1, 1, 0.85, 0.85, 0.5, 0.5, 0.85, 0.85, 1.1, 1.1, 1.3, 1.3, 0], clamp)} />
+      {music ? <Audio src={staticFile("audio/music/bed-real-long.wav")} volume={(v) => 0.5 * interpolate(v, [0, 20, LAB, LAB + 30, ALARM_ON - 10, ALARM_ON, DOOR_SHUT, DOOR_SHUT + 20,
+        SUCCESS - 10, SUCCESS + 20, END, END + 20, SCENE3_FRAMES - 16, SCENE3_FRAMES], [0, 1, 1, 0.85, 0.85, 0.5, 0.5, 0.85, 0.85, 1.1, 1.1, 1.3, 1.3, 0], clamp)} /> : null}
       {whooshes.map(([peak, n, vol], i) => (
         <Sequence key={`w${i}`} from={Math.round(peak - PEAK[n] * 30)} layout="none"><Audio src={staticFile(`audio/sfx/whoosh/${n}.wav`)} volume={vol} /></Sequence>))}
       {WAYS_A.filter((w) => w.press).map((w) => w.f).concat([TAP, YES_L, YES_AC]).map((a, i) => (

@@ -11,6 +11,7 @@ import { FilmV7, FILM_FRAMES } from "./film/FilmV7";
 import { Scene1Book, SCENE1_FRAMES } from "./film/Scene1Book";
 import { Scene2Face, SCENE2_FRAMES } from "./film/Scene2Face";
 import { Scene3People, SCENE3_FRAMES } from "./film/Scene3People";
+import { FilmFull, FULL_FRAMES } from "./film/FilmFull";
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -29,6 +30,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Scene2Face" component={Scene2Face} durationInFrames={SCENE2_FRAMES}
       fps={theme.fps} width={theme.width} height={theme.height} />
     <Composition id="Scene3People" component={Scene3People} durationInFrames={SCENE3_FRAMES}
+      fps={theme.fps} width={theme.width} height={theme.height} />
+    <Composition id="FilmFull" component={FilmFull} durationInFrames={FULL_FRAMES}
       fps={theme.fps} width={theme.width} height={theme.height} />
   </>
 );

@@ -458,9 +458,10 @@ const faceZoom = (f: number) => {
   }
   return { s: 1, fx: 960, fy: 540, u: 0 };
 };
-// The people the app knows: João and Alice were registered before (free portraits, public/stock/portraits.json); Filipe in
-// this film. The camera face is checked against each in turn; Filipe matches his own, the stranger matches none.
-const REGISTERED = [{ name: "Filipe", src: "phone/person/face-view-1.jpg" }, { name: "João", src: "phone/person/joao.jpg" }, { name: "Alice", src: "phone/person/alice.jpg" }];
+// The people the app knows (20 Nov: no stock people any more): Filipe, added in this film, and Mushahid, added from one
+// photo in example 1 (his face crop as the app made it). The camera face is checked against each in turn; Filipe
+// matches his own, the stranger matches none.
+const REGISTERED = [{ name: "Filipe", src: "phone/person/face-view-1.jpg" }, { name: "Mushahid", src: "phone/person/face-mushahid.jpg" }];
 const Compare: React.FC<{ a: number; match: number | null }> = ({ a, match }) => {
   const f = useCurrentFrame();
   if (f < a + 16 || f > a + 100) return null;
@@ -609,7 +610,7 @@ const typedAt = (start: number, n: number, step: number) => Array.from({ length:
 const APP_KEYS = typedAt(6.573, 6, 0.0725).map((t) => Math.round(at(1.38, T.s1, 1.25, t)));   // "Filipe", typed until 7.008 s (named)
 
 /* ------------------------------------------------------------------ the scene */
-export const Scene2Face: React.FC = () => {
+export const Scene2Face: React.FC<{ music?: boolean }> = ({ music = true }) => {   // music: false inside the full film, which has its own
   const f = useCurrentFrame();
   const cxA = lerp(CX.centre, CX.right, ez(f, T.glide, T.glide + 36)) + 1100 * ez(f, T.test - 2, T.test + 16, theme.ease.in);
   const cxC = lerp(CX.cRight + 900, CX.cRight, ez(f, T.phoneIn, T.phoneIn + 26, theme.ease.out));
@@ -644,8 +645,8 @@ export const Scene2Face: React.FC = () => {
       <Grain />
       {/* sound: as example 1 (the song; the team's whooshes as they are; taps; typing), plus the face scenes' shutter, scan,
           match and mismatch; the alarm a beat after the stranger's face fails to match; the buzz */}
-      <Audio src={staticFile("audio/music/bed-real-long.wav")} volume={(v) => 0.5 * interpolate(v, [0, 20, T.lab, T.lab + 30, ALARM_ON - 10, ALARM_ON, T.close, T.close + 20, T.end, T.end + 20, SCENE2_FRAMES - 16, SCENE2_FRAMES],
-        [0, 1, 1, 0.85, 0.85, 0.5, 0.5, 1.1, 1.1, 1.3, 1.3, 0], clamp)} />
+      {music ? <Audio src={staticFile("audio/music/bed-real-long.wav")} volume={(v) => 0.5 * interpolate(v, [0, 20, T.lab, T.lab + 30, ALARM_ON - 10, ALARM_ON, T.close, T.close + 20, T.end, T.end + 20, SCENE2_FRAMES - 16, SCENE2_FRAMES],
+        [0, 1, 1, 0.85, 0.85, 0.5, 0.5, 1.1, 1.1, 1.3, 1.3, 0], clamp)} /> : null}
       {[[222, "zoom-soft", 0.9], [621, "zoom-soft", 0.9], [T.notice + 13, "zoom-soft", 0.9], [T.f1 + 14, "zoom-soft", 0.9], [T.f2 + 14, "zoom-soft", 0.9],
         [T.glide + 18, "slow-gentle", 0.32], [T.test + 12, "fast", 0.08], [T.phoneIn + 4, "slow-gentle", 0.32], [T.aside + 15, "slow-gentle", 0.28], [LAB_OUT + 4, "fast", 0.07],
         [T.lab + 11, "riser-soft", 0.15], [T.close + 8, "riser-soft", 0.12],

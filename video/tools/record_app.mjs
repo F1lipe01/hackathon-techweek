@@ -679,6 +679,149 @@ const TAKES = {
       await pause(2800);
       await api('/api/sim/phone', { member: me.id, home: true });
     }); },
+  // the full film (20 Nov), one private server from an EMPTY home, the takes in story order so each person, thing, link
+  // and scenario appears only after it is added. full-1: Things (empty) › + › Person › Choose a photo (Mushahid, from
+  // REC_PERSON) › Save › Done › + › Book › Take photos › name › Save › "Link to Mushahid?" › Yes › "Belongs to Mushahid" ›
+  // Create › the sentence (the suggestion replaced by the film's own) › Save › Done. full-2: + › Person › Record a face
+  // video › Filipe › the clip › "Filipe added" › Continue › Home security › Turn on › Done › Things. Then ex3-scenarios.
+  'full-1': () => { Object.assign(C, { on: false });
+    return take('full-1', '15:52', async ({ page, tap, hideFinger, mark }) => {
+      const typeIn = async (sel, text) => {
+        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); f.scrollTop = f.scrollHeight; }, [sel, ch]); await pause(45 + Math.random() * 30); }
+      };
+      const addSel = '.ahead [data-act="add-thing"], header [data-act="add-thing"], [data-act="add-thing"]';
+      await pause(1300);
+      mark('things');
+      await tap(addSel);
+      mark('add-1');
+      await pause(1000);
+      await tap('[data-act="pick-thing"][data-name="Person"]');
+      mark('person-method');
+      await pause(1100);
+      let chooser = page.waitForEvent('filechooser');
+      await tap('[data-act="person-photo"]:not([data-capture])');
+      mark('choose-photo');
+      await hideFinger();
+      let fc = await chooser;
+      await pause(500);
+      await fc.setFiles(process.env.REC_PERSON);
+      await page.waitForSelector('#pname', { state: 'visible' });
+      mark('person-photo');
+      await pause(900);
+      await tap('#pname'); await hideFinger();
+      await typeIn('#pname', 'Mushahid');
+      mark('named');
+      await pause(500);
+      await tap('[data-act="save-person-photo"]');
+      mark('save-person');
+      await hideFinger();
+      await page.waitForSelector('.person-added', { state: 'visible', timeout: 30000 });
+      mark('person-added');
+      await pause(1600);
+      await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+      mark('person-done');
+      await hideFinger();
+      await pause(1300);
+      await tap(addSel);
+      mark('add');
+      await pause(1000);
+      await tap('[data-act="pick-thing"][data-name="Book"]');
+      mark('method');
+      await pause(1100);
+      chooser = page.waitForEvent('filechooser');
+      await tap('[data-act="take-photos"]');
+      mark('take-photos');
+      await hideFinger();
+      fc = await chooser;
+      await pause(600);
+      await fc.setFiles(Array.from({ length: 8 }, (_, i) => join(IMG, `photos/final-${i + 1}.jpg`)));
+      await page.waitForSelector('#tname', { state: 'visible' });
+      mark('photos');
+      await pause(1300);
+      await tap('#tname'); await hideFinger();
+      await typeIn('#tname', 'Book');
+      await pause(400);
+      await tap('#tdesc'); await hideFinger();
+      await typeIn('#tdesc', 'yellow book');
+      await pause(500);
+      await tap('[data-act="save-thing"]');
+      mark('save-thing');
+      await hideFinger();
+      await page.waitForSelector('.link-card', { state: 'visible', timeout: 15000 });
+      mark('added');
+      await pause(2000);
+      await tap('[data-act="link-owner"]');
+      mark('link');
+      await hideFinger();
+      await page.waitForSelector('.owner-pair', { state: 'visible', timeout: 15000 });
+      mark('owned');
+      await pause(2600);
+      await tap('[data-act="owned-scenario"]');
+      mark('scenario');
+      await pause(1000);
+      await tap('#scentext'); await hideFinger();
+      await page.evaluate(() => { const f = document.querySelector('#scentext'); f.value = ''; f.dispatchEvent(new Event('input')); });
+      mark('type');
+      await typeIn('#scentext', 'Every time I leave without my book, sound the alarm and send me a message');
+      mark('typed');
+      await pause(500);
+      await tap('[data-act="save-scenario"]');
+      mark('save-scenario');
+      await hideFinger();
+      await page.waitForSelector('.saved-ok', { state: 'visible', timeout: 30000 });
+      mark('saved');
+      await pause(2400);
+      await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+      mark('done');
+      await hideFinger();
+      await pause(2000);
+    }); },
+  'full-2': () => { Object.assign(C, { on: false });
+    return take('full-2', '16:21', async ({ page, tap, hideFinger, mark }) => {
+      const typeIn = async (sel, text) => {
+        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); }, [sel, ch]); await pause(55 + Math.random() * 35); }
+      };
+      await pause(1300);
+      mark('things');
+      await tap('.ahead [data-act="add-thing"], header [data-act="add-thing"], [data-act="add-thing"]');
+      mark('add');
+      await pause(1000);
+      await tap('[data-act="pick-thing"][data-name="Person"]');
+      mark('person-method');
+      await pause(1100);
+      await tap('[data-act="person-video"]');
+      mark('new-person');
+      await pause(1000);
+      await tap('#pname'); await hideFinger();
+      await typeIn('#pname', 'Filipe');
+      mark('named');
+      await pause(600);
+      const chooser = page.waitForEvent('filechooser');
+      await tap('[data-act="record-face"]');
+      mark('record-face');
+      await hideFinger();
+      const fc = await chooser;
+      await pause(1200);
+      mark('upload');
+      await fc.setFiles(join(IMG, 'person/face-scan.mp4'));
+      await page.waitForSelector('.added-person, .person-added', { state: 'visible', timeout: 60000 });
+      mark('added');
+      await pause(1800);
+      await tap('section.page:last-of-type .bottom-bar [data-act="person-next"]');
+      mark('suggestion');
+      await hideFinger();
+      await pause(2000);
+      await tap('[data-act="security-on"]');
+      mark('security-on');
+      await hideFinger();
+      await page.waitForSelector('.saved-ok', { state: 'visible', timeout: 30000 });
+      mark('saved');
+      await pause(2200);
+      await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+      mark('done');
+      await hideFinger();
+      await pause(2600);
+    }); },
   // video 1 v7, the dog: "Has the dog eaten today?", answered with its picture at the bowl
   dog: () => { Object.assign(C, { on: true, events: [], rules: [], delay: 900,
     reply: () => ({ kind: 'answer', answer: 'Yes. The dog was at its bowl at 08:05.', thing: null,

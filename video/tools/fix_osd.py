@@ -99,7 +99,7 @@ def main():
     t0 = hh * 3600 + mm * 60 + ss
 
     # pass 1: the camera's tick rhythm and one clean sample of each digit 0-9, from steady frames in the sampling window
-    # (a light switching floods or blacks out the clock band and would fake a tick); the camera ticks once a second, so
+    # (a light switching floods or blacks out the clock band and would register a false tick); the camera ticks once a second, so
     # the rhythm found there gives every frame's clock, including the unsteady ones.
     samples, prev, ticks_t, n = [], None, [], 0
     for i, fr in enumerate(frames(a.src, w, h)):

@@ -9,7 +9,7 @@ fades (transitions) or trimmed to its transient (clicks, slides, shutter), optio
   tonal       how far the sharpest line of the averaged 80 Hz-12 kHz spectrum stands above the median of its
               third octave, in dB (noise and clicks average out below about 16; beeps and chimes measure 28 to 48);
   crinkle     roughness of the 2-12 kHz envelope, in dB (crackle, cloth, paper texture: above about 3).
-The manifest also marks the earlier files that the review rejected (`avoid`), with the measure that explains it.
+The manifest also marks the earlier files left out after a listening check (`avoid`), with the measure that explains it.
 """
 from __future__ import annotations
 
@@ -52,7 +52,7 @@ SFX = {
                      "low-passed.", {"af": "lowpass=f=7000", "limits": {"hf8": 0.05, "tonal": 20.0}}),
 }
 
-# Earlier files the review rejected, with the measure that explains each.
+# Earlier files left out after a listening check, with the measure that explains each.
 AVOID = {
     "sfx_v2": {
         "lockon-1": "two tonal beeps (tonal 29 dB): reads as a quiz or game sound",
@@ -160,7 +160,7 @@ def main():
                 manifest[section][name]["avoid"] = reason
     if "sfx_v3" not in manifest["about"]:
         manifest["about"] += (" sfx_v3 is the smooth kit (public/audio/sfx/v3/), each with texture measures; entries "
-                              "marked `avoid` were rejected in review.")
+                              "marked `avoid` were left out after a listening check.")
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n")
     for name, e in v3.items():
         t = e["texture"]

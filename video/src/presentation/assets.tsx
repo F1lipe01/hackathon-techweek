@@ -1,4 +1,4 @@
-// Reading the assets other agents deliver: licensed stock clips (public/stock/stock.json, boxes/<clip>.json with real
+// Reading the video's assets: licensed stock clips (public/stock/stock.json, boxes/<clip>.json with real
 // OWLv2 boxes sampled every 0,5 s) and the audio (public/audio/manifest.json: the music bed and the sfx).
 // Until a file exists, the hooks return null and the shots draw placeholders.
 import React, { useEffect, useState } from "react";

@@ -23,11 +23,11 @@ python3 docs/architecture/build_views.py --only implantacao --lang pt
 | `dfd-fronteiras` | Data flow with trust boundaries |
 | `fluxo-app` | The flows in the app |
 
-## Superseded, kept on purpose
+## Superseded: the first design (18 Nov), kept on purpose
 
-These describe the first design (18 Nov), in which the vision models and the rules engine ran in the home. No living document embeds them any more.
+These two figures and their scripts describe the first design, in which the vision models and the rules engine ran in the home. They do not match the current hybrid design and no architecture document embeds them; they are kept only because other files still copy or serve them.
 
-| Files | Built by | Why they are kept |
-|---|---|---|
-| `thingtracker-architecture.*` | `build_diagram.py` | The submitted executive summary copies it (`deliverables/executive-summary/figuras.py`), and the prototype's documentation pages still use it (`prototype/build_doc_pages.py`). Replaced, for the current design, by `implantacao` and `c4-2-contentores` |
-| `sequencia-regra.*` | `build_sequence.py` | Kept as the history of the first integration spec. Replaced by `seq-livro-esquecido` |
+| Files | Built by | Still used by | Current view instead |
+|---|---|---|---|
+| `thingtracker-architecture.*` | `build_diagram.py` | the submitted executive summary (`deliverables/executive-summary/figuras.py`, `deliverables/build_pdfs.py`), the prototype's documentation pages (`prototype/build_doc_pages.py`, `prototype/server.py`) | `implantacao`, `c4-2-contentores` |
+| `sequencia-regra.*` | `build_sequence.py` | the prototype's page list (`prototype/server.py`, `prototype/web/site.js`) | `seq-livro-esquecido` |

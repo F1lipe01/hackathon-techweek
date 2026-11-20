@@ -9,7 +9,7 @@ Dá-se primeiro a resposta curta, e o pormenor só se for pedido. Todas as respo
 Marcas de estado:
 - [proposta]: a solução desenhada;
 - [protótipo]: o que faz o código no portátil da demonstração;
-- [a confirmar]: ainda em desenvolvimento a 19 de novembro, a verificar antes do _pitch_.
+- [execução sem montagem]: o que se mostrou com as gravações dos próprios filmes, passadas de novo pelo sistema real na noite de 19 para 20 de novembro (`video/out/proof/`, [24-what-is-real.md](../24-what-is-real.md)).
 
 ---
 
@@ -132,7 +132,7 @@ Resposta curta: “Com uma câmara no teto, não: dão uma primeira assinatura, 
 Resposta curta: “Com fotografias do telemóvel, ou mostrando-o a uma câmara; o resultado são 8 vistas e uma assinatura.”
 
 - Pormenor:
-  - fotografias do telemóvel: o _OWLv2_ recorta o objeto em cada fotografia e o _DINOv2_ gera os vetores [a confirmar: implementado a 19 de novembro];
+  - fotografias do telemóvel: o _OWLv2_ recorta o objeto em cada fotografia e o _DINOv2_ gera os vetores [protótipo: postos em fila para o agente, `server.py`, `edge.py`]. Chegam a 0,69 numa imagem do _kit_ tirada à altura da secretária, mas, com a câmara no teto, só as vistas da própria câmara reconhecem o livro (0,91-0,94), pelo que a app as acrescenta quando o utilizador confirma (B1a);
   - mostrando-o à câmara: o agente guarda 8 vistas, cada uma suficientemente diferente das outras (cosseno abaixo de 0,97) (`edge.py`, `enrol_step`);
   - a assinatura fica guardada, por cliente, na base de dados da plataforma.
 
@@ -140,7 +140,7 @@ Resposta curta: “Com fotografias do telemóvel, ou mostrando-o a uma câmara; 
 
 Resposta curta: “Não é um modelo que o decide: é uma regra sobre caixas.”
 
-- [proposta; a confirmar no protótipo]:
+- [proposta; protótipo: no código, com testes de ponta a ponta, ainda não visto nas gravações do laboratório]:
   - quando a caixa do livro se sobrepõe à de uma pessoa, regista-se uma observação “na mão”, com o nome de quem o segura se o rosto estiver registado;
   - se, a seguir, o livro deixar de estar no seu lugar em 3 ou mais análises, regista-se “levado por…”;
   - se o livro for visto noutro sítio, regista-se “mudado para…”.
@@ -149,7 +149,7 @@ Resposta curta: “Não é um modelo que o decide: é uma regra sobre caixas.”
 
 Resposta curta: “Quando a porta fecha depois de sair alguém da família, a câmara verifica se o livro continua lá.”
 
-- [proposta; a confirmar no protótipo]:
+- [protótipo e execução sem montagem]: na gravação do filme 1, passada de novo pelo sistema real, a regra dispara “esquecido” (o livro visto a 0,94 em 3 imagens); quando o Filipe sai com o livro, o resultado é “incerto”, sem aviso, e o juiz de visão concorda.
   - gatilho: a porta fecha depois de abrir, e o motor de presença indica que saiu alguém da família (um telemóvel saiu do Wi-Fi, ou há menos pessoas);
   - segue-se uma verificação ativa, ou seja, uma análise forçada do lugar do livro em algumas imagens, mesmo sem movimento;
   - só há aviso se o livro for visto; se não estiver visível, o resultado é “incerto”, sem alarme;
@@ -180,7 +180,7 @@ Resposta curta: “São. Por isso, o reconhecimento é opcional, exige consentim
   - de casa só sai um rótulo: “Filipe”, “rosto desconhecido” ou “rosto não visível”;
   - os dados biométricos usados para identificar uma pessoa são uma categoria especial ao abrigo do RGPD (artigo 9.º), que exige consentimento explícito.
 - Onde se mostra: `docs/architecture/seq-pessoa-desconhecida.png`.
-- [protótipo antes de 19 de novembro]: não havia modelo de rostos, e qualquer pessoa desencadeava a regra. Em correção a 19 de novembro [a confirmar].
+- [protótipo e execução sem montagem]: na gravação do filme 2, o Filipe é reconhecido (0,54 e 0,63) e nada dispara; o outro é classificado como desconhecido (0,17 e 0,14). Para os rostos pequenos da câmara do _kit_ (40-86 px), o protótipo usa três faixas: conhecido a partir de 0,40, desconhecido abaixo de 0,25 e “não tenho a certeza” entre os dois valores. O alarme e a sugestão de chamar a polícia dispararam pela regra em 2 de 4 repetições; nas outras 2, poucos rostos do desconhecido estavam nítidos o bastante, e o sistema perguntou em vez de dar o alarme. Antes de 19 de novembro, não havia modelo de rostos.
 
 ### B6. E quando entra alguém sem o rosto visível?
 
@@ -348,7 +348,7 @@ Resposta curta: “A vossa app já notifica o telemóvel quando a porta abre. O 
   - só a Altice pode enviar notificações para a app da Altice;
   - o servidor MCP não tem nenhuma ferramenta de notificações ([10-mcp-in-practice.md](../10-mcp-in-practice.md));
   - em produção, o _ThingTracker_ corre dentro da plataforma da Altice e usa diretamente esse serviço de notificações. É uma das poucas coisas que pediríamos à Altice para acrescentar.
-- [protótipo]: os avisos aparecem na nossa cópia da app [a confirmar: disparados pelas regras, e não injetados]. A notificação no telemóvel, nos filmes, foi composta na montagem.
+- [protótipo]: os avisos são disparados pelas regras e aparecem na nossa cópia da app; o “Sim” e “Desligar o alarme” chamam as ações (em simulação). A notificação no telemóvel, nos filmes, foi composta na montagem.
 - Se o _kit_ estiver montado para a demonstração: abre-se a porta e a app real da Altice notifica o telemóvel. Essa parte é uma funcionalidade que a Altice já tem.
 
 ### E3. O _ThingTracker_ desligou mesmo as luzes e o ar condicionado no filme 3? Porque não dizer que uma tomada inteligente cortou a corrente do laboratório?
@@ -386,7 +386,7 @@ Resposta curta: “Todas abertas, e todas permitem uso comercial.”
 Resposta curta: “As imagens são do laboratório real e da câmara do _kit_, a app é o nosso protótipo e as caixas vêm dos nossos modelos, aplicados a essas imagens; alguns momentos foram encurtados, e os filmes indicam-no.”
 
 - Pormenor, a dizer com franqueza se for pedido:
-  - os avisos foram disparados para a gravação [a confirmar: desde 19 de novembro, são as mesmas regras que os disparam no protótipo];
+  - os avisos dos filmes foram disparados para a gravação; desde a noite de 19 para 20 de novembro, são as mesmas regras que os disparam no protótipo, como mostram as execuções sem montagem com as mesmas gravações;
   - o trecho em que as pessoas estão sentadas aparece a 4×;
   - um corte elimina o tempo em que a sala está vazia;
   - o ecrã negro da câmara, quando as luzes se apagaram, foi reconstruído a partir do comportamento da própria câmara;
@@ -394,7 +394,8 @@ Resposta curta: “As imagens são do laboratório real e da câmara do _kit_, a
 
 ### G2. O que podem mostrar ao vivo?
 
-- [a confirmar depois do trabalho no código] as regras a disparar a partir de uma porta simulada e de telemóveis simulados, o estado de presença a mudar e um rosto reconhecido ou não.
+- as execuções sem montagem: a gravação de cada filme passada de novo pelo sistema real, com as regras a disparar, o estado de presença a mudar e os rostos avaliados (um rosto aparece desfocado, por privacidade);
+- ao vivo, só se o _kit_ estiver instalado: o sensor da porta lido pelo MCP, a presença a mudar e um aviso disparado por uma regra.
 
 ### G3. O que está medido, e o que não está?
 

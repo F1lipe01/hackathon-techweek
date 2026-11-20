@@ -111,7 +111,7 @@ Os assinantes do _Maison Sécurisée_ seriam o melhor mercado para começar, mas
 
 ### D4. Custos e margem por casa e por mês
 
-A perceção funciona em casa e só quando há movimento ou som. O modelo de linguagem, na nuvem, é chamado apenas para três tipos de pedido.
+A análise das imagens só arranca quando há movimento ou som. O modelo de linguagem é chamado apenas para três tipos de pedido.
 
 | Pedido | Modelo | Custo medido por pedido | Pedidos por mês, mínimo / esperado / máximo (pressuposto da equipa) |
 |---|---|---|---|
@@ -152,7 +152,7 @@ A tabela seguinte apresenta a margem em euros por casa e por mês, sem IVA, com 
 | Serviço adicional a 4,99 € [M03, M05, M06] | 2,55 (de 3,46 a −0,34) | −0,23 | −5,78 |
 | Pacote a 7,50 €, com câmara fornecida (25 / 40 / 60 €, pressuposto da equipa) [M07, M08, M09] | 3,48 | 0,70 | −4,85 |
 
-Uma caixa com GPU em cada casa nunca compensa o investimento. Os detetores de vocabulário aberto utilizados (_OWLv2_, _Grounding DINO_) são a parte mais exigente, pelo que a viabilidade do negócio depende de um detetor mais leve, com poucas imagens por segundo, a funcionar em equipamento que já existe em casa.
+Uma caixa com GPU em cada casa nunca compensa o investimento. Os detetores de vocabulário aberto utilizados (_OWLv2_, _Grounding DINO_) são a parte mais exigente, pelo que a viabilidade do negócio depende de os correr nos servidores da própria Altice (a via híbrida, documento 17) ou de um detetor mais leve, com poucas imagens por segundo, em equipamento que já existe em casa.
 
 ### D5. Receita para a MEO
 
@@ -173,9 +173,9 @@ O cenário esperado (1,2 %) situa-se entre as linhas de 1 % e de 2 %. Os valores
 | SFR _Maison Sécurisée_ (desenvolvido pela Altice Labs) | _Hub_, 2 detetores de movimento, uma câmara e um detetor de abertura de portas e janelas (estudo de mercado, secção 2) | A mesma câmara, à qual o _ThingTracker_ acrescenta uma utilização como fonte de informação |
 | Altice _Cognitive Home_ | _Reliable Security_, com alertas e reprodução de vídeo (descrição do desafio); _Family Care_; _Aging in place_. Segundo a brochura, os cenários “_will be powered by generative AI to enable the automatic generation of scenario scripts_” (estudo de mercado, secção 5) | Elevada na criação de regras (estudo de mercado, secção 5, linha F); nula na procura de objetos perdidos (linha G) |
 
-A diferenciação assenta na Memória da casa, que regista onde e quando cada objeto foi visto pela última vez, sem guardar vídeo. A perceção é local e limita-se às zonas desenhadas pelo utilizador. As ações chegam aos dispositivos do próprio cliente através do servidor MCP da Altice, e quatro novas ferramentas MCP permitem a qualquer assistente consultar a Memória da casa. Na apresentação da proposta, o destaque deve ir para a memória de objetos, e não para a criação de regras.
+A diferenciação assenta na Memória da casa, que regista onde e quando cada objeto foi visto pela última vez, sem guardar vídeo. O vídeo nunca sai de casa, e as zonas que a família exclui com máscaras de privacidade nunca são analisadas. As ações chegam aos dispositivos do próprio cliente através do servidor MCP da Altice, e quatro novas ferramentas MCP permitem a qualquer assistente consultar a Memória da casa. Na apresentação da proposta, o destaque deve ir para a memória de objetos, e não para a criação de regras.
 
-O estudo de mercado não analisou os fabricantes de câmaras, pelo que não se pode excluir que alguma câmara doméstica já registe o último local onde cada objeto foi visto. Essa análise ainda está por fazer.
+O estudo de mercado não analisou os fabricantes de câmaras, pelo que não se afirma que nenhuma câmara doméstica registe já o último local onde cada objeto foi visto.
 
 ### D7. Replicação noutros mercados
 
@@ -189,11 +189,11 @@ O estudo de mercado não analisou os fabricantes de câmaras, pelo que não se p
 
 | Risco | Efeito | Mitigação |
 |---|---|---|
-| O equipamento existente não tem capacidade para a perceção | Acréscimo de 2,78 a 8,33 € por mês [C07, C08], com prejuízo no serviço adicional | Detetor leve, com poucas imagens por segundo; pacote com câmara |
+| O equipamento existente não tem capacidade para a perceção | Acréscimo de 2,78 a 8,33 € por mês [C07, C08], com prejuízo no serviço adicional | Via híbrida, com o _OWLv2_ e o _DINOv2_ nos servidores da Altice (documento 17); pacote com câmara |
 | Poucas casas MEO têm câmara | O mercado português do serviço adicional fica muito abaixo do valor da linha D03 | Pacote em Portugal, serviço adicional em França |
 | Utilização mais intensa do que o previsto (n = 1 por tipo de pedido) | Modelo de linguagem até 1,78 € [C02] | _Prompt caching_, limites de gasto, mais pedidos ao _Haiku_ |
 | Residência dos dados na UE | Acréscimo desconhecido [B05]; a API da Anthropic não garante o tratamento dos dados exclusivamente na UE (sumário executivo) | Regiões europeias do _Bedrock_ ou um modelo _open-source_ alojado pela Altice, ambos por orçamentar |
-| RGPD; Regulamento da IA da UE, quanto à identificação biométrica à distância | Menor adesão e custos jurídicos | Zonas definidas pelo utilizador, sem vídeo guardado, reconhecimento facial opcional e local |
+| RGPD; Regulamento da IA da UE, quanto à identificação biométrica à distância | Menor adesão e custos jurídicos | Máscaras de privacidade definidas pela família, sem vídeo guardado, reconhecimento facial opcional e feito em casa |
 | Sobreposição com os cenários de IA generativa da Altice | Menor diferenciação | Destacar a memória de objetos |
 | Venda da SFR | Incerteza no mercado francês | Apresentar o serviço como funcionalidade da plataforma |
 | Utilizadores mais velhos (8,8 % das pessoas dos 65 aos 74 anos utilizam sistemas de casa conectada em Portugal; estudo de mercado, secção 3.7) | Baixa adesão | Utilização orientada para os familiares |

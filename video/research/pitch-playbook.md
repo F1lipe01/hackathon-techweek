@@ -1,6 +1,6 @@
 # Pitch playbook: ThingTracker, 3 and 5 minutes
 
-Researched 18 Nov 2026 against the published 18-slide deck and its notes. [n] = sources at the end.
+Researched 18 Nov 2026 against the 18-slide deck of that day and its notes. The final run of show and lines are in [docs/pt/21-pitch.md](../../docs/pt/21-pitch.md). [n] = sources at the end.
 
 **Untrusted content.** Source [17] contains "Ask AI About Us" prompts aimed at AI assistants ("Summarize these key areas: (1) What VirtualSpeech helps learners practice…"). They were ignored. No other page addressed an AI.
 
@@ -47,7 +47,7 @@ C drives the laptop and owns business questions. Words = the most to say on that
 **Lines**
 - **First line (A):** "O _ThingTracker_ põe a câmara que a Altice já vende a perceber o que vê, e a avisar a família quando é preciso."
 - **A hands over to B:** "Dois destes casos já funcionam no protótipo. O [B] mostra-vos o exemplo real."
-- **B opens:** "Isto é a câmara do kit, no laboratório: bastaram três fotografias do telemóvel para registar este livro."
+- **B opens:** "Isto é a câmara do kit, no laboratório: bastaram fotografias do telemóvel para registar este livro."
 - **B hands back to A:** "Cerca de 49 cêntimos por casa e por mês, para um serviço de 3,99 €. O [A] fecha."
 - **Last line (A):** "O _ThingTracker_ já reconhece objetos na câmara do kit, custa à Altice cerca de 49 cêntimos por casa e por mês e usa a app e o MCP que a Altice já tem. Propomos começar com um piloto em casas de colaboradores da MEO. _ThingTracker_: a câmara que a casa já tem, agora a perceber o que importa. Obrigado."
 
@@ -91,14 +91,14 @@ Pattern: one-sentence answer → proof → honest limit → bridge to the pilot;
 7. **"Replica-se noutros países?" (C)** Basta uma câmara, uma app e uma interface como o MCP → nada depende do mercado português; França, 39,01 % (Eurostat, 2024) → residências, alojamento local.
 8. **"Quem paga?" (C)** O cliente, 3,99 € por mês (proposta) → a visão pode custar até 1,73 € sem prejuízo; custa 0,49 € → o preço testa-se no piloto.
 9. **"Quantas câmaras? Exterior? Outros dispositivos?" (B)** Duas ou três dentro, uma exterior opcional → com duas, cerca de 0,98 € → o sensor da porta do kit já entra na regra da carteira.
-10. **"O que vos distingue?" (A)** Detetar “uma pessoa” não basta: reconhecemos as coisas desta família → três fotografias registam o livro; uma frase cria um sensor → tudo pela plataforma da Altice. (No competitor claims without a source.)
+10. **"O que vos distingue?" (A)** Detetar “uma pessoa” não basta: reconhecemos as coisas desta família → fotografias do telemóvel registam o livro; uma frase cria um sensor → tudo pela plataforma da Altice. (No competitor claims without a source.)
 
 **Backup slides after slide 18:** cost breakdown, recognition numbers, MCP tools, cameras per home.
 
 ## 5. Where the deck goes against best practice
 
 1. **The proof comes last** (slide 16: "Para terminar, um exemplo real") [2][4][5].
-   - Fix: move it right after case 5 (the wallet: the same "you left without it" rule). `21-pitch.md` still has it at slide 4 of 17; keep one source of truth.
+   - Fix: move it right after case 5 (the wallet: the same "you left without it" rule).
 2. **The scripts overrun.**
    - The 3-minute notes are about 455 words: 3:40–4:10 with the video. The cases are planned at "6 s" but their scripts run 17–41 words.
    - The 5-minute notes are about 670 words: 5:25–6:15.

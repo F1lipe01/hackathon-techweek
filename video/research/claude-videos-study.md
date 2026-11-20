@@ -1,6 +1,6 @@
 # How Anthropic makes its Claude videos (measured)
 
-Studied on 19 Nov 2026 for the ThingTracker film (Remotion, 30 fps, music at 120 BPM: a beat is 15 frames, a bar 60). The team's last storyboard was judged confusing: text cards with no icons, a "how it works" made of three outlined boxes, and a case shot whose question nobody understood. This study looks at what Anthropic does instead.
+Studied on 19 Nov 2026 for the ThingTracker film (Remotion, 30 fps, music at 120 BPM: a beat is 15 frames, a bar 60). Goal: a clearer explanation than the previous storyboard, which had text cards with no icons, a "how it works" made of three outlined boxes, and a case posed as a question over a shot that did not show its subject. This study looks at what Anthropic does instead.
 
 It extends [pacing.md](pacing.md), which measured one Anthropic film ("Keep thinking", Sep 2025). Those numbers are not repeated here.
 

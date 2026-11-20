@@ -1,30 +1,30 @@
-# Video 1 production playbook: faked actions, screen replacement, pace and sound (research, 19 Nov 2026)
+# Video 1 production playbook: staged actions, screen replacement, pace and sound (research, 19 Nov 2026)
 
-Why: the team rejected v5.1. The pace and effects were slow, the opening didn't hook, text pops and on-screen actions were silent, and the wallet section looked fake (a still photo and stock placeholders). This playbook says how professionals do each part, what runs on this Mac, and how we do it. It replaces these rules in [product-film-playbook.md](product-film-playbook.md):
+Goal: a faster cut than v5.1, an opening that hooks, a sound on every text pop and on-screen action, and real action in the wallet story in place of a still photo and stock placeholders. This playbook says how professionals do each part, which tools can do it, and how we do it. It replaces these rules in [product-film-playbook.md](product-film-playbook.md):
 - "≤17 characters per second, hold titles long enough to read twice";
 - "sound effects only for changes of state";
 - long holds.
 
 Companions:
 - [pacing.md](pacing.md): measured shot lengths of six reference films (19 Nov).
-- [../shoot/index.html](../shoot/index.html): the shoot sheet, published for the team.
+- [../shoot/index.html](../shoot/index.html): the shoot sheet (not used; see the status note below).
 - Tools: `video/tools/make_markers.py`, `track_markers.py`, `synth_plate.py`.
 
 Treat every number marked *(estimate)* as ours, not a source's.
 
-Tools on this Mac:
+**Status.** The shoot planned in sections 1, 3 and 4 was not carried out: video 1 was built from licensed stock footage and recordings of the real app (see the [README](../../README.md)). Sections 2, 5 and 6 (screen tracking, pace and sound) do not depend on the shoot.
+
+Tools:
 - After Effects 2027 with Mocha AE;
 - Blender 5.2.3;
 - ffmpeg 9;
 - OpenCV 5 (`cv2.aruco`, ECC);
 - torch 2.15 with MPS;
-- Remotion 4.0.545 (`@remotion/motion-blur` and `@remotion/effects` are in `node_modules`).
-
-DaVinci Resolve is not installed.
+- Remotion 4.0.545, with `@remotion/motion-blur` and `@remotion/effects`.
 
 ---
 
-## 1. Faking real actions (photographing an object, leaving home, the alert)
+## 1. Staging real actions (photographing an object, leaving home, the alert)
 
 **How professionals do it.**
 - A phone in an ad is filmed with a blank or dark screen; the content goes in during post. "Phones in commercials nowadays are just a blank screen until VFX can come in" (VFX supervisor on a Verizon Android spot) [1].
@@ -54,7 +54,7 @@ DaVinci Resolve is not installed.
    - No ProRes: about 220 Mbps at 1080p, roughly 6 GB/min at 4K [10]. No log.
 4. **The shutter moment.**
    - A 1–2-frame blink on the phone's screen only, never a full-frame white flash. A built-in flash transition holds white 1–2 frames [11].
-   - Keep the hand's natural dip; add no fake shake *(estimate)*.
+   - Keep the hand's natural dip; add no artificial shake *(estimate)*.
 5. **"The camera saw it."** A phone taped high in a corner at 0,5×, locked off. Desaturate, crush the blacks, add a timestamp and the detection box, and show it as an inset beside the main shot [12]. Google showed Nest Supersight the same way: a wide view and a close-up.
 6. **The alert.**
    - Shots: the buzz in the pocket, then the pull-out OTS, then the banner full frame.
@@ -71,14 +71,14 @@ DaVinci Resolve is not installed.
 
 ## 2. Mapping a real phone screen (screen replacement)
 
-**Why v5.1's inserts didn't sit** (review of `track_screen.py` and `media.tsx`):
+**Why the v5.1 inserts did not sit** (review of `track_screen.py` and `media.tsx`):
 - `minAreaRect` always returns a rectangle, so the corners are wrong whenever the phone is seen in perspective.
 - The thresholded edge moves with exposure, blur and the thumb.
 - The 7-sample average keeps only about 68 % of a 2 Hz hand sway, so the insert slides against the phone.
 - The insert sits outside the plate's grade and has no motion blur, defocus or grain.
 - Its edge is hard and its blacks are pure black.
 - `multiply` removes the screen's reflections.
-- During a push-in the plate is blurred while the screen stays sharp: a strong fake tell.
+- During a push-in the plate is blurred while the screen stays sharp: a clear sign of a composite.
 
 The homography maths in `geom.ts` is correct; keep it.
 
@@ -127,12 +127,12 @@ The homography maths in `geom.ts` is correct; keep it.
 - The phone is filmed blank, and the viewfinder is composited [1][24].
 
 **Our method.**
-- **Prototype first.** The prototype registers a thing by **showing it to the home camera** (`server.py`: 8 views in 40 s). The app shows that camera's live view, "Registering · n of 8", then "Wallet added". Photographing with the phone is a concept the app doesn't have, so that version carries a "conceito" label.
+- **Prototype first.** On 19 Nov the prototype registered a thing by **showing it to the home camera** (`server.py`: 8 views in 40 s). The app shows that camera's live view, "Registering · n of 8", then "Wallet added". Registration from phone photos was added to the app later; [docs/24-what-is-real.md](../../docs/24-what-is-real.md) records what each film shows.
 - **Proof A (real), show it to the camera:**
   - A1: the hand turns the wallet in front of the kit camera while the held phone shows grey markers.
   - A2: `record.py` records the kit camera and the edge's boxes during the same take, synced by a clap.
   - The phone's screen gets the real `register` recording, with its live box replaced by A2.
-- **Proof B (concept), photograph it with the phone:**
+- **Proof B, photograph it with the phone** (dropped with the shoot):
   - B1: the OTS with green markers.
   - B3: a viewfinder plate shot from the phone's position, repeating the rise, and moved against the tracked phone motion so it stays in step.
   - B4: the hero phone recording its own camera, kept as a rescue. It gives perfect parallax but can't show markers.
@@ -147,7 +147,7 @@ The homography maths in `geom.ts` is correct; keep it.
 **What professionals pick.**
 - **Black or off screen, few or no markers, roto the fingers.** Christiansen (Frame.io) [7]; Allen (ProVideo Coalition) [16]. Green destroys real reflections and spills onto skin.
 - **About 20 % grey with 5 small markers** so the screen edge shows. Logik forum [24].
-- **"Very dark green", at least 1 stop under skin,** when you must key a thumb and keep the reflections. Eliminating all reflections "makes the composite look fake" (Rick Gerard, Adobe Community Expert) [25].
+- **"Very dark green", at least 1 stop under skin,** when you must key a thumb and keep the reflections. Removing every reflection makes the composite less convincing (Rick Gerard, Adobe Community Expert) [25].
 
 **Our method.**
 - Green markers (`#0C401C` ground, `#46BE64` markers) wherever a finger touches the screen: they key out together, and the thumb is kept.
@@ -223,7 +223,7 @@ How to read this:
 - **Speed comes from the hook, montage shots and short single UI inserts**, not from shortening the actions and lines the viewer must understand.
 - **No film speeds up towards the end.** They are fastest at the start or in the middle, and they end on a held card.
 - **Only Pixel cuts on sound hits** (67 % of its cuts land on an onset, against 30–41 % by chance). Cut on hits (beats and accents), not on every beat.
-- **Why v5.1 felt slow, measured against this:**
+- **The v5.1 cut, measured against this:**
   - Its opening held four shots of 60 f each, four times the hook's 15 f.
   - Its story scenes ran 120–240 f as single shots, where these films cut each action in 45–60 f.
   - On top of that came slow effects and silence.
@@ -231,7 +231,7 @@ How to read this:
 Text rules:
 - springs with damping 14 and stiffness 160;
 - words staggered 2–4 f;
-- exits always faster than entrances (from the installed Remotion motion-graphics skill);
+- exits always faster than entrances (from the Remotion motion-graphics skill);
 - something moves in the first 15 f, and nothing goes 90 f without a new element.
 
 ## 6. Sound: a sound for every visual event
@@ -256,7 +256,7 @@ Remotion's `toneFrequency` is fixed per clip and works only in the final render 
 - a duvet behind the recorder;
 - 3–5 takes.
 
-**Logo sting for the approved end card:**
+**Logo sting for the end card:**
 1. A riser or reverse swell of 15–30 f that ends on the frame "ThingTracker" lands, after an optional 5–8 f of silence.
 2. An impact on that frame (low thump, mid body, a little shimmer), the same frame as the music's final hit.
 3. A tonal tail of 45–90 f.
@@ -332,14 +332,14 @@ Levels are relative to the music bed (0 dB).
 19. Noble Desktop, Mocha screen replacement (2023): https://www.nobledesktop.com/learn/after-effects/motion-tracking-screen-replacement
 20. Blender manual, Plane Track Deform: https://docs.blender.org/manual/en/latest/compositing/types/tracking/plane_track_deform.html
 21. TAPNet: https://github.com/google-deepmind/tapnet · LocoTrack: https://github.com/cvlab-kaist/locotrack · CoTracker: https://github.com/facebookresearch/co-tracker
-22. PremiumBeat, Jason Boone, screen replacements (2020-07-30): https://www.premiumbeat.com/blog/screen-replacements-in-after-effects/
+22. Jason Boone, "Screen replacements in After Effects" (2020-07-30)
 23. ProVideo Coalition, Adam Wilt, stop down to erase moiré (2021-09-08): https://www.provideocoalition.com/tip-stop-down-to-erase-moire/
 24. Logik forum, screen replacement advice (Dec 2020): https://forum.logik.tv/t/screen-replacement-advice-for-producers/1773
 25. Adobe Community, Rick Gerard (Feb 2021): https://community.adobe.com/t5/after-effects-discussions/green-screen-tablet-reflection-ae/m-p/11842143
 26. Apple, display brightness: https://support.apple.com/en-us/HT202613
 27. Fix in Post, on-set iPhone guide: https://sites.google.com/view/fixinpost/how-to-guides/on-set-iphone-setup-guide
 28. SAM 2: https://github.com/facebookresearch/sam2
-29. PremiumBeat, Evan Abrams, phone screen replacement: https://www.premiumbeat.com/blog/video-tutorial-cell-phone-tablet-screen-replacement-in-after-effects/
+29. Evan Abrams, "Cell phone and tablet screen replacement in After Effects" (video tutorial)
 30. MacLachlan & Logan, camera shot length in TV commercials, Journal of Advertising Research (1993): https://www.warc.com/Content/421e1376-baa5-472f-aa9d-adc58bea5146
 31. Charles Young, fast editing speed and commercial performance, WARC (2007-04-30): https://www.warc.com/content/article/fast_editing_speed_and_commercial_performance/86058
 32. Netflix, English timed-text style guide: https://partnerhelp.netflixstudios.com/hc/en-us/articles/217350977
@@ -348,11 +348,11 @@ Levels are relative to the music bed (0 dB).
 35. Atlassian, applying motion: https://atlassian.design/foundations/motion/applying-motion
 36. TV Technology, Hoffner, A/V synchronisation (2003-05-14), citing ITU-R BT.1359: https://tvtechnology.com/opinions/av-synchronization-how-bad-is-bad
 37. EBU R37: https://tech.ebu.ch/publications/r037
-38. Pixflow, transition sounds in motion graphics: https://pixflow.net/blog/enhancing-motion-graphics-with-cinematic-transition-sounds/
-39. A Sound Effect, Tilman Hahn on whooshes (2014-01-21): https://www.asoundeffect.com/the-sound-of-the-whoosh-with-tilman-hahn/
+38. "Enhancing motion graphics with cinematic transition sounds" (blog article)
+39. Tilman Hahn, interview "The sound of the whoosh" (2014-01-21)
 40. Remotion, pitch: https://www.remotion.dev/docs/audio/pitch
 41. CalArts 2 Pop, recording Foley at home (updated 2026-08-31): https://2pop.calarts.edu/technicalsupport/recording-foley-at-home/
-42. PremiumBeat, picking music for video: https://www.premiumbeat.com/blog/how-to-pick-the-perfect-music-for-your-video-projects/
+42. "How to pick the perfect music for your video projects" (blog article)
 43. Ian Shepherd, YouTube loudness: https://productionadvice.co.uk/youtube-loudness/
 44. EBU R128 s1 (short-form): https://tech.ebu.ch/docs/r/r128s1.pdf
 45. ffmpeg, loudnorm: https://ffmpeg.org/ffmpeg-filters.html#loudnorm

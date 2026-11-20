@@ -1,6 +1,6 @@
 # ThingTracker film playbook (research, 18 Nov 2026)
 
-> **Partly replaced on 19 Nov** by [compositing-playbook.md](compositing-playbook.md), after the team rejected v5.1 as slow and silent. Three rules here no longer apply:
+> **Partly replaced on 19 Nov** by [compositing-playbook.md](compositing-playbook.md), which sets a faster pace than v5.1 and a sound for every visual event. Three rules here no longer apply:
 > - "≤17 characters per second": 17 is Netflix's limit for children, and the adult cap is 20. It is a subtitle cap, not a hold time.
 > - "Sound effects only for changes of state": now every visual event gets its sound.
 > - Long holds.
@@ -41,7 +41,7 @@ At 120 BPM, a bar is 2 s and a 4-bar phrase is 8 s. Every length below is a whol
 8. **Speed ramp.** Slow one instant, once, with high-frame-rate footage. Ask what the ramp is for [20].
 9. **Dissolve.** Use it only for time passing, over 24–48 frames [17].
 10. **Push into the UI.** Show the whole screen, then push in. The hold starts after the move ends; don't pull out before the result has been read [15].
-11. **Real recordings.** Record at native pixels with the UI at 110–125 %, and move the finger slowly [14]. Give the UI the whole frame, since half-and-half splits are unreadable on phones [7]. Use no fake UI [43].
+11. **Real recordings.** Record at native pixels with the UI at 110–125 %, and move the finger slowly [14]. Give the UI the whole frame, since half-and-half splits are unreadable on phones [7]. Use no mock-up UI [43].
 12. **Screen inserts.** Shoot the screen black so it keeps its reflections. Track the corners, match the motion blur, soften 1–2 px and add grain [16].
 13. **Reading time.** ≤17 characters per second and ≤42 per line (Netflix's Portuguese guide) [24]. At least 0,3 s per word. Titles stay long enough to read twice [25].
 14. **Few words.** Jobs used under 10 words on 7 slides [5]. Move type for a feeling, keep it still for information, and never caption a screen that already says it [26].
@@ -100,13 +100,13 @@ At 120 BPM, a bar is 2 s and a 4-bar phrase is 8 s. Every length below is a whol
 
 **Act 5.** 8 s, at most 3 nodes drawn on beats, with the privacy line as the payoff.
 - Why: brands lead with privacy [30][38][40], and Ring shows the cost of not doing so [35].
-- The team must confirm the wording (AGENTS.md); today it holds for the prototype only.
+- The privacy line describes the prototype only; as a product claim it needs the team's confirmation (AGENTS.md).
 
 **Act 6.** Three cases × 8 s: the cat (safety), the mother (care) and 4 a.m. (memory). Drop the dog and its day bar.
 - Each case: footage and lock-on (2 s), the phone held (4 s), the result (2 s).
 - The mother is seen from behind, with no face recognition. Her alert is a missing routine [42], and a dissolve marks morning to noon [17].
 - The night answer shows its crop [32].
-- "Ninguém configura nada" is a claim: label it "conceito" or soften it (team decision).
+- "Ninguém configura nada" is an unconfirmed product claim: label it as a concept ("conceito") or soften it.
 
 **Act 7.** "ThingTracker" lands on the downbeat and "by Altice Labs" a beat later. Hold ≥3 s and add a 1 s tail [11]. No whoosh.
 

@@ -1,6 +1,6 @@
 # Editing pace of strong product films (measured)
 
-Measured on 19 Nov 2026 for the ThingTracker film (Remotion, 30 fps, music at 120 BPM: a beat is 15 frames, a bar 60). Our last cut was rejected as slow. No one publishes shot-by-shot numbers for these films, so we measured them.
+Measured on 19 Nov 2026 for the ThingTracker film (Remotion, 30 fps, music at 120 BPM: a beat is 15 frames, a bar 60), to set a faster pace than the v5.1 cut. No one publishes shot-by-shot numbers for these films, so we measured them.
 
 ## How we measured
 

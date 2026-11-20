@@ -2,7 +2,7 @@
 
 The shot-by-shot plan that the team approves before a cut is rendered. `index.html` is the source of the page published at [Video 1 storyboard](https://claude.ai/artifact/S51wmbPejvLMuXodXr4myL), where each shot is marked Approve or Change. `img/` holds one real frame per shot: licensed stock, or the reference for a shot we film.
 
-- **v5 (18 Nov):** steady real moments, then a text-only burst of questions, then the wallet story on its own footage. It answers the team's rejection of v4: a fast footage montage, one clip reused, and drawn app screens.
+- **v5 (18 Nov):** steady real moments, then a text-only burst of questions, then the wallet story on its own footage. It replaces v4's fast footage montage, reused clip and drawn app screens.
 - **v5.1 (18 Nov):** revised from the research in [../research/](../research/):
   - cuts on the bar;
   - readable questions, which stack instead of swapping;

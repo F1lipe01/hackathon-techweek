@@ -315,11 +315,298 @@ def guide_cover(prs):
     return s
 
 
+# ---------- slide variants: one geometry each, shared by the guide and the slides ----------
+# Each returns {zone: (x, y, w, h)} in inches, inside the frame. The slides will place their assets in these zones.
+
+CW = CONTENT_X1 - CONTENT_X0
+COVER_TEXT = (0.36, 2.15, 3.8, 1.75)   # on the cover, left of the drawings and above the red bar
+FLOW_GAP = 0.50                        # steps of a flow: room for the arrow, 0.10" clear on each side
+ARROW_LEN = 0.30
+STRIP_H = 0.36                         # caption strip inside a full image
+
+
+def v_capa():
+    x, y, w, _ = COVER_TEXT
+    return {"nome": (x, y, 2.9, 0.5), "linha": (x, y + 0.62, w, 0.3), "equipa": (x, y + 1.04, w, 0.25),
+            "nomes": (x, y + 1.33, w, 0.25)}
+
+
+def v_afirmacao():
+    y0 = CONTENT_Y0_NO_TITLE
+    third = (CONTENT_Y1 - y0) / 3
+    tw = (CW - GAP) * 2 / 3
+    return {"frase": (CONTENT_X0, y0, tw, third), "subfrase": (CONTENT_X0, y0 + third + GAP, tw, 0.5),
+            "imagem": (CONTENT_X0 + tw + GAP, y0, CW - tw - GAP, CONTENT_Y1 - y0)}
+
+
+def v_imagem(has_title=False):
+    y0 = content_top(has_title)
+    return {"imagem": (CONTENT_X0, y0, CW, CONTENT_Y1 - y0), "faixa": (CONTENT_X0, CONTENT_Y1 - STRIP_H, 4.2, STRIP_H)}
+
+
+def v_duas_colunas(has_title=True):
+    y0 = content_top(has_title)
+    cw = (CW - GAP) / 2
+    lab_h, cap_h = 0.22, 0.25
+    z = {}
+    for i, k in enumerate(["esq", "dir"]):
+        x = CONTENT_X0 + i * (cw + GAP)
+        img_y = y0 + lab_h + CAPTION_GAP
+        img_h = CONTENT_Y1 - img_y - CAPTION_GAP - cap_h
+        z[f"{k}-rotulo"] = (x, y0, cw, lab_h)
+        z[f"{k}-imagem"] = (x, img_y, cw, img_h)
+        z[f"{k}-legenda"] = (x, img_y + img_h + CAPTION_GAP, cw, cap_h)
+    return z
+
+
+def v_fluxo(n=4, has_title=True):
+    y0 = content_top(has_title)
+    sw = (CW - (n - 1) * FLOW_GAP) / n
+    img_h = min(sw * 0.8, CONTENT_Y1 - y0 - 0.6)
+    block = img_h + CAPTION_GAP + 0.3
+    top = y0 + (CONTENT_Y1 - y0 - block) / 2
+    z = {}
+    for i in range(n):
+        x = CONTENT_X0 + i * (sw + FLOW_GAP)
+        z[f"passo{i + 1}-imagem"] = (x, top, sw, img_h)
+        z[f"passo{i + 1}-rotulo"] = (x, top + img_h + CAPTION_GAP, sw, 0.3)
+        if i < n - 1:
+            ax = x + sw + (FLOW_GAP - ARROW_LEN) / 2
+            z[f"seta{i + 1}"] = (ax, top + img_h / 2, ARROW_LEN, 0)
+    return z
+
+
+def v_numero(has_title=True):
+    """The number needs about 5.3" at 96 pt ("≈ 0,49 €"), so it takes 60 % of the width; the image the rest."""
+    y0 = content_top(has_title)
+    nw = round(CW * 0.6, 2)
+    return {"numero": (CONTENT_X0, y0, nw, 1.45), "rotulo": (CONTENT_X0, y0 + 1.45 + CAPTION_GAP, nw, 0.4),
+            "fonte": (CONTENT_X0, CONTENT_Y1 - 0.2, nw, 0.2),
+            "imagem": (CONTENT_X0 + nw + GAP, y0, CW - nw - GAP, CONTENT_Y1 - y0)}
+
+
+def v_grelha(n=3, rows=1, ratio=16 / 9, has_title=True):
+    y0 = content_top(has_title)
+    cw = (CW - (n - 1) * GAP) / n
+    ih = cw / ratio
+    cap_h = 0.25
+    cell = ih + CAPTION_GAP + cap_h
+    total = rows * cell + (rows - 1) * GAP
+    if total > CONTENT_Y1 - y0:  # too tall: shrink the images, keep the ratio
+        ih = ((CONTENT_Y1 - y0) - rows * (CAPTION_GAP + cap_h) - (rows - 1) * GAP) / rows
+        cell = ih + CAPTION_GAP + cap_h
+        total = rows * cell + (rows - 1) * GAP
+    top = y0 + (CONTENT_Y1 - y0 - total) / 2
+    z = {}
+    for r in range(rows):
+        for c in range(n):
+            k = r * n + c + 1
+            x, y = CONTENT_X0 + c * (cw + GAP), top + r * (cell + GAP)
+            z[f"imagem{k}"] = (x, y, cw, ih)
+            z[f"legenda{k}"] = (x, y + ih + CAPTION_GAP, cw, cap_h)
+    return z
+
+
+def v_fecho(has_title=True):
+    y0 = content_top(has_title)
+    pts = 3 * 0.42
+    return {"pontos": (CONTENT_X0, y0, CW, pts), "pedido": (CONTENT_X0, y0 + pts + GAP, 6.6, 0.5),
+            "assinatura": (CONTENT_X0, CONTENT_Y1 - 0.38, CW, 0.38)}
+
+
+# ---------- the variants in the guide ----------
+
+LOGO = REPO / "assets" / "brand" / "logo" / "thingtracker-dark.png"
+
+
+def _alpha(shape, pct):
+    clr = shape._element.spPr.find(qn("a:solidFill")).find(qn("a:srgbClr"))
+    clr.append(clr.makeelement(qn("a:alpha"), {"val": str(int(pct * 1000))}))
+
+
+def _arrow(slide, x, y, length, color, width=1.5):
+    c = slide.shapes.add_connector(1, Inches(x), Inches(y), Inches(x + length), Inches(y))
+    c.line.color.rgb = color
+    c.line.width = Pt(width)
+    ln = c.line._get_or_add_ln()
+    ln.append(ln.makeelement(qn("a:tailEnd"), {"type": "triangle", "w": "med", "len": "med"}))
+    c.name = "Arrow"
+    return c
+
+
+class Guide:
+    """Draws one variant's zones: dashed outline, a short label, and a stand-in in the real style."""
+
+    def __init__(self, slide, dark):
+        self.s, self.dark = slide, dark
+        self.g = GUIDE_D if dark else GUIDE_W
+        self.block = RGBColor(0x1A, 0x1C, 0x1E) if dark else RGBColor(0xEE, 0xF0, 0xEE)
+        self.muted = MUTED_D if dark else MUTED_W
+        self.fg = WHITE if dark else INK
+
+    def outline(self, z, label, inside=True, align=PP_ALIGN.RIGHT):
+        x, y, w, h = z
+        box(self.s, x, y, w, h, line=self.g, dash=True, line_w=0.75, name=f"Guide: {label}")
+        ly = y + 0.03 if inside else y - 0.16
+        text(self.s, x + 0.05, ly, w - 0.1, 0.14, label.upper(), size=7, bold=True, color=self.g, align=align)
+
+    def image(self, z, label, note="imagem"):
+        x, y, w, h = z
+        box(self.s, x, y, w, h, fill=self.block)
+        text(self.s, x, y, w, h, note, size=11, color=self.muted, align=PP_ALIGN.CENTER, anchor=MSO_ANCHOR.MIDDLE)
+        self.outline(z, label)
+
+    def words(self, z, label, sample, size, bold=False, color=None, anchor=MSO_ANCHOR.TOP, wrap=True, inside=True):
+        x, y, w, h = z
+        text(self.s, x, y, w, h, sample, size=size, bold=bold, color=color or self.fg, anchor=anchor, wrap=wrap)
+        self.outline(z, label, inside=inside)
+
+    def frame(self, variant, has_title, title_words=None):
+        mx, my, mw, mh = mark_box()
+        text(self.s, 4.0, my + 0.04, CONTENT_X1 - 4.0, 0.2, f"VARIANTE · {variant}", size=10, bold=True, color=self.g,
+             align=PP_ALIGN.RIGHT)
+        if has_title:
+            title(self.s, title_words or "Título, numa só linha", dark=self.dark)
+            self.outline(TITLE, "título", inside=False)
+        y0 = content_top(has_title)
+        box(self.s, CONTENT_X0, y0, CW, CONTENT_Y1 - y0, line=self.g, dash=True, line_w=0.5, name="Guide: content")
+
+
+def gv_capa(prs):
+    s = new_slide(prs, L_COVER)
+    g = Guide(s, True)
+    text(s, 4.0, 0.12, 5.55, 0.2, "VARIANTE · capa", size=10, bold=True, color=g.g, align=PP_ALIGN.RIGHT)
+    z = v_capa()
+    picture(s, LOGO, *z["nome"][:2], w=z["nome"][2], alt="ThingTracker")
+    g.outline(z["nome"], "nome do produto", inside=False)
+    g.words(z["linha"], "linha", "A câmara da casa, atenta ao que importa.", 14, inside=False)
+    g.words(z["equipa"], "desafio e equipa", "Desafio #3 · Altice Labs · Equipa IT-Porto", 11, bold=True, color=NEON,
+            inside=False)
+    g.words(z["nomes"], "nomes", "Filipe Peixoto · Simon Ranjith · Mushahid Hussain", 11, color=RGBColor(0xD0, 0xD4, 0xD8),
+            inside=False)
+    return s, "Capa: a marca grande e os desenhos do modelo; à esquerda, o nome do produto, a linha, o desafio e a equipa, e os nomes."
+
+
+def gv_afirmacao(prs):
+    s = new_slide(prs, L_BLACK)
+    g = Guide(s, True)
+    g.frame("afirmacao", False)
+    z = v_afirmacao()
+    g.words(z["frase"], "frase · Arial Bold 40 pt · terço de cima", "Uma frase grande, no terço de cima", 40, bold=True)
+    g.words(z["subfrase"], "subfrase (opcional) · 16 pt", "Uma linha pequena, se for precisa", 16, color=g.muted)
+    g.image(z["imagem"], "imagem ou recorte (opcional)", "imagem ou recorte")
+    return s, "Afirmação: sem título. Uma frase grande (Arial Bold 40 pt) no terço de cima da zona de conteúdo, uma " \
+              "subfrase opcional e, à direita, uma imagem ou um recorte opcional. Sem imagem, a frase pode ocupar toda a largura."
+
+
+def gv_imagem(prs):
+    s = new_slide(prs, L_BLACK)
+    g = Guide(s, True)
+    g.frame("imagem", False)
+    z = v_imagem(False)
+    g.image(z["imagem"], "imagem ou fotograma · preenche a zona (cover) · com título, começa em y 1,50",
+            "imagem ou fotograma do filme")
+    fx, fy, fw, fh = z["faixa"]
+    band = box(s, fx, fy, fw, fh, fill=RGBColor(0, 0, 0))
+    _alpha(band, 60)
+    text(s, fx + 0.14, fy, fw - 0.2, fh, "Legenda opcional, faixa escura, 12 pt", size=12, color=WHITE, anchor=MSO_ANCHOR.MIDDLE)
+    g.outline(z["faixa"], "faixa de legenda", inside=False, align=PP_ALIGN.LEFT)
+    return s, "Imagem: uma imagem ou um fotograma enche a zona de conteúdo (cover); título opcional (com título, a " \
+              "imagem começa em y 1,50). Legenda opcional numa faixa escura translúcida, em baixo à esquerda, 12 pt. Para os filmes."
+
+
+def gv_duas_colunas(prs):
+    s = new_slide(prs, L_BLACK)
+    g = Guide(s, True)
+    g.frame("duas-colunas", True, "Hoje e com IA, lado a lado")
+    z = v_duas_colunas(True)
+    for k, lab in [("esq", "Hoje"), ("dir", "Com IA")]:
+        g.words(z[f"{k}-rotulo"], "rótulo (opcional)", lab.upper(), 11, bold=True, color=NEON)
+        g.image(z[f"{k}-imagem"], "imagem")
+        g.words(z[f"{k}-legenda"], "legenda", "Legenda, 11 a 12 pt", 11, color=g.muted)
+    return s, "Duas colunas: iguais, 0,25\" entre elas; cada uma com um rótulo opcional, a imagem e a legenda 0,08\" por baixo. " \
+              "Fundo preto ou branco."
+
+
+def gv_fluxo(prs):
+    s = new_slide(prs, L_WHITE)
+    g = Guide(s, False)
+    g.frame("fluxo", True, "Da câmara ao aviso, em quatro passos")
+    z = v_fluxo(4, True)
+    for i in range(1, 5):
+        g.image(z[f"passo{i}-imagem"], f"passo {i}")
+        x, y, w, h = z[f"passo{i}-rotulo"]
+        text(s, x, y, w, h, ["Câmara", "Imagens", "IA", "Aviso"][i - 1], size=12, bold=True, color=INK, align=PP_ALIGN.CENTER)
+        g.outline(z[f"passo{i}-rotulo"], "rótulo")
+        if i < 4:
+            ax, ay, al, _ = z[f"seta{i}"]
+            _arrow(s, ax, ay, al, RGBColor(0x5F, 0x63, 0x68))
+    text(s, CONTENT_X0, CONTENT_Y1 - 0.18, CW, 0.15, "PASSOS IGUAIS · 0,50\" ENTRE PASSOS, COM A SETA AO CENTRO · TRÊS OU QUATRO",
+         size=7, bold=True, color=g.g, align=PP_ALIGN.CENTER)
+    return s, "Fluxo: três ou quatro passos iguais, numa linha; cada um com uma área de imagem e um rótulo de duas ou três " \
+              "palavras por baixo; setas finas e retas no centro dos intervalos (0,50\" entre passos, para caber a seta). Branco ou preto."
+
+
+def gv_numero(prs):
+    s = new_slide(prs, L_BLACK)
+    g = Guide(s, True)
+    g.frame("numero", True, "Quanto custa à Altice")
+    z = v_numero(True)
+    g.words(z["numero"], "número · 96 pt · 60 % da largura", "≈ 0,49 €", 96, bold=True, color=NEON, wrap=False)
+    g.words(z["rotulo"], "rótulo · 18 pt", "por casa e por mês", 18)
+    g.words(z["fonte"], "fonte · 10 pt", "Fonte: estimativa da equipa (documento 17)", 10, color=g.muted)
+    g.image(z["imagem"], "imagem de apoio (opcional)", "imagem de apoio")
+    return s, "Número: um número a verde, cerca de 96 pt, à esquerda, em 60 % da largura (a 96 pt, “≈ 0,49 €” ocupa " \
+              "cerca de 5,3\"); o rótulo por baixo, 18 pt; a fonte no fundo da zona de conteúdo, 10 a 11 pt; uma imagem de " \
+              "apoio opcional nos 40 % da direita."
+
+
+def gv_grelha(prs):
+    s = new_slide(prs, L_BLACK)
+    g = Guide(s, True)
+    g.frame("grelha", True, "Três exemplos, lado a lado")
+    z = v_grelha(3, 1, 16 / 9, True)
+    for i in range(1, 4):
+        g.image(z[f"imagem{i}"], f"imagem {i} · mesma proporção")
+        g.words(z[f"legenda{i}"], "legenda", "Legenda, 11 a 12 pt", 11, color=g.muted)
+    text(s, CONTENT_X0, CONTENT_Y1 - 0.18, CW, 0.15, "TRÊS OU QUATRO NUMA LINHA, OU 2 × 3 · 0,25\" ENTRE IMAGENS",
+         size=7, bold=True, color=g.g, align=PP_ALIGN.CENTER)
+    return s, "Grelha: três ou quatro imagens numa linha, ou 2 × 3, todas com a mesma proporção, 0,25\" entre elas, " \
+              "cada uma com a legenda 0,08\" por baixo. Preto ou branco."
+
+
+def gv_fecho(prs):
+    s = new_slide(prs, L_BLACK)
+    g = Guide(s, True)
+    g.frame("fecho", True, "Em resumo")
+    z = v_fecho(True)
+    x, y, w, h = z["pontos"]
+    for i, t in enumerate(["Um ponto curto, numa linha", "Outro ponto curto", "O terceiro ponto"]):
+        box(s, x + 0.3, y + i * 0.42 + 0.1, 0.16, 0.16, fill=NEON)
+        text(s, x + 0.6, y + i * 0.42, w - 0.6, 0.34, t, size=18, bold=True, color=WHITE)
+    g.outline(z["pontos"], "três pontos · marcador verde · 18 pt")
+    px, py, pw, ph = z["pedido"]
+    box(s, px, py, pw, ph, fill=NEON)
+    text(s, px + 0.2, py, pw - 0.3, ph, "O pedido, numa linha", size=15, bold=True, color=INK, anchor=MSO_ANCHOR.MIDDLE)
+    g.outline(z["pedido"], "pedido em destaque", inside=False, align=PP_ALIGN.LEFT)
+    ax, ay, aw, ah = z["assinatura"]
+    picture(s, LOGO, ax, ay + 0.04, h=0.3, alt="ThingTracker")
+    text(s, ax + 2.0, ay, aw - 2.0, ah, "A câmara da casa, atenta ao que importa.", size=14, color=WHITE, anchor=MSO_ANCHOR.MIDDLE)
+    g.outline(z["assinatura"], "nome do produto e frase final")
+    return s, "Fecho: três pontos curtos com o marcador verde, o pedido numa faixa verde e, no fundo da zona de conteúdo, " \
+              "o nome do produto e a frase final."
+
+
+VARIANT_GUIDES = [gv_capa, gv_afirmacao, gv_imagem, gv_duas_colunas, gv_fluxo, gv_numero, gv_grelha, gv_fecho]
+
+
 def build_guide(template, out):
     prs = open_template(template)
     for dark, has_title in [(True, True), (True, False), (False, True), (False, False)]:
         guide_slide(prs, dark, has_title)
-    guide_cover(prs)
+    for make in VARIANT_GUIDES:
+        s, note = make(prs)
+        set_notes(s, note + " As linhas a laranja não entram nos diapositivos.")
     prs.save(out)
     return out
 

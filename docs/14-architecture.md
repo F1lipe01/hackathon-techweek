@@ -7,7 +7,7 @@ The views follow three standards: the C4 model for context, containers and compo
 ## In short
 
 - **Hybrid.** At home, on hardware that is already there (the Altice router's CPU, no AI accelerator): the motion gate, privacy masks, cutting out the region that changed, and opt-in face recognition, so face templates never leave the home. At Altice: the vision models (OWLv2, DINOv2) on Altice's own L4 GPUs behind queues, and the ThingTracker service, where presence and the rules are worked out for each home.
-- **Video never leaves the home.** What leaves is the region that changed (at most 640 × 640 pixels, about once a second while there is motion), a region the service asks for in a check, face labels ("Filipe", "unknown face"), and, rarely, 2 to 3 s of a region for the judge.
+- **Video never leaves the home.** What leaves is the region that changed (at most 640 × 640 pixels, about once a second while there is motion), a region the service asks for in a check, face labels (a family member's name, "unknown face"), and, rarely, 2 to 3 s of a region for the judge.
 - **Three kinds of evidence, one decision maker.** Fast eyes at every motion (motion gate, OWLv2, DINOv2, faces); a vision-language judge called rarely, for an ambiguous moment; facts beyond the camera (the door sensor and the family's phones on the Wi-Fi) for "did someone leave?". The rules engine decides, with plain code.
 - **Cost at 500,000 homes:** about €0.49 per home a month for vision with one camera, on Altice's own L4 servers (document 17), plus about €0.43 for the language model (document 16). Both are estimates.
 - **Upgrade path:** if the router or the camera has an NPU that can run a detector, vision moves into the home and the cost falls to about €0.36 (document 17, option A1).
@@ -95,7 +95,7 @@ Figure 3 shows where each part runs, the hardware, the numbers at 500,000 homes,
 
 ### 5.2 The upgrade path: vision in the home (A1)
 
-If Altice's routers or cameras have an NPU that can run a detector, OWLv2 and DINOv2 (or a lighter detector) move into the home agent, and only events, thumbnails and fingerprints leave the home. Document 17 estimates about €0.36 per home a month, from an assumed €15 router premium. Whether the router has such an NPU is the first question for Altice (§18).
+If Altice's routers or cameras have an NPU that can run a detector, OWLv2 and DINOv2 (or a lighter detector) move into the home agent, and only events, thumbnails and fingerprints leave the home. Document 17 estimates about €0.36 per home a month, from an assumed €15 router premium. Whether the router has such an NPU is the first item the pilot must confirm with Altice (§18).
 
 ### 5.3 The rejected options
 
@@ -124,7 +124,7 @@ Figure 4 opens the home agent, the vision workers and the ThingTracker service, 
 | 2 | Privacy masks | Home agent | Frame | Which areas are never analysed | Areas the family drew | Masked frame |
 | 3 | Motion gate | Home agent | 160 × 90 grey picture every 0.5 s against a slow background | Whether to analyse | More than 0.6 % of pixels changed by more than 22 grey levels; stays open 6 s (prototype values). Also opens on a request from the service | Open or closed |
 | 4 | Region cutter | Home agent | Frame, gate | Which part to send | The changed region, or the requested one, at most 640 × 640; about 1 a second | Region |
-| 5 | Faces (opt-in) | Home agent | Region | Who a visible face is | YuNet finds the face; SFace compares it with the templates; cosine ≥ 0.363 gives the name (§8.3) | "Filipe", "unknown face", with the face box |
+| 5 | Faces (opt-in) | Home agent | Region | Who a visible face is | YuNet finds the face; SFace compares it with the templates; cosine bands give the name, "unknown face" or "face not visible" (§8.3) | A family member's name ("Ana"), "unknown face" or "face not visible", with the face box |
 | 6 | Secure channel | Home agent | Region and labels | Nothing; queues events and labels while offline, never images | mTLS, one certificate per home | Messages to the broker |
 | 7 | Vision queues | Altice | Regions, requests | Urgent or batch | Urgent: active checks, refreshes, registrations, clips for the judge, homes with an active safety rule. Batch: the rest | Ordered work |
 | 8 | Detection | Vision workers | Region | Boxes of the home's registered things, "a person" and surfaces (desk, table) | OWLv2 scores (prototype: 0.1 to propose, 0.2 for a person) | Boxes |
@@ -247,11 +247,12 @@ Document 20 (section 1.3) had proposed enrolment in front of the home camera so 
 | Find | For each person box, the home agent looks for a face with YuNet inside it |
 | Judge only clear faces | A face too small, too unclear or too turned is "face not visible" (prototype gates: YuNet score ≥ 0.8, width ≥ 40 px, turn ≤ 0.75) |
 | Compare | SFace cosine against every template of the household |
-| Name | Cosine ≥ 0.363 to a person's templates: that person. 0.363 is OpenCV's recommended value for SFace (`samples/dnn/face_detect.py`), set on sharp close-up faces |
-| Unknown | A visible face below the threshold for everyone: "unknown face" |
-| Prototype | Three bands, set on the lab take where the kit camera's faces were 40 to 86 px wide: known at 0.40 or more to a template, unknown below 0.25 to every template, "not sure" in between. At a single 0.30 cut, one of the stranger's faces scored 0.33 against the enrolled person while some of the enrolled person's own scored 0.31 to 0.36, so a band replaced the cut. On the replayed take the enrolled person scored 0.54 and 0.63, the stranger 0.17 and 0.14. One take is a check, not a measured accuracy; the bands are to be set per camera in the pilot |
+| Name | Cosine ≥ 0.40 to one of a person's templates: that person. OpenCV recommends 0.363 for SFace (`samples/dnn/face_detect.py`), set on sharp close-up faces; on the kit camera's small faces an enrolled person's and a stranger's scores overlapped between about 0.30 and 0.36, so a name needs 0.40 |
+| Unknown | A visible face below 0.25 to every template of the household: "unknown face" |
+| Not sure | Between 0.25 and 0.40: answered "face not visible", never "unknown face" |
+| How the bands were set | On the lab take, where the kit camera's faces were 40 to 86 px wide (`prototype/faces.py`, `THRESHOLD_NOTE`). At a single 0.30 cut, one of the stranger's faces scored 0.33 against the enrolled person while some of the enrolled person's own scored 0.31 to 0.36, so a band replaced the cut. On the replayed take the enrolled person scored 0.54 and 0.63, the stranger 0.17 and 0.14. One take is a check, not a measured accuracy; the bands are to be set per camera in the pilot |
 
-Only the label leaves the home ("Filipe", "unknown face", with the face box); the templates never do.
+Only the label leaves the home (a family member's name, "unknown face" or "face not visible", with the face box); the templates never do.
 
 **Alarm and suggestions.**
 
@@ -326,7 +327,7 @@ A sentence is compiled once into a small, explicit rule; the rules engine runs r
   "title": "Book left behind",
   "kind": "leave_without",
   "thing": "book",
-  "owner": "Filipe",
+  "owner": "Ana",
   "trigger": { "door": "closed_after_open", "and_any": ["phone_left", "count_dropped"] },
   "check": { "frames": 3, "seen_at_least": 2, "match": 0.62, "judge_if_unsure": true },
   "then": [ { "notify": "Your book stayed at home." } ],
@@ -431,7 +432,7 @@ The text model is called only by the ThingTracker service, for two jobs: compili
 
 ## 16. Prototype vs target
 
-Status late on 19 Nov 2026, from the prototype's code and commits. "In progress" items were being built on the night of 19 Nov and are to be confirmed.
+Status on 20 Nov 2026, from the prototype's code, its end-to-end tests (`prototype/test_scenarios.py`) and the proof runs on the lab takes.
 
 | Part | Target | Prototype | Status |
 |---|---|---|---|
@@ -442,18 +443,18 @@ Status late on 19 Nov 2026, from the prototype's code and commits. "In progress"
 | Faces | YuNet + SFace on the router, templates at home | YuNet + SFace on the Mac, templates in the edge's own SQLite, known at 0.40, unknown below 0.25 | Implemented |
 | Vision workers | OWLv2, DINOv2 on L4 GPUs behind queues | OWLv2, DINOv2 on the Mac's GPU, no queue | Simulated |
 | Matching | pgvector in the service | NumPy on the edge, threshold 0.62 | Implemented (different place) |
-| In hand, taken, moved | Tracking in the service | "in_hand" from the edge; "taken" after 3 missed analyses on the server; "moved" on a new place | Implemented (to confirm) |
+| In hand, taken, moved | Tracking in the service | "in_hand" from the edge; "taken" after 3 missed analyses on the server; "moved" on a new place | Implemented; covered by the end-to-end tests, not yet seen on the lab takes |
 | Presence engine | Event-driven, per home | `presence.py`, four states, demo and production timings, state in SQLite | Implemented |
 | Family phones on the Wi-Fi | Proposed `get_home_wifi_clients` tool | Toggled from the page (`/api/sim/phone`) | Simulated |
 | Door sensor | Event API (requested) | Polling `get_home_devices` every 4 s when logged in; a simulated door otherwise | Implemented |
 | Left behind | Door close + leaver + active check | Same; "unsure" when not seen or no answer | Implemented |
 | Unknown person, 112 | 3 analyses, Family away; suggestion only | Same; the app's button never dials | Implemented |
 | Power saving, door left open | On EMPTY, one alert per incident | Same | Implemented |
-| Judge | Vision-language model at Altice | A small model may be added on the night of 19 Nov | In progress (to confirm) |
+| Judge | Vision-language model at Altice | Qwen2-VL-2B (`judge.py`, MLX) on the Mac, asked only when an active check finds no match, on one tight crop; its "yes" or "unsure" becomes a question to the family | Implemented (different place) |
 | Rules engine | Event-driven in the service | A loop every 2 s in `server.py` | Implemented (as a loop) |
 | Alerts and actions | Notification service; MCP after "Yes" | In the web copy of the app; dry run unless `TT_LIVE_ACTIONS=1`; the alarm always simulated | Simulated |
 | Registration from photos, from the camera | Vision workers | Implemented on the Mac | Implemented |
-| The camera's proposals | Vision workers | "Looking through your cameras…" screen | To confirm |
+| The camera's proposals | Vision workers | The "Looking through your cameras…" screen lists common things; the camera does not propose them yet | Not in the prototype |
 | Secure channel | MQTT over mTLS | HTTP on the Mac | Not in the prototype |
 | Load balancers, stateless instances, queues | At Altice | One process | Not in the prototype |
 | PostgreSQL, cache, object storage | At Altice | SQLite (`store.py`) and local files | Simulated |
@@ -473,15 +474,17 @@ Status late on 19 Nov 2026, from the prototype's code and commits. "In progress"
 | D8 | **Recognising people: opt-in, in the home** | Never; or in the cloud | The family's safety scenarios need it; consent per person and templates at home keep the legal risk and the trust question manageable |
 | D9 | **Each camera is one place** | Zones drawn inside a camera | Simpler for the family; zones are left to Altice as a later feature |
 
-## 18. Open questions for Altice
+## 18. What the pilot must confirm with Altice
 
-1. Which **routers or cameras have an NPU** that can run a detector (option A1, about €0.36 per home a month)?
-2. Does the platform offer **events or push** (door, Wi-Fi) we can use, instead of polling the MCP server?
-3. Can Altice add a read-only **`get_home_wifi_clients`** tool, and how does the router keep recognising a phone that randomises its MAC address?
-4. Can the router read the camera's **RTSP stream on the home network**, instead of through the cloud relay?
-5. Would Altice **add the Things tools** and the `thingTracker` trigger to the MCP server, and a tool to **delete scenarios**?
-6. Which **language-model** contracts or GPU capacity does Altice already have (EU residency, DPA)?
-7. Should the face video be **uploaded over the home Wi-Fi** straight to the router, so that it never crosses the platform?
+The design rests on seven assumptions about the Altice platform. Each is a next step for the pilot; the matching requests are in [document 15, section 9](15-integration-spec.md).
+
+1. **Vision at home.** Assumed: the router has a CPU and no AI accelerator, so vision runs on Altice's L4 servers (€0.49 per home a month, document 17). Next step: Altice says which routers or cameras have an NPU; with one, option A1 costs about €0.36 (§5.2).
+2. **Events.** Known: the MCP server has no push and no general event feed, so the prototype polls `get_home_devices` every 4 s. Next step: an event API for the door and the Wi-Fi.
+3. **Phones on the Wi-Fi.** Known: no MCP tool exposes the router's clients, so the prototype simulates the phones. Next step: a read-only `get_home_wifi_clients` tool, and a way to keep recognising a phone that randomises its MAC address, designed with Altice.
+4. **Local video.** Known: the prototype reads the camera through the organisers' cloud relay. Next step: RTSP access from the router on the home network.
+5. **New MCP tools.** Known: the server has 18 tools and none deletes a scenario. Next step: the four Things tools, the `thingTracker` trigger and a tool to delete scenarios (document 15).
+6. **The language model.** Assumed: a model hosted by Altice or a provider under contract, with EU processing and a DPA (§16 and document 15). The prototype runs Qwen3-1.7B locally. Next step: Altice names the contract or the GPU capacity.
+7. **The face video.** Decided: a short selfie video relayed to the home agent without being stored (§8.3). Next step: whether the app can upload it over the home Wi-Fi straight to the router, so that it never crosses the platform.
 
 ## Sources
 

@@ -1,14 +1,14 @@
 # Folha de apoio do _pitch_
 
-Uma página para o Filipe, a 20 de novembro de 2026. O guião completo está no documento [21](21-pitch.md) e as respostas longas no documento [23](23-perguntas-engenharia.md). Ronda intermédia, a partir das 16h00: 3 min de _pitch_ e 2 min de perguntas (duas ou três). Final, a partir das 18h00: 5 min e 3 min. A mensagem de adoção dirige-se a Pedro Almeida, responsável da Altice pela plataforma que o _ThingTracker_ estende.
+Folha de uma página para o apresentador, para as rondas de 20 de novembro de 2026. O guião completo está no documento [21](21-pitch.md) e as respostas longas no documento [23](23-perguntas-engenharia.md). Ronda intermédia, a partir das 16h00: 3 min de _pitch_ e 2 min de perguntas (duas ou três). Final, a partir das 18h00: 5 min e 3 min. A mensagem de adoção dirige-se ao responsável da Altice pela plataforma que o _ThingTracker_ estende.
 
 ## Ordem e tempos
 
 - 3 minutos, 9 diapositivos, alvo aos 2:40: capa · introdução · a casa ligada (`casa`) · vigiar (`vigiar`) · _ThingTracker_ (`reveal`) · basta uma imagem (`basta`) · o livro (filme de 20 s) · Altice (encaixa, 0,49 €, piloto) · fecho.
   - Alvo: `casa` aos 0:08, `vigiar` aos 0:28, `reveal` aos 0:48, `basta` aos 1:05, `livro` aos 1:25, `altice` aos 1:50, fecho aos 2:20.
-  - Com as frases atuais, a 2 palavras por segundo, acaba aos 3:44: é preciso cortar cerca de 130 palavras (guião, secção 6).
 - 5 minutos, 12 diapositivos: capa · introdução · `casa` · `vigiar` · `reveal` · `basta` · os olhos também se enganam (`ilusao`) · exemplos (os três filmes de 20 s, seguidos) · como funciona (com os modelos e as ferramentas) · viabilidade e replicação · começar (o piloto e o repositório) · fecho.
-  - Com as frases atuais, acaba aos 5:38: para ficar abaixo dos 4:30, é preciso cortar cerca de 70 s (guião, secção 7).
+  - Alvo: acabar por volta dos 4:15, e nunca depois dos 4:45.
+- Regra de corte (guião, secção 6): a frase antes dos filmes, os números e o fecho dizem-se palavra por palavra; o que não couber no alvo corta-se primeiro nas enumerações da abertura (`casa`, `reveal` e `basta`).
 - O anexo de diagramas é um ficheiro à parte, só para as perguntas.
 
 ## Abertura e fecho
@@ -51,7 +51,7 @@ Uma página para o Filipe, a 20 de novembro de 2026. O guião completo está no 
 - Real: os ecrãs da app, gravados com o protótipo a funcionar, e as frases que se tornam cenários; a filmagem, da câmara do _kit_, no laboratório.
 - Resultado dos modelos, calculado depois da filmagem: as caixas das pessoas e do livro.
 - Encenado ou feito na montagem: o alarme, as notificações, as luzes e o ar condicionado a desligarem-se, a porta, o contador de pessoas e, no filme, a comparação de rostos.
-- Provado sem montagem, com as mesmas gravações: o aviso do livro dispara pela regra; o Filipe é reconhecido e o desconhecido não (alarme em 2 de 4 repetições; nas outras, o sistema pergunta); com a casa vazia, chega o aviso com os dois cartões.
+- Provado sem montagem, com as mesmas gravações: o aviso do livro dispara pela regra; o membro da equipa registado, com consentimento, é reconhecido e o desconhecido não (alarme em 2 de 4 repetições; nas outras, o sistema pergunta); com a casa vazia, chega o aviso com os dois cartões.
 
 ## Dez perguntas
 

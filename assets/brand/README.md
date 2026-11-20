@@ -4,7 +4,6 @@ Decided 18 Nov 2026: **name ThingTracker** (a noun, one word; it was "Track Thin
 
 | What | File |
 |---|---|
-| Options sheet (logo, typeface, colour, live preview) | [`options/brand-options.html`](options/brand-options.html) |
 | Animated logo, mark ⇄ wordmark (source, plays in a browser, has controls) | [`animation/logo-reveal.html`](animation/logo-reveal.html) |
 | Animated logo as 4K video (3840 × 2160): 60 fps for slides, plus a 120 fps version of the main one for 120 Hz screens; each with and without the "by Altice Labs" ending, and a still of the last frame | [`animation/out/`](animation/out/) |
 | **Logo files**: the ThingTracker lockup, the mark alone, and the "by Altice Labs" endorsement ("by" above the official logo); `light` for white grounds, `dark` for `#003399` or black. SVG (text converted to outlines, works without the font) and transparent PNG | [`logo/`](logo/) |

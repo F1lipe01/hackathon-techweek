@@ -2,11 +2,29 @@
 
 Estado a 18 de novembro de 2026. Todos os valores resultam do _script_ [`deliverables/opcost/model.py`](../../deliverables/opcost/model.py) (`python3 deliverables/opcost/model.py`), que imprime cada tabela. Os valores externos têm uma fonte numerada no fim; os restantes estão assinalados como PRESSUPOSTO, com a respetiva justificação. Tal como no [caso de negócio](16-viabilidade-negocio.md), considera-se 1 USD = 1 EUR e os preços não incluem IVA.
 
-## Em resumo
+## Desenho final (20 de novembro): tudo local
+
+Decisão final da equipa: toda a perceção e toda a inferência correm no equipamento da casa, que é o _router_, se tiver uma _NPU_, ou uma caixa dedicada, como um _Raspberry Pi 5_ com um acelerador de IA ou um _Jetson Orin Nano Super_. As imagens, o vídeo, as assinaturas visuais e os padrões faciais nunca saem de casa. A plataforma da Altice recebe apenas texto: as contas, os metadados, o registo de eventos, as notificações, a ligação à casa a partir do exterior e as ações nos dispositivos através do _MCP_. A visão nos servidores da Altice (a via híbrida calculada mais abaixo, com cerca de 0,49 € por casa e por mês) é a alternativa avaliada e não escolhida, porque as imagens sairiam de casa.
+
+O desenho escolhido custa o equipamento, comprado uma única vez, e a eletricidade (pesquisa de preços da equipa, 20 de novembro):
+
+- Equipamento, comprado uma única vez: uma câmara de interior, cerca de 45 € (média de 3 modelos à venda em Portugal); um equipamento leve, um _Raspberry Pi 5_, cerca de 200 €; um equipamento mais potente, um _Jetson Orin Nano Super_, cerca de 345 €; ou um _router_ com _NPU_, por cerca de mais 15 € (estimativa).
+- Em 5 anos, o equipamento custa 3,33 € por mês (_Raspberry Pi 5_) ou 5,75 € por mês (_Jetson Orin Nano Super_).
+- A eletricidade consumida pelos modelos custa cêntimos por mês: menos de 0,01 € com o _YOLOv8n_ e até 0,72 € com o _OWLv2_, com 12 h de movimento por dia (estimativa da equipa num _Jetson Orin Nano_).
+- Quem compra o equipamento. Uma caixa paga pela Altice não se paga com a mensalidade de 3,99 €: o saldo fica entre −4,81 € e −6,90 € por casa e por mês (secção 9, opções A2 e A3). O modelo funciona com a IA no _router_ ou com equipamento comprado pelo cliente.
+- As secções seguintes correspondem à análise anterior (18 de novembro) e mantêm-se como contexto: o preço de lançamento de 249 USD do _Jetson_, o equipamento amortizado em 36 meses, 1 USD = 1 EUR e a via híbrida nos servidores _L4_ próprios da Altice.
+
+Fontes dos valores de 20 de novembro (pesquisa de preços da equipa):
+
+- Câmaras: _TP-Link Tapo C210_, 42,00 € (codi-tek.com, Lisboa); _EZVIZ H8C SE_, 37,99 € (worten.pt); _Reolink E1 Pro_, 48,76 € em promoção e 64,99 € a preço normal (ipcam-shop.nl). Em Portugal, os preços vão de 30 € a 80 € (guia da 4gnews.pt).
+- _Raspberry Pi 5_ de 8 GB com fonte de alimentação, caixa e armazenamento: cerca de 200 €, uma estimativa entre o preço de venda recomendado de 130 USD, os 199,95 USD na Amazon e os 264,49 € num revendedor da UE.
+- _Jetson Orin Nano Super Developer Kit_: 399 USD ≈ 345 € (lista de preços da cnx-software; cerca de 1,15 USD/€, um pressuposto).
+
+## Em resumo (análise anterior, 18 de novembro)
 
 - A pergunta. O caso de negócio apresenta o custo do modelo de linguagem por casa (cerca de 0,43 € por mês). Este documento calcula o custo para o operador dos modelos de visão, que depende do local onde correm, e responde à objeção de que um equipamento por casa, ou uma frota de servidores, é muito caro com 500 000 clientes, e de que é por isso que as empresas recorrem aos _hyperscalers_.
 - Com imagens completas, a objeção confirma-se. Analisar todas as imagens com movimento, em resolução completa, custa à Altice 2,41 € por casa e por mês em servidores próprios, entre 3,93 € e 4,26 € em _GPU_ alugadas a pedido num _hyperscaler_ e entre 6,55 € e 8,64 € com uma caixa em cada casa. Com o serviço adicional a 3,99 €, nenhuma destas opções deixa margem.
-- A via recomendada custa cerca de 0,49 € por casa e por mês com uma câmara (0,98 € com duas). A deteção de movimento, que é barata, fica em casa, na câmara ou no _router_. Só a zona da imagem que mudou segue para os servidores da Altice, e o trabalho que não é urgente aguarda numa fila por um momento de menor carga, pelo que os servidores não são dimensionados para o pico da noite. Sobra cerca de 1,25 € por casa e por mês.
+- A via recomendada a 18 de novembro custa cerca de 0,49 € por casa e por mês com uma câmara (0,98 € com duas). A deteção de movimento, que é barata, fica em casa, na câmara ou no _router_. Só a zona da imagem que mudou segue para os servidores da Altice, e o trabalho que não é urgente aguarda numa fila por um momento de menor carga, pelo que os servidores não são dimensionados para o pico da noite. Sobra cerca de 1,25 € por casa e por mês.
 - O pressuposto principal: 2 h de movimento por câmara e por dia, analisadas a 1 imagem por segundo, numa _GPU_ a 25 % da sua velocidade máxima. Cada um destes valores pode duplicar ou reduzir para metade o custo (secção 9).
 - Se o _router_ tiver uma _NPU_ capaz de correr os modelos, o custo desce para cerca de 0,36 € por casa e por mês, mas ainda nada demonstra que tenha.
 
@@ -112,7 +130,7 @@ A vantagem do _hyperscaler_ é real: cobra a curva diária e não o pico. Ainda 
 
 Enviar o vídeo das câmaras para a nuvem está fora de questão: move 37 vezes mais dados do que as imagens enviadas apenas quando há movimento. É a verificação de movimento em casa que torna viável qualquer opção centralizada.
 
-## 8. A via híbrida recomendada
+## 8. A via híbrida (recomendada a 18 de novembro, não escolhida)
 
 1. A verificação de movimento fica sempre em casa, na câmara ou no _router_. Trata-se de uma comparação simples de duas imagens de 160 × 90 em tons de cinzento, sem acelerador de IA.
 2. Só se envia a zona que mudou, redimensionada para um máximo de 640 × 640. O trabalho por imagem desce de 1,16 para 0,41 TFLOP e o envio reduz-se para metade.
@@ -141,7 +159,7 @@ No caso de negócio, o serviço adicional custa 3,99 € por mês (3,24 € sem 
 | C. AWS _T4_, a pedido | 4,26 | 8,52 | 4,26 | −2,53 |
 | C. AWS _T4_, _spot_ (sem garantia de capacidade) | 1,93 | 3,87 | 1,93 | −0,20 |
 | C. Azure _T4_, reserva a 3 anos | 5,15 | 10,30 | 5,15 | −3,42 |
-| Via híbrida em servidores _L4_ próprios (recomendada) | 0,49 | 0,98 | 0,49 | 1,25 |
+| Via híbrida em servidores _L4_ próprios (recomendada a 18 de novembro) | 0,49 | 0,98 | 0,49 | 1,25 |
 | Via híbrida em _T4_ da Azure, reserva a 3 anos | 1,01 | 2,02 | 1,01 | 0,72 |
 | Via híbrida em _T4_ da AWS, a pedido | 1,53 | 3,07 | 1,53 | 0,20 |
 

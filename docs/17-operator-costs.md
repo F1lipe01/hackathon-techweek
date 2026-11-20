@@ -2,11 +2,29 @@
 
 State on **Wed 18 Nov 2026**. Every number below is printed by [`deliverables/opcost/model.py`](../deliverables/opcost/model.py) (`python3 deliverables/opcost/model.py`). Each external figure has a numbered source at the end; everything else is marked **ASSUMPTION**, with the reasoning. As in the [business case](16-business-case.md), 1 USD = 1 EUR and prices are net of VAT.
 
-## In one minute
+## Final design (20 Nov): fully local
+
+The team's final decision: all perception and inference run on the home device, which is the router if it has an NPU, or a dedicated box such as a Raspberry Pi 5 with an AI accelerator or a Jetson Orin Nano Super. Images, video, visual fingerprints and face templates never leave the home; the Altice platform carries text only (accounts, metadata, the event log, notifications, the relay to the home, device actions through the MCP). Vision on Altice's servers, the hybrid path costed below at about €0.49 per home a month, is the alternative evaluated and not chosen: images would leave the home.
+
+The chosen design costs equipment bought once, plus electricity (the team's price research, 20 Nov):
+
+- **Equipment, bought once:** an indoor camera, about €45 (the average of 3 models on sale in Portugal); a light device, a Raspberry Pi 5, about €200; a heavy device, a Jetson Orin Nano Super, about €345; or a router with an NPU, about €15 more (an estimate).
+- **Over 5 years,** the device comes to €3.33 a month (Raspberry Pi 5) or €5.75 a month (Jetson Orin Nano Super).
+- **Electricity for the models** costs cents a month: below €0.01 for YOLOv8n, and up to €0.72 for OWLv2 at 12 h of motion a day (a team estimate on a Jetson Orin Nano).
+- **Who buys the device.** A box paid for by Altice does not pay back at €3.99 a month: it leaves −€4.81 to −€6.90 per home a month (section 9, options A2 and A3). The model works with the AI on the router, or with equipment the customer buys.
+- **The sections below are the earlier analysis (18 Nov)** and stay as context: the Jetson's $249 launch price, hardware amortised over 36 months, 1 USD = 1 EUR, and the hybrid path on Altice's own L4 servers.
+
+Sources of the 20 Nov figures (the team's price research):
+
+- Cameras: TP-Link Tapo C210 €42.00 (codi-tek.com, Lisbon); EZVIZ H8C SE €37.99 (worten.pt); Reolink E1 Pro €48.76 on sale, €64.99 regular (ipcam-shop.nl); the Portuguese range is €30–80 (4gnews.pt guide).
+- Raspberry Pi 5 8 GB with power supply, case and storage: about €200, an estimate between the $130 MSRP, $199.95 on Amazon and €264.49 at an EU retailer.
+- Jetson Orin Nano Super developer kit: $399 ≈ €345 (cnx-software price list; about $1.15 per €, an assumption).
+
+## In one minute (earlier analysis, 18 Nov)
 
 - **The question.** The business case shows the cost per home of the language model (about €0.43 a month). The mentors asked for the operator's cost of the vision models, which depends on where they run. They also objected that a device per home, or a fleet of servers, is very costly at 500,000 customers, which is why companies use hyperscalers.
 - **The objection holds for full frames.** Analysing every frame in motion at full resolution costs Altice €2.41 per home a month on its own servers, €3.93 to €4.26 on hyperscaler GPUs on demand, and €6.55 to €8.64 with a box in every home. With the €3.99 add-on, none of these leaves a margin.
-- **The recommended path costs about €0.49 per home a month** (one camera; €0.98 with two). The cheap motion check stays at home, on the camera or the router. Only the region that changed goes to Altice's servers, and work that is not urgent waits in a queue for a quiet moment, so the servers are not sized for the evening peak. That leaves about €1.25 per home a month.
+- **The path recommended on 18 Nov costs about €0.49 per home a month** (one camera; €0.98 with two). The cheap motion check stays at home, on the camera or the router. Only the region that changed goes to Altice's servers, and work that is not urgent waits in a queue for a quiet moment, so the servers are not sized for the evening peak. That leaves about €1.25 per home a month.
 - **The key assumption:** 2 h of motion per camera a day, analysed at 1 frame per second, with a GPU running at 25 % of its peak speed. Each one doubles or halves the cost (section 9).
 - **If the router has an NPU that can run the models,** the cost falls to about €0.36 per home a month, but nothing yet shows that it can.
 
@@ -112,7 +130,7 @@ The hyperscaler's advantage is real: it charges for the daily curve, not for the
 
 Streaming the cameras to the cloud is ruled out: it moves 37 times more data than frames sent during motion. The motion check at home is what makes any central option possible.
 
-## 8. The recommended hybrid path
+## 8. The hybrid path (recommended on 18 Nov, not chosen)
 
 1. **The motion check always stays at home**, on the camera or the router. It is a tiny comparison of two 160 × 90 grey images, with no AI accelerator.
 2. **Only the region that changed is sent**, resized to at most 640 × 640. That cuts the work per frame from 1.16 to 0.41 TFLOP and halves the upload.
@@ -141,7 +159,7 @@ The business case's add-on costs €3.99 a month (€3.24 net of 23 % VAT). Its 
 | C. AWS T4, on-demand | 4.26 | 8.52 | 4.26 | −2.53 |
 | C. AWS T4, spot (no capacity guarantee) | 1.93 | 3.87 | 1.93 | −0.20 |
 | C. Azure T4, 3-year reserved | 5.15 | 10.30 | 5.15 | −3.42 |
-| **Hybrid on own L4 servers (recommended)** | **0.49** | **0.98** | **0.49** | **1.25** |
+| **Hybrid on own L4 servers (recommended on 18 Nov)** | **0.49** | **0.98** | **0.49** | **1.25** |
 | Hybrid on Azure T4, 3-year reserved | 1.01 | 2.02 | 1.01 | 0.72 |
 | Hybrid on AWS T4, on-demand | 1.53 | 3.07 | 1.53 | 0.20 |
 

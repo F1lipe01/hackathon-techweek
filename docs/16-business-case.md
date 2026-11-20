@@ -2,12 +2,19 @@
 
 State on **Wed 18 Nov 2026**. The charts are built from [the model](16-business-case-model.csv) by `business-case/build_graficos.py --lang en`, which stops if a chart shows a value that this text does not. Every number is either sourced or marked as our assumption; the details and sources are at the end.
 
+## Final design (20 Nov): fully local
+
+- **The decision.** All perception and inference run on the home device, including the language model (Qwen3-1.7B in the prototype): the router, if it has an NPU, or a dedicated box such as a Raspberry Pi 5 with an AI accelerator or a Jetson Orin Nano Super. Images, video, visual fingerprints and face templates never leave the home; the Altice platform carries text only.
+- **Cost, the chosen option.** Equipment bought once: an indoor camera, about €45; a Raspberry Pi 5, about €200, or a Jetson Orin Nano Super, about €345; or a router with an NPU, about €15 more (an estimate). Over 5 years the device comes to €3.33 or €5.75 a month. Electricity for the models costs cents a month: below €0.01 for YOLOv8n, up to €0.72 for OWLv2 at 12 h of motion a day (a team estimate on a Jetson Orin Nano). Figures and sources: the team's price research of 20 Nov, in [document 17](17-operator-costs.md), "Final design".
+- **Who buys the device.** A box paid for by Altice does not pay back at €3.99 a month (−€4.81 to −€6.90 per home a month, document 17, section 9). The case works with the AI on the router, or with equipment the customer buys.
+- **The analysis below is the earlier one (18 Nov)** and stays as context. Vision on Altice's own L4 servers (about €0.49 per home a month) is the alternative evaluated and not chosen: images would leave the home. The language model was costed as a cloud service paid per call (about €0.43 per home a month); with the model on the home device that per-call cost falls away, and the figures below have not been recomputed for it.
+
 ## In one minute
 
 - **Who pays:** households pay their operator a small monthly fee; Altice Labs supplies ThingTracker on its Cognitive Home platform.
 - **How many:** about 19,000 MEO homes in the expected case, 1.2 % of MEO's fixed-broadband homes.
-- **Per home:** €3.99 a month leaves about €1.74 after the language model, the servers, support and the cost of winning the customer, and about €1.25 once the vision models run on Altice's own servers (about €0.49, [document 17](17-operator-costs.md)).
-- **The condition:** no box in every home. The heavy vision models run on Altice's own servers or on hardware already in the home (document 17); with a box per home, the add-on loses money.
+- **Per home:** €3.99 a month leaves about €1.74 after the language model, the servers, support and the cost of winning the customer, and, in the earlier analysis, about €1.25 with the vision models on Altice's own servers (about €0.49, [document 17](17-operator-costs.md)).
+- **The condition:** no box in every home paid for by Altice. The models run on the router or on equipment the customer buys (final design, above); with a box per home paid for by Altice, the add-on loses money (document 17).
 - **Price:** a fraction of today's camera alarm plans in Portugal, which start at €34.99 a month.
 
 ## 1. The market
@@ -32,7 +39,7 @@ Figure 2 shows what is left of the monthly fee after the costs. The language mod
 
 Figure 3 – Where the AI runs decides the case
 
-The local vision models are the heavy part. If they run on a router, gateway or camera already in the home, every subscriber leaves money; with a box per home, the add-on loses money (Figure 3). The architecture's hybrid route avoids the box: only the light models run at home, and OWLv2 and DINOv2 run on Altice's own servers (document 17). Whether Altice's home hardware has spare capacity is the first item to confirm with Altice, because it would move vision into the home (see *What we need from Altice* below).
+The local vision models are the heavy part. If they run on a router, gateway or camera already in the home, every subscriber leaves money; with a box per home, the add-on loses money (Figure 3). The earlier analysis's hybrid route avoids the box: only the light models run at home, and OWLv2 and DINOv2 run on Altice's own servers (document 17). Whether Altice's home hardware has spare capacity is the first item to confirm with Altice, because it would move vision into the home (see *What we need from Altice* below).
 
 ## 4. Price
 

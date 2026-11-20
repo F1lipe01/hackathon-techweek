@@ -96,7 +96,7 @@ It replaces the v3 recommendation (Casa Saudável on its own). The full v3 repor
 | Step | Live | Fallback if a test fails |
 |---|---|---|
 | Keys put on the table → «Onde estão as chaves?» → answer with the picture | Camera + vision model (keys about 1–2 m from the camera, good light) | A recording, labelled |
-| The answer is spoken | The camera speaker, if Altice's relay carries sound back | The laptop speaker (Joana, a European Portuguese voice) |
+| The answer is spoken | The camera speaker, if Altice's relay carries sound back | The laptop speaker, with a European Portuguese system voice |
 | The door opens → «as chaves ficaram na mesa, e o aquecedor está ligado» + amber light | Contact (open/closed **untested**), plug drawing power (a lamp stands in for the heater), bulb | A recording; the bulb step shown in the log |
 | The phone leaves → plug off → «Quer ativar o alarme?» | Phone presence (the wait is shortened, and we say so); plug off is verified | A "vou sair" (I'm leaving) button in the chat |
 | Blue light: time to air | Live temperature and humidity + IPMA | — |

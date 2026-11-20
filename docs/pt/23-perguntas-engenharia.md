@@ -81,7 +81,7 @@ Onde se mostra: `docs/architecture/implantacao.png`.
 
 Resposta curta: “Na horizontal, e os custos já estão contabilizados.”
 
-- Pormenor: o caso de negócio prevê 1 427 placas _L4_ (6,4 milhões de euros de _hardware_) para 500 000 casas com uma câmara, porque só o movimento desencadeia a análise e só se analisa a região que mudou (documento 17).
+- Pormenor: o documento 17 estima 1427 placas _L4_ (6,4 milhões de euros de _hardware_) para 500 000 casas com uma câmara, porque só o movimento desencadeia a análise e só se analisa a região que mudou.
 
 ### A7. E se a internet falhar?
 
@@ -94,12 +94,13 @@ Resposta curta: “O agente da casa guarda os eventos numa fila e envia-os quand
 
 ### A8. Quanto demora um aviso?
 
-Resposta curta: “O objetivo é menos de 3 segundos; no aviso da porta, o protótipo demora cerca de 10 segundos.”
+Resposta curta: “A meta é no máximo 3 segundos; no aviso da porta, o protótipo demora cerca de 10 segundos.”
 
 - Pormenor:
+  - a meta, do evento à ação, é a do documento [20](20-produto.md), §6.4, e confirma-se no piloto;
   - o tempo divide-se em movimento, envio da região, fila urgente de visão, regra e notificação;
-  - medido na GPU do _Mac_: _OWLv2_ 0,57 s por imagem e _DINOv2_ 22 ms por recorte (documento 14, §3);
-  - os 10 s do protótipo resultam da consulta do sensor da porta pelo MCP a cada 4 s, somada à espera da regra (documento 19, §6.4).
+  - medido na GPU do _Mac_: _OWLv2_ 557 ms por imagem, com 10 objetos pedidos, e _DINOv2_ 22 ms por recorte (documento 14, §14);
+  - os 10 s do protótipo resultam da consulta do sensor da porta pelo MCP a cada 4 s, da espera da regra (5 s) e do motor de regras (2 s) (documento 19, secção 6).
 
 ## B. Perceção: o que os modelos fazem, e só isso
 
@@ -112,7 +113,7 @@ Resposta curta: “Dois modelos: um encontra ‘um livro’ e o outro confirma q
   - o _DINOv2_ transforma cada caixa numa assinatura visual (384 números) e compara-a, por semelhança de cosseno, com as 8 vistas guardadas;
   - a partir de 0,62, conta como seu;
   - no laboratório, na câmara do _kit_, o livro obteve 0,70 e uma garrafa 0,10;
-  - `edge.py` (comparação por volta das linhas 195-208).
+  - `edge.py`, função `analyse` (a comparação com o limiar `--match`, 0,62 por omissão).
 - Medido na gravação do filme 1, com a câmara no teto:
   - na região da secretária em resolução completa, o _OWLv2_ encontrou o livro em 68 de 68 imagens;
   - face a uma assinatura registada a partir da mesma câmara, o livro obteve uma mediana de 0,93 (0,79-0,96), os outros objetos 0,23 (máximo 0,28), e depois de o livro ser levado não houve candidatos;
@@ -149,7 +150,7 @@ Resposta curta: “Não é um modelo que o decide: é uma regra sobre caixas.”
 
 Resposta curta: “Quando a porta fecha depois de sair alguém da família, a câmara verifica se o livro continua lá.”
 
-- [protótipo e execução sem montagem]: na gravação do filme 1, passada de novo pelo sistema real, a regra dispara “esquecido” (o livro visto a 0,94 em 3 imagens); quando o Filipe sai com o livro, o resultado é “incerto”, sem aviso, e o juiz de visão concorda.
+- [protótipo e execução sem montagem]: na gravação do filme 1, passada de novo pelo sistema real, a regra dispara “esquecido” (o livro visto a 0,94 em 3 imagens); quando a mesma pessoa sai com o livro, o resultado é “incerto”, sem aviso, e o juiz de visão concorda (`server.py`, `check_leave_without`).
   - gatilho: a porta fecha depois de abrir, e o motor de presença indica que saiu alguém da família (um telemóvel saiu do Wi-Fi, ou há menos pessoas);
   - segue-se uma verificação ativa, ou seja, uma análise forçada do lugar do livro em algumas imagens, mesmo sem movimento;
   - só há aviso se o livro for visto; se não estiver visível, o resultado é “incerto”, sem alarme;
@@ -176,21 +177,22 @@ Resposta curta: “São. Por isso, o reconhecimento é opcional, exige consentim
 
 - Pormenor:
   - o _YuNet_ (MIT) encontra o rosto e o _SFace_ (Apache-2.0) compara-o; ambos são modelos pequenos, que correm num processador comum;
-  - na solução proposta, um rosto conhecido obtém 0,363 ou mais, o valor recomendado pelo OpenCV; o protótipo usa três faixas para os rostos pequenos da câmara do _kit_ (40-86 px): conhecido a 0,40 ou mais, desconhecido abaixo de 0,25 e “incerto” entre os dois, a calibrar por câmara num piloto;
-  - de casa só sai um rótulo: “Filipe”, “rosto desconhecido” ou “rosto não visível”;
+  - um rosto é de uma pessoa da família a partir de 0,40 de semelhança com um dos seus padrões, e é “desconhecido” abaixo de 0,25 face a todos; entre os dois valores, o sistema não decide e responde “rosto não visível”. O OpenCV recomenda 0,363 para rostos nítidos e de perto; os rostos da câmara do _kit_ têm 40 a 86 px, e os limiares calibram-se por câmara no piloto (`faces.py`, `THRESHOLD_NOTE`);
+  - só se avalia um rosto que o _YuNet_ pontue a 0,8 ou mais, com pelo menos 40 px de largura e não demasiado virado; caso contrário, é “rosto não visível”, e nunca “desconhecido”;
+  - de casa só sai um rótulo: o identificador da pessoa, “rosto desconhecido” ou “rosto não visível”;
   - os dados biométricos usados para identificar uma pessoa são uma categoria especial ao abrigo do RGPD (artigo 9.º), que exige consentimento explícito.
 - Onde se mostra: `docs/architecture/seq-pessoa-desconhecida.png`.
-- [protótipo e execução sem montagem]: na gravação do filme 2, o Filipe é reconhecido (0,54 e 0,63) e nada dispara; o outro é classificado como desconhecido (0,17 e 0,14). Para os rostos pequenos da câmara do _kit_ (40-86 px), o protótipo usa três faixas: conhecido a partir de 0,40, desconhecido abaixo de 0,25 e “não tenho a certeza” entre os dois valores. O alarme e a sugestão de chamar a polícia dispararam pela regra em 2 de 4 repetições; nas outras 2, poucos rostos do desconhecido estavam nítidos o bastante, e o sistema perguntou em vez de dar o alarme. Antes de 19 de novembro, não havia modelo de rostos.
+- [protótipo e execução sem montagem]: na gravação do filme 2, um membro da equipa (Filipe), registado com consentimento, é reconhecido (0,54 e 0,63) e nada dispara; a outra pessoa é classificada como desconhecida (0,17 e 0,14). O alarme e a sugestão de chamar a polícia dispararam pela regra em 2 de 4 repetições; nas outras 2, poucos rostos do desconhecido estavam nítidos o bastante, e o sistema perguntou em vez de dar o alarme. O alarme é simulado.
 
 ### B6. E quando entra alguém sem o rosto visível?
 
 Resposta curta: “Pergunta, não dá o alarme.”
 
 - Pormenor:
-  - o alarme só soa perante um rosto desconhecido visível em várias análises seguidas (3, na solução proposta), e nunca para um membro da família;
+  - o alarme só soa perante um rosto desconhecido visível em várias análises seguidas, e nunca para um membro da família: 3 na solução proposta e 2 no protótipo, porque aí um veredicto “desconhecido” já exige um rosto nítido abaixo de 0,25 face a todos os padrões (`presence.py`, `unknown_runs`);
   - uma pessoa sem o rosto visível, com a família fora, deixa a casa no estado INCERTA, e o serviço envia uma pergunta à família.
 
-### B7. Falsas deteções, como um casaco confundido com uma pessoa?
+### B7. Deteções erradas, como um casaco confundido com uma pessoa?
 
 Resposta curta: “Limiares, seguimento e respostas graduais, e é a família que escolhe o que é intrusivo.”
 
@@ -204,7 +206,7 @@ Resposta curta: “Limiares, seguimento e respostas graduais, e é a família qu
 
 ### B8. E às escuras?
 
-Resposta curta: “A câmara do _kit_ passa para a visão noturna por infravermelhos, e os modelos continuam a funcionar com essa imagem; na escuridão total, não se deteta nada, e não afirmamos o contrário.”
+Resposta curta: “A câmara do _kit_ passa para a visão noturna por infravermelhos; a exatidão dos modelos com essa imagem ainda não foi medida, e mede-se no piloto. Na escuridão total, não se deteta nada.”
 
 - Pormenor: nos filmes, a imagem da própria câmara fica negra durante uma fração de segundo e passa depois à visão noturna. Enquanto a imagem está demasiado escura, não aparecem caixas.
 
@@ -212,7 +214,7 @@ Resposta curta: “A câmara do _kit_ passa para a visão noturna por infraverme
 
 Resposta curta: “Cada câmara é um lugar; o que nenhuma câmara vê fica a cargo dos telemóveis e do sensor da porta; não se adivinha.”
 
-- Pormenor: uma pessoa escondida atrás de um monitor continua a ser seguida enquanto está parada. As zonas dentro de uma câmara ficam para uma fase posterior.
+- Pormenor: uma pessoa parada não gera movimento; enquanto a presença depender só das câmaras, o serviço pede ao agente da casa, a cada 30 s, uma análise das zonas onde as pessoas foram vistas pela última vez, mesmo sem movimento (documento 14, §7; `presence.py`, `refresh_s`). As zonas dentro de uma câmara ficam para uma fase posterior.
 
 ## C. Presença e regras: quem decide
 
@@ -229,7 +231,7 @@ Resposta curta: “Não só pela câmara: têm de concordar três sinais.”
   - A SAIR: a porta abriu e fechou, e o serviço verifica quem saiu;
   - VAZIA: todos os telemóveis fora, a porta abriu e fechou, e ninguém foi visto durante um tempo definido;
   - INCERTA: os sinais não concordam.
-- Tempos: valores em segundos na demonstração e em minutos em produção (por exemplo, “vazia” ao fim de 20 s na demonstração, e 3 min propostos para produção).
+- Tempos: valores em segundos na demonstração e em minutos em produção, estes propostos para afinar no piloto. Por exemplo, a fase A SAIR dura 10 s na demonstração e 5 min em produção, e uma pessoa vista conta como presente durante 15 s e 2 min, respetivamente (documento 14, §7; `presence.py`, `TIMINGS`).
 
 Onde se mostra: `docs/architecture/presenca-estados.png`.
 
@@ -237,14 +239,14 @@ Onde se mostra: `docs/architecture/presenca-estados.png`.
 
 Resposta curta: “Os telemóveis cobrem esses casos.”
 
-- Pormenor: se o telemóvel do Filipe está no Wi-Fi, o Filipe está em casa, mesmo numa divisão sem câmara. Uma pessoa parada fica coberta pelos telemóveis e, enquanto a presença depender apenas de uma câmara, por uma análise periódica de atualização.
+- Pormenor: se o telemóvel de um membro da família está no Wi-Fi, essa pessoa conta como estando em casa, mesmo numa divisão sem câmara. Uma pessoa parada fica coberta pelos telemóveis e, enquanto a presença depender apenas das câmaras, por uma análise de atualização a cada 30 s (B9).
 
 ### C3. E se o telemóvel ficar em casa, ou uma visita não tiver telemóvel?
 
 Resposta curta: “Nesse caso, os sinais não concordam, a casa fica ‘incerta’ e as regras perguntam em vez de agir.”
 
 - Pormenor:
-  - um telemóvel em casa, sem nenhuma observação nem uso da porta durante muito tempo (3 h propostas), indica um telemóvel esquecido;
+  - um telemóvel em casa, sem nenhuma observação nem uso da porta durante muito tempo (4 h propostas para produção, 15 min na demonstração), indica um telemóvel esquecido, e a casa passa a INCERTA;
   - uma pessoa vista quando não há nenhum telemóvel em casa é alguém sem telemóvel registado: uma visita, uma criança ou um desconhecido;
   - o rosto decide qual, se estiver registado; caso contrário, pergunta-se à família.
 
@@ -255,8 +257,9 @@ Resposta curta: “Não. Os modelos só veem; quem decide é um motor de regras 
 - Pormenor:
   - o _OWLv2_ devolve caixas com pontuações, o _DINOv2_ indica quão próximo um recorte está de uma assinatura e o _SFace_ diz de quem é o rosto;
   - todas as conclusões (“esquecido”, “ninguém em casa”, “pessoa desconhecida”) são decididas por código nos motores de regras e de presença, e reavaliadas a cada evento e a cada temporizador;
-  - o modelo de linguagem faz apenas três coisas: transformar uma frase numa regra, redigir respostas e mensagens e, raramente, avaliar um recorte duvidoso;
-  - [protótipo]: `server.py`, `rules_engine`; o modelo de linguagem em `brain.py`.
+  - o modelo de linguagem só escreve texto: transforma uma frase numa regra e redige as respostas e as mensagens;
+  - o juiz de visão (_Qwen2-VL-2B_, opcional) é um modelo à parte: só é chamado quando uma verificação ativa não encontra o objeto, recebe um único recorte apertado do lugar e, no protótipo, o seu “sim” ou “incerto” torna-se uma pergunta à família; nunca aciona um dispositivo;
+  - [protótipo]: `server.py`, `rules_engine`; o modelo de linguagem em `brain.py`; o juiz em `judge.py`.
 
 ### C5. E se o modelo de linguagem se enganar?
 
@@ -268,9 +271,9 @@ Resposta curta: “Não pode agir sozinho: a regra que escreve é validada e mos
 
 ### C6. Como se executam as ações?
 
-Resposta curta: “Através do servidor MCP da Altice; é a escolha da família que define o que é intrusivo, e ativar o alarme exige sempre confirmação.”
+Resposta curta: “Através do servidor MCP da Altice; a sirene segue a escolha da família para cada risco, e armar o alarme de segurança exige sempre confirmação.”
 
-- [protótipo]: todas as ações correm em simulação, salvo com `TT_LIVE_ACTIONS=1`, que a equipa nunca ativa, pelo que a casa real nunca é alterada (`actions.py`).
+- [protótipo]: todas as ações correm em simulação, salvo com `TT_LIVE_ACTIONS=1`, que a equipa nunca ativa, pelo que a casa real nunca é alterada; o alarme é sempre simulado, e o alarme da Altice nunca é chamado (`actions.py`).
 
 ## D. Dados, segurança e privacidade
 
@@ -301,7 +304,7 @@ Onde se mostra: o diagrama de fluxo de dados com fronteiras de confiança.
 
 Resposta curta: “Minimização desde a conceção: nenhum vídeo sai de casa, os rostos só com consentimento explícito e guardados em casa, e prazos de conservação limitados.”
 
-- O fornecedor do modelo de linguagem tem de garantir que não treina com os nossos dados, assinar um acordo de tratamento de dados (DPA) e tratar os dados na UE (documento 14, §3).
+- O fornecedor do modelo de linguagem tem de garantir que não treina com os nossos dados, assinar um acordo de tratamento de dados (DPA) e tratar os dados na UE (documento 14, §15).
 
 ## E. Integração com a Altice
 
@@ -309,7 +312,7 @@ Resposta curta: “Minimização desde a conceção: nenhum vídeo sai de casa, 
 
 Resposta curta: “Um separador _Things_, um botão de assistente, quatro ferramentas MCP para os objetos, uma para a presença no Wi-Fi, e o serviço.”
 
-- As ferramentas: `list_things`, `create_thing`, `get_thing_last_seen` e `get_thing_timeline`, mais a ferramenta proposta para a presença no Wi-Fi. As ações usam as 18 ferramentas que já existem (documento 14, §3, e documento 15).
+- As ferramentas: `list_things`, `create_thing`, `get_thing_last_seen` e `get_thing_timeline`, mais a ferramenta proposta para a presença no Wi-Fi. As ações usam as 18 ferramentas que já existem (documento 14, §2, e documento [15](15-especificacao-integracao.md)).
 
 ### E1a. Como ligaram a porta à vossa app sem acesso ao nosso _backend_, à app ou à base de dados?
 
@@ -318,7 +321,7 @@ Resposta curta: “Não precisámos do vosso _backend_. Deram às equipas o serv
 - Pormenor:
   - o sensor: o sensor de contacto do _kit_ (MS-D3D) na nossa casa de testes (“Hack 3”). A Altice configurou os sete dispositivos do _kit_ e associou-os à conta da equipa; não acrescentámos nenhum dispositivo ([04-kit-and-access.md](../04-kit-and-access.md)). Colámos o sensor e o íman na porta do laboratório ([19-teste-real.md](../19-teste-real.md));
   - o acesso: o nosso cliente MCP (`mcp/client/chmcp.py`) inicia sessão com a conta da equipa através do _Keycloak_ da Altice (OAuth) e envia a chave da API em cada pedido (`chmcp.py:170-171`), com a versão 2025-06-18 do protocolo MCP;
-  - a leitura da porta: a cada 4 s, o servidor chama a ferramenta de leitura `get_home_devices`, encontra o `contactSensor` e lê o `sensorState`, em que `"alarm"` significa aberta (`server.py:894-921`). A base de dados do protótipo tem eventos reais da porta desde 19 de novembro;
+  - a leitura da porta: a cada 4 s, o servidor chama a ferramenta de leitura `get_home_devices`, encontra o `contactSensor` e lê o `sensorState`, em que `"alarm"` significa aberta (`server.py`, `device_poller`). A base de dados do protótipo tem eventos reais da porta desde 19 de novembro;
   - nunca tocámos no _backend_, na app nem na base de dados da Altice. A app dos filmes é a nossa cópia dos ecrãs da app da Altice, a correr o nosso protótipo; em produção, a Altice acrescenta o separador _Things_ à sua própria app.
 - A limitação, dita com franqueza, e o pedido: o servidor MCP não envia eventos, pelo que fazemos consultas periódicas, o que explica parte dos cerca de 10 s do aviso da porta no protótipo. Em produção, o _ThingTracker_ corre dentro da plataforma da Altice e recebe os eventos dos sensores diretamente, ou por uma subscrição de eventos. Nunca chamamos as ferramentas de escrita: as ações correm em simulação, por regra da própria equipa.
 
@@ -377,7 +380,7 @@ Resposta curta: “Cerca de 0,49 € por mês para a visão, com uma câmara, e 
 
 Resposta curta: “Todas abertas, e todas permitem uso comercial.”
 
-- Pormenor: _OWLv2_ e _DINOv2_, Apache-2.0; _Qwen3-1.7B_, Apache-2.0; _YuNet_, MIT; _SFace_, Apache-2.0 (verificadas nos ficheiros dos modelos; as somas de verificação estão no [AGENTS.md](../../AGENTS.md)).
+- Pormenor: _OWLv2_ e _DINOv2_, Apache-2.0; _Qwen3-1.7B_, Apache-2.0; _Qwen2-VL-2B_ (o juiz opcional), Apache-2.0; _YuNet_, MIT; _SFace_, Apache-2.0. As licenças foram verificadas nos ficheiros dos modelos; as somas de verificação dos modelos de rostos estão no [AGENTS.md](../../AGENTS.md). O _Qwen2.5-VL-3B_ foi excluído por causa da sua licença, a _Qwen Research License_, que restringe o uso comercial.
 
 ## G. Os filmes e a demonstração
 
@@ -394,10 +397,19 @@ Resposta curta: “As imagens são do laboratório real e da câmara do _kit_, a
 
 ### G2. O que podem mostrar ao vivo?
 
+Resposta curta: “As mesmas gravações dos filmes a passar pelo sistema real, sem montagem; e, se o _kit_ estiver instalado, a porta lida pelo MCP e um aviso disparado por uma regra.”
+
 - as execuções sem montagem: a gravação de cada filme passada de novo pelo sistema real, com as regras a disparar, o estado de presença a mudar e os rostos avaliados (um rosto aparece desfocado, por privacidade);
 - ao vivo, só se o _kit_ estiver instalado: o sensor da porta lido pelo MCP, a presença a mudar e um aviso disparado por uma regra.
 
 ### G3. O que está medido, e o que não está?
 
-- Medido no laboratório, na câmara do _kit_: o livro a 0,70 para um limiar de 0,62; uma garrafa a 0,10.
-- Não medido: a exatidão e os falsos alarmes em casas reais. Isso será medido no piloto.
+Resposta curta: “Está medido no laboratório, na câmara do _kit_; a exatidão em casas reais mede-se no piloto.”
+
+- Medido no laboratório, na câmara do _kit_:
+  - o livro a 0,70 para um limiar de 0,62, e uma garrafa a 0,10;
+  - na gravação do filme 1, o livro encontrado em 68 de 68 imagens, com mediana 0,93 (B1);
+  - na gravação do filme 2, o membro da equipa registado reconhecido a 0,54 e 0,63, para um limiar de 0,40, e o desconhecido a 0,17 e 0,14 (B5);
+  - os tempos do _OWLv2_ e do _DINOv2_ na GPU do _Mac_ (A8).
+- Estimado, e não medido: os custos por casa (F1).
+- Não medido: a exatidão e os falsos alarmes em casas reais, a visão noturna (B8) e o tempo de aviso em produção (A8). Mede-se tudo no piloto.

@@ -1,5 +1,5 @@
-// Proof A, 5 s: the keys are shown to the home camera and the app learns them. The film's new standard, on one shot,
-// before the film is rebuilt (video/research/compositing-playbook.md). All footage is licensed stock (Pexels, listed in
+// Proof A, 5 s: the keys are shown to the home camera and the app learns them. A test of the film's compositing on one
+// shot (video/research/compositing-playbook.md). All footage is licensed stock (Pexels, listed in
 // public/stock/stock.json); the app is a recording of the real prototype (video/tools/record_app.mjs register-keys).
 //   0-44   a hand holds an iPhone; the app, tracked onto its green screen, shows the camera's live view of the keys
 //          with the registration box; a line pops in

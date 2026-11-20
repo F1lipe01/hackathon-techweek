@@ -87,7 +87,7 @@ def _llm(fn, *args):
 #   state the app shows after a dry run is ThingTracker's own.
 # - an Air conditioner connected to the app directly, as a third-party integration: not part of the Altice kit, and
 #   simulated in this prototype (its state lives here; nothing is sent to it).
-TT_FILE = Path(__file__).resolve().parent / "data" / "tt_devices.json"
+TT_FILE = Path(os.environ.get("TT_DEVICES_FILE") or DATA / "tt_devices.json")
 TT_DEFAULT = {"powers": {"plug": "Ceiling lights"}, "state": {},
               "integrations": [{"id": "ac", "name": "Air conditioner", "type": "ac", "room": "Work Room", "on": True,
                                 "via": "Third-party integration"}]}
@@ -113,6 +113,12 @@ def tt_devices():
                     "powers": powers, "kit": True})
     for x in d["integrations"]:
         out.append({**x, "on": bool(d["state"].get(x["id"], x["on"])), "kit": False})
+    sim = d.get("sim") or {}               # the demo home's devices (prototype/site.py): simulated by ThingTracker
+    for x in store.home().get("devices", []):
+        if x["id"] in sim:
+            out.append({"id": x["id"], "name": x["name"], "type": x["type"], "room": rooms.get(x.get("room_id"), ""),
+                        "on": bool(d["state"].get(x["id"], sim[x["id"]]["on"])), "kit": False, "sim": True,
+                        "watch": sim[x["id"]].get("watch", True)})
     return out
 
 
@@ -281,6 +287,8 @@ threading.Thread(target=deadline_ticker, daemon=True).start()
 
 # ---------------------------------------------------------------------- edge service (prototype/edge.py)
 # Who is home is the presence engine's (presence.py); the edge only reports what each analysis saw.
+DEMO_SITE = bool(os.environ.get("TT_DEMO"))     # the pitch site (prototype/site.py): reset, models switch, media
+MODELS = {"on": False, "proc": None, "started": 0.0, "error": ""}
 EDGE = {"state": "offline", "checked": 0, "analysed": 0, "last_motion": 0.0, "updated": 0.0, "ms": None}
 _last_crop = {}
 _unknown_crop = {}      # camera -> (ts, jpeg b64) of the latest unknown face's person crop; written only if a rule fires
@@ -487,7 +495,8 @@ def edge_task(camera: str = ""):
     snap = next(({"id": k, "alert_id": v["alert_id"]} for k, v in SNAPSHOTS.items() if not v.get("done")), None)
     learn = next(iter(LEARN.values()), None)
     return {"enrol": dict(ENROL) or None, "refresh": presence.wants_refresh(cam), "check": check, "photos": photos,
-            "snapshot": snap, "learn": learn}
+            "snapshot": snap, "learn": learn, "paused": bool(DEMO_SITE and not MODELS["on"])} | (
+        {"refresh": True} if time.time() < MODELS.get("look_until", 0) else {})
 
 
 # "Mark it on the camera picture": the family taps their thing on the live view; the edge learns how it looks from
@@ -716,6 +725,9 @@ def power(did, on, **extra):
         sent = "sent to the platform" if res.get("live") else "not sent (dry run)"
         ev = store.add_event("device", f"{d['name']} (powers {d['powers']}) turned {'on' if on else 'off'} from the app: {sent}.",
                              action=res, **extra)
+    elif d.get("sim"):
+        word = {"lock": ("locked", "unlocked"), "blind": ("opened", "closed")}.get(d["type"], ("turned on", "turned off"))
+        ev = store.add_event("device", f"{d['name']} {word[0] if on else word[1]} from the app (simulated).", **extra)
     else:
         ev = store.add_event("device", f"{d['name']} turned {'on' if on else 'off'} from the app ({d.get('via', 'integration').lower()}, simulated).",
                              **extra)
@@ -1129,7 +1141,7 @@ def check_empty_home(rules, now_):
     dev_rules = [r for r in rules if r.get("kind") == "nobody_devices_on"]
     door_rules = [r for r in rules if r.get("kind") == "door_open_nobody"]
     grace = lambda r: float(r.get("grace_s") or float(r.get("minutes") or 0) * 60 or 10)
-    on = [d for d in tt_devices() if d["on"]]
+    on = [d for d in tt_devices() if d["on"] and d.get("watch", True)]
     door_open = DOOR["open"] is True
     dev_due = [r for r in dev_rules if on and r.get("asked_after", 0) < empty_since and now_ - empty_since >= grace(r)]
     dev_wait = [r for r in dev_rules if on and r.get("asked_after", 0) < empty_since and now_ - empty_since < grace(r)]
@@ -1150,6 +1162,7 @@ def check_empty_home(rules, now_):
             store.update_rule(x["id"], door_seen=DOOR["changed"], last_fired=now_)
         cards = [{"device": d["id"], "name": d["name"], "kind": d["type"], "state": "on",
                   "label": "Turn off the AC?" if d["type"] == "ac" else "Turn off the lights?" if "light" in (d.get("powers") or "").lower()
+                  else f"Turn off the {d['name'] if d['name'].isupper() else d['name'].lower()}?" if d.get("sim")
                   else f"Turn off {d.get('powers') or d['name']}?"} for d in on]
         text = f"Everyone left, and {len(on)} thing{'s are' if len(on) > 1 else ' is'} still on." + (" The door is open." if door else "")
         e = fire(r, title="Nobody is home", text=text, alarm=sound, cards=cards, door=door, devices=[d["id"] for d in on],
@@ -1579,6 +1592,28 @@ if os.environ.get("TT_REPLAY"):
     replayer = Replayer(kit, {"setup": replay_setup, "event": replay_event})   # its setup runs at the start
 
 
+class Switch:
+    """The pitch site's camera: one of its sources, switched from the page. The endpoints and the edge read it."""
+
+    def __init__(self, cur):
+        self.__dict__["cur"] = cur
+
+    def __getattr__(self, k):
+        return getattr(self.__dict__["cur"], k)
+
+
+SOURCES, CURRENT = {}, {"id": None}
+if DEMO_SITE and replayer:
+    from replay import WebcamCamera   # noqa: E402
+    SOURCES["book"] = {"name": "O livro", "kind": "take", "cam": kit, "replayer": replayer}
+    _nob = ReplayCamera(HERE / "replays" / "nobody.json")
+    SOURCES["nobody"] = {"name": "Ninguém em casa", "kind": "take", "cam": _nob,
+                         "replayer": Replayer(_nob, {"setup": replay_setup, "event": replay_event})}
+    SOURCES["webcam"] = {"name": "Webcam ao vivo", "kind": "live", "cam": WebcamCamera(), "replayer": None}
+    CURRENT["id"] = "book"
+    kit = Switch(kit)
+
+
 @app.post("/api/replay/start")
 def replay_start():
     if not replayer:
@@ -1626,6 +1661,252 @@ def kit_stream():
 @app.get("/api/kit/status")
 def kit_status():
     return _kit().status()
+
+
+# ---------------------------------------------------------------------- the pitch site (TT_DEMO=1, prototype/site.py)
+# The models switch: the edge service is started once through video/tools/heavy.sh (one heavy job at a time on the
+# team laptop), then paused and resumed from the page (GET /api/edge/task says "paused"), so turning the models back
+# on is instant. Unloading it frees the machine.
+import atexit  # noqa: E402
+import signal  # noqa: E402
+import sqlite3  # noqa: E402
+import urllib.request  # noqa: E402
+
+
+def _edge_alive():
+    p = MODELS["proc"]
+    return bool(p and p.poll() is None)
+
+
+def _edge_stop():
+    p, MODELS["proc"] = MODELS["proc"], None
+    if p and p.poll() is None:
+        try:
+            os.killpg(p.pid, signal.SIGTERM)
+            p.wait(timeout=8)
+        except Exception:
+            try:
+                os.killpg(p.pid, signal.SIGKILL)
+            except Exception:
+                pass
+    EDGE.update(state="offline", updated=0.0)
+
+
+atexit.register(_edge_stop)
+
+
+_LLM = {"ok": False, "at": 0.0}
+
+
+def _llm_up():
+    """Whether the local text model answers, checked at most every 5 s (the page asks every second)."""
+    if time.time() - _LLM["at"] > 5:
+        try:
+            with urllib.request.urlopen("http://127.0.0.1:8766/health", timeout=1.5) as r:
+                _LLM["ok"] = bool(json.loads(r.read()).get("ok", False))
+        except Exception:
+            _LLM["ok"] = False
+        _LLM["at"] = time.time()
+    return _LLM["ok"]
+
+
+def _edge_log_tail(n=4):
+    try:
+        return (DATA / "edge.out").read_text().strip().splitlines()[-n:]
+    except OSError:
+        return []
+
+
+@app.get("/api/demo/status")
+def demo_status():
+    alive = _edge_alive()
+    online = edge_online()
+    loading = alive and not online
+    tail = _edge_log_tail()
+    waiting = loading and any("heavy.sh" in line for line in tail)
+    src = SOURCES.get(CURRENT["id"]) or {}
+    cam = src.get("cam")
+    source = None
+    if cam:
+        st = cam.status()
+        rp = src.get("replayer")
+        marks = [{"t": e["t"], "what": "door" if "door" in e else "phone" if "phone" in e else "device"}
+                 for e in (cam.spec.get("events") or [])] if src["kind"] == "take" else []
+        source = {"id": CURRENT["id"], "name": src["name"], "kind": src["kind"], "t": st["t"], "duration": st["duration"],
+                  "from": st.get("from", 0), "started": st["started"], "paused": st.get("paused", False),
+                  "ended": st.get("ended", False), "story": bool(rp and getattr(rp, "active", False)), "marks": marks}
+    return {"demo": DEMO_SITE, "models": {"on": MODELS["on"], "loaded": alive and online, "loading": loading,
+                                          "waiting": waiting, "error": MODELS["error"] if not alive else "",
+                                          "edge_state": EDGE.get("state") if online else "offline"},
+            "llm": _llm_up(), "replay": replayer.status() if replayer else None, "source": source,
+            "sources": [{"id": k, "name": v["name"], "kind": v["kind"]} for k, v in SOURCES.items()]}
+
+
+def _look(seconds=3.0):
+    """The models analyse the frame now, without waiting for movement (a paused or dragged frame never moves)."""
+    MODELS["look_until"] = time.time() + seconds
+
+
+@app.post("/api/demo/source")
+def demo_source(payload: dict = Body(...)):
+    """Switches the camera: a lab take or the MacBook's webcam."""
+    global replayer
+    sid = str(payload.get("id", ""))
+    if sid not in SOURCES:
+        raise HTTPException(404, "no such source")
+    if sid != CURRENT["id"]:
+        old = SOURCES[CURRENT["id"]]
+        (old["replayer"].stop() if old["replayer"] else old["cam"].stop())
+        CURRENT["id"] = sid
+        new = SOURCES[sid]
+        kit.__dict__["cur"] = new["cam"]
+        replayer = new["replayer"]
+        if new["kind"] == "live":
+            new["cam"].start()
+        EDGE["boxes"] = []
+        _look()
+    return demo_status()
+
+
+@app.post("/api/demo/player")
+def demo_player(payload: dict = Body(...)):
+    """The take's player: {"action": "story"} plays it from its start with the door and phone moments;
+    "play" goes on from where it is (looking only); "pause"; "seek" with "t" (take seconds) shows that frame, paused,
+    and the models analyse it. Dragging ends the story: its events still to come are dropped."""
+    src = SOURCES.get(CURRENT["id"])
+    if not src or src["kind"] != "take":
+        raise HTTPException(400, "the player works on the recorded takes")
+    cam, rp, a = src["cam"], src["replayer"], payload.get("action")
+    if a == "story":
+        return {**demo_play(), **demo_status()}
+    if a == "play":
+        at = None if (not cam.started_at or cam.ended or cam.t() >= cam.duration - 0.2) else cam.t()
+        if not cam.started_at:
+            rp.cancel()
+        cam.start(at=at if at is not None else cam.offset)
+        _look(2)
+    elif a == "pause":
+        cam.pause()
+        _look()
+    elif a == "seek":
+        rp.cancel()
+        EDGE["boxes"] = []
+        cam.seek(float(payload.get("t", 0)))
+        _look()
+    return demo_status()
+
+
+@app.post("/api/demo/models")
+def demo_models(payload: dict = Body(...)):
+    """{"on": true}: the models analyse the camera (the edge is started if needed); {"on": false}: paused;
+    {"unload": true}: the edge stops and frees the machine."""
+    if not DEMO_SITE:
+        raise HTTPException(404, "not the pitch site")
+    if payload.get("unload"):
+        MODELS["on"] = False
+        _edge_stop()
+        return demo_status()
+    MODELS["on"] = bool(payload.get("on"))
+    if MODELS["on"] and not _edge_alive():
+        MODELS["error"] = ""
+        log = open(DATA / "edge.out", "w")
+        MODELS["proc"] = subprocess.Popen(
+            [str(ROOT / "video" / "tools" / "heavy.sh"), str(HERE / ".venv-vision" / "bin" / "python"), str(HERE / "edge.py"),
+             "--server", f"http://127.0.0.1:{os.environ.get('TT_PORT', '8765')}", "--no-faces"],
+            env={**os.environ, "TT_DATA": str(DATA), "MAX_WAIT": "20"}, stdout=log, stderr=subprocess.STDOUT,
+            start_new_session=True)
+        MODELS["started"] = time.time()
+    return demo_status()
+
+
+@app.post("/api/demo/reset")
+def demo_reset():
+    """The demo home exactly as prototype/site.py built it: things, rules, devices, presence, the take at its start."""
+    if not DEMO_SITE:
+        raise HTTPException(404, "not the pitch site")
+    if replayer:
+        replayer.stop()
+    EDGE["boxes"] = []
+    pristine = DATA / "pristine.db"
+    with store.lock:
+        src = sqlite3.connect(pristine)
+        src.backup(store.db)
+        src.close()
+    presence.reset()
+    for d in (HELD, CHECKS, SNAPSHOTS, PENDING, ENROL, LEARN):
+        d.clear()
+    with _door_lock:
+        DOOR.update(open=False, source="reset", changed=time.time(), opened_at=0.0)
+    store.set_device_status("contactSensor", "Closed")
+    tp = DATA / "tt_devices.pristine.json"
+    if tp.exists():
+        TT_FILE.write_text(tp.read_text())
+    store.add_event("info", "Demo home ready: the kit's devices (a copy) and simulated devices; the book's camera views "
+                    "learnt by the real models. Nothing is sent to the real home.")
+    return {"ok": True}
+
+
+@app.post("/api/demo/play")
+def demo_play():
+    """The take from its first second (again), with its door and phone moments."""
+    if not replayer:
+        raise HTTPException(404, "not in replay mode")
+    if kit.started_at:
+        replayer.stop()
+    # the camera looks at the room as the scene begins (a real analysis, as when the edge starts): without it, a camera
+    # that has watched the still first frame for minutes only wakes on the first movement, and may not have seen the
+    # book before the door closes
+    _look(4)
+    return replay_start()
+
+
+if DEMO_SITE:
+    demo_reset()            # every start of the site begins from the demo home as built
+
+
+MEDIA = {   # what the site may serve from the repo, and nothing else (never the unblurred face.mp4)
+    "pitch-livro.mp4": "video/out/pitch/ThingTracker - pitch - o livro (20 s).mp4",
+    "pitch-pessoa.mp4": "video/out/pitch/ThingTracker - pitch - pessoa desconhecida (20 s).mp4",
+    "pitch-casa-vazia.mp4": "video/out/pitch/ThingTracker - pitch - ninguém em casa (20 s).mp4",
+    "proof-book.mp4": "video/out/proof/book.mp4",
+    "proof-face-blurred.mp4": "video/out/proof/face (desfocado).mp4",
+    "proof-nobody.mp4": "video/out/proof/nobody.mp4",
+    "film-livro.mp4": "video/out/ThingTracker - exemplo 1 - o livro (v12).mp4",
+    "film-pessoa.mp4": "video/out/ThingTracker - exemplo 2 - a pessoa desconhecida v6 (1080p preview).mp4",
+    "film-pessoas.mp4": "video/out/ThingTracker - exemplo 3 - as pessoas (rascunho 4).mp4",
+    "demo-fallback.mp4": "video/out/demo/site-demo.mp4",
+    "sumario-executivo.pdf": "deliverables/executive-summary/sumario-executivo-IT-Porto.pdf",
+    "arquitetura.pdf": "deliverables/pt/ThingTracker · Arquitetura.pdf",
+    "integracao.pdf": "deliverables/pt/ThingTracker · Especificação de integração.pdf",
+    "viabilidade.pdf": "docs/business-case/viabilidade-negocio.pdf",
+    "casos-de-uso.pdf": "deliverables/pt/ThingTracker · Casos de uso.pdf",
+    "custos-operador.pdf": "deliverables/pt/ThingTracker · Custos para o operador.pdf",
+    "perguntas-engenharia.pdf": "deliverables/pt/ThingTracker · Perguntas de engenharia.pdf",
+    "produto.pdf": "deliverables/pt/ThingTracker · Produto.pdf",
+    "img/arquitetura.png": "deliverables/executive-summary/arquitetura.png",
+    "img/exemplo.png": "deliverables/executive-summary/figura-exemplo.png",
+    "img/livro.png": "deliverables/deck/assets/frame-livro-ia.png",
+    "img/pessoa.png": "deliverables/deck/assets/frame-filipe-ia.png",
+    "img/casa-vazia.png": "deliverables/deck/assets/frame-casa-vazia-ia.png",
+    "img/crianca.jpg": "deliverables/deck/assets/crianca2-cena-deck.jpg",
+}
+for _v in ("c4-1-contexto", "c4-2-contentores", "c4-3-componentes", "implantacao", "presenca-estados", "seq-livro-esquecido",
+           "seq-pessoa-desconhecida", "seq-casa-vazia", "sequencia-regra", "dfd-fronteiras", "er-casa", "er-plataforma",
+           "fluxo-app", "thingtracker-architecture"):
+    MEDIA[f"views/{_v}.png"] = f"docs/architecture/{_v}.png"
+
+
+@app.get("/media/{name:path}")
+def media(name: str):
+    rel = MEDIA.get(name)
+    if not rel or not (ROOT / rel).exists():
+        raise HTTPException(404, "not available")
+    return FileResponse(ROOT / rel)
+
+
+@app.get("/site")
+def site():
+    return FileResponse(HERE / "web" / "site.html", headers={"Cache-Control": "no-store"})
 
 
 app.mount("/crops", StaticFiles(directory=CROPS), name="crops")

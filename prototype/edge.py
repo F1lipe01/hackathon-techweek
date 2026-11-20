@@ -616,6 +616,16 @@ def main():
             print("no frame:", e, flush=True)
             time.sleep(2)
             continue
+        if tasks.get("paused"):          # the demo site's "Ativar modelos" is off: models loaded, nothing analysed
+            if t0 - last_status > 2:
+                try:
+                    post(f"{args.server}/api/edge/status", {"state": "paused", "checked": checked, "analysed": analysed,
+                                                            "last_motion": last_motion, "change": 0})
+                except Exception:
+                    pass
+                last_status = t0
+            time.sleep(0.5)
+            continue
         checked += 1
         moved, frac = motion.changed(img)
         if moved:

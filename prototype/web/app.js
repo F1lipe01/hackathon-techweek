@@ -5,6 +5,8 @@
 // the assistant button. Its data comes from the prototype's local SQLite database (server.py, store.py).
 
 const $ = (id) => document.getElementById(id);
+const EMBED = new URLSearchParams(location.search).has('embed');
+if (EMBED) document.body.classList.add('embed');
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const hm = (ts) => new Date(ts * 1000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 const ago = (ts) => {
@@ -75,7 +77,18 @@ const TAB_ICON = {
 };
 const DEVICE_PNG = { camera: 'camera', contactSensor: 'contact-sensor', bulb: 'light', plug: 'plug', gateway: 'security-hub',
   smokeSensor: 'smoke-sensor', temperatureSensor: 'temperature-sensor' };
-const devImg = (type) => `/web/icons/app/${DEVICE_PNG[type] || 'camera'}.png`;
+// the demo home's simulated devices (prototype/site.py): drawn for ThingTracker in the app's flat style
+const SIM_SVG = ['tv', 'speaker', 'blind', 'vacuum', 'coffee', 'oven', 'leakSensor', 'washer', 'heater', 'thermostat', 'lock', 'siren', 'motionSensor', 'ac'];
+const devImg = (type) => (SIM_SVG.includes(type) ? `/web/icons/sim/${type}.svg` : `/web/icons/app/${DEVICE_PNG[type] || 'camera'}.png`);
+// a thing's icon when it has no photo yet, from the word the detector searches for
+const THING_ICON = { keys: '/web/icons/fluent/key.svg', wallet: '/web/icons/fluent/purse.svg', glasses: '/web/icons/fluent/glasses.svg',
+  'tv remote control': '/web/icons/remote.svg', laptop: '/web/icons/fluent/laptop.svg', smartphone: '/web/icons/fluent/mobile_phone.svg',
+  'coffee mug': '/web/icons/fluent/hot_beverage.svg', 'medication box': '/web/icons/sim/pills.svg', passport: '/web/icons/sim/passport.svg',
+  backpack: '/web/icons/sim/backpack.svg' };
+const thingIcon = (t) => (THING_ICON[t?.query] ? `<img src="${THING_ICON[t.query]}" alt="">` : null);
+// on/off words of a simulated device
+const SIM_WORDS = { lock: ['Locked', 'Unlocked', 'Lock', 'Unlock'], blind: ['Open', 'Closed', 'Open', 'Close'] };
+const simWord = (d, on) => (SIM_WORDS[d.type] || ['On', 'Off', 'Turn on', 'Turn off'])[on ? 0 : 1];
 const crop = (name) => `/crops/${encodeURIComponent(name)}`;
 
 // ------------------------------------------------------------------ state
@@ -98,7 +111,36 @@ function useSource(next) {
   stageMsg('Connecting to the kit camera… (about 5 s, waiting for a keyframe)');
   kitimg.onload = () => stageMsg('');
   kitimg.onerror = () => stageMsg('The kit camera is not answering. Is it powered and on the Wi-Fi?');
+  if (EMBED) { pollFrames(); return; }
   kitimg.src = '/api/kit/stream.mjpg?t=' + Date.now();
+}
+// Inside the site, the camera is read frame by frame (GET /api/kit/frame.jpg, about 6 a second) instead of one long
+// MJPEG stream: a browser keeps at most 6 connections to a host, and long streams from other tabs or the phone's camera
+// screen can take them all, which left the picture black. Each frame is decoded before it is shown, so it never flickers.
+let framesOn = false;
+async function pollFrames() {
+  if (framesOn) return;
+  framesOn = true;
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  while (true) {
+    if (document.hidden) { await wait(500); continue; }
+    const t0 = performance.now();
+    try {
+      const r = await fetch('/api/kit/frame.jpg', { cache: 'no-store' });
+      if (r.ok) {
+        const url = URL.createObjectURL(await r.blob());
+        const im = new Image(); im.src = url;
+        await im.decode().catch(() => {});
+        const old = kitimg.src;
+        kitimg.src = url;
+        document.querySelectorAll('img.live-cam').forEach((x) => { x.src = url; });
+        if (old.startsWith('blob:')) setTimeout(() => URL.revokeObjectURL(old), 1000);
+        stageMsg('');
+        if (!kitimg.dataset.sized) { kitimg.dataset.sized = '1'; kitimg.addEventListener('load', fitStage, { once: true }); }
+      } else stageMsg('The camera is not answering.');
+    } catch { stageMsg('The camera is not answering.'); }
+    await wait(Math.max(40, 160 - (performance.now() - t0)));
+  }
 }
 // Where the picture sits inside the stage. "cover" fills the stage and crops the edges; "contain" letterboxes it.
 function contentRect(el, w, h) {
@@ -130,7 +172,7 @@ async function drawBoxes() {
   const r = contentRect(stage, kitimg.naturalWidth, kitimg.naturalHeight);
   Object.assign(el.style, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px' });
   el.dataset.stale = lastBoxes.age > 4 ? '1' : '';
-  el.innerHTML = lastBoxes.age > 20 ? '' : boxHtml(lastBoxes.boxes);
+  el.innerHTML = lastBoxes.age > 20 && !PLAYER.paused ? '' : boxHtml(lastBoxes.boxes);
   const live = document.querySelector('.page .lbox');   // the same boxes inside the app's registration screen
   if (live) live.innerHTML = lastBoxes.age > 20 ? '' : boxHtml(lastBoxes.boxes);
 }
@@ -175,12 +217,12 @@ const sec = (key, title, count) => `<h3 class="sec ${ui.closed.has(key) ? 'close
 const row = (icon, label, act = '', extra = '') => `<button type="button" class="row ${extra}" ${act ? `data-act="${act}" data-title="${esc(label)}"` : ''}>${icon}<span>${esc(label)}</span>${extra.includes('danger') ? '<span></span>' : I.chevR}</button>`;
 const statusCls = (s) => (s === 'Disconnected' ? 'red' : '');
 const ttOf = (id) => (state.tt_devices || []).find((x) => x.id === id);
-const ttStatus = (d) => { const t = ttOf(d.id); return t?.powers ? `${t.on ? 'On' : 'Off'} · powers ${t.powers}` : d.status; };
+const ttStatus = (d) => { const t = ttOf(d.id); return t?.sim ? simWord(t, t.on) : t?.powers ? `${t.on ? 'On' : 'Off'} · powers ${t.powers}` : d.status; };
 function deviceCard(d) {
   const round = d.type === 'plug' ? 'round' : '';
   return `<li><button type="button" class="card ${d.raised ? 'raised' : ''}" data-act="device" data-id="${esc(d.id)}">
     <span class="ic ${round}"><img src="${devImg(d.type)}" alt=""></span>
-    <span><span class="nm">${esc(d.name)}</span><span class="st ${statusCls(d.status)}">${esc(ttStatus(d))}</span></span><span></span></button></li>`;
+    <span><span class="nm">${esc(d.name)}</span><span class="st ${ttOf(d.id)?.sim && !ttOf(d.id).on ? 'grey' : statusCls(d.status)}">${esc(ttStatus(d))}</span></span><span></span></button></li>`;
 }
 function thingPhoto(t) { return t.last_seen?.crop || t.fingerprint?.crops?.[0] || null; }
 function thingStatus(t) {
@@ -192,7 +234,7 @@ function thingStatus(t) {
 }
 function thingCard(t, act = 'thing') {
   const p = thingPhoto(t), [st, cls] = thingStatus(t);
-  const ic = p ? `<span class="ic photo"><img src="${crop(p)}" alt=""></span>` : `<span class="ic">${I.book}</span>`;
+  const ic = p ? `<span class="ic photo"><img src="${crop(p)}" alt=""></span>` : `<span class="ic">${thingIcon(t) || I.book}</span>`;
   return `<li><button type="button" class="card" data-act="${act}" data-id="${esc(t.id)}">${ic}
     <span><span class="nm">${esc(t.name)}</span><span class="st ${cls}">${esc(st)}</span></span><span></span></button></li>`;
 }
@@ -214,7 +256,7 @@ function itemCard(t) {
   const kind = person ? 'Person' : 'Thing';   // the group above says who they are (Family, Guests)
   const meta = [ownerOf(t) ? `Belongs to ${ownerOf(t).name}` : kind, addedOn(t.created), n ? `${n} scenario${n === 1 ? '' : 's'}` : 'No scenarios'].join(' · ');
   const l = t.last_seen;
-  const ic = p ? `<span class="ic photo${person ? ' round' : ''}"><img src="${crop(p)}" alt=""></span>` : `<span class="ic">${person ? I.user : I.book}</span>`;
+  const ic = p ? `<span class="ic photo${person ? ' round' : ''}"><img src="${crop(p)}" alt=""></span>` : `<span class="ic">${person ? I.user : thingIcon(t) || I.book}</span>`;
   return `<li><button type="button" class="card" data-act="thing" data-id="${esc(t.id)}">${ic}
     <span><span class="nm">${esc(t.name)}</span><span class="st meta">${esc(meta)}</span>${l ? `<span class="st seen">On the ${esc(l.zone_name)} · ${hm(l.ts)}</span>` : ''}</span><span></span></button></li>`;
 }
@@ -270,7 +312,7 @@ function renderDevices() {
     if (ds.length) html += sec('room-' + r.id, r.name, ds.length) + `<ul class="cards">${ds.map(deviceCard).join('')}</ul>`;
   }
   // devices connected to the app directly (third-party integrations, not part of the Altice kit; simulated here)
-  const apps = (state.tt_devices || []).filter((d) => !d.kit);
+  const apps = (state.tt_devices || []).filter((d) => !d.kit && !d.sim);
   if (apps.length) html += sec('room-apps', 'Connected to the app', apps.length) + `<ul class="cards">${apps.map((d) => `<li><button type="button" class="card" data-act="tt-device" data-id="${esc(d.id)}">
     <span class="ic">${ttIcon(d)}</span><span><span class="nm">${esc(d.name)}</span><span class="st ${d.on ? '' : 'grey'}">${d.on ? 'On' : 'Off'} · ${esc(d.room)}</span></span><span></span></button></li>`).join('')}</ul>`;
   const none = list.filter((d) => !d.room_id);
@@ -371,7 +413,7 @@ function devicePage(id) {
     const right = `<button type="button" class="ibtn" data-act="fav" data-id="${esc(id)}" aria-label="Favorite">${fav ? I.starOn : I.star}</button><button type="button" class="ibtn" data-act="stub" data-title="More" aria-label="More">${I.more}</button>`;
     const rows = `<div class="group">${row(I.wandC, 'Scenarios', 'scenarios')}${row(I.eventsC, 'Events', 'stub')}${row(I.bellC, 'Notifications', 'notifications')}${row(I.infoC, 'About', 'stub')}</div>`;
     if (x.type === 'camera') {
-      return `${phead(x.name, room(x), right)}<div class="live"><img src="/api/kit/stream.mjpg?t=cam" alt="Live view"></div>
+      return `${phead(x.name, room(x), right)}<div class="live">${EMBED ? `<img class="live-cam" src="${kitimg.src}" alt="Live view">` : '<img src="/api/kit/stream.mjpg?t=cam" alt="Live view">'}</div>
         <div class="single">${row(I.recC, 'Video Recordings', 'stub')}</div><div style="height:18px"></div>
         <div class="group">${row(I.gearC, 'Camera settings', 'stub')}${row(I.wandC, 'Scenarios', 'scenarios')}${row(I.eventsC, 'Events', 'stub')}${row(I.bellC, 'Notifications', 'notifications')}${row(I.infoC, 'About', 'stub')}</div>`;
     }
@@ -381,6 +423,15 @@ function devicePage(id) {
         <div class="tiles"><div class="tile">${I.thermo}<small>Temperature</small><b>${esc(t || '')}</b></div><div class="tile">${I.drop}<small>Humidity</small><b>${esc(h || '')}</b></div></div>${rows}`;
     }
     const tt = ttOf(x.id);
+    if (tt?.sim) {
+      return `${phead(x.name, room(x), right)}<div class="hero"><img class="dev" src="${devImg(x.type)}" alt=""><span class="st ${tt.on ? '' : 'grey'}">${esc(simWord(tt, tt.on))}</span></div>
+        <div class="single"><button type="button" class="btn-p sim-toggle" data-act="tt-toggle" data-id="${esc(x.id)}">${esc((SIM_WORDS[x.type] || ['On', 'Off', 'Turn on', 'Turn off'])[tt.on ? 3 : 2])}</button></div>
+        <p class="sim-note">Simulated in this demo home: ThingTracker keeps its state and sends nothing to a real device.</p><div style="height:14px"></div>${rows}`;
+    }
+    if (!tt && x.id.startsWith('sim-')) {
+      return `${phead(x.name, room(x), right)}<div class="hero"><img class="dev" src="${devImg(x.type)}" alt=""><span class="st">${esc(x.status)}</span></div>
+        <p class="sim-note">Simulated sensor in this demo home.</p><div style="height:14px"></div>${rows}`;
+    }
     const powers = tt?.powers ? `<div class="group powers"><div class="row">${ICON_LIGHT}<span>Powers</span><span class="val">${esc(tt.powers)}</span></div></div>
       <p class="sim-note">What this plug powers is set in ThingTracker and kept with your things, not in the Altice platform.</p>` : '';
     return `${phead(x.name, room(x), right)}<div class="hero"><img class="dev" src="${devImg(x.type)}" alt=""><span class="st ${statusCls(x.status)}">${esc(tt ? (tt.on ? 'On' : 'Off') : x.status)}</span></div>${powers}${rows}`;
@@ -392,7 +443,7 @@ function thingPage(id) {
     if (!t) return `${phead('Thing', '')}<div class="empty"><p>This thing was removed.</p></div>`;
     const p = thingPhoto(t), [st, cls] = thingStatus(t), l = t.last_seen, fp = t.fingerprint;
     return `${phead(t.name, l ? l.room || '' : st, `<button type="button" class="ibtn" data-act="stub" data-title="More" aria-label="More">${I.more}</button>`)}
-      <div class="hero">${p ? `<img class="photo" src="${crop(p)}" alt="">` : I.book.replace('<svg', '<svg width="60" height="60"')}<span class="st ${cls}">${esc(st)}</span></div>
+      <div class="hero">${p ? `<img class="photo" src="${crop(p)}" alt="">` : thingIcon(t)?.replace('<img', '<img class="dev"') || I.book.replace('<svg', '<svg width="60" height="60"')}<span class="st ${cls}">${esc(st)}</span></div>
       ${ownerOf(t) ? `<div class="owner-line"><img src="${crop(ownerOf(t).fingerprint?.crops?.[0] || '')}" alt=""><span>Belongs to <b>${esc(ownerOf(t).name)}</b></span></div>` : ''}
       ${fp ? `<div class="single" style="padding-top:12px"><div style="font-size:14.5px;font-weight:600;padding:2px 0 10px">Visual fingerprint · ${fp.n} views</div>
         <div class="views-grid">${fp.crops.map((c) => `<img src="${crop(c)}" alt="">`).join('')}</div></div><div style="height:18px"></div>` : ''}
@@ -796,7 +847,7 @@ const ICON_BEACON = '<svg viewBox="0 0 40 40" width="40" height="40"><path d="M1
 const ICON_LIGHT = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#b7791f" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.7.6 1.1 1.4 1.1 2.2h5c0-.8.4-1.6 1.1-2.2A6 6 0 0 0 12 3Z" fill="#fde68a"/></svg>';
 const ICON_AC = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#2563eb" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="8" rx="2" fill="#dbeafe"/><path d="M7 10h10M8 16l-1 3M12 16v3M16 16l1 3"/></svg>';
 // the same icon wherever a device appears: the Altice app's own plug image for the kit's plug, the AC's for the integration
-function ttIcon(d) { return d.type === 'plug' ? `<img src="${devImg('plug')}" alt="">` : ICON_AC; }
+function ttIcon(d) { return d.type === 'plug' || d.sim ? `<img src="${devImg(d.type)}" alt="">` : ICON_AC; }
 const askFor = (d) => (d.type === 'ac' ? 'Turn off the AC?' : /light/i.test(d.powers || '') ? 'Turn off the lights?' : `Turn off ${d.powers || d.name}?`);
 /** The alert as the server keeps it now: its cards and alarm change when the user answers (server.py: /api/alerts). */
 const alertNow = (e) => (state.events || []).find((x) => x.id === e.id) || e;
@@ -880,7 +931,8 @@ function closeSheet() {
 }
 function filterSheet() {
   const draft = { sort: ui.sort, types: new Set(ui.types) };
-  const T = [['camera', 'Camera'], ['contactSensor', 'Contact Sensor'], ['plug', 'Energy Meter'], ['bulb', 'Light'], ['gateway', 'Security Hub'], ['smokeSensor', 'Smoke Sensor'], ['temperatureSensor', 'Temperature Sensor']];
+  const T = [['camera', 'Camera'], ['contactSensor', 'Contact Sensor'], ['plug', 'Energy Meter'], ['bulb', 'Light'], ['gateway', 'Security Hub'], ['smokeSensor', 'Smoke Sensor'], ['temperatureSensor', 'Temperature Sensor'],
+    ['tv', 'TV'], ['heater', 'Heater'], ['lock', 'Lock'], ['leakSensor', 'Leak Sensor'], ['motionSensor', 'Motion Sensor']].filter(([k]) => (state.home?.devices || []).some((d) => d.type === k));
   const body = () => `<p class="sh">Sort by</p>${[['az', 'A - Z (default)'], ['za', 'Z - A']].map(([k, l]) => `<div class="opt" data-sort="${k}"><span class="radio ${draft.sort === k ? 'on' : ''}"></span>${l}</div>`).join('')}
     <div class="sline"></div><p class="sh">Filter by</p><p class="sh" style="font-size:14px">Device</p>
     ${T.map(([k, l]) => `<div class="opt" data-type="${k}"><span class="check ${draft.types.has(k) ? 'on' : ''}"></span>${l}</div>`).join('')}`;
@@ -1102,7 +1154,9 @@ function renderDoor(d) {
   simDoor.hidden = !!d?.live;    // the real Contact sensor drives the door while the MCP session is live
   simDoor.title = 'The MCP session is not live: this simulates the Contact sensor on the front door.';
   simHold.hidden = !!d?.live;
-  simHold.textContent = d?.open && d?.source === 'sim' ? 'Simulate: close the door' : 'Simulate: leave the door open';
+  simHold.textContent = EMBED ? (d?.open && d?.source === 'sim' ? 'Fechar a porta' : 'Deixar a porta aberta')
+    : d?.open && d?.source === 'sim' ? 'Simulate: close the door' : 'Simulate: leave the door open';
+  if (EMBED) simDoor.textContent = 'Porta abre e fecha';
 }
 // "Leave the door open" opens the simulated Contact sensor and keeps it open (the door left open when everyone left);
 // the same button then closes it.
@@ -1118,7 +1172,7 @@ simHold.addEventListener('click', async () => {
 let replayAt = null;
 function renderReplay(r) {
   const el = $('replay');
-  if (!r || !r.replay) { el.hidden = true; replayAt = null; return; }
+  if (!r || !r.replay || EMBED) { el.hidden = true; replayAt = null; return; }
   replayAt = { t: r.t, at: performance.now(), on: r.started && !r.ended, d: r.duration, v: r.video };
   el.hidden = false;
   $('place').textContent = 'Work Room · Kit camera · replayed take';
@@ -1137,12 +1191,16 @@ function renderSim(p) {
   if (!p) return;
   const who = p.home?.length ? ` · ${p.home.join(', ')}` : '';
   const extra = p.unknown ? ` + ${p.unknown} not known` : '';
-  $('pres').innerHTML = `Home: <b data-state="${esc(p.state)}">${esc(p.state || '…')}</b> · ${p.count} at home${esc(who)}${esc(extra)}<br>${esc(p.reason || '')}`;
+  if (EMBED) {
+    const ST = { OCCUPIED: 'ocupada', LEAVING: 'a sair', EMPTY: 'vazia', UNSURE: 'incerta' };
+    $('pres').innerHTML = `Casa <b data-state="${esc(p.state)}">${esc(ST[p.state] || '…')}</b> · ${p.count} em casa`;
+    $('pres').title = p.reason || '';
+  } else $('pres').innerHTML = `Home: <b data-state="${esc(p.state)}">${esc(p.state || '…')}</b> · ${p.count} at home${esc(who)}${esc(extra)}<br>${esc(p.reason || '')}`;
   const sig = JSON.stringify(p.phones);
   if ($('simphones').dataset.sig === sig) return;
   $('simphones').dataset.sig = sig;
   $('simphones').innerHTML = (p.phones || []).map((m) => `<button type="button" class="sim-phone" data-member="${esc(m.id)}" aria-pressed="${m.home ? 'true' : 'false'}"
-    title="Simulated: ${esc(m.name)}'s phone on the home Wi-Fi">${esc(m.name)}'s phone · ${m.home ? 'home' : 'away'}</button>`).join('');
+    title="Simulated: ${esc(m.name)}'s phone on the home Wi-Fi">${EMBED ? `📱 ${esc(m.name)} · ${m.home ? 'em casa' : 'fora'}` : `${esc(m.name)}'s phone · ${m.home ? 'home' : 'away'}`}</button>`).join('');
 }
 $('simphones').addEventListener('click', async (e) => {
   const b = e.target.closest('[data-member]'); if (!b) return;
@@ -1153,11 +1211,85 @@ $('simphones').addEventListener('click', async (e) => {
 
 // Scale the 402 x 874 pt screen to the frame, so the app never reflows: the whole screen scales, as on a real device.
 const screenWrap = $('screenwrap');
-function fitDevice() { device.style.zoom = screenWrap.clientWidth / 402; }
+function fitDevice() {
+  const z = screenWrap.clientWidth / 402;
+  device.style.zoom = z;
+}
 new ResizeObserver(fitDevice).observe(screenWrap);
 fitDevice();
 const tick = () => { $('iostime').textContent = new Date().toLocaleTimeString('en-GB', { hour: 'numeric', minute: '2-digit' }); };
 tick(); setInterval(tick, 15000);
+
+
+// ------------------------------------------------------------------ the pitch site (embed): one scaled canvas, and the player
+// The canvas is laid out at 1920 x 1016 and scaled as a whole to the frame, keeping its proportions (no reflow).
+const PLAYER = { paused: false };
+if (EMBED) {
+  const split = document.querySelector('.split');
+  const fitCanvas = () => {
+    const sc = Math.min(innerWidth / 1920, innerHeight / 1016);
+    split.style.setProperty('--s', sc);
+    split.style.setProperty('--ox', `${Math.max(0, (innerWidth - 1920 * sc) / 2)}px`);
+    split.style.setProperty('--oy', `${Math.max(0, (innerHeight - 1016 * sc) / 2)}px`);
+  };
+  addEventListener('resize', fitCanvas); fitCanvas();
+  $('simbar').append($('simdoor'), $('simhold'));     // the door's two buttons sit with the phones
+
+  const pl = $('player');
+  const P = { s: null, at: 0, dragging: false };
+  const fmt = (x) => x.toFixed(1).replace('.', ',');
+  const ICON = { play: '<svg viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z"/></svg>', pause: '<svg viewBox="0 0 24 24"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z"/></svg>' };
+  const post = (path, body) => fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then((r) => r.json()).catch(() => null);
+  function draw(force) {
+    const st = P.s; if (!st?.source) return;
+    const src = st.source, take = src.kind === 'take';
+    const playing = take && src.started && !src.paused && !src.ended;
+    PLAYER.paused = take && (src.paused || src.ended || !src.started);
+    $('place').textContent = take ? `Work Room · câmara do kit · gravação de 19 nov` : 'MacBook · webcam ao vivo';
+    const sig = JSON.stringify([src.id, take, playing, src.story, st.sources.map((x) => x.id)]);
+    if (force || pl.dataset.sig !== sig) {
+      pl.dataset.sig = sig;
+      const seg = `<div class="seg" role="group" aria-label="Fonte da câmara">${st.sources.map((x) => `<button type="button" data-src="${x.id}" aria-pressed="${x.id === src.id}">${x.kind === 'live' ? '<i class="live"></i>' : ''}${esc(x.name)}</button>`).join('')}</div>`;
+      pl.innerHTML = seg + (take
+        ? `<button type="button" class="pb" data-act-p="${playing ? 'pause' : 'play'}" aria-label="${playing ? 'Pausa' : 'Reproduzir'}">${playing ? ICON.pause : ICON.play}</button>
+           <button type="button" class="story" data-act-p="story" aria-pressed="${src.story}" title="Do início, com a porta e o telemóvel nos seus momentos">${src.story ? '● História a decorrer' : '↺ História do início'}</button>
+           <div class="tl"><div class="marks">${src.marks.map((m) => `<i class="${m.what}" style="left:${((m.t - src.from) / (src.duration - src.from)) * 100}%"></i>`).join('')}</div>
+             <input type="range" id="tl" min="${src.from}" max="${src.duration}" step="0.1" value="${src.t}" aria-label="Linha do tempo"></div>
+           <span class="time" id="tltime"></span>`
+        : `<div class="livebadge"><b>● AO VIVO</b> Câmara do MacBook: os modelos procuram as coisas registadas e as pessoas, sem gravar nada.</div>`);
+    }
+    if (take) {
+      const t = playing ? Math.min(src.duration, src.t + (performance.now() - P.at) / 1000) : src.t;
+      const tl = $('tl');
+      if (tl && !P.dragging) tl.value = t;
+      if ($('tltime')) $('tltime').textContent = `${fmt(P.dragging ? +tl.value : t)} / ${fmt(src.duration)} s`;
+    }
+  }
+  async function poll() {
+    try { P.s = await fetch('/api/demo/status').then((r) => r.json()); P.at = performance.now(); } catch { return; }
+    draw();
+  }
+  pl.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-src], [data-act-p]'); if (!b) return;
+    b.disabled = true;
+    const r = b.dataset.src ? await post('/api/demo/source', { id: b.dataset.src }) : await post('/api/demo/player', { action: b.dataset.actP });
+    if (r?.source) { P.s = r; P.at = performance.now(); }
+    if (b.dataset.src) { $('boxes').replaceChildren(); refresh(); }
+    draw(true);
+    if (b.dataset.actP === 'story') refresh();
+  });
+  pl.addEventListener('input', (e) => { if (e.target.id === 'tl') { P.dragging = true; draw(); } });
+  pl.addEventListener('change', async (e) => {
+    if (e.target.id !== 'tl') return;
+    $('boxes').replaceChildren();
+    const r = await post('/api/demo/player', { action: 'seek', t: +e.target.value });
+    P.dragging = false;
+    if (r?.source) { P.s = r; P.at = performance.now(); }
+    draw(true);
+  });
+  poll(); setInterval(() => { if (!document.hidden) poll(); }, 700);
+  setInterval(() => { if (!document.hidden && !P.dragging) draw(); }, 100);
+}
 
 window.__ttRefresh = refresh;     // lets web/demo.html (the scripted product video) redraw on cue
 useSource('kit');

@@ -24,6 +24,7 @@ node_modules/
 __pycache__/
 *.pyc
 .venv/
+.venv-*/
 venv/
 dist/
 build/
@@ -39,5 +40,25 @@ prototype/.venv-llm/
 prototype/.venv-vlm/
 # Face models (ONNX weights from opencv_zoo): fetched once, see AGENTS.md
 prototype/models/
+*.onnx
+*.safetensors
+*.gguf
 deliverables/executive-summary/.fonts/
 prototype/web/docs/
+
+# Videos, recordings and audio stay local (AGENTS.md rule 6); the short logo animations are the exception
+video/out/
+*.mp4
+*.mov
+*.m4v
+*.webm
+*.mkv
+*.wav
+*.mp3
+*.m4a
+!assets/brand/animation/out/*.mp4
+
+# Deck build: the JPEG copies build_pptx.py makes of each photo
+deliverables/deck/_jpeg/
+# A lab frame in which a person who did not agree to appear is not fully blurred (AGENTS.md rule 6)
+deliverables/deck/assets/frame-filipe-ia.png

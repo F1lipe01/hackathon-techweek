@@ -616,6 +616,20 @@ function personPickPage() {
       <button type="button" class="btn-s" data-act="person-photo">Choose a photo</button></div>`,
   { mount: (el) => el.querySelector('#pphotoin').addEventListener('change', (e) => { if (e.target.files[0]) personPhotoPage(e.target.files[0]); }) });
 }
+// "Choose a photo" opens the phone's own photo picker; the app draws it as Android does (Photos / Albums, a grid of the
+// recent pictures, a check on the one chosen, Add), over the pictures the server offers from data/picker (out of git).
+// With none there, the browser's own file dialog opens instead.
+async function photoPicker() {
+  let photos = [];
+  try { photos = (await (await fetch('/api/picker')).json()).photos || []; } catch { photos = []; }
+  if (!photos.length) { const i = $('pphotoin'); i.removeAttribute('capture'); i.value = ''; i.click(); return; }
+  const src = (p) => `/picker/${encodeURIComponent(p)}`;
+  push(() => `<div class="pk"><div class="pk-top"><button type="button" class="pk-x" data-act="back" aria-label="Close">${I.x}</button>
+      <div class="pk-tabs"><span class="on">Photos</span><span>Albums</span></div></div>
+    <p class="pk-lbl">Recent</p>
+    <div class="pk-grid">${photos.map((p) => `<button type="button" class="pk-ph" data-act="pick-photo" data-src="${src(p)}"><img src="${src(p)}" alt=""><i></i></button>`).join('')}</div>
+    <div class="pk-bar"><span class="pk-n"></span><button type="button" class="pk-add" data-act="picker-add" disabled>Add</button></div></div>`);
+}
 async function personPhotoPage(file) {
   const bmp = await createImageBitmap(file), k = Math.min(1, 900 / Math.max(bmp.width, bmp.height));
   const c = Object.assign(document.createElement('canvas'), { width: Math.round(bmp.width * k), height: Math.round(bmp.height * k) });
@@ -1061,7 +1075,11 @@ device.addEventListener('click', async (e) => {
     case 'add-thing': addThingPage(); break;
     case 'pick-thing': if (el.dataset.q === 'person') personPickPage(); else methodPage(el.dataset.name, el.dataset.q); break;
     case 'person-video': pop(); personMethodPage(); break;
-    case 'person-photo': { const i = $('pphotoin'); if (el.dataset.capture) i.setAttribute('capture', el.dataset.capture); else i.removeAttribute('capture'); i.value = ''; i.click(); break; }
+    case 'person-photo': { const i = $('pphotoin'); if (el.dataset.capture) { i.setAttribute('capture', el.dataset.capture); i.value = ''; i.click(); } else photoPicker(); break; }
+    case 'pick-photo': { const g = el.closest('.pk'); g.querySelectorAll('.pk-ph.sel').forEach((x) => x !== el && x.classList.remove('sel')); el.classList.toggle('sel');
+      const n = g.querySelectorAll('.pk-ph.sel').length; g.querySelector('.pk-add').disabled = !n; g.querySelector('.pk-n').textContent = n ? '1 selected' : ''; break; }
+    case 'picker-add': { const s = el.closest('.pk').querySelector('.pk-ph.sel'); if (!s) break; el.disabled = true;
+      const b = await (await fetch(s.dataset.src)).blob(); pop(); personPhotoPage(new File([b], 'photo.jpg', { type: b.type })); break; }
     case 'save-person-photo': savePersonPhoto(el); break;
     case 'pick-owner': { const pg = el.closest('section.page'); if (pg?._pick) { pg._pick.id = el.dataset.id; pg.innerHTML = pg._render(); } break; }
     case 'link-owner': linkOwner(el); break;

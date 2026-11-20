@@ -15,33 +15,36 @@ import { Scene2Face } from "./Scene2Face";
 import { Scene3People } from "./Scene3People";
 
 type Kind = "app" | "photos" | "selfie";
-type Pc = { kind: Kind; from: number; to: number; rate: number };
+type Pc = { kind: Kind; from: number; to: number; rate: number; v?: string };   // v: another take of the same story ("a": full-1a)
 type Laid = Pc & { start: number; end: number };
 const lay = (at: number, pcs: Pc[]): Laid[] => {
   let s = at;
   return pcs.map((p) => { const len = Math.round(((p.to - p.from) / p.rate) * 30); const o = { ...p, start: s, end: s + len }; s += len; return o; });
 };
 /** The film frame of an app take's second t (the app pieces only); null if that moment is cut. */
-const frOf = (ps: Laid[], t: number) => { const p = ps.find((x) => x.kind === "app" && t >= x.from && t <= x.to); return p ? Math.round(p.start + ((t - p.from) / p.rate) * 30) : null; };
-type Tap = readonly [number, number, number];   // take second, x, y (app points, from the take's marks.json)
-const waysOf = (ps: Laid[], taps: Tap[]): Way[] => taps.flatMap(([t, x, y]) => { const f = frOf(ps, t); return f === null ? [] : [{ f, x: x * 3, y: y * 3 + REC_Y, press: true }]; });
+const frOf = (ps: Laid[], t: number, v?: string) => { const p = ps.find((x) => x.kind === "app" && x.v === v && t >= x.from && t <= x.to); return p ? Math.round(p.start + ((t - p.from) / p.rate) * 30) : null; };
+type Tap = readonly [number, number, number, string?];   // take second, x, y (app points, from the take's marks.json), the take
+const waysOf = (ps: Laid[], taps: Tap[]): Way[] => taps.flatMap(([t, x, y, v]) => { const f = frOf(ps, t, v); return f === null ? [] : [{ f, x: x * 3, y: y * 3 + REC_Y, press: true }]; });
 
 /* ------------------------------------------------------------------ the timeline (30 fps) */
 const S1 = 0;
 const P1 = lay(S1, [
-  { kind: "app", from: 0.5, to: 2.25, rate: 1 },       // Things: nothing yet (the first card lifts off it)
-  { kind: "app", from: 2.2, to: 13.95, rate: 3.5 },    // + › Person › Choose a photo › Mushahid › Save › "Mushahid added"
-  { kind: "app", from: 13.95, to: 19.98, rate: 3 },    // Things (Mushahid) › + › Book › Take photos
-  { kind: "photos", from: 0.9, to: 36.5, rate: 10 },   // the colleague's camera: the 8 photos, sped up, in one go
+  { kind: "app", from: 0.5, to: 2.25, rate: 1, v: "a" },        // Things: nothing yet (the first card lifts off it)
+  { kind: "app", from: 2.2, to: 6.35, rate: 3.5, v: "a" },       // + › Person › Choose a photo
+  { kind: "app", from: 6.35, to: 10.75, rate: 2.2, v: "a" },     // the phone's picker: his photo, the check, Add
+  { kind: "app", from: 10.75, to: 16.831, rate: 3.5, v: "a" },   // New person › Mushahid › Save › "Mushahid added" › Done
+  { kind: "app", from: 13.95, to: 19.98, rate: 4 },    // Things (Mushahid) › + › Book › Take photos (full-1 from here)
+  { kind: "photos", from: 0.9, to: 36.5, rate: 12 },   // the colleague's camera: the 8 photos, sped up, in one go
   { kind: "app", from: 20.68, to: 26.53, rate: 3 },    // the photos in the app, the name, Save
-  { kind: "app", from: 26.53, to: 32.75, rate: 1.6 },  // "Link to Mushahid?" › Yes › "Belongs to Mushahid" › Create
-  { kind: "app", from: 34.8, to: 40.63, rate: 3 },     // the sentence typed › Save
+  { kind: "app", from: 26.53, to: 32.75, rate: 1.75 }, // "Link to Mushahid?" › Yes › "Belongs to Mushahid" › Create
+  { kind: "app", from: 34.8, to: 40.63, rate: 3.239 }, // the sentence typed › Save
   { kind: "app", from: 43.2, to: 44.6, rate: 1.4 },    // "Scenario saved": Book left at home
 ]);
-const TAPS1: Tap[] = [[2.397, 249, 90], [4.277, 201, 525.6], [6.251, 201, 565.7], [8.571, 201, 463.8], [10.487, 201, 664], [13.773, 201, 442.1],
+const TAPS1: Tap[] = [[2.416, 249, 90, "a"], [4.276, 201, 525.6, "a"], [6.253, 201, 565.7, "a"], [8.556, 66.3, 395, "a"], [10.339, 346.8, 825.7, "a"], [12.119, 201, 463.8, "a"],
+  [13.985, 201, 664, "a"], [16.654, 201, 442.1, "a"],
   [15.951, 249, 90], [17.8, 201, 613.6], [19.788, 201, 455.3], [22.662, 201, 463.8], [24.255, 201, 573.5], [26.337, 201, 772.3], [29.224, 201, 587.6],
   [32.703, 116, 496.1], [40.435, 201, 436]];   // full-1.marks.json
-const L1A = { at: P1[7].end, src0: 1160, len: 95 }, L1B = { at: P1[7].end + 95, src0: 1362, len: 278 };   // Scene1Book: he leaves, the door shuts; the alarm, the alert, turned off
+const L1A = { at: P1[9].end, src0: 1160, len: 95 }, L1B = { at: P1[9].end + 95, src0: 1362, len: 278 };   // Scene1Book: he leaves, the door shuts; the alarm, the alert, turned off
 const S2 = L1B.at + L1B.len;
 const P2 = lay(S2, [
   { kind: "app", from: 1.0, to: 2.2, rate: 1 },        // Things: Mushahid, the book (his), Book left at home
@@ -75,7 +78,7 @@ type CK = { at: number; s: number; x: number; y: number };
 const H0 = { s: 1, x: 960, y: 540 };
 const WHO = scr(CX.right, 603, 1000 + REC_Y);
 const OWNED = frOf(P1, 29.42)!;
-const CAM: CK[] = [{ at: 0, ...H0 }, { at: OWNED - 2, ...H0 }, { at: OWNED + 16, s: 1.9, ...WHO }, { at: P1[5].end - 14, s: 1.9, ...WHO }, { at: P1[5].end + 4, ...H0 }, { at: 99999, ...H0 }];
+const CAM: CK[] = [{ at: 0, ...H0 }, { at: OWNED - 2, ...H0 }, { at: OWNED + 16, s: 1.9, ...WHO }, { at: P1[7].end - 14, s: 1.9, ...WHO }, { at: P1[7].end + 4, ...H0 }, { at: 99999, ...H0 }];
 const camAt = (f: number) => {
   let i = 0;
   while (i < CAM.length - 2 && f >= CAM[i + 1].at) i++;
@@ -105,9 +108,9 @@ const Screen: React.FC<{ src: string; ps: Laid[]; taps: Tap[] }> = ({ src, ps, t
   const inserts = ps.filter((p) => p.kind !== "app").map((p) => [p.start, p.end - 1] as [number, number]);
   return (
     <AbsoluteFill style={{ background: "#000" }}>
-      {ps.map((p, i) => (f >= p.start - 1 && f < p.end + 1 ? (
+      {ps.map((p, i) => (f >= p.start - 1 && f < p.end + (i === ps.length - 1 ? 12 : 1) ? (   // the last stays up while the lab fades in over it
         <Sequence key={i} from={p.start} durationInFrames={p.end - p.start + (i === ps.length - 1 ? 200 : 1)} layout="none">
-          {p.kind === "app" ? <AbsoluteFill style={{ background: "#EEF3FB" }}><Rec src={src} from={p.from} rate={p.rate} /></AbsoluteFill>
+          {p.kind === "app" ? <AbsoluteFill style={{ background: "#EEF3FB" }}><Rec src={p.v ? src.replace(".mp4", `${p.v}.mp4`) : src} from={p.from} rate={p.rate} /></AbsoluteFill>
             : p.kind === "photos" ? <AbsoluteFill style={{ background: "#000" }}><Rec src="footage/phone-photos.mp4" from={p.from} rate={p.rate} w={1236} h={2680} top={0} /></AbsoluteFill>
             : <AbsoluteFill style={{ background: "#000", transform: "scaleX(-1)" }}><Rec src="phone/person/selfie-a.mp4" from={p.from} rate={p.rate} w={1508} h={2680} top={0} /></AbsoluteFill>}
         </Sequence>) : null))}
@@ -158,14 +161,14 @@ const Card: React.FC<{ at: number; n: number; first?: boolean; end?: boolean }> 
 
 /* ------------------------------------------------------------------ sound */
 const SHOT = [1.3, 7.83, 11.17, 16.2, 23.03, 27.27, 31.8, 36.1];   // the colleague's 8 shutter presses (phone-photos)
-const typing = (ps: Laid[], a: number, b: number) => { const fa = frOf(ps, a), fb = frOf(ps, b); if (fa === null || fb === null) return []; const r: number[] = []; for (let x = fa; x < fb; x += 2) r.push(x); return r; };
-const KEYS = [...typing(P1, 8.6, 9.3), ...typing(P1, 22.7, 23.2), ...typing(P1, 24.3, 25.3), ...typing(P1, 34.8, 39.25), ...typing(P2, 8.15, 8.75),
+const typing = (ps: Laid[], a: number, b: number, v?: string) => { const fa = frOf(ps, a, v), fb = frOf(ps, b, v); if (fa === null || fb === null) return []; const r: number[] = []; for (let x = fa; x < fb; x += 2) r.push(x); return r; };
+const KEYS = [...typing(P1, 12.13, 12.8, "a"), ...typing(P1, 22.7, 23.2), ...typing(P1, 24.3, 25.3), ...typing(P1, 34.8, 39.25), ...typing(P2, 8.15, 8.75),
   ...typing(P3, 8.1, 11.9), ...typing(P3, 20.8, 25.5)];
-const SUCCESS = [frOf(P1, 11.48), frOf(P1, 29.42), P1[7].start, frOf(P2, 16.42), frOf(P2, 24.28), P3[3].start, P3[6].start].filter((x): x is number => x !== null);
+const SUCCESS = [frOf(P1, 14.375, "a"), frOf(P1, 29.42), P1[9].start, frOf(P2, 16.42), frOf(P2, 24.28), P3[3].start, P3[6].start].filter((x): x is number => x !== null);
 const LABS = [L1B, L2B, L3B];
 const Sound: React.FC = () => {
   const taps = [...waysOf(P1, TAPS1), ...waysOf(P2, TAPS2), ...waysOf(P3, TAPS3)].map((w) => w.f);
-  const shutters = SHOT.map((t) => Math.round(P1[3].start + ((t - P1[3].from) / P1[3].rate) * 30));
+  const shutters = SHOT.map((t) => Math.round(P1[5].start + ((t - P1[5].from) / P1[5].rate) * 30));
   const whoosh: [number, string, number][] = [[S2, "fast", 0.08], [S3, "fast", 0.08], [END, "fast", 0.08], [L1A.at, "riser-soft", 0.12], [L2A.at, "riser-soft", 0.12],
     [L3A.at, "riser-soft", 0.12], [OWNED + 7, "zoom-soft", 0.8], [END + 6, "riser-soft", 0.15], [END + 23, "slow-gentle", 0.28], [END + 68, "zoom-soft", 0.6]];
   const PEAK: Record<string, number> = { "slow-gentle": 0.28, "zoom-soft": 0.37, fast: 0.15, "riser-soft": 0.43 };
@@ -191,10 +194,10 @@ export const FilmFull: React.FC = () => {
         <AppPart src="app/full/full-1.mp4" ps={P1} taps={TAPS1} time="15:52" />
         <AppPart src="app/full/full-2.mp4" ps={P2} taps={TAPS2} time="16:21" />
         <AppPart src="app/full/full-3.mp4" ps={P3} taps={TAPS3} time="17:28" />
-        <Line text="Junta-se o Mushahid, com uma foto." from={P1[0].start + 18} to={P1[2].start + 4} />
-        <Line text="Fotografa-se o livro." from={P1[2].start + 6} to={P1[5].start} />
-        <Line text="De quem é? Do Mushahid." from={P1[5].start + 2} to={P1[6].start} />
-        <Line text="Uma frase cria o cenário." from={P1[6].start + 2} to={P1[7].end} />
+        <Line text="Junta-se o Mushahid, com uma foto." from={P1[0].start + 18} to={P1[4].start + 4} />
+        <Line text="Fotografa-se o livro." from={P1[4].start + 6} to={P1[7].start} />
+        <Line text="De quem é? Do Mushahid." from={P1[7].start + 2} to={P1[8].start} />
+        <Line text="Uma frase cria o cenário." from={P1[8].start + 2} to={P1[9].end} />
         <Line text="O Filipe junta-se com um vídeo da cara." from={P2[0].start + 14} to={P2[4].start} />
         <Line text="A app sugere a segurança da casa." from={P2[4].start + 2} to={P2[5].end} />
         <Line text="Duas frases, dois cenários." from={P3[0].start + 14} to={P3[6].end} />

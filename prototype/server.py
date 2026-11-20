@@ -1992,6 +1992,18 @@ def site():
     return FileResponse(HERE / "web" / "site.html", headers={"Cache-Control": "no-store"})
 
 
+# "Choose a photo": on a phone, the phone's own picker; here the app draws it, over the pictures in data/picker (never in
+# git: the team puts there what the picker should offer). Empty, the app opens the browser's file dialog instead.
+PICKER = DATA / "picker"
+PICKER.mkdir(parents=True, exist_ok=True)
+
+
+@app.get("/api/picker")
+def picker():
+    return {"photos": sorted(p.name for p in PICKER.iterdir() if p.suffix.lower() in (".jpg", ".jpeg", ".png"))}
+
+
+app.mount("/picker", StaticFiles(directory=PICKER), name="picker")
 app.mount("/crops", StaticFiles(directory=CROPS), name="crops")
 app.mount("/web", StaticFiles(directory=HERE / "web"), name="web")
 

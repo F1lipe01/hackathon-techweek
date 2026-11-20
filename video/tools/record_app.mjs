@@ -776,6 +776,47 @@ const TAKES = {
       await hideFinger();
       await pause(2000);
     }); },
+  // full-1a (20 Nov): the start of full-1 again, with "Choose a photo" as a real gallery pick: the phone's picker opens
+  // (the app draws Android's, over data/picker), his photo is tapped (the check), Add, the New person form, Save.
+  'full-1a': () => { Object.assign(C, { on: false });
+    return take('full-1a', '15:52', async ({ page, tap, hideFinger, mark }) => {
+      const typeIn = async (sel, text) => {
+        for (const ch of text) { await page.evaluate(([s, c]) => { const f = document.querySelector(s); f.value += c; f.dispatchEvent(new Event('input')); }, [sel, ch]); await pause(45 + Math.random() * 30); }
+      };
+      await pause(1300);
+      mark('things');
+      await tap('.ahead [data-act="add-thing"], header [data-act="add-thing"], [data-act="add-thing"]');
+      mark('add-1');
+      await pause(1000);
+      await tap('[data-act="pick-thing"][data-name="Person"]');
+      mark('person-method');
+      await pause(1100);
+      await tap('[data-act="person-photo"]:not([data-capture])');
+      await page.waitForSelector('.pk-grid', { state: 'visible', timeout: 8000 });
+      mark('picker');
+      await pause(1400);
+      await tap(`.pk-ph[data-src*="${process.env.REC_PICK || '04.jpg'}"]`);
+      mark('picked');
+      await pause(900);
+      await tap('.pk-add');
+      await page.waitForSelector('#pname', { state: 'visible' });
+      mark('person-photo');
+      await pause(900);
+      await tap('#pname'); await hideFinger();
+      await typeIn('#pname', 'Mushahid');
+      mark('named');
+      await pause(500);
+      await tap('[data-act="save-person-photo"]');
+      mark('save-person');
+      await hideFinger();
+      await page.waitForSelector('.person-added', { state: 'visible', timeout: 30000 });
+      mark('person-added');
+      await pause(1600);
+      await tap('section.page:last-of-type .bottom-bar [data-act="finish"]');
+      mark('person-done');
+      await hideFinger();
+      await pause(1500);
+    }); },
   'full-2': () => { Object.assign(C, { on: false });
     return take('full-2', '16:21', async ({ page, tap, hideFinger, mark }) => {
       const typeIn = async (sel, text) => {

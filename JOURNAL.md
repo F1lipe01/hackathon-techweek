@@ -1,117 +1,68 @@
 # Journal
 
-How the project moved, day by day: what changed, why, and what the team said. Git history has every step; this page is the summary. Newest day first.
+What was done each day. The git history has every step; this page is the summary. Newest day first.
 
-## Thu 19 Nov: research before the rebuild, and a shoot set up for compositing
+## Fri 20 Nov: the hand-in
 
-**After v5.1 was rejected (night of 18–19 Nov)**
-- The team's verdict on v5.1:
-  - slow pace and slow effects;
-  - an opening that doesn't hook;
-  - silent text pops and actions;
-  - a wallet section that looked fake.
-- So research came first, on six questions: faking real actions, screen replacement, the viewfinder, green screens on phones, pace and sound. It is in `video/research/compositing-playbook.md`, with 45 sources.
-- **Two findings changed the plan:**
-  - Phones in ads are filmed with a blank or marker screen and the app is tracked in afterwards.
-  - The prototype registers a thing by showing it to the home camera, not by phone photos. So the proof of the registration shot is built twice: proof A shows the real flow, proof B shows the photo concept and is labelled "conceito".
-- **Six films measured shot by shot** (`video/research/pacing.md`).
-  - v5.1's opening shots were four times too long: 60 f, against a 15 f hook.
-  - Its 4–8 s scenes need cutting into actions of 45–60 f.
-  - None of the films speeds up towards the end.
-- **Rules from 18 Nov that turned out to be misread:**
-  - "17 characters per second" was Netflix's limit for children.
-  - "Sound only on changes of state" made the cut silent.
-  - Both are replaced: every visual event gets a sound.
+- Engineering Q&A and what-is-real: the proof runs settle each claim that had been marked "to confirm" (left behind fired by the rule; faces judged in the replays; the nobody-home alert with both device cards).
+- Face thresholds made consistent across the documents: the prototype's three bands (known at 0,40 or more, unknown below 0,25, not sure in between).
+- The event's format confirmed from the participants' guide: 3 + 2 min intermediate pitch from 16:00, 3 finalists per challenge, the presentation as PPT or PDF naming the tools used.
+- Pitch decks on the organisers' template: 3-minute and 5-minute PPTX files with PDFs and notes, and a new opening (motivation first, then ThingTracker).
+- App: things belong to a person, and a person can be added from one photo.
+- A pitch website served by the prototype, with a live demo on the laptop's webcam, the use cases, how memory works, the documents and the films. Fonts are served locally so it works offline.
+- A full film of about 90 s joining the three examples.
+- Documents cleaned for delivery (PT and EN).
 
-**Tools for today's takes**
-- Marker screens for the held iPhone:
-  - dark green where a thumb crosses the screen, so it can be keyed;
-  - grey where nothing touches it.
-- A marker tracker: ArUco markers plus an ECC planar fit.
-  - On a synthetic 4K plate with motion blur, a fast flick and a thumb: 0,42 px median error and 2,1 px worst. v5.1's tracker fitted a rectangle and was wrong under perspective.
-  - A thumb keyer.
-  - A Remotion layer (`TrackedScreen`) that adds motion blur, defocus, the keyed bezel and thumb, glow and grain.
-- The shoot sheet, published for the team: settings (4K, 30 fps, 1/50 s against 50 Hz flicker, HEVC), 17 shots plus a hook pack, the sounds to record on set, and a first-take tracking check.
+## Thu 19 Nov: three real examples, proof runs and the hybrid architecture
 
-**No shoot; the proof built from stock (later that night)**
-- The team decided video 1 needs no shoot, and the wallet photo used all through v5.1 is out.
-- The proof is built from Pexels clips:
-  - a hand holding an iPhone with a green screen;
-  - keys held out to the camera.
-- The app in it is a new recording of the real prototype registering the keys.
-- New tool: `track_green.py`, a tracker for green screens without markers. It fits each screen edge and ignores the notch and the thumb (2,2 px median error on a synthetic test).
-- Proof A (keys shown to the camera, 5 s) was rendered at 1080p: sound on every event, −14 LUFS.
-- The renders had been failing because Remotion's bundled Chrome broke, not because of disk space. The fix is to render with the installed Chrome.
-- Proof A was rendered in 4K: clean frames, −14 LUFS. A first 4K attempt was corrupted when the disk ran out mid-render; after space was freed it rendered cleanly at concurrency 1.
-- Proof B (photographing with the phone) was dropped. No stock clip shows a green-screen phone photographing an object, and the app has no such step.
-- Storyboard v6 was published for approval on the same page:
-  - about 44 s, with the keys as the story;
-  - an opening of fast questions over one real moment;
-  - three quick cases and the approved end card with a logo sting.
-- Storyboard v7 followed: the team's notes on v6, plus a study of ten recent Claude films (video/research/claude-videos-study.md).
-- The team asked for the film rather than more storyboards, so v7 was built with the recommended choices: video/out "v7 (1080p preview)", 47 s.
-  - Every app screen was re-recorded so none shows the wallet.
-  - The app now asks "Where are my keys?" (it said "Where is my keys?").
+**Film research**
+- Research before rebuilding the presentation film, with sources: compositing a phone screen, pace measured shot by shot on six product films, and sound on every visual event ([video/research/](video/research/)).
+- A green-screen and marker tracker for phone screens (`track_green.py`; 2,2 px median error on a synthetic test).
+- Video 1 is built from licensed stock footage and new recordings of the real prototype; no shoot.
 
-**The architecture, redrawn for the pitch (evening)**
-- The design is now hybrid, following the operator-cost study (document 17): motion, the changed region and opt-in faces (YuNet + SFace) on the router at home; OWLv2 and DINOv2 on Altice's L4 servers behind queues; presence and rules per home in a stateless ThingTracker service. A box in every home and full frames to the cloud are recorded as rejected, with their numbers.
-- A vision-language judge was added for rare ambiguous moments ("taken or just moved?"); "unsure" asks the family and never acts.
-- Twelve views in PT and EN (`docs/architecture/build_views.py`): C4 levels 1–3, deployment, the presence state machine, three sequences (book left behind, unknown person with the 112 suggestion, empty home and door left open), two ER diagrams, the DFD with trust boundaries, and the app flows.
-- docs/14 and docs/pt/14 rewritten around them, with a decision table per rule and the prototype's status item by item.
+**Three examples filmed in the lab with the kit camera**
+- Example 1, the book left behind: the lab take, the detector's boxes, the book's box from the system's own recognition with its score, and the alert.
+- Example 2, the unknown person: adding a person from a short video of their face, a Home security suggestion, the alarm and the police suggestion (112; the app never dials).
+- Example 3, nobody home: two rules about the empty home, the people counter from four takes, the alert with the devices to turn off.
+- App changes recorded for them: a person added from a face video, two simulated devices outside the Altice kit (the lights' plug and an AC integration), one screen at a time.
 
-## Wed 18 Nov: from an idea to a submitted report, a prototype and a pitch
+**The prototype**
+- A presence engine that fuses the family's phones (simulated), the real door through the read-only MCP and the cameras.
+- Faces on the home device (YuNet + SFace, opt-in), "in hand" sightings, active checks and photo fingerprints on the edge.
+- Rules read the presence engine, and alerts are structured events.
+- Replay mode: a lab take stands in for the camera, through the real pipeline.
+- Proof runs: each film's take replayed through the real pipeline, unedited (`video/tools/proof_run.py`).
+- A local vision-language judge for ambiguous checks (Qwen2-VL-2B, Apache-2.0); its answer becomes a question to the family, never an action.
 
-**Morning: the product and the prototype**
-- The idea settles: the home's camera becomes a source of information. The name moved from Track Things to ThingTracker, under the Altice Labs brand.
-- First prototype by 10:33. By 14:28 the edge service runs on the kit camera, idles until motion, registers things by sight and draws live boxes.
-- By 16:06 there is an exact copy of the Altice app with the new Things tab, the assistant and a local SQLite store. By 16:42 a local text model (Qwen3-1.7B) answers on the laptop, offline.
-- The architecture, the integration spec and the business case are written in English and Portuguese.
+**The architecture, redrawn**
+- The design is hybrid, following the operator-cost study (docs/17): motion, the changed region and opt-in faces at home; OWLv2 and DINOv2 on Altice's L4 servers behind queues; presence and rules in a stateless ThingTracker service. A box in every home and full frames to the cloud are recorded as rejected alternatives, with their numbers.
+- Twelve views in PT and EN (`docs/architecture/build_views.py`): C4 levels 1–3, deployment, presence states, three sequences, two data models, the data flow with trust boundaries, and the app flows.
+- docs/14 rewritten around them; the integration spec (v3) and the business case updated to match.
+- Engineering questions and answers (EN and PT), and what is real in each film ([docs/24-what-is-real.md](docs/24-what-is-real.md)).
 
-**Afternoon: the report**
-- The 2-page report is rewritten around camera plus AI and fact-checked.
-- Figure 1 moved from the book to the child in the kitchen after the mentors' call (safety-led cases).
-- Submitted at 18:51 as v2.
+## Wed 18 Nov: report submitted, prototype running
 
-**Evening: the material for Friday**
-- Supporting documents:
-  - operator costs: about 0,49 € per home per month in the hybrid option;
-  - 34 use cases with 10 finalists;
-  - the product spec, written as the Altice team planning the launch;
-  - the lab-test checklist;
-  - PDFs in PT and EN.
-- The MCP is connected read-only: the real door and light now reach the prototype.
-- A guard against running heavy jobs together (`video/tools/heavy.sh`), after the laptop stopped with a watchdog panic at 18:12.
+**Product and prototype**
+- The direction is set: the home's camera becomes a source of information. Name: ThingTracker, under the Altice Labs brand.
+- First prototype in the morning; by the afternoon the edge service runs on the kit camera, idles until motion, registers things by sight and draws live boxes.
+- A copy of the Altice app with the new *Things* tab, the assistant and a local SQLite store; a local text model (Qwen3-1.7B) answers offline.
+- The yellow book recognised on the kit camera at 0,70 against a 0,62 threshold, from phone photos.
+- The MCP connected read-only: the real door and light reach the prototype.
+- A lock that runs heavy jobs one at a time (`video/tools/heavy.sh`), after the laptop stopped under several renders at once.
 
-**Videos and deck: what we learnt**
-- **Video 1 (presentation).**
-  - v2 scored "idea 7, execution 4".
-  - v3: the team liked the start and "Basta perguntar", but the sound was poor and the picture too dark.
-  - v4 was rejected: a fast footage montage, one clip reused, drawn app screens.
-  - Lesson: lock a shot-by-shot storyboard with the team before rendering, and film real actions.
-  - Storyboard v5, then v5.1 after research.
-  - v5.1 was built and rendered at 23:37. Rejected: the pace and the effects are slow, the opening doesn't work, text pop-ups have no sound, there is no sound on the actions (keys, the dog eating), and the stock and placeholder wallet shots look fake. The team liked only the end card animation, which needs a sound.
-  - Next: research how to fake real actions convincingly (someone photographing an object, replacing a real phone's screen with tracked or green-screen footage) and how to pace and sound a product film, then prove one shot before rebuilding the film.
-- **Video 2 (the real lab example).**
-  - The 37 s proof with 3 photos and the real score of 0,70 against a 0,62 threshold.
-  - Redesigned on a bright home.
-  - 11 review fixes: one clean photo move, no flicker, labels on boxes, readable app.
-- **Deck.**
-  - v1 "no motion, no creativity".
-  - Rebuilt cinematic and "way, way better".
-  - Then logos, team, PT-PT review, balanced space, smoother motion.
-  - Version 22 follows the pitch research.
-- **Research instead of trial and error.**
-  - Three cited playbooks, in [video/research/](video/research/): craft skills, how launch films and home-camera brands present products, and how to run a 3- and 5-minute pitch.
-  - One skill was installed after review (presentation-creator).
-  - One was rejected because it steers users to promote its author.
-- **Team decisions recorded in the docs.**
-  - The family chooses for each rule whether the siren asks first or sounds at once; the child case sounds at once.
-  - The real example comes right after the five cases in the pitch.
-  - Every box in the film is fitted by hand to its object.
+**Report and documents**
+- The 2-page report rewritten around camera plus AI and fact-checked. After the mentor checkpoint (safety-led use cases), Figure 1 follows a child at risk in the kitchen. Submitted at 18:51 (v2).
+- Architecture, integration spec and business case in English and Portuguese.
+- Operator costs (about 0,49 € per home per month in the hybrid option), 34 use cases with 10 scored, the product spec, the lab-test checklist, and PDFs in PT and EN.
+
+**Pitch material**
+- First pitch deck and its run of show for 3 and 5 minutes ([docs/pt/21-pitch.md](docs/pt/21-pitch.md)).
+- Research playbooks with sources on craft, how launch films present products, and how to run a short pitch ([video/research/](video/research/)).
+- Video 2, the real lab example (37 s), with the real score of 0,70 against 0,62.
 
 ## Tue 17 Nov: evidence before ideas
 
-- Sourced market research for Portugal, France and the EU: damp and cold homes, older people living alone, fires, burglary, adoption. Every figure has a primary source.
+- Sourced market research for Portugal, France and the EU: damp and cold homes, older people living alone, fires, burglary, adoption. Every figure has a primary source ([docs/12-market-research.md](docs/12-market-research.md)).
 - A top-5 use-case report scored against the jury's criteria.
 
 ## Mon 16 Nov: the kit and the platform
@@ -119,10 +70,5 @@ How the project moved, day by day: what changed, why, and what the team said. Gi
 - Hackathon material filed, with the organiser files kept as untrusted.
 - The kit mapped: the devices, the network and the missing 12 V camera adapter.
 - The Altice app and its APK analysed, with the platform's capability model.
-- The Connected Home MCP connected through our own OAuth client. Live read tests, and one supervised write test of the plug.
+- The Connected Home MCP connected through our own OAuth client: live read tests, and one supervised write test of the plug.
 - A project baseline: what works, what doesn't, and the decisions to make.
-
-## Next: Thu 19 and Fri 20 Nov
-
-- **Thursday, in the lab:** the real end-to-end test ([docs/19-teste-real.md](docs/19-teste-real.md)) (the book, the door sensor, the red light, with the team's explicit go-ahead for live actions), filming the takes for video 1, and the final cut of video 1.
-- **Friday:** the executive summary and the deck (PPTX and PDF) by 17:30, the repo link, and the 3- and 5-minute pitches.

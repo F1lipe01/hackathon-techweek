@@ -66,7 +66,7 @@ Creating the rule:
 
 When it is met (Figure 1):
 5. The door sensor reports "open" and then "closed" to the platform (`sensorState: alarm` means open), and the service receives both events (today by polling `get_home_devices` every 4 s). The presence engine moves from OCCUPIED to LEAVING.
-6. Filipe's phone leaves the home Wi-Fi; the service learns it through the proposed `wifi.left` event (or `get_home_wifi_clients`). A family member has left.
+6. A family member's phone leaves the home Wi-Fi; the service learns it through the proposed `wifi.left` event (or `get_home_wifi_clients`). A family member has left.
 7. The service asks the home agent for the region of the book's usual place, 3 frames about 1 s apart, regardless of motion. The regions go on the urgent queue to the vision workers.
 8. The vision workers return the "book" boxes and their DINOv2 vectors; the service matches them with the book's 8 views (cosine ≥ 0.62). Seen in at least 2 of the 3 frames, the rule is met and the app shows the alert with the book's thumbnail. Seen in fewer, the result is "unsure": no alert, or, if the book may be partly hidden, the rules engine may call the vision-language judge, whose "unsure" makes the app ask the family.
 
@@ -168,7 +168,7 @@ Each sentence from the user becomes a rule, compiled once by the language model.
 - Conditions and actions on devices (door contact, light colour, plug) already map onto the platform's scenario model.
 - Conditions on things and people ("book still on the desk after someone left", "no one in the living room for 30 minutes") have no equivalent among today's triggers. We therefore propose the `thingTracker` trigger, evaluated by the rules engine in the ThingTracker service. When the condition is met, the service marks the trigger as met (`sensor.fired`) and the platform runs the scenario's start actions; an action the family chose to confirm waits for a "Yes" in the app.
 
-The scenario of the first example, in the `post_new_scenario` format (the values of `triggerLogic` and `operator` that the platform accepts are still to be confirmed):
+The scenario of the first example, in the `post_new_scenario` format. The tool's schema types `triggerLogic` and `operator` as free strings and lists no accepted values ([`mcp/tools-schema.json`](../mcp/tools-schema.json)), so the values below are an assumption to agree with Altice:
 ```json
 { "name": "Left without the book", "isActive": true, "triggerLogic": "AND",
   "triggers": [
@@ -179,7 +179,7 @@ The scenario of the first example, in the `post_new_scenario` format (the values
     { "type": "notification", "message": "Your book stayed at home." } ] }
 ```
 
-The door is part of the `thingTracker` condition, because "closed after an opening" and "a family member left" are worked out by the service from the door's reports and the presence engine. The door contact sensor reports an open door as `sensorState` with the value `alarm`, as observed on the challenge kit. The family marks which contact sensor is the entrance door. The alert is delivered by the app's notification service, not by an MCP tool; whether the scenario model has a notification action type is to be confirmed with Altice.
+The door is part of the `thingTracker` condition, because "closed after an opening" and "a family member left" are worked out by the service from the door's reports and the presence engine. The door contact sensor reports an open door as `sensorState` with the value `alarm`, as observed on the challenge kit. The family marks which contact sensor is the entrance door. The alert is delivered by the app's notification service, not by an MCP tool. Today's scenario actions carry only a device and capability values, with no notification type ([document 10](10-mcp-in-practice.md)), so the `notification` action above is part of the proposed extension.
 
 ## 8. Connection between the home agent and the platform
 
@@ -187,7 +187,7 @@ The door is part of the `thingTracker` condition, because "closed after an openi
 |---|---|
 | Connection | The home agent opens a single outbound connection to the platform (MQTT over mutual TLS), through a load balancer to a broker; the home needs no open inbound port |
 | Identity | One certificate per home, issued when the camera is added in the app and revocable from it |
-| From the home to the platform | The changed region (at most 640 × 640, about once a second during motion); a region asked for in an active check or a refresh; rarely, 2 to 3 s of a region for the judge; face labels ("Filipe", "unknown face") with their boxes; events. Never continuous video, never face templates |
+| From the home to the platform | The changed region (at most 640 × 640, about once a second during motion); a region asked for in an active check or a refresh; rarely, 2 to 3 s of a region for the judge; face labels (a family member's name, "unknown face" or "face not visible") with their boxes; events. Never continuous video, never face templates |
 | From the platform to the home | Requests for an active check or a refresh; the face video when a person registers, relayed without being stored; privacy masks; orders to delete face templates |
 | Door | Today, the service polls `get_home_devices` every 4 s; with an event feed, door events would arrive at once |
 | Phones on the Wi-Fi | The proposed read-only `get_home_wifi_clients` tool (each client's MAC address, name, band and "connected since"), with `wifi.joined` and `wifi.left` events; the family pairs each phone with a person once, in the app |
@@ -202,10 +202,10 @@ The door is part of the `thingTracker` condition, because "closed after an openi
 | 2 | A read-only `get_home_wifi_clients` tool | Presence needs the family's phones; no camera sees someone who has left | The router sees the clients, but no tool exposes them |
 | 3 | Local RTSP access to the camera from the router | Video should stay on the home network | Video goes through a cloud relay (go2rtc) |
 | 4 | Whether the routers or cameras have an NPU | With one, vision moves home and costs about €0.36 per home a month instead of €0.49 (document 17) | The kit's LTE hub cannot run vision models |
-| 5 | A way to add tools to the MCP server | For the four Things tools and the `thingTracker` trigger | To be determined |
+| 5 | A way to add tools to the MCP server | For the four Things tools and the `thingTracker` trigger | The server's 18 tools are set by Altice; a client cannot add tools |
 | 6 | A tool to delete scenarios | Users must be able to remove sensors | The MCP can create scenarios but not delete them |
-| 7 | Push notifications to the app | For the rules' alerts | The app's notification service; unknown how ThingTracker would call it |
-| 8 | Contracts or GPU capacity for the models | Text models with no use of the data for training, a DPA and EU processing; GPUs for the vision workers and the judge | Unknown which providers or capacity Altice already has |
+| 7 | Push notifications to the app | For the rules' alerts | The app has a notification service; the way ThingTracker calls it is to be agreed with Altice in the pilot |
+| 8 | Contracts or GPU capacity for the models | Text models with no use of the data for training, a DPA and EU processing; GPUs for the vision workers and the judge | To be agreed with Altice in the pilot; the prototype runs a local model (Qwen3-1.7B) |
 
 ## 10. Status of the prototype
 
